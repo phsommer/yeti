@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="tinyos.windows.environment"
+      label="Yeti 2 - TinyOS 2.x in Cygwin (optional)"
+      version="1.1.15"
+      provider-name="ETH Zurich, Benjamin Sigg">
+
+   <description url="http://www.example.com/description">
+      Binding between TinyOS 2.x on Windows systems and the TinyOS Eclipse Plugin.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      Copyright (c) 2008, ETH Zurich. All rights reserved.
+Redistribution. 
+Redistribution and use in binary form, without modification,
+are permitted provided that the following conditions are met:
+* Redistributions must reproduce the above copyright notice and
+the following disclaimer in the documentation and/or other materials
+provided with the distribution.
+* Neither the name of ETH Zurich nor the names of its suppliers
+may be used to endorse or promote products derived from this
+software without specific prior written permission.
+* No reverse engineering, decompilation, or disassembly of this
+software is permitted.
+DISCLAIMER. 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import feature="Feature_Core_Plugin" version="2.2.15"/>
+      <import feature="Feature_Environment" version="1.2.15"/>
+      <import plugin="tinyos.yeti.core" version="2.2.15" match="greaterOrEqual"/>
+      <import plugin="tinyos.yeti.environment.basic" version="1.2.15" match="greaterOrEqual"/>
+   </requires>
+  <includes id="tinyos.yeti.environment.winXP.source" version="0.0.0" optional="true"/>
+   <plugin
+         id="tinyos.yeti.environment.winXP"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
