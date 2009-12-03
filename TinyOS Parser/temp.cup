@@ -1,0 +1,3026 @@
+ 
+
+	
+import java_cup.runtime.Symbol;
+import java.util.*;
+import tinyos.yeti.nesc12.lexer.Token;
+import tinyos.yeti.nesc12.lexer.Lexer;
+import tinyos.yeti.nesc12.parser.ast.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.definition.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.error.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.general.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.*;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.*;
+import tinyos.yeti.nesc12.parser.actions.*;
+parser code {: 
+	protected ScopeStack scopes;
+	
+	 
+	private LinkedList<Symbol> peekSymbols = new LinkedList<Symbol>();
+	 
+	private LinkedList<Symbol> errorSymbols = new LinkedList<Symbol>();
+	
+	
+	private SyntaxErrorMessager syntaxError = new SyntaxErrorMessager( this );
+	
+	 
+	
+	public ScopeStack scopes(){
+		return scopes;
+	}
+	
+	private Symbol errorSymbol(){
+		return errorSymbols.removeFirst();
+	
+	 
+	}
+	
+	private Symbol peekSymbol(){
+		return peekSymbols.removeFirst();
+	}
+	
+	public ErrorASTNode errorNode( String rule, String expected ){
+		return syntaxError.error( rule, expected, errorSymbol(), peekSymbol() );
+	}
+	
+	public ErrorASTNode errorNode( String rule, String expected, int left, int right ){
+		return syntaxError.error( rule, expected, errorSymbol(), peekSymbol(), left, right );
+	}
+	
+	public ErrorASTNode missing( String rule, String expected, int left, int right ){
+	  	return syntaxError.missing( rule, expected, left, right ); 
+	}
+	
+	public ErrorASTNode missing( String rule, String expected, int location ){
+	  	return syntaxError.missing( rule, expected, location, location ); 
+	}
+	
+    public void report_fatal_error( String message, Object info ) throws Exception {
+        done_parsing();
+         
+    }
+	
+	public void syntax_error( Symbol cur_token ) {
+	    errorSymbols.addLast( cur_token );
+	    peekSymbols.addLast( (Symbol)stack.peek() );
+	}
+	
+    public List<ErrorASTNode> remainingErrors(){
+        List<ErrorASTNode> result = new ArrayList<ErrorASTNode>();
+        while( !peekSymbols.isEmpty() ){
+            result.add( errorNode( null, null ) );
+        }
+        return result;
+    }
+    
+:}
+
+
+terminal Token		S_FOLLOW;
+
+
+terminal Token	 	P_RECT_OPEN; 		
+terminal Token 		P_RECT_CLOSE; 		
+terminal Token 		P_ROUND_OPEN; 		
+terminal Token 		P_ROUND_CLOSE;	 	
+terminal Token 		P_CURLY_OPEN; 		
+terminal Token 		P_CURLY_CLOSE; 		
+terminal Token 		P_POINT; 			
+terminal Token 		P_RIGHT_ARROW; 		
+terminal Token 		P_INCREMENT; 		
+terminal Token 		P_DECREMENT; 		
+terminal Token 		P_AMP; 				
+terminal Token 		P_STAR; 			
+terminal Token 		P_PLUS; 			
+terminal Token 		P_MINUS; 			
+terminal Token 		P_TILDE; 			
+terminal Token 		P_EXCLAMATION; 		
+terminal Token 		P_SLASH; 			
+terminal Token 		P_PERCENT; 			
+terminal Token 		P_SHIFT_LEFT; 		
+terminal Token 		P_SHIFT_RIGHT; 		
+terminal Token 		P_SMALLER; 			
+terminal Token 		P_GREATER; 			
+terminal Token 		P_SMALLER_EQ; 		
+terminal Token 		P_GREATER_EQ; 		
+terminal Token 		P_EQ; 				
+terminal Token 		P_NOT_EQ; 			
+terminal Token 		P_CARET; 			
+terminal Token	 	P_LINE; 			
+terminal Token 		P_AND; 				
+terminal Token 		P_OR; 				
+terminal Token 		P_QUESTION; 		
+terminal Token 		P_COLON; 			
+terminal Token 		P_SEMICOLON; 		
+terminal Token 		P_ELLIPSIS; 		
+terminal Token 		P_ASSIGN;  			
+terminal Token 		P_MUL_ASSIGN; 		
+terminal Token 		P_DIV_ASSIGN; 		
+terminal Token 		P_MOD_ASSIGN; 		
+terminal Token 		P_ADD_ASSIGN; 		
+terminal Token 		P_SUB_ASSIGN; 		
+terminal Token 		P_SHIFT_LEFT_ASSIGN; 	
+terminal Token 		P_SHIFT_RIGHT_ASSIGN; 	
+terminal Token 		P_AND_ASSIGN; 		
+terminal Token 		P_XOR_ASSIGN; 		
+terminal Token 		P_OR_ASSIGN; 		
+terminal Token 		P_COMMA; 			
+
+
+terminal Token 		K_SIZEOF;
+terminal Token 		K_TYPEDEF;
+terminal Token 		K_EXTERN;
+terminal Token 		K_STATIC;
+terminal Token 		K_AUTO;
+terminal Token 		K_REGISTER;
+terminal Token 		K_VOID;
+terminal Token 		K_CHAR;
+terminal Token 		K_SHORT;
+terminal Token 		K_INT;
+terminal Token 		K_LONG;
+terminal Token 		K_FLOAT;
+terminal Token 		K_DOUBLE;
+terminal Token 		K_SIGNED;
+terminal Token 		K_UNSIGNED;
+terminal Token 		K__BOOL; 
+terminal Token 		K__COMPLEX; 
+terminal Token 		K_STRUCT;
+terminal Token 		K_UNION;
+terminal Token 		K_ENUM;
+terminal Token 		K_CONST;
+terminal Token 		K_RESTRICT;
+terminal Token 		K_VOLATILE;
+terminal Token 		K_INLINE;
+terminal Token 		K_CASE;
+terminal Token 		K_SWITCH;
+terminal Token 		K_DEFAULT;
+terminal Token 		K_IF;
+terminal Token 		K_ELSE;
+terminal Token 		K_WHILE;
+terminal Token 		K_DO;
+terminal Token 		K_FOR;
+terminal Token 		K_GOTO;
+terminal Token 		K_CONTINUE;
+terminal Token 		K_BREAK;
+terminal Token 		K_RETURN;
+terminal Token		K_ASM;
+terminal Token		K_EXTENSION;
+
+
+terminal Token 		NP_AT;
+terminal Token		NP_LEFT_ARROW;
+terminal Token		NK_INTERFACE;
+terminal Token 		NK_PROVIDES;
+terminal Token		NK_USES;
+terminal Token 		NK_AS;
+terminal Token		NK_GENERIC;
+terminal Token		NK_MODULE;
+terminal Token		NK_IMPLEMENTATION;
+terminal Token		NK_NX_STRUCT;
+terminal Token		NK_NX_UNION;
+terminal Token		NK_CONFIGURATION;
+terminal Token		NK_COMPONENTS;
+terminal Token		NK_COMPONENT;
+terminal Token		NK_NEW;
+terminal Token		NK_COMMAND;
+terminal Token		NK_EVENT;
+terminal Token		NK_ASYNC;
+terminal Token		NK_NORACE;
+terminal Token		NK_ATOMIC;
+terminal Token		NK_CALL;
+terminal Token		NK_SIGNAL;
+terminal Token		NK_TASK;
+terminal Token		NK_POST;
+terminal Token		NK_INCLUDES;
+
+
+terminal Token 		IDENTIFIER;
+terminal Token 		INTEGER_CONSTANT;
+terminal Token 		FLOATING_CONSTANT;
+terminal Token 		ENUMERATION_CONSTANT;
+terminal Token 		CHARACTER_CONSTANT;
+terminal Token 		STRING;
+terminal Token 		TYPEDEF;
+
+non terminal Identifier				c_identifier;
+non terminal Identifier				c_all_identifier;
+non terminal Identifier				c_typedef_name_identifier;
+non terminal EnumerationConstant	c_enumeration_constant;
+non terminal Expression				c_constant;
+non terminal StringLiteralList		c_string_literal;
+
+non terminal Token					c_semicolon;
+non terminal Token					c_semicolon_token;
+non terminal Token					c_curly_open_recycle;
+non terminal Token					c_curly_open_token_recycle;
+non terminal Token					c_curly_open;
+non terminal Token					c_curly_open_token;
+non terminal Token					c_curly_close;
+non terminal Token					c_curly_close_token;
+non terminal Token					c_round_open;
+non terminal Token					c_round_open_token;
+non terminal Token					c_round_close;
+non terminal Token					c_round_close_token;
+non terminal Token					c_round_close_remember;
+non terminal Token					c_arrow_open;
+non terminal Token					c_arrow_open_token;
+non terminal Token					c_arrow_close;
+non terminal Token					c_arrow_close_token;
+non terminal Token					c_smaller;
+non terminal Token					c_greater;
+
+non terminal ASMCall						c_asm;
+non terminal ASMCall						c_asm_no_semicolon;
+non terminal ASMArgumentsList				c_asm_args;
+non terminal ASMArgumentsList				c_asm_args_list;
+non terminal ASMArgumentList				c_asm_arg_list;
+non terminal ASMArgument					c_asm_arg;
+non terminal Expression						c_primary_expression;
+non terminal Expression						c_postfix_expression;
+non terminal CompoundLiteral				c_compound_literal;
+non terminal CompoundLiteral				c_compound_literal_head;
+non terminal ArgumentExpressionList			c_argument_expression_list;
+non terminal Expression						c_unary_expression;
+non terminal UnaryOperator					c_unary_operator;
+non terminal Expression						c_cast_expression;
+non terminal Expression						c_multiplicative_expression;
+non terminal ArithmeticOperator				c_multiplicative_operator;
+non terminal Expression						c_additive_expression;
+non terminal ArithmeticOperator				c_additive_operator;
+non terminal Expression						c_shift_expression;
+non terminal ArithmeticOperator				c_shift_operator;
+non terminal Expression						c_relational_expression;
+non terminal ArithmeticOperator				c_relational_operator;
+non terminal Expression						c_equality_expression;
+non terminal ArithmeticOperator				c_equality_operator;
+non terminal Expression						c_and_expression;
+non terminal Expression						c_exclusive_or_expression;
+non terminal Expression						c_inclusive_or_expression;
+non terminal Expression						c_logical_and_expression;
+non terminal Expression						c_logical_or_expression;
+non terminal Expression						c_conditional_expression;
+non terminal ConditionalExpression			c_conditional_expression_middle;
+non terminal ConditionalExpression			c_conditional_expression_head;
+non terminal Expression						c_assignment_expression;
+non terminal AssignmentOperator				c_assignment_operator;
+non terminal Expression						c_expression;
+non terminal Expression						c_constant_expression;
+	
+non terminal Declaration					c_declaration;
+non terminal DeclarationSpecifierList		c_declaration_specifiers;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_nosc;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_tn_nosc;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_tp_notn_nosc;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_tp_notn;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_tn;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_tp_notn_sc_rg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_tp_notn_sc_norg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_tp_notn_nosc_rg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_tp_notn_nosc_norg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_tn_sc_rg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_tn_sc_norg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_tn_nosc_rg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_tn_nosc_norg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_notn_sc_rg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_notn_sc_norg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_notn_nosc_rg;
+non terminal DeclarationSpecifierList		c_declaration_specifiers_notp_notn_nosc_norg;
+non terminal DeclaratorSpecifier			c_declaration_specifier_notp_notn_nosc_norg;
+non terminal DeclarationSpecifierList		c_extended_type_qualifier_list;
+non terminal DeclarationSpecifierList		c_array_declarator_qualifiers;
+non terminal DeclarationSpecifierList		c_type_qualifier_and_static_list;
+non terminal StorageClass					c_storage_class_specifier_norg;
+non terminal StorageClass					c_storage_class_specifier_rg;
+non terminal InitDeclaratorList				c_init_declarator_list;
+non terminal InitDeclarator					c_init_declarator;
+non terminal TypeSpecifier					c_type_specifier_notn;
+non terminal TypeSpecifier					c_struct_or_union_specifier;
+non terminal DataObjectSpecifier			c_struct_or_union;
+non terminal DataObjectFieldDeclarationList		c_struct_declaration_list;
+non terminal DataObjectFieldDeclaration			c_struct_declaration;
+non terminal DataObjectFieldDeclaratorList		c_struct_declarator_list;
+non terminal DataObjectFieldDeclarator			c_struct_declarator;
+non terminal TypeSpecifier					c_enum_specifier;
+non terminal EnumConstantList				c_enumerator_list;
+non terminal EnumConstant					c_enumerator;
+non terminal TypeQualifier					c_type_qualifier;
+non terminal Declarator						c_declarator_typedef_name;
+non terminal Declarator						c_declarator_no_hidden_typedef_name;
+non terminal Declarator						c_declarator_no_typedef_name;
+non terminal Declarator						c_direct_declarator_typedef_name;
+non terminal Declarator						c_direct_declarator_no_hidden_typedef_name;
+non terminal Declarator						c_direct_declarator_no_typedef_name;
+non terminal Pointer						c_pointer;
+non terminal DeclarationSpecifierList		c_type_qualifier_list;
+non terminal ParameterTypeList				c_parameter_type_list;
+non terminal ParameterTypeList				c_parameter_list;
+non terminal ParameterDeclaration			c_parameter_declaration;
+non terminal IdentifierList					c_identifier_list;
+non terminal IdentifierList					c_all_identifier_list;
+non terminal TypeName						c_type_name;
+non terminal AbstractDeclarator				c_abstract_declarator;
+non terminal AbstractDeclarator				c_direct_abstract_declarator;
+non terminal TypedefName					c_typedef_name;
+non terminal Initializer					c_initializer;
+non terminal InitializerList				c_initializer_list;
+non terminal DesignatorList					c_designation;
+non terminal DesignatorList					c_designator_list;
+non terminal Designator						c_designator;
+non terminal Statement						c_statement;
+non terminal Statement						c_labeled_statement;
+non terminal CompoundStatement			 	c_compound_statement_recycle;
+non terminal CompoundStatement			 	c_compound_statement;
+non terminal CompoundStatement				c_block_item_list;
+non terminal Statement						c_block_item;
+non terminal Statement						c_expression_statement;
+non terminal Statement						c_selection_statement;
+non terminal Statement						c_iteration_statement;
+non terminal DoWhileStatement				c_iteration_do_header;
+non terminal ForStatement					c_iteration_for_update;
+non terminal ForStatement					c_iteration_for_condition;
+non terminal ForStatement					c_iteration_for_header;
+non terminal Statement						c_jump_statement;
+non terminal TranslationUnit				c_translation_unit;
+non terminal ExternalDeclaration			c_external_declaration;
+non terminal FunctionDefinition				c_function_definition;
+non terminal DeclarationList				c_declaration_list;
+
+
+non terminal Includes						n_includes;
+non terminal Interface						n_interface;
+non terminal Interface						n_interface_head_parameters;
+non terminal Interface						n_interface_head;
+non terminal InterfaceParameterList			n_interface_parameters;
+non terminal InterfaceParameterList			n_interface_parameter_list;
+non terminal InterfaceParameter				n_interface_parameter;
+non terminal AttributeList					n_attributes;
+non terminal AttributeList					n_attributes_no_init;
+non terminal Attribute						n_attribute;
+non terminal Attribute						n_attribute_no_init;
+non terminal InitializerList				n_attribute_initializer_list;
+non terminal DatadefList					n_datadef_list;
+non terminal Datadef						n_datadef;
+non terminal Expression						n_nocomma_expression;
+non terminal Module							n_module;
+non terminal Module							n_module_uses_or_provides;
+non terminal Module							n_module_head_attributes;
+non terminal Module							n_module_head;
+non terminal Module							n_module_generic;
+non terminal TemplateParameterList			n_component_parameters;
+non terminal TemplateParameterList			n_template_parameters;
+non terminal TemplateParameter				n_template_parameter;
+non terminal AccessList						n_uses_or_provides_block;
+non terminal AccessList						n_uses_or_provides_list;
+non terminal ASTNode						n_uses_or_provides;
+non terminal Access							n_uses;
+non terminal Access							n_provides;
+non terminal ParameterizedInterfaceList		n_parameterised_interface_list;
+non terminal ParameterizedInterfaceList		n_parameterised_interfaces;
+non terminal ASTNode						n_parameterised_interface;
+non terminal InterfaceReference				n_interface_ref;
+non terminal InterfaceType					n_interface_type;
+non terminal TypeList						n_typelist;
+non terminal TypeName						n_generic_type;
+non terminal IdentifierParameterList		n_parameters;
+non terminal IdentifierParameterList		n_params;
+non terminal IdentifierParameter			n_param;
+non terminal NesCExternalDefinitionList		n_module_implementation;
+non terminal NesCExternalDefinitionList		n_external_definitions;
+non terminal NesCExternalDefinition			n_external_definition;
+non terminal Configuration					n_configuration;
+non terminal ConfigurationDeclarationList	n_configuration_implementation;
+non terminal ConfigurationDeclarationList	n_configuration_declarations;
+non terminal ConfigurationDeclaration		n_configuration_declaration;
+non terminal Connection						n_connection;
+non terminal Wire							n_wire;
+non terminal Endpoint						n_endpoint;
+non terminal ParameterizedIdentifier		n_parameterized_identifier;
+non terminal ComponentList					n_component_uses;
+non terminal ComponentList					n_component_list;
+non terminal Component						n_component_ref;
+non terminal NewComponent					n_new_component_ref;
+non terminal GenericArgumentList			n_generic_arguments;
+non terminal GenericArgument				n_generic_argument;
+non terminal BinaryComponent				n_binary_component;
+non terminal NesCName						n_primary;
+non terminal AtomicStatement				n_atomic_statement;
+non terminal CallKind						n_call_kind;
+
+ 
+
+precedence nonassoc K_IF;
+precedence nonassoc K_ELSE;
+
+ 
+ start with c_translation_unit;	
+
+
+ 
+
+ 
+
+c_identifier ::=
+	IDENTIFIER:i
+		{: RESULT = new Identifier( i ); :}
+	;
+	
+c_typedef_name ::=
+	TYPEDEF:t
+		{: RESULT = new TypedefName( new Identifier( t )); :}
+	;
+	
+c_typedef_name_identifier ::=
+	TYPEDEF:t
+		{: RESULT = new Identifier( t ); :}
+	;	
+	
+c_enumeration_constant ::=
+	ENUMERATION_CONSTANT:c
+		{: RESULT = new EnumerationConstant( new Identifier( c )); :}
+	;
+
+c_all_identifier ::=
+	c_identifier:i
+		{: RESULT = i; :}
+	|
+	TYPEDEF:t
+		{: RESULT = new Identifier( t ); :}
+	|
+	ENUMERATION_CONSTANT:c
+		{: RESULT = new Identifier( c ); :}
+	;
+
+ 	
+c_string_literal ::=
+	STRING:s
+		{: RESULT = new StringLiteralList( new StringLiteral( s ) ); :}
+	|
+	c_string_literal:l STRING:s
+		{: RESULT = l.add( new StringLiteral( s ) ); :}
+	;
+	
+c_constant ::=
+	INTEGER_CONSTANT:c
+		{: RESULT = new IntegerConstant( c ); :}
+	|
+	FLOATING_CONSTANT:c
+		{: RESULT = new FloatingConstant( c ); :}
+	|
+	c_enumeration_constant:e
+		{: RESULT = e; :}
+	|
+	CHARACTER_CONSTANT:c
+		{: RESULT = new CharacterConstant( c ); :}
+	;
+
+ 
+
+c_semicolon ::=
+	c_semicolon_token:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+	
+c_semicolon_token ::=
+	P_SEMICOLON:p
+		{: parser.scopes().wipe();
+			RESULT = p; :}
+	;
+	
+c_curly_open ::=
+	c_curly_open_token:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+	
+c_curly_open_token ::=
+	P_CURLY_OPEN:p
+		{: 	parser.scopes().push();
+			RESULT = p; :}
+	;
+	
+c_curly_open_recycle ::=
+	c_curly_open_token_recycle:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+
+c_curly_open_token_recycle ::=
+	P_CURLY_OPEN:p
+		{:	parser.scopes().recycle();
+			RESULT = p; :}
+	;
+	
+c_curly_close ::=
+	c_curly_close_token:p S_FOLLOW 
+		{: RESULT = p; :}
+	;
+	
+c_curly_close_token ::=
+	P_CURLY_CLOSE:p
+		{: 	parser.scopes().pop();
+			RESULT = p; :}
+	;
+
+c_round_open ::=
+	c_round_open_token:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+	
+c_round_open_token ::=
+	P_ROUND_OPEN:p
+		{: 	parser.scopes().push();
+			RESULT = p; :}
+	;
+	
+c_round_close_remember ::=
+	c_round_close:p
+		{: parser.scopes().remember();
+			RESULT = p; :}
+	;
+	
+c_round_close ::=
+	c_round_close_token:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+	
+c_round_close_token ::=
+	P_ROUND_CLOSE:p
+		{: 	parser.scopes().pop();
+			RESULT = p; :}
+	;
+	
+c_arrow_open ::=
+	c_arrow_open_token:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+
+c_arrow_open_token ::=
+	P_SMALLER:p
+		{: 	parser.scopes().push();
+			RESULT = p; :}
+	;
+
+c_arrow_close ::=
+	c_arrow_close_token:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+
+c_arrow_close_token ::=
+	P_GREATER:p
+		{: 	parser.scopes().pop();
+			RESULT = p; :}
+	;
+	
+c_smaller ::=
+	P_SMALLER:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+	
+c_greater ::=
+	P_GREATER:p S_FOLLOW
+		{: RESULT = p; :}
+	;
+
+	
+ 
+ 	  
+n_includes ::=
+	NK_INCLUDES:k c_semicolon:s
+		{: RESULT = new Includes( k, null ); RESULT.setRight( s.getRight() ); :}
+	|
+	NK_INCLUDES:k c_all_identifier_list:f c_semicolon:s
+		{: RESULT = new Includes( k, f ); RESULT.setRight( s.getRight() ); :}
+	; 	
+ 
+	  
+n_interface ::=
+	n_interface_head_parameters:h c_curly_open_recycle c_curly_close:rr 
+		{: 	RESULT = h; 
+			h.setRight( rr.getRight() ); :}
+	|
+	n_interface_head_parameters:h c_curly_open_recycle n_datadef_list:d c_curly_close:rr 
+		{: 	RESULT = h; 
+			h.setBody( d ); 
+			h.setRight( rr.getRight() ); :}
+	|
+	n_interface_head_parameters:h c_curly_open_recycle error c_curly_close:rr 
+		{: 	RESULT = h; 
+			h.setField( Interface.BODY, parser.errorNode( "interface", "event/command list" ) ); 
+			h.setRight( rr.getRight() ); :}
+	;
+	
+n_interface_head_parameters ::=
+	NK_INTERFACE:k c_all_identifier:i error
+		{:
+			RESULT = new Interface( i, parser.errorNode( "interface", "parameter list, attribute list or body" ), null, null );
+			RESULT.setLeft( k.getLeft() ); :} 
+	|
+	n_interface_head:h
+		{: RESULT = h; :}
+	|
+	n_interface_head:h n_interface_parameters:p n_attributes_no_init:a
+		{: RESULT = h; 
+			h.setParameters( p );
+			h.setAttributes( a ); :}
+	|
+	n_interface_head:h n_attributes_no_init:a
+		{: RESULT = h; 
+			h.setAttributes( a ); :}
+	|
+	n_interface_head:h n_interface_parameters:p
+		{: RESULT = h; 
+			h.setParameters( p ); :}
+	|
+	n_interface_head:h n_interface_parameters:p error
+		{: RESULT = h; 
+			h.setParameters( p );
+			h.setField( Interface.ATTRIBUTES, parser.errorNode( "interface", "attribute list or body" ) ); :}
+	;
+	
+n_interface_head ::=
+	NK_INTERFACE:k c_all_identifier:i
+		{: RESULT = new Interface( i, null, null, null ); 
+			RESULT.setLeft( k.getLeft() ); :}
+	|
+	NK_INTERFACE:k error
+		{: RESULT = new Interface( parser.errorNode( "interface", "identifier" ), null, null, null ); 
+			RESULT.setLeft( k.getLeft() ); :}
+	|
+	NK_INTERFACE:k
+		{: RESULT = new Interface( parser.missing( "interface", "identifier", k.getRight() ), null, null, null ); 
+			RESULT.setLeft( k.getLeft() ); :}
+	;
+	
+n_interface_parameters ::=
+	c_arrow_open:rl c_arrow_close:rr
+		{: RESULT = new InterfaceParameterList();
+			RESULT.setRanges( rl, rr ); :}
+	|
+	c_arrow_open:rl n_interface_parameter_list:p c_arrow_close:rr
+		{:	p.setRanges( rl, rr );
+		    parser.scopes().remember();
+			RESULT = p; :}
+	|
+	c_arrow_open:rl error:e c_arrow_close:rr
+		{: RESULT = new InterfaceParameterList();
+			RESULT.setRanges( rl, rr );
+			RESULT.addError( parser.errorNode( "parameter list", "identifier", rl.getLeft(), rr.getRight() ) ); :}
+	; 
+	
+n_interface_parameter_list ::= 
+	n_interface_parameter:i 		{: RESULT = new InterfaceParameterList( i ); :} 	| 	n_interface_parameter_list:s P_COMMA n_interface_parameter:i 		{: RESULT = s.add( i ); :} 	| 	n_interface_parameter_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "interface parameter list", "interface parameter" )); :} 	;   
+	
+n_interface_parameter ::=
+	c_all_identifier:i
+		{: 	parser.scopes().addTypedef( i.getToken().getText() );
+			RESULT = new InterfaceParameter( i, null ); :}
+	|
+	c_all_identifier:i n_attributes_no_init:a
+		{: 	parser.scopes().addTypedef( i.getToken().getText() );
+			RESULT = new InterfaceParameter( i, a ); :}
+	|
+	c_all_identifier:i error
+		{: parser.scopes().addTypedef( i.getToken().getText() );
+			RESULT = new InterfaceParameter( i, parser.errorNode( "parameter", "attribute list" ) ); :}
+	;
+
+	 
+	 
+n_module ::=
+	n_module_uses_or_provides:h n_module_implementation:m
+		{: RESULT = h;
+			h.setImplementation( m ); :}
+	;
+	
+n_module_uses_or_provides ::=
+	n_module_head_attributes:h n_uses_or_provides_block:u
+		{: RESULT = h;
+			h.setConnections( u ); :}
+	|
+	n_module_head_attributes:h
+		{: RESULT = h;
+			h.setField( Module.CONNECTIONS, parser.missing( "module", "uses/provides block", h.getRange().getRight() ) ); :}
+	;
+	
+n_module_head_attributes ::=
+	n_module_head:h n_component_parameters:p n_attributes_no_init:a
+		{: RESULT = h;
+			h.setParameters( p );
+			h.setAttributes( a ); :}
+	|
+	n_module_head:h n_component_parameters:p
+		{: RESULT = h;
+			h.setParameters( p ); :}
+	|
+	n_module_head:h n_component_parameters:p error
+		{: RESULT = h;
+			h.setParameters( p );
+			h.setField( Module.ATTRIBUTES, parser.errorNode( "module", "attribute list, uses/provides block or implementation" ) ); :}
+	|
+	n_module_head:h n_attributes_no_init:a
+		{: RESULT = h;
+			h.setAttributes( a ); :}
+	|
+	n_module_head:h
+		{: RESULT = h; :}
+	;	
+	
+n_module_head ::=
+	n_module_generic:h c_all_identifier:i
+		{: RESULT = h; h.setName( i ); :}
+	|
+	n_module_generic:h
+		{: RESULT = h; h.setField( Module.NAME, parser.missing( "module", "identifier", h.getRange().getRight() ) ); :}
+	|
+	n_module_generic:h error
+		{: RESULT = h; h.setField( Module.NAME, parser.errorNode( "module", "identifier" )); :}
+	;
+	
+n_module_generic ::=
+	NK_GENERIC:lr NK_MODULE
+		{: RESULT = new Module( true, null, null, null, null, null ); 
+			RESULT.setLeft( lr.getLeft() ); :}
+	|
+	NK_MODULE:lr
+		{: RESULT = new Module( false, null, null, null, null, null ); 
+			RESULT.setLeft( lr.getLeft() ); :}
+	;
+
+n_component_parameters ::=
+	c_round_open:rl c_round_close_remember:rr
+		{: RESULT = new TemplateParameterList();
+			RESULT.setRanges( rl, rr ); :}
+	|
+	c_round_open n_template_parameters:t c_round_close_remember
+		{: RESULT = t; :}
+	|
+	c_round_open:rl error c_round_close_remember:rr
+		{: RESULT = new TemplateParameterList();
+			RESULT.setRanges( rl, rr );
+			RESULT.addError( parser.errorNode( "parameter list", "type" )); :}
+	;
+	
+n_template_parameters ::=
+	n_template_parameter:i 		{: RESULT = new TemplateParameterList( i ); :} 	| 	n_template_parameters:s P_COMMA n_template_parameter:i 		{: RESULT = s.add( i ); :} 	| 	n_template_parameters:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "template parameter list", "template parameter" )); :} 	;
+	
+n_template_parameter ::=
+	c_declaration_specifiers:s c_declarator_typedef_name:d
+		{: RESULT = new TemplateParameter( s, d ); :}
+	|
+	c_declaration_specifiers:s
+		{: RESULT = new TemplateParameter( s, null ); :}
+	|
+	c_declaration_specifiers:s error
+		{: RESULT = new TemplateParameter( s, parser.errorNode( "template parameter", "declarator" ) ); :}
+	|
+	c_declarator_no_typedef_name:d
+		{: RESULT = new TemplateParameter( parser.missing( "template parameter", "type", d.getRange().getLeft() ), d ); :}
+	|
+	K_TYPEDEF:k c_identifier:i
+		{:	parser.scopes().addTypedef( i.getToken().getText() );
+			RESULT = new TemplateParameter( k, i, null ); :}
+	|
+	K_TYPEDEF:k c_identifier:i n_attributes_no_init:a
+		{:	parser.scopes().addTypedef( i.getToken().getText() );
+			RESULT = new TemplateParameter( k, i, a ); :}
+	|
+	K_TYPEDEF:k error
+		{: RESULT = new TemplateParameter( null, parser.errorNode( "template parameter", "identifier" ) ); :}
+	;
+		
+n_module_implementation ::=
+	NK_IMPLEMENTATION:rl c_curly_open_recycle c_curly_close:rr
+		{: RESULT = new NesCExternalDefinitionList(); 
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_IMPLEMENTATION:rl c_curly_open_recycle n_external_definitions:e c_curly_close:rr
+		{: RESULT = e; 
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_IMPLEMENTATION:rl c_curly_open_recycle error c_curly_close:rr
+		{: RESULT = new NesCExternalDefinitionList(); 
+			RESULT.addError( parser.errorNode( "implementation", "declarations" ));
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_IMPLEMENTATION:rl error
+		{: RESULT = new NesCExternalDefinitionList(); 
+			RESULT.addError( parser.errorNode( "implementation", "body" ));
+			RESULT.setRanges( rl, rl ); :}
+	;
+	
+n_external_definitions ::=
+	n_external_definition:i 		{: RESULT = new NesCExternalDefinitionList( i ); :} 	| 	n_external_definitions:s n_external_definition:i 		{: RESULT = s.add( i ); :} 	| 	n_external_definitions:s error 		{: RESULT = s; s.addError( parser.errorNode( "external definition list", "external definition" )); :} 	;
+	
+n_external_definition ::=
+	c_function_definition:f
+		{: RESULT = f; :}
+	|
+	c_declaration:d
+		{: RESULT = d; :}
+	|
+	c_semicolon:s
+		{: RESULT = new Declaration( null, new BaseWarningASTNode( "empty declaration", s ) ); :}
+	|
+	c_asm:a
+		{: RESULT = a; :}
+	|
+	K_EXTENSION:rl n_external_definition:e
+		{: ExtensionExternalDefinition result = new ExtensionExternalDefinition( e );
+			RESULT = result; 
+			result.setLeft( rl.getLeft() ); :}
+	|
+	K_EXTENSION:k error
+		{: ExtensionExternalDefinition result = new ExtensionExternalDefinition( parser.errorNode( "extension", "external definition" ));
+			RESULT = result;
+			result.setLeft( k.getLeft() ); :}
+	;
+	
+	 
+	 
+	 	 
+	 
+	 
+	 
+	 
+n_configuration ::=
+	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,null,null,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,i,null,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,null,null,parser.missing( "configuration", "provides/uses block", i.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i 		{: RESULT = new Configuration(true,i,null,null,parser.missing( "configuration", "provides/uses block", i.getRange().getRight()),parser.missing( "configuration", "implementation", i.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,p,a,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,i,p,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_attributes_no_init:a 		{: RESULT = new Configuration(true,i,p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,null,a,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,i,null,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_attributes_no_init:a 		{: RESULT = new Configuration(true,i,null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,p,null,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,i,p,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p n_configuration_implementation:c 		{: RESULT = new Configuration(true,i,p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr c_identifier:i n_component_parameters:p 		{: RESULT = new Configuration(true,i,p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),parser.missing( "configuration", "implementation", p.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,null,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,null,parser.missing( "configuration", "provides/uses block", rr.getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,null,parser.missing( "configuration", "provides/uses block", rr.getRight()),parser.missing( "configuration", "implementation", rr.getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,a,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_attributes_no_init:a 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,a,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_attributes_no_init:a 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,null,u,c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_uses_or_provides_block:u 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p n_configuration_implementation:c 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),c); 			RESULT.setLeft( rl.getLeft() ); :} 	| 	NK_GENERIC:rl NK_CONFIGURATION:rr error n_component_parameters:p 		{: RESULT = new Configuration(true,parser.errorNode( "configuration", "identifier" ),p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),parser.missing( "configuration", "implementation", p.getRange().getRight())); 			RESULT.setLeft( rl.getLeft() ); :}
+	|
+	NK_CONFIGURATION:k c_identifier:i n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,null,null,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,i,null,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,null,null,parser.missing( "configuration", "provides/uses block", i.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i 		{: RESULT = new Configuration(false,i,null,null,parser.missing( "configuration", "provides/uses block", i.getRange().getRight()),parser.missing( "configuration", "implementation", i.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,p,a,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,i,p,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_attributes_no_init:a 		{: RESULT = new Configuration(false,i,p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,null,a,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,i,null,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_attributes_no_init:a 		{: RESULT = new Configuration(false,i,null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,p,null,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,i,p,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p n_configuration_implementation:c 		{: RESULT = new Configuration(false,i,p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k c_identifier:i n_component_parameters:p 		{: RESULT = new Configuration(false,i,p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),parser.missing( "configuration", "implementation", p.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,null,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,null,parser.missing( "configuration", "provides/uses block", k.getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,null,parser.missing( "configuration", "provides/uses block", k.getRight()),parser.missing( "configuration", "implementation", k.getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,a,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_attributes_no_init:a 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_attributes_no_init:a n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,a,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_attributes_no_init:a n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,a,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_attributes_no_init:a n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_attributes_no_init:a 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),null,a,parser.missing( "configuration", "provides/uses block", a.getRange().getRight()),parser.missing( "configuration", "implementation", a.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_uses_or_provides_block:u n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,null,u,c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_uses_or_provides_block:u 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,null,u,parser.missing( "configuration", "implementation", u.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p n_configuration_implementation:c 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),c); 			RESULT.setLeft( k.getLeft() ); :} 	| 	NK_CONFIGURATION:k error n_component_parameters:p 		{: RESULT = new Configuration(false,parser.errorNode( "configuration", "identifier" ),p,null,parser.missing( "configuration", "provides/uses block", p.getRange().getRight()),parser.missing( "configuration", "implementation", p.getRange().getRight())); 			RESULT.setLeft( k.getLeft() ); :}
+	;
+
+n_configuration_implementation ::=
+	NK_IMPLEMENTATION:rl c_curly_open_recycle c_curly_close:rr
+		{: RESULT = new ConfigurationDeclarationList();
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_IMPLEMENTATION:rl c_curly_open_recycle n_configuration_declarations:d c_curly_close:rr
+		{: RESULT = d; d.setRanges( rl, rr ); :}
+	|
+	NK_IMPLEMENTATION:rl c_curly_open_recycle error c_curly_close:rr
+		{: 	RESULT = new ConfigurationDeclarationList();
+			RESULT.addError( parser.errorNode( "implementation", "declarations" ));
+			RESULT.setRanges( rl, rr ); :}
+	;
+	
+n_configuration_declarations ::=
+	n_configuration_declaration:d
+		{: RESULT = new ConfigurationDeclarationList( d ); :}
+	|
+	n_configuration_declarations:s n_configuration_declaration:d
+		{: RESULT = s.add( d ); :}
+	;
+	
+n_configuration_declaration ::=
+	n_datadef:d
+		{: RESULT = d; :}
+	|
+	n_connection:c
+		{: RESULT = c; :}
+	|
+	n_component_uses:u
+		{: RESULT = u; :}
+	;
+		
+n_connection ::=
+	n_endpoint:a n_wire:w n_endpoint:b c_semicolon
+		{: RESULT = new Connection( a, w, b ); :}
+	|
+	n_endpoint:a error n_endpoint:b c_semicolon
+		{: RESULT = new Connection( a, parser.errorNode( "connection", "wire ->, <- or =" ), b ); :}
+	|
+	n_endpoint:a n_wire:w c_semicolon:rr
+		{: RESULT = new Connection( a, w, parser.missing( "connection", "right endpoint", w.getRange().getRight() ) ); :}
+	|
+	n_wire:w n_endpoint:b c_semicolon:rr
+		{: RESULT = new Connection( parser.missing( "connection", "left endpoint", w.getRange().getLeft() ), w, b ); :}
+	|
+	n_wire:w c_semicolon:rr
+		{: RESULT = new Connection( parser.missing( "connection", "left endpoint", w.getRange().getLeft() ), w, parser.missing( "connection", "right endpoint", w.getRange().getRight() ) ); :}
+	;
+
+n_wire ::=
+	P_ASSIGN:p
+		{: RESULT = new Wire( p, Wire.Direction.ASSIGN ); :}
+	|
+	P_RIGHT_ARROW:p
+		{: RESULT = new Wire( p, Wire.Direction.LEFT_TO_RIGHT ); :}
+	|
+	NP_LEFT_ARROW:p
+		{: RESULT = new Wire( p, Wire.Direction.RIGHT_TO_LEFT ); :}
+	;
+
+n_endpoint ::=
+	n_parameterized_identifier:i
+		{: RESULT = new Endpoint( i, null ); :}
+	|
+	n_parameterized_identifier:i P_POINT n_parameterized_identifier:p
+		{: RESULT = new Endpoint( i, p ); :}
+	|
+	error P_POINT n_parameterized_identifier:p
+		{: RESULT = new Endpoint( parser.errorNode( "endpoint", "identifier" ), p ); :}
+	|
+	n_parameterized_identifier:i P_POINT error
+		{: RESULT = new Endpoint( i, parser.errorNode( "endpoint", "parameterized identifier" ) ); :}
+	|
+	error P_POINT error
+		c_all_identifier:i P_POINT error
+			{: RESULT = new Endpoint( parser.errorNode( "endpoint", "identifier" ), parser.errorNode( "endpoint", "parameterized identifier" ) ); :}
+	;
+
+n_component_uses ::=
+	NK_COMPONENTS:rl n_component_list:l c_semicolon
+		{: RESULT = l; RESULT.setLeft( rl.getLeft() ); :}
+	|
+	NK_COMPONENTS:rl error
+		{: RESULT = new ComponentList(); RESULT.addError( parser.errorNode( "components", "list of components" )); :}
+	;
+	
+n_component_list ::=
+	n_component_ref:i 		{: RESULT = new ComponentList( i ); :} 	| 	n_component_list:s P_COMMA n_component_ref:i 		{: RESULT = s.add( i ); :} 	| 	n_component_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "list of components", "component" )); :} 	;
+	
+n_component_ref ::=
+	c_all_identifier:i
+		{: RESULT = new RefComponent( i, null ); :}
+	|
+	c_all_identifier:i NK_AS c_all_identifier:n
+		{: RESULT = new RefComponent( i, n ); :}
+	|
+	c_all_identifier:i NK_AS error
+		{: RESULT = new RefComponent( i, parser.errorNode( "component", "identifier" )); :}
+	|
+	n_new_component_ref:n
+		{: RESULT = n; :}
+	|
+	n_new_component_ref:n NK_AS c_all_identifier:i
+		{: RESULT = n; n.setRename( i ); n.setRight( i.getRange().getRight() ); :}
+	|
+	n_new_component_ref:n NK_AS error
+		{: RESULT = n; n.setField( NewComponent.RENAME, parser.errorNode( "component", "identifier" )); :}
+	|
+	error NK_AS c_all_identifier:n
+		{: RESULT = new RefComponent( parser.errorNode( "component", "identifier" ), n ); :}
+	|
+	error NK_AS error
+		{: RESULT = new RefComponent( parser.errorNode( "component", "identifier" ), parser.errorNode( "component", "identifier" )); :}
+	;
+	
+		
+	
+n_new_component_ref ::=
+	NK_NEW:rl c_all_identifier:i c_round_open n_generic_arguments:g c_round_close:rr 		{: RESULT = new NewComponent( i, g, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_NEW:rl c_all_identifier:i c_round_open c_round_close:rr 		{: RESULT = new NewComponent( i, new GenericArgumentList(), null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_NEW:rl c_all_identifier:i error 		{: RESULT = new NewComponent( i, parser.errorNode( "new component", "generic argument list" ), null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( i.getRange().getRight() ); :} 	| 	NK_NEW:rl error c_round_open n_generic_arguments:g c_round_close:rr 		{: RESULT = new NewComponent( parser.errorNode( "new component", "identifier" ), g, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_NEW:rl error c_round_open c_round_close:rr 		{: RESULT = new NewComponent( parser.errorNode( "new component", "identifier" ), new GenericArgumentList(), null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_NEW:rl error error 		{: RESULT = new NewComponent( parser.errorNode( "new component", "identifier" ), parser.errorNode( "new component", "generic argument list" ), null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rl.getRight() ); :} 	| 	NK_NEW:rl c_round_open n_generic_arguments:g c_round_close:rr 		{: RESULT = new NewComponent( parser.missing( "new component", "identifier", rl.getRight() ), g, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_NEW:rl c_round_open c_round_close:rr 		{: RESULT = new NewComponent( parser.missing( "new component", "identifier", rl.getRight() ), new GenericArgumentList(), null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_NEW:rl error 		{: RESULT = new NewComponent( parser.missing( "new component", "identifier", rl.getRight() ), parser.errorNode( "new component", "generic argument list" ), null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rl.getRight() ); :}
+	;
+
+n_generic_arguments ::=
+	n_generic_argument:g
+		{: RESULT = new GenericArgumentList( g ); :}
+	|
+ 	n_generic_arguments:g P_COMMA n_generic_argument:a
+		{: RESULT = g.add( a ); :}
+	;
+
+n_generic_argument ::=
+	n_nocomma_expression:e
+		{: RESULT = e; :}
+	|
+	n_generic_type:g
+		{: RESULT = g; :}
+	;
+	
+	 
+
+	
+	
+n_binary_component ::=
+	NK_COMPONENT:rl c_all_identifier:i n_attributes_no_init:a error 		{: RESULT = new BinaryComponent( i, a, parser.errorNode( "binary component", "provides/uses block") ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( a.getRange().getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i n_attributes_no_init:a c_curly_open c_curly_close:rr 		{: RESULT = new BinaryComponent( i, a, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i n_attributes_no_init:a c_curly_open n_uses_or_provides_list:u c_curly_close:rr 		{: RESULT = new BinaryComponent( i, a, u ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i n_attributes_no_init:a c_curly_open:op error c_curly_close:rr 		{: RESULT = new BinaryComponent( i, a, parser.errorNode( "binary component", "provides/uses block", op.getRight(), rr.getLeft() ) ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i error 		{: RESULT = new BinaryComponent( i, null, parser.errorNode( "binary component", "provides/uses block") ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( i.getRange().getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i c_curly_open c_curly_close:rr 		{: RESULT = new BinaryComponent( i, null, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i c_curly_open n_uses_or_provides_list:u c_curly_close:rr 		{: RESULT = new BinaryComponent( i, null, u ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_all_identifier:i c_curly_open:op error c_curly_close:rr 		{: RESULT = new BinaryComponent( i, null, parser.errorNode( "binary component", "provides/uses block", op.getRight(), rr.getLeft() ) ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl n_attributes_no_init:a error 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), a, parser.errorNode( "binary component", "provides/uses block") ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( a.getRange().getRight() ); :} 	| 	NK_COMPONENT:rl n_attributes_no_init:a c_curly_open c_curly_close:rr 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), a, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl n_attributes_no_init:a c_curly_open n_uses_or_provides_list:u c_curly_close:rr 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), a, u ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl n_attributes_no_init:a c_curly_open:op error c_curly_close:rr 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), a, parser.errorNode( "binary component", "provides/uses block", op.getRight(), rr.getLeft() ) ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl error 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), null, parser.errorNode( "binary component", "provides/uses block") ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rl.getRight() ); :} 	| 	NK_COMPONENT:rl c_curly_open c_curly_close:rr 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), null, null ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_curly_open n_uses_or_provides_list:u c_curly_close:rr 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), null, u ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :} 	| 	NK_COMPONENT:rl c_curly_open:op error c_curly_close:rr 		{: RESULT = new BinaryComponent( parser.missing( "binary component", "identifier", rl.getRight() ), null, parser.errorNode( "binary component", "provides/uses block", op.getRight(), rr.getLeft() ) ); RESULT.setLeft( rl.getLeft() ); RESULT.setRight( rr.getRight() ); :}
+	;
+
+	 
+	 
+n_primary ::=
+	c_identifier:e P_POINT n_parameterized_identifier:p
+		{: RESULT = new NesCName( e, p ); :}
+	|
+	n_parameterized_identifier:p
+		{: RESULT = new NesCName( null, p ); :}
+	|
+	c_identifier:e P_POINT error:r
+		{: RESULT = new NesCName( e, parser.errorNode( null, "parameterized identifier" ) );
+			RESULT.setRanges( eleft, rright ); :}
+	|
+	c_identifier:e P_POINT:p
+		{: RESULT = new NesCName( e, parser.missing( null, "parameterized identifier", p.getRight() ) );
+			RESULT.setRanges( eleft, pright ); :}
+	;
+
+n_parameterized_identifier ::=
+	c_all_identifier:i
+		{: RESULT = new ParameterizedIdentifier( i, null ); :}
+	|
+	c_all_identifier:i P_RECT_OPEN c_expression:e P_RECT_CLOSE:rr
+		{: RESULT = new ParameterizedIdentifier( i, e );
+			RESULT.setRight( rr.getRight() ); :}
+	|
+	c_all_identifier:i P_RECT_OPEN error P_RECT_CLOSE:rr
+		{: RESULT = new ParameterizedIdentifier( i, parser.errorNode( "parameterized identifier", "expression" ) );
+			RESULT.setRight( rr.getRight() ); :}
+	|
+	c_all_identifier:i P_RECT_OPEN:ro P_RECT_CLOSE:rr
+		{: RESULT = new ParameterizedIdentifier( i, parser.missing( "parameterized identifier", "expression", ro.getLeft(), rr.getRight() ) );
+			RESULT.setRight( rr.getRight() ); :}
+	;
+	 
+n_parameters ::=
+	P_RECT_OPEN:lr n_params:p P_RECT_CLOSE:rr
+		{: RESULT = p; p.setRanges( lr, rr ); :}
+	|
+	P_RECT_OPEN:lr P_RECT_CLOSE:rr
+		{: RESULT = new IdentifierParameterList();
+			RESULT.setRanges( lrleft, rrright );;
+			RESULT.addError( parser.missing( "parameter list", "parameter", lr.getLeft(), rr.getRight() ) ); :}
+	|
+	P_RECT_OPEN:lr error P_RECT_CLOSE:rr
+		{: RESULT = new IdentifierParameterList();
+			RESULT.setRanges( lrleft, rrright );;
+			RESULT.addError( parser.errorNode( "parameter list", "parameter" ) ); :}		
+	;
+	
+n_params ::=
+	n_param:i 		{: RESULT = new IdentifierParameterList( i ); :} 	| 	n_params:s P_COMMA n_param:i 		{: RESULT = s.add( i ); :} 	| 	n_params:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "parameter list", "parameter" )); :} 	;
+	
+n_param ::=
+	c_declaration_specifiers:s c_declarator_no_hidden_typedef_name:d
+		{: RESULT = new IdentifierParameter( s, d, null ); :}
+	|
+	c_declaration_specifiers:s c_abstract_declarator:d n_attributes_no_init:a
+		{: RESULT = new IdentifierParameter( s, d, a ); :}
+	|
+	c_declaration_specifiers:s c_abstract_declarator:d
+		{: RESULT = new IdentifierParameter( s, d, null ); :}
+	|
+	c_declaration_specifiers:s
+		{: RESULT = new IdentifierParameter( s, null, null ); :}
+	|
+	c_declaration_specifiers:s error
+		{: RESULT = new IdentifierParameter( s, parser.errorNode( "parameter", "(abstract) declarator" ), null ); :}
+	;
+	 
+
+n_attributes_no_init ::=
+	n_attribute_no_init:a
+		{: RESULT = new AttributeList( a ); :}
+	|
+	n_attributes_no_init:s n_attribute_no_init:a
+		{: RESULT = s.add( a ); :}
+	;	
+	
+
+n_attributes ::=
+	n_attribute:a
+		{: RESULT = new AttributeList( a ); :}
+	|
+	n_attributes:s n_attribute:a
+		{: RESULT = s.add( a ); :}
+	;	
+
+n_attribute_no_init ::=
+	NP_AT:rl c_all_identifier:i
+		{: RESULT = new Attribute( i, null );
+			RESULT.setLeft( rl.getLeft() );  :}
+	|
+	n_attribute:a
+		{: RESULT = a; :}
+	;
+
+n_attribute ::=
+	NP_AT error
+		{: RESULT = new Attribute( parser.errorNode( "attribute", "identifier" ), null ); :}
+	|
+	NP_AT:rl c_all_identifier:i n_attribute_initializer_list:l
+		{: RESULT = new Attribute( i, l );
+			RESULT.setRanges( rlleft, lright );  :}
+	|
+	NP_AT:rl n_attribute_initializer_list:l
+		{: RESULT = new Attribute( parser.missing( "attribute", "identifier", rl.getRight(), l.getRange().getLeft() ), l );
+			RESULT.setRanges( rlleft, lright );  :}
+	;
+	
+n_attribute_initializer_list ::=
+	c_round_open c_round_close
+		{:   :}
+	|
+	c_round_open c_initializer_list:l c_round_close
+		{: RESULT = l; :}
+	|
+	c_round_open:ro error c_round_close:rc
+		{: RESULT = new InitializerList();
+			RESULT.setRanges( roleft, rcright );
+			RESULT.addError( parser.errorNode( "attribute initializer", "expression list", ro.getRight(), rc.getLeft() ) ); :}
+	|
+	c_round_open c_initializer_list:l P_COMMA c_round_close
+		{: RESULT = l; :}
+	|
+	c_round_open:ro error P_COMMA c_round_close:rc
+		{: RESULT = new InitializerList();
+			RESULT.setRanges( roleft, rcright );
+			RESULT.addError( parser.errorNode( "attribute initializer", "expression list", ro.getRight(), rc.getLeft() ) ); :}
+	;
+	
+n_datadef_list ::=
+	n_datadef:i 		{: RESULT = new DatadefList( i ); :} 	| 	n_datadef_list:s n_datadef:i 		{: RESULT = s.add( i ); :} 	| 	n_datadef_list:s error 		{: RESULT = s; s.addError( parser.errorNode( "declaration list", "declaration" )); :} 	;
+	
+n_datadef ::=
+	c_declaration:d
+		{: RESULT = new Datadef( d ); :}
+	|
+	c_semicolon:r
+		{: RESULT = new Datadef();
+			RESULT.setRanges( r, r ); :}
+	;
+	 
+n_uses_or_provides_block ::=
+	c_curly_open_recycle:rl c_curly_close:rr
+		{: RESULT = new AccessList();
+			RESULT.setRanges( rl, rr );  :}
+	|
+	c_curly_open_recycle:rl n_uses_or_provides_list:l c_curly_close:rr
+		{: RESULT = l; 
+			RESULT.setRanges( rl, rr ); :}
+	|
+	c_curly_open_recycle:rl error c_curly_close:rr
+		{: RESULT = new AccessList();
+			RESULT.addError( parser.errorNode( "uses/provides block", "uses, provides or typedef" ) ); 
+			RESULT.setRanges( rl, rr ); :}
+	;
+	
+n_uses_or_provides_list ::=
+	n_uses_or_provides:i 		{: RESULT = new AccessList( i ); :} 	| 	n_uses_or_provides_list:s n_uses_or_provides:i 		{: RESULT = s.add( i ); :} 	| 	n_uses_or_provides_list:s error 		{: RESULT = s; s.addError( parser.errorNode( "uses/provides list", "uses, provides or typedef" )); :} 	;
+	
+n_uses_or_provides ::=
+	n_datadef:d
+		{: RESULT = d; :}
+	|
+	n_uses:u
+		{: RESULT = u; :}
+	|
+	n_provides:p
+		{: RESULT = p; :}
+	;
+	
+n_uses ::=
+	NK_USES:rl n_parameterised_interface_list:l
+		{: RESULT = new Access( Access.Direction.USES, l ); 
+			RESULT.setLeft( rl.getLeft() ); :}
+	|
+	NK_USES:rl c_curly_open c_curly_close:rr
+		{: RESULT = new Access( Access.Direction.USES, new ParameterizedInterfaceList() );
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_USES:rl error
+		{: RESULT = new Access( Access.Direction.USES, parser.errorNode( "uses", "parameterized interface" ) );
+			RESULT.setRanges( rl, rl ); :}
+	;
+	
+n_provides ::=
+	NK_PROVIDES:rl n_parameterised_interface_list:l
+		{: RESULT = new Access( Access.Direction.PROVIDES, l ); 
+			RESULT.setLeft( rl.getLeft() ); :}
+	|
+	NK_PROVIDES:rl c_curly_open c_curly_close:rr
+		{: RESULT = new Access( Access.Direction.PROVIDES, new ParameterizedInterfaceList() );
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_PROVIDES:rl error
+		{: RESULT = new Access( Access.Direction.PROVIDES, parser.errorNode( "provides", "parameterized interface" ) );
+			RESULT.setRanges( rl, rl ); :}
+	;
+	
+n_parameterised_interface_list ::=
+	n_parameterised_interface:p
+		{: RESULT = new ParameterizedInterfaceList( p ); :}
+	|
+	c_curly_open:rl n_parameterised_interfaces:p c_curly_close:rr
+		{: RESULT = p;
+			p.setRanges( rl, rr ); :}
+	|
+	c_curly_open:rl error c_curly_close:rr
+		{: RESULT = new ParameterizedInterfaceList();
+			RESULT.addError( parser.errorNode( "interface list", "interface" ) );
+			RESULT.setRanges( rl, rr ); :}
+	;
+	
+n_parameterised_interfaces ::=
+	n_parameterised_interface:i 		{: RESULT = new ParameterizedInterfaceList( i ); :} 	| 	n_parameterised_interfaces:s n_parameterised_interface:i 		{: RESULT = s.add( i ); :} 	| 	n_parameterised_interfaces:s error 		{: RESULT = s; s.addError( parser.errorNode( "interface list", "interface" )); :} 	;
+	
+n_parameterised_interface ::=
+	n_datadef:d
+		{: RESULT = d; :}
+	|
+	n_interface_ref:i c_semicolon:rr
+		{: ParameterizedInterface result = new ParameterizedInterface( i, null, null );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	n_interface_ref:i n_attributes_no_init:a c_semicolon:rr
+		{: ParameterizedInterface result = new ParameterizedInterface( i, null, a );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	n_interface_ref:i n_parameters:p c_semicolon:rr
+		{: ParameterizedInterface result = new ParameterizedInterface( i, p, null );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	n_interface_ref:i n_parameters:p n_attributes_no_init:a c_semicolon:rr
+		{: ParameterizedInterface result = new ParameterizedInterface( i, p, a );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	n_interface_ref:i n_parameters:p error c_semicolon:rr
+		{: ParameterizedInterface result = new ParameterizedInterface( i, p, parser.errorNode( "interface", "attribute list" ) );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	n_interface_ref:i error c_semicolon:rr
+		{: ParameterizedInterface result = new ParameterizedInterface( i, parser.errorNode( "interface", "parameter or attribute list" ), null );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	;
+	
+n_interface_ref ::=
+	n_interface_type:t
+		{: RESULT = new InterfaceReference( t, null ); :}
+	|
+	n_interface_type:t NK_AS c_all_identifier:i
+		{: RESULT = new InterfaceReference( t, i ); :}
+	|
+	n_interface_type:t NK_AS error
+		{: RESULT = new InterfaceReference( t, parser.errorNode( "interface reference", "identifier" ) ); :}
+	;
+	
+n_interface_type ::=
+	NK_INTERFACE:rl error
+		{: RESULT = new InterfaceType( parser.errorNode( "interface", "identifier" ), null );
+			RESULT.setRanges( rlleft, rlright ); :}
+	|
+	NK_INTERFACE:rl c_identifier:i
+		{: RESULT = new InterfaceType( i, null );
+			RESULT.setLeft( rl.getLeft() ); :}
+	|
+	NK_INTERFACE:rl c_identifier:i c_arrow_open c_arrow_close:rr
+		{: RESULT = new InterfaceType( i, null );
+			RESULT.setRanges( rl, rr );  :}
+	|
+	NK_INTERFACE:rl c_identifier:i c_arrow_open n_typelist:t c_arrow_close:rr
+		{: RESULT =  new InterfaceType( i, t ); 
+			RESULT.setRanges( rl, rr ); :}
+	|
+	NK_INTERFACE:rl c_identifier:i c_arrow_open error c_arrow_close:rr
+		{: RESULT =  new InterfaceType( i, parser.errorNode( "interface", "type list" ) ); 
+			RESULT.setRanges( rl, rr ); :}
+	;
+	
+n_typelist ::=
+	n_generic_type:t
+		{: RESULT = new TypeList( t ); :}
+	|
+	P_COMMA:r
+		{: RESULT = new TypeList( null );
+			RESULT.setRanges( r, r ); :}
+	|
+	n_typelist:t P_COMMA:rr
+		{: RESULT = t.add( null );
+			t.setRanges( null, rr ); :}
+	|
+	n_typelist:t P_COMMA n_generic_type:g
+		{: RESULT = t.add( g );
+			t.setRanges( null, null ); :}
+	|
+	n_typelist:t P_COMMA error
+		{: RESULT = t;
+			t.addError( parser.errorNode( "type list", "type" ));
+			t.setRanges( null, null ); :}
+	;
+		
+n_generic_type ::=
+	c_type_name:t
+		{: RESULT = t; :}
+	;	
+	
+ 
+c_primary_expression ::=
+	c_identifier:i
+		{: RESULT = new IdentifierExpression( i ); :}
+	|
+	c_constant:c
+		{: RESULT = c; :}
+	|
+	c_string_literal:s
+		{: RESULT = s; :}	
+	|
+	c_round_open:rl c_expression:e c_round_close:rr
+		{: ParenthesizedExpression result = new ParenthesizedExpression( e );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	c_round_open:rl c_compound_statement:c c_round_close:rr
+		{:  
+			StatementExpression result = new StatementExpression( c );
+			RESULT = result;
+			result.setRanges( rl, rr );
+		:}
+	|
+	c_round_open:rl error c_round_close:rr
+		{: ParenthesizedExpression result = new ParenthesizedExpression( parser.errorNode( "parenthesized expression", "expression", rl.getRight(), rr.getLeft() ));
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	c_round_open:rl c_round_close:rr
+		{: ParenthesizedExpression result = new ParenthesizedExpression( parser.missing( null, "expression", rl.getLeft(), rr.getRight() ) );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	;
+	
+c_postfix_expression ::=
+	c_primary_expression:p
+		{: RESULT = p; :}
+	|
+	c_postfix_expression:p P_RECT_OPEN:op error P_RECT_CLOSE:rr
+		{: ArraySubscripting result = new ArraySubscripting( p, parser.errorNode( "array access", "index expression", op.getRight(), rr.getLeft() ));
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_postfix_expression:p P_RECT_OPEN:op c_expression:i P_RECT_CLOSE:rr
+		{: ArraySubscripting result = new ArraySubscripting( p, i );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_postfix_expression:p c_round_open c_round_close:rr
+		{: FunctionCall result = new FunctionCall( p, null );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_postfix_expression:p c_round_open c_argument_expression_list:a c_round_close:rr
+		{: FunctionCall result = new FunctionCall( p, a );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_postfix_expression:p c_round_open:op error c_round_close:rr
+		{: FunctionCall result = new FunctionCall( p, parser.errorNode( "function call", "argument list", op.getRight(), rr.getLeft() ));
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	n_call_kind:c n_primary:p c_round_open c_round_close:rr
+		{: CallExpression result = new CallExpression( c, p, null );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	n_call_kind:c n_primary:p c_round_open c_argument_expression_list:a c_round_close:rr
+		{: CallExpression result = new CallExpression( c, p, a );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	n_call_kind:c error
+		{: RESULT = new CallExpression( c, parser.errorNode( "call", "identifier and/or arguments" ), null ); :}
+	|
+	n_call_kind:c c_round_open:op c_argument_expression_list:a c_round_close:rr
+		{: CallExpression result = new CallExpression( c, parser.missing( "call", "identifier", c.getRange().getRight(), op.getLeft() ), a );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	n_call_kind:c n_primary:p c_round_open:op error c_round_close:rr
+		{: CallExpression result = new CallExpression( c, p, parser.errorNode( "call", "argument list", op.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_postfix_expression:p P_POINT c_identifier:i
+		{: RESULT = new FieldAccess( p, i ); :}
+	|
+	c_postfix_expression:p P_POINT error
+		{: RESULT = new FieldAccess( p, parser.errorNode( "field access", "field identifier" )); :}
+	|
+	c_postfix_expression:p P_RIGHT_ARROW c_identifier:i
+		{: RESULT = new PointerAccess( p, i ); :}
+	|
+	c_postfix_expression:p P_RIGHT_ARROW error
+		{: RESULT = new PointerAccess( p, parser.errorNode( "pointer access", "field identifier" )); :}
+	|
+	c_postfix_expression:p P_INCREMENT:i
+		{: RESULT = new PostfixExpression( p, new PostfixOperator( i, PostfixOperator.Operator.INCREMENT )); :}
+	|
+	c_postfix_expression:p P_DECREMENT:d
+		{: RESULT = new PostfixExpression( p, new PostfixOperator( d, PostfixOperator.Operator.DECREMENT )); :}
+	|	
+	c_compound_literal:c
+		{: RESULT = c; :}
+	;
+	
+c_compound_literal ::=
+	c_compound_literal_head:h c_curly_open c_initializer_list:i c_curly_close:rr
+		{: RESULT = h; h.setInitializer( i ); h.setRight( rr.getRight() ); :}
+	|
+	c_compound_literal_head:h c_curly_open error c_curly_close:rr
+		{: RESULT = h; 
+			h.setField( CompoundLiteral.INITIALIZER, parser.errorNode( "compound literal", "initializer" ) ); 
+			h.setRight( rr.getRight() ); :}
+	|
+	c_compound_literal_head:h c_curly_open c_initializer_list:i P_COMMA c_curly_close:rr
+		{: RESULT = h; h.setInitializer( i ); h.setRight( rr.getRight() ); :}
+	|
+	c_compound_literal_head:h c_curly_open error P_COMMA c_curly_close:rr
+		{: RESULT = h; 
+			h.setField( CompoundLiteral.INITIALIZER, parser.errorNode( "compound literal", "initializer" ) ); 
+			h.setRight( rr.getRight() ); :}
+	;
+	
+c_compound_literal_head ::=
+	c_round_open:rl c_type_name:t c_round_close:rr
+		{: RESULT = new CompoundLiteral( t, null ); RESULT.setRanges( rl, rr ); :}
+	|
+	c_round_open:rl error c_round_close:rr
+		{: RESULT = new CompoundLiteral( parser.errorNode( "compound literal", "type name" ), null ); RESULT.setRanges( rl, rr ); :}
+	|
+	c_round_open:rl c_round_close:rr
+		{: RESULT = new CompoundLiteral( parser.missing( "compound literal", "type name", rl.getLeft(), rr.getRight() ), null ); :}
+	;
+	
+n_call_kind ::=
+	NK_CALL:k
+		{: RESULT = new CallKind( CallKind.Call.CALL, k ); :}
+	|
+	NK_SIGNAL:k
+		{: RESULT = new CallKind( CallKind.Call.SIGNAL, k ); :}
+	|
+	NK_POST:k
+		{: RESULT = new CallKind( CallKind.Call.POST, k ); :}
+	;
+
+c_argument_expression_list ::=	
+	c_assignment_expression:i 		{: RESULT = new ArgumentExpressionList( i ); :} 	| 	c_argument_expression_list:s P_COMMA c_assignment_expression:i 		{: RESULT = s.add( i ); :} 	| 	c_argument_expression_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "argument list", "expression" )); :} 	;
+	
+c_unary_expression ::=
+	c_postfix_expression:p
+		{: RESULT = p; :}
+	|
+	P_INCREMENT:p c_unary_expression:u
+		{: RESULT = new PrefixExpression( new UnaryOperator( p, UnaryOperator.Operator.INCREMENT ), u ); :}	
+	|
+	P_INCREMENT:p error
+		{: RESULT = new PrefixExpression( new UnaryOperator( p, UnaryOperator.Operator.INCREMENT ), parser.errorNode( "increment", "expression" ) ); :}	
+	|
+	P_DECREMENT:p c_unary_expression:u
+		{: RESULT = new PrefixExpression( new UnaryOperator( p, UnaryOperator.Operator.DECREMENT ), u ); :}	
+	|
+	P_DECREMENT:p error
+		{: RESULT = new PrefixExpression( new UnaryOperator( p, UnaryOperator.Operator.DECREMENT ), parser.errorNode( "increment", "expression" ) ); :}	
+	|
+	c_unary_operator:u c_cast_expression:e
+		{: RESULT = new PrefixExpression( u, e ); :}
+	|
+	c_unary_operator:u error
+		{: RESULT = new PrefixExpression( u, parser.errorNode( "unary expression", "expression" )); :}
+	|
+	K_SIZEOF:rl c_unary_expression:u
+		{: SizeofExpression result = new SizeofExpression( u );
+			RESULT = result;
+			result.setRight( rl.getRight() ); :}
+	|
+	K_SIZEOF:rl c_round_open c_type_name:t c_round_close:rr
+		{: SizeofExpression result = new SizeofExpression( t );
+			RESULT = result; 
+			result.setRanges( rl, rr ); :}
+	|
+	K_SIZEOF:rl error
+		{: RESULT = new SizeofExpression( parser.errorNode( "sizeof expression", "expression or typename" ) ); :}
+	;
+	
+c_unary_operator ::=
+	P_AMP:p
+		{: RESULT = new UnaryOperator( p, UnaryOperator.Operator.ADDRESS ); :}
+	|
+	P_STAR:p
+		{: RESULT = new UnaryOperator( p, UnaryOperator.Operator.POINTER ); :}
+	|
+	P_PLUS:p
+		{: RESULT = new UnaryOperator( p, UnaryOperator.Operator.POSITIVE ); :}
+	|
+	P_MINUS:p
+		{: RESULT = new UnaryOperator( p, UnaryOperator.Operator.NEGATIVE ); :}
+	|
+	P_TILDE:p
+		{: RESULT = new UnaryOperator( p, UnaryOperator.Operator.INVERSE ); :}
+	|
+	P_EXCLAMATION:p
+		{: RESULT = new UnaryOperator( p, UnaryOperator.Operator.NOT ); :}
+	;
+	
+c_cast_expression ::=
+	c_unary_expression:u
+		{: RESULT = u; :}
+	|
+	c_round_open:rl c_type_name:t c_round_close c_cast_expression:e
+		{: CastExpression result = new CastExpression( t, e );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	c_round_open:rl c_type_name:t c_round_close error
+		{: CastExpression result = new CastExpression( t, parser.errorNode( "cast expression", "expression" ) );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	;
+	
+ 
+	
+c_multiplicative_expression ::=
+	c_cast_expression:e
+		{: RESULT = e; :}
+	|
+	c_multiplicative_expression:m c_multiplicative_operator:p c_cast_expression:e 		{: RESULT = new ArithmeticExpression( m, p, e ); :} 	| 	c_multiplicative_expression:m c_multiplicative_operator:p error 		{: RESULT = new ArithmeticExpression( m, p, parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+
+c_multiplicative_operator ::=
+	P_STAR:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.MUL ); :}
+	|
+	P_SLASH:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.DIV ); :}
+	|
+	P_PERCENT:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.MOD ); :}
+	;
+	
+c_additive_expression ::=
+	c_multiplicative_expression:m
+		{: RESULT = m; :}
+	|
+	c_additive_expression:a c_additive_operator:p c_multiplicative_expression:m 		{: RESULT = new ArithmeticExpression( a, p, m ); :} 	| 	c_additive_expression:a c_additive_operator:p error 		{: RESULT = new ArithmeticExpression( a, p, parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_additive_operator ::=
+	P_PLUS:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.ADD ); :}
+	|
+	P_MINUS:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.SUB ); :}
+	;
+	
+c_shift_expression ::=
+	c_additive_expression:a
+		{: RESULT = a; :}
+	|
+	c_shift_expression:s c_shift_operator:p c_additive_expression:a 		{: RESULT = new ArithmeticExpression( s, p, a ); :} 	| 	c_shift_expression:s c_shift_operator:p error 		{: RESULT = new ArithmeticExpression( s, p, parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_shift_operator ::=
+	P_SHIFT_LEFT:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.SHIFT_LEFT ); :}
+	|
+	P_SHIFT_RIGHT:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.SHIFT_RIGHT ); :}
+	;
+			
+c_relational_expression ::=
+	c_shift_expression:s
+		{: RESULT = s; :}
+	|
+	c_relational_expression:r c_relational_operator:p c_shift_expression:s 		{: RESULT = new ArithmeticExpression( r, p, s ); :} 	| 	c_relational_expression:r c_relational_operator:p error 		{: RESULT = new ArithmeticExpression( r, p, parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_relational_operator ::=
+	c_smaller:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.SMALLER ); :}
+	|
+	c_greater:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.GREATER ); :}
+	|
+	P_SMALLER_EQ:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.SMALLER_EQ ); :}
+	|
+	P_GREATER_EQ:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.GREATER_EQ ); :}
+	;
+		
+c_equality_expression ::=
+	c_relational_expression:r
+		{: RESULT = r; :}
+	|
+	c_equality_expression:e c_equality_operator:p c_relational_expression:r 		{: RESULT = new ArithmeticExpression( e, p, r ); :} 	| 	c_equality_expression:e c_equality_operator:p error 		{: RESULT = new ArithmeticExpression( e, p, parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_equality_operator ::=
+	P_EQ:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.EQ ); :}
+	|
+	P_NOT_EQ:p
+		{: RESULT = new ArithmeticOperator( p, ArithmeticOperator.Operator.NOT_EQ ); :}		
+	;
+
+c_and_expression ::=
+	c_equality_expression:e
+		{: RESULT = e; :}
+	|
+	c_and_expression:a P_AMP:p c_equality_expression:e 		{: RESULT = new ArithmeticExpression( a, new ArithmeticOperator( p, ArithmeticOperator.Operator.BIT_AND ), e ); :} 	| 	c_and_expression:a P_AMP:p error 		{: RESULT = new ArithmeticExpression( a, new ArithmeticOperator( p, ArithmeticOperator.Operator.BIT_AND ), parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_exclusive_or_expression ::=
+	c_and_expression:e
+		{: RESULT = e; :}	
+	|
+	c_exclusive_or_expression:e P_CARET:p c_and_expression:a 		{: RESULT = new ArithmeticExpression( e, new ArithmeticOperator( p, ArithmeticOperator.Operator.BIT_XOR ), a ); :} 	| 	c_exclusive_or_expression:e P_CARET:p error 		{: RESULT = new ArithmeticExpression( e, new ArithmeticOperator( p, ArithmeticOperator.Operator.BIT_XOR ), parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}	
+	;
+	
+c_inclusive_or_expression ::=
+	c_exclusive_or_expression:e
+		{: RESULT = e; :}
+	|
+	c_inclusive_or_expression:i P_LINE:p c_exclusive_or_expression:e 		{: RESULT = new ArithmeticExpression( i, new ArithmeticOperator( p, ArithmeticOperator.Operator.BIT_OR ), e ); :} 	| 	c_inclusive_or_expression:i P_LINE:p error 		{: RESULT = new ArithmeticExpression( i, new ArithmeticOperator( p, ArithmeticOperator.Operator.BIT_OR ), parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_logical_and_expression ::=
+	c_inclusive_or_expression:i
+		{: RESULT = i; :}
+	|
+	c_logical_and_expression:l P_AND:p c_inclusive_or_expression:i 		{: RESULT = new ArithmeticExpression( l, new ArithmeticOperator( p, ArithmeticOperator.Operator.AND ), i ); :} 	| 	c_logical_and_expression:l P_AND:p error 		{: RESULT = new ArithmeticExpression( l, new ArithmeticOperator( p, ArithmeticOperator.Operator.AND ), parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_logical_or_expression ::=
+	c_logical_and_expression:l
+		{: RESULT = l; :}
+	|
+	c_logical_or_expression:o P_OR:p c_logical_and_expression:a 		{: RESULT = new ArithmeticExpression( o, new ArithmeticOperator( p, ArithmeticOperator.Operator.OR ), a ); :} 	| 	c_logical_or_expression:o P_OR:p error 		{: RESULT = new ArithmeticExpression( o, new ArithmeticOperator( p, ArithmeticOperator.Operator.OR ), parser.errorNode( "arithmetic expression", "right hand side expression" ) ); :}
+	;
+	
+c_conditional_expression ::=
+	c_logical_or_expression:l
+		{: RESULT = l; :}
+	|
+	c_conditional_expression_middle:h c_conditional_expression:f
+		{: RESULT = h; h.setElseValue( f ); :}
+	|
+	c_conditional_expression_middle:h
+		{: RESULT = h; h.setField( ConditionalExpression.ELSE_VALUE, parser.missing( "conditional expression", "expression", h.getRange().getRight() ) ); :}
+	;
+
+c_conditional_expression_middle ::=
+	c_conditional_expression_head:h c_expression:t P_COLON:p
+		{: RESULT = h; h.setIfValue( t ); :}
+	|
+	c_conditional_expression_head:h P_COLON:p
+		{: 	RESULT = h; 
+			h.setField( ConditionalExpression.IF_VALUE, parser.missing( "conditional expression", "expression", h.getRange().getRight(), p.getLeft() ) ); :}
+	|
+	c_conditional_expression_head:h error P_COLON:p
+		{: RESULT = h; 
+			h.setField( ConditionalExpression.IF_VALUE, parser.errorNode( "conditional expression", "expression", h.getRange().getRight(), p.getLeft() ) ); :}
+	;
+	
+c_conditional_expression_head ::=
+	c_logical_or_expression:c P_QUESTION:q
+		{: RESULT = new ConditionalExpression( c, null, null ); :}
+	|
+	P_QUESTION:q
+		{: 	RESULT = new ConditionalExpression( parser.missing( "conditional expression", "expression", q.getLeft() ), null, null ); :}
+	;
+	
+c_assignment_expression ::=
+	c_conditional_expression:c
+		{: RESULT = c; :}
+	|
+	c_unary_expression:u c_assignment_operator:o c_assignment_expression:e
+		{: RESULT = new AssignmentExpression( u, o, e ); :}
+	|
+	c_unary_expression:u c_assignment_operator:o error
+		{: RESULT = new AssignmentExpression( u, o, parser.errorNode( "assignment", "expression" ) ); :}
+	;
+	
+c_assignment_operator ::=
+	P_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.ASSIGN ); :}
+	|
+	P_MUL_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.MUL ); :}
+	|
+	P_DIV_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.DIV ); :}
+	|
+	P_MOD_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.MOD ); :}
+	|
+	P_ADD_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.AND ); :}
+	|
+	P_SUB_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.SUB ); :}
+	|
+	P_SHIFT_LEFT_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.SHIFT_LEFT ); :}
+	|
+	P_SHIFT_RIGHT_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.SHIFT_RIGHT ); :}
+	|
+	P_AND_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.AND ); :}
+	|
+	P_XOR_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.XOR ); :}
+	|
+	P_OR_ASSIGN:p
+		{: RESULT = new AssignmentOperator( p, AssignmentOperator.Operator.OR ); :}
+	;
+	
+n_nocomma_expression ::=
+	c_assignment_expression:e
+		{: RESULT = e; :}
+	;
+	
+c_expression ::=
+	c_assignment_expression:a
+		{: RESULT = a; :}
+	|
+	c_assignment_expression:e error
+		{: if( !(e instanceof ExpressionList) ){
+				e = new ExpressionList( e );
+			}
+			ExpressionList list = (ExpressionList)e;
+			list.addError( parser.errorNode( "expression", null ));
+			RESULT = list;
+		:}
+	|
+	c_expression:e P_COMMA c_assignment_expression:a
+		{: 	if( e instanceof ExpressionList ){
+				RESULT = ((ExpressionList)e).add( a );
+			}
+			else{
+				RESULT = new ExpressionList().add( e ).add( a );
+			} :}
+	|
+	c_expression:e P_COMMA c_assignment_expression:a error
+		{: 	if( !(e instanceof ExpressionList) ){
+				e = new ExpressionList( e );
+			}
+			
+			RESULT = e;
+			ExpressionList list = (ExpressionList)e;
+			list.add( a );
+			list.addError( parser.errorNode( "expression list", "expression" ) );
+		:}
+	|
+	c_expression:e P_COMMA error
+		{: 	if( e instanceof ExpressionList ){
+				RESULT = ((ExpressionList)e).addError( parser.errorNode( "expression list", "expression" ));
+			}
+			else{
+				RESULT = new ExpressionList().add( e ).addError( parser.errorNode( "expression list", "expression" ));
+			} :}
+	;
+	
+c_constant_expression ::=
+	c_conditional_expression:c
+		{: RESULT = c; :}
+	;
+	
+ 
+ 
+c_declaration ::=
+	c_declaration_specifiers:d c_semicolon:s
+ 		{: RESULT = new Declaration( d, new InitDeclaratorList() ); RESULT.setRight( s.getRight() ); :}
+ 	|
+	c_declaration_specifiers:d c_init_declarator_list:i c_semicolon:s
+	 	{: RESULT = new Declaration( d, i ); RESULT.setRight( s.getRight() ); :}
+ 	;
+ 	
+ 	 
+	
+c_declaration_specifiers ::=
+	c_declaration_specifiers_tp_notn:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_notp_tn:d
+		{: RESULT = d; :}
+	;
+
+c_declaration_specifiers_nosc ::=
+	c_declaration_specifiers_notp_tn_nosc:d
+		{: RESULT = d; :}
+	|	
+	c_declaration_specifiers_tp_notn_nosc:d
+		{: RESULT = d; :}
+	;
+
+c_declaration_specifiers_notp_tn_nosc ::=
+	c_declaration_specifiers_notp_tn_nosc_norg:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_rg:d
+		{: RESULT = d; :}
+	;
+
+c_declaration_specifiers_tp_notn_nosc ::=
+	c_declaration_specifiers_tp_notn_nosc_norg:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_rg:d
+		{: RESULT = d; :}
+	;
+
+c_declaration_specifiers_notp_tn ::=
+	c_declaration_specifiers_notp_tn_sc_rg:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_notp_tn_sc_norg:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_rg:d	
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_norg:d 
+		{: RESULT = d; :}
+	;	
+
+c_declaration_specifiers_tp_notn ::=
+	c_declaration_specifiers_tp_notn_sc_rg:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_tp_notn_sc_norg:d 
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_rg:d
+		{: RESULT = d; :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_norg:d
+		{: RESULT = d; :}
+	;
+	
+c_declaration_specifiers_tp_notn_sc_rg ::=
+	c_declaration_specifiers_notp_notn_sc_rg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_rg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_norg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_rg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_rg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_rg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_rg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_tp_notn_sc_norg ::=	
+	c_declaration_specifiers_notp_notn_sc_norg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_norg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_norg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_norg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_sc_norg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_tp_notn_nosc_rg ::=
+	c_declaration_specifiers_notp_notn_nosc_rg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_norg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_rg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_rg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_rg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_tp_notn_nosc_norg ::=
+	c_declaration_specifiers_notp_notn_nosc_norg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_norg:d c_type_specifier_notn:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_type_specifier_notn:t
+		{: RESULT = new DeclarationSpecifierList( t ); :}
+	|
+	c_declaration_specifiers_tp_notn_nosc_norg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_notp_tn_sc_rg ::=
+	c_declaration_specifiers_notp_notn_sc_rg:d c_typedef_name:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_rg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_sc_norg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_sc_rg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_sc_rg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_sc_rg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;	
+
+c_declaration_specifiers_notp_tn_sc_norg ::=
+	c_declaration_specifiers_notp_notn_sc_norg:d c_typedef_name:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_norg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_sc_norg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_sc_norg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_notp_tn_nosc_rg ::=
+	c_declaration_specifiers_notp_notn_nosc_rg:d c_typedef_name:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_norg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_rg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_rg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_notp_tn_nosc_norg ::=
+	c_declaration_specifiers_notp_notn_nosc_norg:d c_typedef_name:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_tn_nosc_norg:d c_declaration_specifier_notp_notn_nosc_norg:e	
+		{: RESULT = d.add( e ); :}
+	|
+	c_typedef_name:t
+		{: RESULT = new DeclarationSpecifierList( t ); :}
+	;
+
+c_declaration_specifiers_notp_notn_sc_rg ::=
+	c_declaration_specifiers_notp_notn_nosc_rg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_notn_sc_norg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_notn_sc_rg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_notn_sc_rg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_notn_sc_rg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_notp_notn_sc_norg ::=
+	c_declaration_specifiers_notp_notn_nosc_norg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_notn_sc_norg:d c_storage_class_specifier_norg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_storage_class_specifier_norg:s
+		{: RESULT = new DeclarationSpecifierList( s ); :}
+	|
+	c_declaration_specifiers_notp_notn_sc_norg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+
+c_declaration_specifiers_notp_notn_nosc_rg ::=
+	c_declaration_specifiers_notp_notn_nosc_norg:d c_storage_class_specifier_rg:e	
+		{: RESULT = d.add( e ); :}
+	|
+	c_declaration_specifiers_notp_notn_nosc_rg:d c_storage_class_specifier_rg:e
+		{: RESULT = d.add( e ); :}
+	|
+	c_storage_class_specifier_rg:s
+		{: RESULT = new DeclarationSpecifierList( s ); :}
+	|
+	c_declaration_specifiers_notp_notn_nosc_rg:d c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = d.add( e ); :}
+	;
+	
+c_declaration_specifiers_notp_notn_nosc_norg ::=
+	c_type_qualifier_list:t
+		{: RESULT = t; :}
+	|
+	c_extended_type_qualifier_list:t
+		{: RESULT = t; :}
+	;
+	
+c_extended_type_qualifier_list	::=
+	K_INLINE:k
+		{: RESULT = new DeclarationSpecifierList( new DirectDeclaratorSpecifier( k, DirectDeclaratorSpecifier.Specifier.INLINE ) ); :}
+	|
+	K_DEFAULT:k
+		{: RESULT = new DeclarationSpecifierList( new DirectDeclaratorSpecifier( k, DirectDeclaratorSpecifier.Specifier.DEFAULT ) ); :}
+	|
+	c_type_qualifier_list:t K_INLINE:k
+		{: RESULT = t.add( new DirectDeclaratorSpecifier( k, DirectDeclaratorSpecifier.Specifier.INLINE ) ); :}
+	|
+	c_type_qualifier_list:t K_DEFAULT:k
+		{: RESULT = t.add( new DirectDeclaratorSpecifier( k, DirectDeclaratorSpecifier.Specifier.DEFAULT ) ); :}
+	|
+	c_extended_type_qualifier_list:t c_declaration_specifier_notp_notn_nosc_norg:e
+		{: RESULT = t.add( e ); :}
+	;
+ 	
+c_declaration_specifier_notp_notn_nosc_norg ::=
+  	c_type_qualifier:t
+		{: RESULT = t; :}
+ 	|
+  	K_INLINE:k
+		{: RESULT = new DirectDeclaratorSpecifier( k, DirectDeclaratorSpecifier.Specifier.INLINE ); :}
+ 	|
+	
+	K_DEFAULT:k
+		{: RESULT = new DirectDeclaratorSpecifier( k, DirectDeclaratorSpecifier.Specifier.DEFAULT ); :}
+ 	;	
+
+c_storage_class_specifier_rg ::=
+	K_REGISTER:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.REGISTER ); :}
+	;
+	
+c_storage_class_specifier_norg ::=
+	K_TYPEDEF:k
+		{:  parser.scopes().typedef();
+			RESULT = new StorageClass( k, StorageClass.Storage.TYPEDEF ); :}
+	|
+	K_EXTERN:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.EXTERN ); :}
+	|
+	K_STATIC:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.STATIC ); :}
+	|
+	K_AUTO:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.AUTO ); :}
+	|
+	NK_COMMAND:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.COMMAND ); :}
+	|
+	NK_EVENT:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.EVENT ); :}
+	|
+	NK_TASK:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.TASK ); :}
+	|
+	NK_ASYNC:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.ASYNC ); :}
+	|
+	NK_NORACE:k
+		{: RESULT = new StorageClass( k, StorageClass.Storage.NORACE ); :}
+	;
+
+c_type_specifier_notn ::=
+	K_VOID:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.VOID ); :}
+	|
+	K_CHAR:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.CHAR ); :}
+	|
+	K_SHORT:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.SHORT ); :}
+	|
+	K_INT:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.INT ); :}
+	|
+	K_LONG:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.LONG ); :}
+	|
+	K_FLOAT:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.FLOAT ); :}
+	|
+	K_DOUBLE:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.DOUBLE ); :}
+	|
+	K_SIGNED:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.SIGNED ); :}
+	|
+	K_UNSIGNED:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type.UNSIGNED ); :}
+	|
+	K__BOOL:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type._BOOL ); :}
+	|
+	K__COMPLEX:k
+		{: RESULT = new PrimitiveSpecifier( k, PrimitiveSpecifier.Type._COMPLEX ); :}
+	|
+	c_struct_or_union_specifier:k
+		{: RESULT = k; :}
+	|
+	c_enum_specifier:k
+		{: RESULT = k; :}
+	;
+	
+	
+	
+c_struct_or_union_specifier ::=
+	c_struct_or_union:s c_all_identifier:i c_curly_open c_struct_declaration_list:d c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, i, null, d );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_all_identifier:i c_curly_open c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, i, null, null );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_all_identifier:i c_curly_open error c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, i, null, parser.errorNode( "data object declaration", "field declarations" ) );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_curly_open c_struct_declaration_list:d c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, null, null, d );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_curly_open c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, null, null, null );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_curly_open error c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, null, null, parser.errorNode( "data object declaration", "field declarations" ) );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_all_identifier:i n_attributes_no_init:a c_curly_open c_struct_declaration_list:d c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, i, a, d );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_all_identifier:i n_attributes_no_init:a c_curly_open c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, i, a, null );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s c_all_identifier:i n_attributes_no_init:a c_curly_open error c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, i, a, parser.errorNode( "data object declaration", "field declarations" ) );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s error c_curly_open c_struct_declaration_list:d c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, parser.errorNode( "data object declaration", "identifier or field declarations" ), null, d );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s error c_curly_open c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, parser.errorNode( "data object declaration", "identifier or field declarations" ), null, null );	RESULT = result; result.setRight( rr.getRight() ); :} 	| 	c_struct_or_union:s error c_curly_open error c_curly_close:rr 		{: DataObjectDeclaration result = new DataObjectDeclaration( s, parser.errorNode( "data object declaration", "identifier or field declarations" ), null, parser.errorNode( "data object declaration", "field declarations" ) );	RESULT = result; result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT c_all_identifier:i c_curly_open c_struct_declaration_list:d c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, i, null, d );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT c_all_identifier:i n_attributes_no_init:a c_curly_open c_struct_declaration_list:d c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, i, a, d );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT c_all_identifier:i c_curly_open error c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, i, null, parser.errorNode( "attribute", "field declarations" ) );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT c_all_identifier:i c_curly_open c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, i, null, null );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT c_all_identifier:i n_attributes_no_init:a c_curly_open c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, i, a, null );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT error c_curly_open c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, parser.errorNode( "attribute declaration", "identifier" ), null, null );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT error c_curly_open c_struct_declaration_list:d c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, parser.errorNode( "attribute declaration", "identifier" ), null, d );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT error c_curly_open error c_curly_close:rr
+		{: AttributeDeclaration result = new AttributeDeclaration( s, parser.errorNode( "attribute declaration", "identifier" ), null, parser.errorNode( "attribute", "field declarations" ) );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s NP_AT c_all_identifier:i error
+		{: RESULT = new AttributeDeclaration( s, i, null, parser.errorNode( "attribute", "field declarations" ) ); :}
+	|
+	c_struct_or_union:s NP_AT:rr error
+		{: AttributeDeclaration result = new AttributeDeclaration( s, parser.errorNode( "attribute declaration", "identifier" ), null, null );
+			RESULT = result; 
+			result.setRight( rr.getRight() ); :}
+	|
+	c_struct_or_union:s c_all_identifier:i
+		{: RESULT = new IncompleteDataObject( s, i ); :}
+	|
+	c_struct_or_union:s error
+		{: RESULT = new IncompleteDataObject( s, parser.errorNode( "data object declaration", "identifier or field declarations" ) ); :}
+	;
+	
+c_struct_or_union ::=
+	K_STRUCT:k
+		{: RESULT = new DataObjectSpecifier( k, DataObjectSpecifier.Specifier.STRUCT ); :}
+	|
+	K_UNION:k
+		{: RESULT = new DataObjectSpecifier( k, DataObjectSpecifier.Specifier.UNION ); :}
+	|
+	NK_NX_STRUCT:k
+		{: RESULT = new DataObjectSpecifier( k, DataObjectSpecifier.Specifier.NX_STRUCT ); :}
+	|
+	NK_NX_UNION:k
+		{: RESULT = new DataObjectSpecifier( k, DataObjectSpecifier.Specifier.NX_UNION ); :}
+	;
+	
+c_struct_declaration_list ::=
+	c_struct_declaration:i 		{: RESULT = new DataObjectFieldDeclarationList( i ); :} 	| 	c_struct_declaration_list:s c_struct_declaration:i 		{: RESULT = s.add( i ); :} 	| 	c_struct_declaration_list:s error 		{: RESULT = s; s.addError( parser.errorNode( "declaration list", "declaration" )); :} 	;
+	
+c_struct_declaration ::=
+	c_declaration_specifiers:q c_struct_declarator_list:d c_semicolon:rr
+		{: RESULT = new DataObjectFieldDeclaration( q, d );
+			RESULT.setRight( rr.getRight() ); :}
+	|
+	c_declaration_specifiers:q c_semicolon:rr
+		{: RESULT = new DataObjectFieldDeclaration( q, new DataObjectFieldDeclaratorList() );
+			RESULT.setRight( rr.getRight() ); :}
+	|
+	c_declaration_specifiers:q error c_semicolon:rr
+		{: RESULT = new DataObjectFieldDeclaration( q, parser.errorNode( "declaration", "declarator list" ) );
+			RESULT.setRight( rr.getRight() ); :}
+	;
+
+ 
+	
+ 
+ 	 
+ 
+c_init_declarator_list ::=
+	c_init_declarator:i 		{: RESULT = new InitDeclaratorList( i ); :} 	| 	c_init_declarator_list:s P_COMMA c_init_declarator:i 		{: RESULT = s.add( i ); :} 	| 	c_init_declarator_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "declarator list", "declarator" )); :} 	;
+ 
+c_init_declarator ::= 
+	c_declarator_typedef_name:d
+		{: RESULT = new InitDeclarator( d, null, null ); :}
+	|
+	c_declarator_typedef_name:d c_asm_no_semicolon:a
+		{: RESULT = new InitDeclarator( d, a, null ); :}
+	|
+	c_declarator_typedef_name:d P_ASSIGN c_initializer:i
+		{: RESULT = new InitDeclarator( d, null, i ); :}
+	|
+	c_declarator_typedef_name:d c_asm_no_semicolon:a P_ASSIGN c_initializer:i
+		{: RESULT = new InitDeclarator( d, a, i ); :}
+	|
+	c_declarator_typedef_name:d P_ASSIGN error
+		{: RESULT = new InitDeclarator( d, null, parser.errorNode( "declarator", "initializer" ) ); :}
+	|
+	c_declarator_typedef_name:d c_asm_no_semicolon:a P_ASSIGN error
+		{: RESULT = new InitDeclarator( d, a, parser.errorNode( "declarator", "initializer" ) ); :}	
+	;
+	
+c_struct_declarator_list ::=
+	c_struct_declarator:i 		{: RESULT = new DataObjectFieldDeclaratorList( i ); :} 	| 	c_struct_declarator_list:s P_COMMA c_struct_declarator:i 		{: RESULT = s.add( i ); :} 	| 	c_struct_declarator_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "declarator list", "declarator" )); :} 	;
+	
+c_struct_declarator ::=
+	c_declarator_typedef_name:d
+		{: RESULT = new DataObjectFieldDeclarator( d, null ); :}
+	|
+	c_declarator_typedef_name:d P_COLON c_constant_expression:c
+		{: RESULT = new DataObjectFieldDeclarator( d, c ); :}
+	|
+	c_declarator_typedef_name:d P_COLON error
+		{: RESULT = new DataObjectFieldDeclarator( d, parser.errorNode( "declarator", "expression" )); :}
+	|
+	P_COLON c_constant_expression:c
+		{: RESULT = new DataObjectFieldDeclarator( (Declaration)null, c ); :}
+	|
+	P_COLON error
+		{: RESULT = new DataObjectFieldDeclarator( (Declaration)null, parser.errorNode( "declarator", "expression" )); :}
+	;
+	
+	
+	
+	
+c_enum_specifier ::= 
+	K_ENUM:rl c_curly_open c_enumerator_list:e c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( null, null, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_curly_open c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( null, null, new EnumConstantList() ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_curly_open c_enumerator_list:e P_COMMA c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( null, null, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_curly_open error c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( null, null, parser.errorNode( "enum declaration", "enum constant list" ) ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i 		{: EnumDeclaration declaration = new EnumDeclaration( i, null, null ); 			RESULT = declaration; 			declaration.setLeft(rl.getLeft()); :} 	| 	K_ENUM:rl c_all_identifier:i c_curly_open c_enumerator_list:e c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, null, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i c_curly_open c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, null, new EnumConstantList() ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i c_curly_open c_enumerator_list:e P_COMMA c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, null, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i c_curly_open error c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, null, parser.errorNode( "enum declaration", "enum constant list" ) ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier and/or constant list" ), null, null ); 			RESULT = declaration; 			declaration.setLeft(rl.getLeft()); :} 	| 	K_ENUM:rl error c_curly_open c_enumerator_list:e c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier and/or constant list" ), null, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error c_curly_open c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier and/or constant list" ), null, new EnumConstantList() ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error c_curly_open c_enumerator_list:e P_COMMA c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier and/or constant list" ), null, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error c_curly_open error c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier and/or constant list" ), null, parser.errorNode( "enum declaration", "enum constant list" ) ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i n_attributes:a 		{: EnumDeclaration declaration = new EnumDeclaration( i, a, null ); 			RESULT = declaration; 			declaration.setLeft(rl.getLeft()); :} 	| 	K_ENUM:rl c_all_identifier:i n_attributes:a c_curly_open c_enumerator_list:e c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, a, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i n_attributes:a c_curly_open c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, a, new EnumConstantList() ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i n_attributes:a c_curly_open c_enumerator_list:e P_COMMA c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, a, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl c_all_identifier:i n_attributes:a c_curly_open error c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( i, a, parser.errorNode( "enum declaration", "enum constant list" ) ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error n_attributes:a 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier" ), a, null ); 			RESULT = declaration; 			declaration.setLeft(rl.getLeft()); :} 	| 	K_ENUM:rl error n_attributes:a c_curly_open c_enumerator_list:e c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier" ), a, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error n_attributes:a c_curly_open c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier" ), a, new EnumConstantList() ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error n_attributes:a c_curly_open c_enumerator_list:e P_COMMA c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier" ), a, e ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :} 	| 	K_ENUM:rl error n_attributes:a c_curly_open error c_curly_close:rr 		{: EnumDeclaration declaration = new EnumDeclaration( parser.errorNode( "enum declaration", "identifier" ), a, parser.errorNode( "enum declaration", "enum constant list" ) ); 			RESULT = declaration; 			declaration.setRanges( rl, rr ); :}
+	;
+	
+c_enumerator_list ::=
+	c_enumerator:i 		{: RESULT = new EnumConstantList( i ); :} 	| 	c_enumerator_list:s P_COMMA c_enumerator:i 		{: RESULT = s.add( i ); :} 	| 	c_enumerator_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "enum constant list", "enum constant" )); :} 	;
+
+c_enumerator ::=
+	c_all_identifier:e
+		{: RESULT = new EnumConstant( e, null );
+			parser.scopes().addEnum( e.getName() ); :}
+	|
+	c_all_identifier:e P_ASSIGN c_constant_expression:c
+		{: RESULT = new EnumConstant( e, c );
+			parser.scopes().addEnum( e.getName() ); :}
+	|
+	c_all_identifier:e P_ASSIGN error
+		{: RESULT = new EnumConstant( e, parser.errorNode( "enum constant", "expression" ) );
+			parser.scopes().addEnum( e.getName() ); :}
+	;
+	
+c_type_qualifier ::=
+	K_CONST:k
+		{: RESULT = new TypeQualifier( k, TypeQualifier.Qualifier.CONST ); :}
+	|
+	K_RESTRICT:k
+		{: RESULT = new TypeQualifier( k, TypeQualifier.Qualifier.RESTRICT ); :}
+	|
+	K_VOLATILE:k
+		{: RESULT = new TypeQualifier( k, TypeQualifier.Qualifier.VOLATILE ); :}
+	;
+
+ 
+
+c_declarator_no_typedef_name ::=
+	c_pointer:p c_direct_declarator_no_typedef_name:d 		{: RESULT = new PointerDeclarator( p, d ); :} 	| 	c_pointer:p c_direct_declarator_no_typedef_name:d n_attributes_no_init:a 		{: RESULT = new AttributedDeclarator( new PointerDeclarator( p, d ), a ); :} 	| 	c_pointer:p error 		{: RESULT = new PointerDeclarator( p, parser.errorNode( "pointer", "declarator" )); :} 	| 	c_direct_declarator_no_typedef_name:d 		{: RESULT = d; :} 	| 	c_direct_declarator_no_typedef_name:d n_attributes_no_init:a 		{: RESULT = new AttributedDeclarator( d, a ); :} 	;
+	
+c_declarator_typedef_name ::=
+	c_pointer:p c_direct_declarator_typedef_name:d 		{: RESULT = new PointerDeclarator( p, d ); :} 	| 	c_pointer:p c_direct_declarator_typedef_name:d n_attributes_no_init:a 		{: RESULT = new AttributedDeclarator( new PointerDeclarator( p, d ), a ); :} 	| 	c_pointer:p error 		{: RESULT = new PointerDeclarator( p, parser.errorNode( "pointer", "declarator" )); :} 	| 	c_direct_declarator_typedef_name:d 		{: RESULT = d; :} 	| 	c_direct_declarator_typedef_name:d n_attributes_no_init:a 		{: RESULT = new AttributedDeclarator( d, a ); :} 	;
+	
+c_declarator_no_hidden_typedef_name ::=
+	c_pointer:p c_direct_declarator_no_hidden_typedef_name:d 		{: RESULT = new PointerDeclarator( p, d ); :} 	| 	c_pointer:p c_direct_declarator_no_hidden_typedef_name:d n_attributes_no_init:a 		{: RESULT = new AttributedDeclarator( new PointerDeclarator( p, d ), a ); :} 	| 	c_pointer:p error 		{: RESULT = new PointerDeclarator( p, parser.errorNode( "pointer", "declarator" )); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d 		{: RESULT = d; :} 	| 	c_direct_declarator_no_hidden_typedef_name:d n_attributes_no_init:a 		{: RESULT = new AttributedDeclarator( d, a ); :} 	;
+	
+ 
+	
+	
+c_direct_declarator_no_typedef_name ::=
+	c_identifier:i 		{: 				  			if( parser.scopes().isTypedef() ){ 				parser.scopes().addTypedef( i.getToken().getText() ); 			} 			else{ 				parser.scopes().addField( i.getToken().getText() ); 			} 			RESULT = new DeclaratorName( i ); :} 	| 	c_round_open:rl error c_round_close:rr 		{: ParenthesizedDeclarator result = new ParenthesizedDeclarator( parser.errorNode( "parenthesized declarator", "declarator", rl.getRight(), rr.getLeft() ) ); 			RESULT = result; 			result.setRanges( rl, rr ); :} 	| 	c_round_open:rl c_declarator_no_typedef_name:d c_round_close:rr 		{: ParenthesizedDeclarator result = new ParenthesizedDeclarator( d ); 			RESULT = result; 			result.setRanges( rl, rr ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN c_assignment_expression:a P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, a ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t c_assignment_expression:a P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, a ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN P_STAR:p P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, new VariableLength( p )); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t P_STAR:p P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, new VariableLength( p ));  			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN error P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, parser.errorNode( "array declarator", "qualifiers and/or size" ) ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d c_round_open c_parameter_type_list:p c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, p ); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d c_round_open c_identifier_list:i c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, i ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d c_round_open c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d c_round_open error c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, parser.errorNode( "function declarator", "parameter type list" ) ); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	  	c_identifier:i P_POINT c_identifier:d 		{: RESULT = new NesCNameDeclarator( i, d ); :} 	| 	c_identifier:i P_POINT error 		{: RESULT = new NesCNameDeclarator( i, parser.errorNode( "interface field", "identifier" ) ); :} 	| 	c_direct_declarator_no_typedef_name:d P_RECT_OPEN c_parameter_type_list:p P_RECT_CLOSE 		{: RESULT = new ParameterizedDeclarator( d, p ); :} 	|   	c_direct_declarator_no_typedef_name:d n_interface_parameters:i c_round_open c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_typedef_name:d n_interface_parameters:i c_round_open n_params:p c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, p ); 			RESULT = result; 			result.setRight( rr.getRight() ); :}  	| 	c_direct_declarator_no_typedef_name:d n_interface_parameters:i c_round_open error c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, parser.errorNode( "interface field", "type list" ) ); 			RESULT = result; 			result.setRight( rr.getRight() ); :}
+	;
+	
+c_direct_declarator_typedef_name ::=
+	c_identifier:i 		{: 				  			if( parser.scopes().isTypedef() ){ 				parser.scopes().addTypedef( i.getToken().getText() ); 			} 			else{ 				parser.scopes().addField( i.getToken().getText() ); 			} 			RESULT = new DeclaratorName( i ); :} 	| 	c_round_open:rl error c_round_close:rr 		{: ParenthesizedDeclarator result = new ParenthesizedDeclarator( parser.errorNode( "parenthesized declarator", "declarator", rl.getRight(), rr.getLeft() ) ); 			RESULT = result; 			result.setRanges( rl, rr ); :} 	| 	c_round_open:rl c_declarator_typedef_name:d c_round_close:rr 		{: ParenthesizedDeclarator result = new ParenthesizedDeclarator( d ); 			RESULT = result; 			result.setRanges( rl, rr ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN c_assignment_expression:a P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, a ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t c_assignment_expression:a P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, a ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN P_STAR:p P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, new VariableLength( p )); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t P_STAR:p P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, new VariableLength( p ));  			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN error P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, parser.errorNode( "array declarator", "qualifiers and/or size" ) ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d c_round_open c_parameter_type_list:p c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, p ); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d c_round_open c_identifier_list:i c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, i ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d c_round_open c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d c_round_open error c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, parser.errorNode( "function declarator", "parameter type list" ) ); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	  	c_identifier:i P_POINT c_identifier:d 		{: RESULT = new NesCNameDeclarator( i, d ); :} 	| 	c_identifier:i P_POINT error 		{: RESULT = new NesCNameDeclarator( i, parser.errorNode( "interface field", "identifier" ) ); :} 	| 	c_direct_declarator_typedef_name:d P_RECT_OPEN c_parameter_type_list:p P_RECT_CLOSE 		{: RESULT = new ParameterizedDeclarator( d, p ); :} 	|   	c_direct_declarator_typedef_name:d n_interface_parameters:i c_round_open c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_typedef_name:d n_interface_parameters:i c_round_open n_params:p c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, p ); 			RESULT = result; 			result.setRight( rr.getRight() ); :}  	| 	c_direct_declarator_typedef_name:d n_interface_parameters:i c_round_open error c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, parser.errorNode( "interface field", "type list" ) ); 			RESULT = result; 			result.setRight( rr.getRight() ); :}
+	|
+	c_typedef_name_identifier:i
+		{:	if( parser.scopes().isTypedef() ){
+				parser.scopes().addTypedef( i.getToken().getText() );
+			}
+			else{
+				parser.scopes().addField( i.getToken().getText() );
+			}
+			RESULT = new DeclaratorName( i );  :}
+	;
+	
+c_direct_declarator_no_hidden_typedef_name ::=
+	c_identifier:i 		{: 				  			if( parser.scopes().isTypedef() ){ 				parser.scopes().addTypedef( i.getToken().getText() ); 			} 			else{ 				parser.scopes().addField( i.getToken().getText() ); 			} 			RESULT = new DeclaratorName( i ); :} 	| 	c_round_open:rl error c_round_close:rr 		{: ParenthesizedDeclarator result = new ParenthesizedDeclarator( parser.errorNode( "parenthesized declarator", "declarator", rl.getRight(), rr.getLeft() ) ); 			RESULT = result; 			result.setRanges( rl, rr ); :} 	| 	c_round_open:rl c_declarator_no_typedef_name:d c_round_close:rr 		{: ParenthesizedDeclarator result = new ParenthesizedDeclarator( d ); 			RESULT = result; 			result.setRanges( rl, rr ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN c_assignment_expression:a P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, a ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t c_assignment_expression:a P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, a ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN P_STAR:p P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, new VariableLength( p )); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN c_array_declarator_qualifiers:t P_STAR:p P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, t, new VariableLength( p ));  			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN error P_RECT_CLOSE:rr 		{: ArrayDeclarator result = new ArrayDeclarator( d, null, parser.errorNode( "array declarator", "qualifiers and/or size" ) ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d c_round_open c_parameter_type_list:p c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, p ); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d c_round_open c_identifier_list:i c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, i ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d c_round_open c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d c_round_open error c_round_close:rr 		{: FunctionDeclarator result = new FunctionDeclarator( d, parser.errorNode( "function declarator", "parameter type list" ) ); 			RESULT = result;  			result.setRight( rr.getRight() ); :} 	| 	  	c_identifier:i P_POINT c_identifier:d 		{: RESULT = new NesCNameDeclarator( i, d ); :} 	| 	c_identifier:i P_POINT error 		{: RESULT = new NesCNameDeclarator( i, parser.errorNode( "interface field", "identifier" ) ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d P_RECT_OPEN c_parameter_type_list:p P_RECT_CLOSE 		{: RESULT = new ParameterizedDeclarator( d, p ); :} 	|   	c_direct_declarator_no_hidden_typedef_name:d n_interface_parameters:i c_round_open c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, null ); 			RESULT = result; 			result.setRight( rr.getRight() ); :} 	| 	c_direct_declarator_no_hidden_typedef_name:d n_interface_parameters:i c_round_open n_params:p c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, p ); 			RESULT = result; 			result.setRight( rr.getRight() ); :}  	| 	c_direct_declarator_no_hidden_typedef_name:d n_interface_parameters:i c_round_open error c_round_close:rr 		{: InterfaceDeclarator result = new InterfaceDeclarator( d, i, parser.errorNode( "interface field", "type list" ) ); 			RESULT = result; 			result.setRight( rr.getRight() ); :}
+	|
+	c_typedef_name_identifier:i
+		{:	if( parser.scopes().isTypedef() ){
+				parser.scopes().addTypedef( i.getToken().getText() );
+			}
+			else{
+				parser.scopes().addField( i.getToken().getText() );
+			}
+			RESULT = new DeclaratorName( i );  :}
+	;
+	
+c_array_declarator_qualifiers ::=
+	c_type_qualifier_list:t
+		{: RESULT = t; :}
+	|
+	c_type_qualifier_and_static_list:t
+		{: RESULT = t; :}
+	;
+	
+c_type_qualifier_and_static_list ::=
+	K_STATIC:k
+		{: RESULT = new DeclarationSpecifierList( new StorageClass( k, StorageClass.Storage.STATIC )); :}
+	|
+	c_type_qualifier_list:t K_STATIC:k
+		{: RESULT = t.add( new StorageClass( k, StorageClass.Storage.STATIC )); :}
+	|
+	c_type_qualifier_and_static_list:t K_STATIC:k
+		{: RESULT = t.add( new StorageClass( k, StorageClass.Storage.STATIC )); :}
+	|
+	c_type_qualifier_and_static_list:t c_type_qualifier:q
+		{: RESULT = t.add( q ); :}
+	;
+	
+c_pointer ::=
+	P_STAR:s
+		{: RESULT = new Pointer();
+			RESULT.setRanges( s, s ); :}
+	|
+	P_STAR:rl c_type_qualifier_list:t
+		{: RESULT = new Pointer( t, null ); 
+			RESULT.setLeft( rl.getLeft() ); :}
+	|
+	P_STAR:rl c_pointer:p
+		{: RESULT = new Pointer( null, p );
+			RESULT.setLeft( rl.getLeft() ); :}	
+	|
+	P_STAR:rl c_type_qualifier_list:t c_pointer:p
+		{: RESULT = new Pointer( t, p ); 
+			RESULT.setLeft( rl.getLeft() ); :}
+	;
+	
+c_type_qualifier_list ::=
+	c_type_qualifier:t
+		{: RESULT = new DeclarationSpecifierList( t ); :}
+	|
+	c_type_qualifier_list:t c_type_qualifier:q
+		{: RESULT = t.add( q ); :}
+	;
+	
+c_parameter_type_list ::=
+	c_parameter_list:p
+		{: RESULT = p; p.setOpenEnded( false ); :}
+	|
+	c_parameter_list:p P_COMMA P_ELLIPSIS:rr
+		{: RESULT = p; p.setOpenEnded( true );
+			RESULT.setRight( rr.getRight() ); :}
+	;
+	
+c_parameter_list ::=
+	c_parameter_declaration:i 		{: RESULT = new ParameterTypeList( i ); :} 	| 	c_parameter_list:s P_COMMA c_parameter_declaration:i 		{: RESULT = s.add( i ); :} 	| 	c_parameter_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "parameter list", "type or field" )); :} 	;
+	
+c_parameter_declaration ::=
+	c_declaration_specifiers_nosc:s c_declarator_no_hidden_typedef_name:d
+		{: RESULT = new ParameterDeclaration( s, d ); :}
+	|
+	c_declaration_specifiers_nosc:s
+		{: RESULT = new ParameterDeclaration( s, null ); :}
+	|
+	c_declaration_specifiers_nosc:s c_abstract_declarator:a
+		{: RESULT = new ParameterDeclaration( s, a ); :}
+	;
+
+c_all_identifier_list ::=
+	c_all_identifier:i 		{: RESULT = new IdentifierList( i ); :} 	| 	c_all_identifier_list:s P_COMMA c_all_identifier:i 		{: RESULT = s.add( i ); :} 	| 	c_all_identifier_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "identifier list", "identifier" )); :} 	;
+	
+c_identifier_list ::=
+	c_identifier:i 		{: RESULT = new IdentifierList( i ); :} 	| 	c_identifier_list:s P_COMMA c_identifier:i 		{: RESULT = s.add( i ); :} 	| 	c_identifier_list:s P_COMMA error 		{: RESULT = s; s.addError( parser.errorNode( "identifier list", "identifier" )); :} 	;
+	
+c_type_name ::=
+	c_declaration_specifiers:s
+		{: RESULT = new TypeName( s, null ); :}
+	|
+	c_declaration_specifiers:s c_abstract_declarator:a
+		{: RESULT = new TypeName( s, a ); :}
+	|
+	c_declaration_specifiers:s error
+		{: RESULT = new TypeName( s, parser.errorNode( "type name", "abstract declarator" ) ); :}
+	;
+	
+c_abstract_declarator ::=
+	c_pointer:p
+		{: RESULT = new PointerAbstractDeclarator( p, null ); :}
+	|
+	c_pointer:p c_direct_abstract_declarator:d
+		{: RESULT = new PointerAbstractDeclarator( p, d ); :}
+	|
+	c_direct_abstract_declarator:d
+		{: RESULT = d; :}
+	;
+	
+c_direct_abstract_declarator ::=
+	c_round_open:rl c_abstract_declarator:a c_round_close:rr
+		{: ParenthesizedAbstractDeclarator result = new ParenthesizedAbstractDeclarator( null, a );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	c_round_open:rl n_attributes:t c_abstract_declarator:a c_round_close:rr
+		{: ParenthesizedAbstractDeclarator result = new ParenthesizedAbstractDeclarator( t, a );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	c_direct_abstract_declarator:d P_RECT_OPEN c_assignment_expression:a P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result = new ArrayAbstractDeclarator( d, a );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_direct_abstract_declarator:d P_RECT_OPEN P_STAR:p P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result =  new ArrayAbstractDeclarator( d, new VariableLength( p ));
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_direct_abstract_declarator:d P_RECT_OPEN P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result = new ArrayAbstractDeclarator( d, null );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_direct_abstract_declarator:d P_RECT_OPEN:op error P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result = new ArrayAbstractDeclarator( d, parser.errorNode( "abstract declarator", "size expression or \"*\"", op.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	P_RECT_OPEN:rl c_assignment_expression:a P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result = new ArrayAbstractDeclarator( null, a );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	P_RECT_OPEN:rl P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result = new ArrayAbstractDeclarator();
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	P_RECT_OPEN:rl error P_RECT_CLOSE:rr
+		{: ArrayAbstractDeclarator result = new ArrayAbstractDeclarator( null, parser.errorNode( "abstract declarator", "size expression", rl.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	c_direct_abstract_declarator:d c_round_open c_parameter_type_list:p c_round_close:rr
+		{: FunctionAbstractDeclarator result = new FunctionAbstractDeclarator( d, p );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_direct_abstract_declarator:d c_round_open c_round_close:rr
+		{: FunctionAbstractDeclarator result = new FunctionAbstractDeclarator( d, null );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_direct_abstract_declarator:d c_round_open:op error c_round_close:rr
+		{: FunctionAbstractDeclarator result = new FunctionAbstractDeclarator( d, parser.errorNode( "abstract function declarator", "parameter list", op.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	c_round_open:lr c_parameter_type_list:p c_round_close:rr
+		{: FunctionAbstractDeclarator result = new FunctionAbstractDeclarator( null, p );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	c_round_open:lr c_round_close:rr
+		{: FunctionAbstractDeclarator result = new FunctionAbstractDeclarator();
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	;
+
+	
+c_initializer ::=
+	c_assignment_expression:a
+		{: RESULT = new SingleInitializer( a ); :}
+	|
+	c_curly_open:lr c_initializer_list:i c_curly_close:rr
+		{: MultiInitializer result = new MultiInitializer( i );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	c_curly_open:lr c_initializer_list:i P_COMMA c_curly_close:rr
+		{: MultiInitializer result = new MultiInitializer( i );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	c_curly_open:lr c_curly_close:rr
+		{: MultiInitializer result = new MultiInitializer( new InitializerList() );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	c_curly_open:lr error c_curly_close:rr
+		{: MultiInitializer result = new MultiInitializer( parser.errorNode( "multi initializer", "initializer list", lr.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	;
+	
+c_initializer_list ::=
+	c_initializer:i
+		{: RESULT = new InitializerList( i ); :}
+	|
+	c_designation:d c_initializer:i
+		{: RESULT = new InitializerList( new DesignationInitializer( d, i )); :}
+	|
+	c_designation:d error
+		{: RESULT = new InitializerList( new DesignationInitializer( d, parser.errorNode( "designation", "initializer" ) )); :}
+	|	
+	c_initializer_list:l P_COMMA c_initializer:i
+		{: RESULT = l.add( i ); :}
+	|
+	c_initializer_list:l P_COMMA error
+		{: RESULT = l; l.addError( parser.errorNode( "initializer list", "initializer" ) ); :}
+	|
+	c_initializer_list:l P_COMMA c_designation:d c_initializer:i
+		{: RESULT = l.add( new DesignationInitializer( d, i ) ); :}
+	|
+	c_initializer_list:l P_COMMA c_designation:d error
+		{: RESULT = l.add( new DesignationInitializer( d, parser.errorNode( "designation", "initializer" ) ) ); :}
+	;
+
+c_designation ::=
+	c_designator_list:d P_ASSIGN
+		{: RESULT = d; :}
+	|
+	c_all_identifier:d P_COLON
+		{: RESULT = new DesignatorList( new FieldDesignator( d ) ); :}
+	;
+	
+c_designator_list ::=
+	c_designator:d
+		{: RESULT = new DesignatorList( d ); :}
+	|
+	c_designator_list:l c_designator:d
+		{: RESULT = l.add( d ); :}
+	;
+	
+c_designator ::=
+	P_RECT_OPEN:lr c_constant_expression:c P_RECT_CLOSE:rr
+		{: ArrayDesignator result = new ArrayDesignator( c );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	P_RECT_OPEN:lr c_constant_expression:a P_ELLIPSIS c_constant_expression:b P_RECT_CLOSE:rr
+		{: RangeDesignator result = new RangeDesignator( a, b );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	P_RECT_OPEN:lr P_RECT_CLOSE:rr
+		{: ArrayDesignator result = new ArrayDesignator( parser.missing( "array designator", "expression", lr.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	P_RECT_OPEN:lr error P_RECT_CLOSE:rr
+		{: ArrayDesignator result = new ArrayDesignator( parser.errorNode( "array designator", "expression", lr.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	P_POINT:rl c_identifier:i
+		{: FieldDesignator result = new FieldDesignator( i );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	P_POINT:rl error
+		{: FieldDesignator result = new FieldDesignator( parser.errorNode( "field designator", "identifier" ) );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	;
+	
+ 
+
+c_statement ::=
+	c_labeled_statement:s
+		{: RESULT = s; :}
+	|
+	c_compound_statement:s
+		{: RESULT = s; :}
+	|
+	c_expression_statement:s
+		{: RESULT = s; :}
+	|
+	c_selection_statement:s
+		{: RESULT = s; :}
+	|
+	c_iteration_statement:s
+		{: RESULT = s; :}
+	|
+	c_jump_statement:s
+		{: RESULT = s; :}
+	|
+	n_atomic_statement:s
+		{: RESULT = s; :}
+	;
+	
+c_labeled_statement ::=
+	c_identifier:i P_COLON c_statement:s
+		{: RESULT = new LabeledStatement( i, s ); :}
+	|
+	error P_COLON c_statement:s
+		{: RESULT = new LabeledStatement( parser.errorNode( "labeled statement", "identifier" ), s ); :}
+	|
+	K_CASE:lr c_constant_expression:e P_COLON c_statement:s
+		{: CaseStatement result = new CaseStatement( lr, e, s );
+			RESULT = result;
+			result.setLeft( lr.getLeft() ); :}
+	|
+	K_CASE:lr error P_COLON:p c_statement:s
+		{: CaseStatement result = new CaseStatement( lr, parser.errorNode( "case statement", "expression", lr.getRight(), p.getLeft() ), s );
+			RESULT = result;
+			result.setLeft( lr.getLeft() ); :}
+	|
+	K_CASE:lr P_COLON:p c_statement:s
+		{: CaseStatement result = new CaseStatement( lr, parser.missing( "case statement", "condition expression", lr.getRight(), p.getLeft() ), s );
+			RESULT = result;
+			result.setLeft( lr.getLeft() ); :}
+	|
+	K_DEFAULT:lr P_COLON c_statement:s
+		{: DefaultStatement result = new DefaultStatement( lr, s );
+			RESULT = result;
+			result.setLeft( lr.getLeft() ); :}
+	;
+	
+c_compound_statement ::=
+	c_curly_open:lr c_curly_close:rr
+		{: CompoundStatement result = new CompoundStatement();
+			RESULT = result;
+			result.setRanges( lr, rr ); :}
+	|
+	c_curly_open:lr c_block_item_list:i c_curly_close:rr
+		{: RESULT = i;
+			i.setRanges( lr, rr ); :}
+	|
+	c_curly_open:lr error c_curly_close:rr
+		{: CompoundStatement result = new CompoundStatement( parser.errorNode( "compound statement", "declaration or statement list", lr.getRight(), rr.getLeft() ) );
+			result.setRanges( lr, rr );
+			RESULT = result; :}
+	;
+
+	c_compound_statement_recycle ::=
+		c_curly_open_recycle:lr c_curly_close:rr
+			{: CompoundStatement result = new CompoundStatement();
+				RESULT = result;
+				result.setRanges( lr, rr ); :}
+		|
+		c_curly_open_recycle:lr c_block_item_list:i c_curly_close:rr
+			{: RESULT = i;
+				i.setRanges( lr, rr ); :}
+		|
+		c_curly_open_recycle:lr error c_curly_close:rr
+			{: CompoundStatement result = new CompoundStatement( parser.errorNode( "compound statement", "declaration or statement list", lr.getRight(), rr.getLeft() ) );
+				result.setRanges( lr, rr );
+				RESULT = result; :}
+		;
+	
+c_block_item_list ::=
+	c_block_item:b
+		{: RESULT = new CompoundStatement( b ); :}
+	|
+	c_block_item_list:l c_block_item:i
+		{: RESULT = l.add( i ); :}
+	;
+	
+c_block_item ::=
+	c_declaration:d
+		{: RESULT = d; :}
+	|
+	c_statement:s
+		{: RESULT = s; :}
+	|
+	c_asm:a
+		{: RESULT = a; :}
+	;
+	
+c_asm ::=
+	c_asm_no_semicolon:a c_semicolon:r
+		{: RESULT = a; a.setRight( r.getRight() ); :}
+	;
+	
+c_asm_no_semicolon ::=
+	K_ASM:k c_asm_args:a
+		{: ASMCall result = new ASMCall( false, a );
+			result.setLeft( k.getLeft() );
+			RESULT = result; :}
+	|
+	K_ASM:k K_VOLATILE c_asm_args:a
+		{: ASMCall result = new ASMCall( true, a );
+			result.setLeft( k.getLeft() );
+			RESULT = result; :}
+	;
+	
+c_asm_args ::=
+	c_round_open c_round_close
+		{: RESULT = new ASMArgumentsList(); :}
+	|
+	c_round_open c_asm_args_list:l c_round_close
+		{: RESULT = l; :}
+	;
+
+c_asm_args_list ::=
+	P_COLON
+		{: RESULT = new ASMArgumentsList();
+		   RESULT.add( null );
+		   RESULT.add( null ); :}
+	|
+	c_asm_args_list:l P_COLON 
+		{: RESULT = l;
+			l.add( null ); :}
+	|
+	c_asm_arg_list:l
+		{: RESULT = new ASMArgumentsList( l ); :}
+	|
+	c_asm_args_list:l P_COLON c_asm_arg_list:a
+		{: RESULT = l; l.add( a ); :}
+	;
+	
+c_asm_arg_list ::=
+	c_asm_arg:a
+		{: RESULT = new ASMArgumentList( a ); :}
+	|
+	c_asm_arg_list:l P_COMMA c_asm_arg:a  
+		{: RESULT = l; l.add( a ); :}
+	;
+	
+c_asm_arg ::=
+	c_string_literal:l
+		{: RESULT = new ASMArgument( l, null ); :}
+	|
+	c_string_literal:l c_round_open c_round_close:rc
+		{: RESULT = new ASMArgument( l, parser.missing( "asm argument", "variable", rc.getLeft() ) );
+			RESULT.setRight( rc.getRight() ); :}
+	|
+	c_string_literal:l c_round_open c_expression:e c_round_close:rc
+		{: RESULT = new ASMArgument( l, e );
+			RESULT.setRight( rc.getRight() ); :}
+	;
+		
+c_expression_statement ::=
+	c_semicolon:s
+		{: RESULT = new EmptyStatement( s ); :}
+	|
+	c_expression:e c_semicolon:rr
+		{: ExpressionStatement result = new ExpressionStatement( e );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	|
+	error c_semicolon:rr
+		{: ExpressionStatement result = new ExpressionStatement( parser.errorNode( "expression statement", "expression" ) );
+			RESULT = result;
+			result.setRight( rr.getRight() ); :}
+	;
+	
+	
+	
+	
+c_selection_statement ::=
+	K_IF:rl c_round_open c_expression:e c_round_close c_statement:t 		{: IfStatement result = new IfStatement( e, t, null ); RESULT = result; result.setLeft( rl.getLeft() ); :} 	| 	K_IF:rl c_round_open c_expression:e c_round_close c_statement:t K_ELSE c_statement:f 		{: IfStatement result = new IfStatement( e, t, f ); RESULT = result; result.setLeft( rl.getLeft() ); :} 	| 	K_IF:rl c_round_open error c_round_close c_statement:t 		{: IfStatement result = new IfStatement( parser.errorNode( "if statement", "expression" ), t, null ); RESULT = result; result.setLeft( rl.getLeft() ); :} 	| 	K_IF:rl c_round_open error c_round_close c_statement:t K_ELSE c_statement:f 		{: IfStatement result = new IfStatement( parser.errorNode( "if statement", "expression" ), t, f ); RESULT = result; result.setLeft( rl.getLeft() ); :} 	| 	K_IF:rl error c_statement:t 		{: IfStatement result = new IfStatement( parser.errorNode( "if statement", "expression" ), t, null ); RESULT = result; result.setLeft( rl.getLeft() ); :} 	| 	K_IF:rl error c_statement:t K_ELSE c_statement:f 		{: IfStatement result = new IfStatement( parser.errorNode( "if statement", "expression" ), t, f ); RESULT = result; result.setLeft( rl.getLeft() ); :}
+	|
+	K_SWITCH:rl c_round_open c_expression:e c_round_close c_statement:s
+		{: SwitchStatement result = new SwitchStatement( e, s );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	K_SWITCH:rl c_round_open:ro error c_round_close:rc c_statement:s
+		{: SwitchStatement result = new SwitchStatement( parser.errorNode( "switch header", "expression", ro.getRight(), rc.getLeft()), s );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	K_SWITCH:rl error c_statement:s
+		{: SwitchStatement result = new SwitchStatement( parser.errorNode( "switch header", "expression", rl.getRight(), s.getRange().getLeft()), s );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}	
+	;
+	
+c_iteration_statement ::=
+	K_WHILE:rl c_round_open c_expression:e c_round_close c_statement:s
+		{: WhileStatement result = new WhileStatement( e, s );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	K_WHILE:rl c_round_open:ro error c_round_close:rc c_statement:s
+		{: WhileStatement result = new WhileStatement( parser.errorNode( "while header", "expression", ro.getRight(), rc.getLeft() ), s );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	c_iteration_do_header:h K_WHILE c_round_open c_expression:e c_round_close c_semicolon:rr
+		{: DoWhileStatement result = h;
+			h.setExpression( e );
+			RESULT = h;
+			h.setRight( rr.getRight() ); :}
+	|
+	c_iteration_do_header:h K_WHILE error c_semicolon:rr
+		{: DoWhileStatement result = h;
+			h.setField( DoWhileStatement.EXPRESSION, parser.errorNode( "do-while statement", "expression" ) );
+			RESULT = h;
+			h.setRight( rr.getRight() ); :}
+	|
+	c_iteration_do_header:h K_WHILE c_round_open error c_round_close c_semicolon:rr
+		{: DoWhileStatement result = h;
+			h.setField( DoWhileStatement.EXPRESSION, parser.errorNode( "do-while statement", "expression" ) );
+			RESULT = h;
+			h.setRight( rr.getRight() ); :}
+	|
+	c_iteration_for_update:u c_statement:s
+		{: RESULT = u; u.setBody( s ); :}
+	;
+	
+c_iteration_do_header ::=
+	K_DO:rl c_statement:s
+		{: DoWhileStatement result = new DoWhileStatement( s, null );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	|
+	K_DO:rl error
+		{: DoWhileStatement result = new DoWhileStatement( parser.errorNode( "do-while statement", "statement" ), null );
+			RESULT = result;
+			result.setLeft( rl.getLeft() ); :}
+	;
+	
+c_iteration_for_update ::=
+	c_iteration_for_condition:h c_expression:u c_round_close
+		{: RESULT = h; h.setUpdate( u ); :}
+	|
+	c_iteration_for_condition:h c_round_close
+		{: RESULT = h; :}
+	|
+	c_iteration_for_condition:h error c_round_close
+		{: RESULT = h; h.setField( ForStatement.UPDATE, parser.errorNode( "for statement", "expression" )); :}
+	|
+	K_FOR c_round_open:ro error c_round_close:rc
+		{: RESULT = new ForStatement( parser.errorNode( "for statement", null, ro.getRight(), rc.getLeft() ), null, null, null ); :}
+	|
+	K_FOR c_round_open:ro c_expression:e c_round_close:rc
+		{: RESULT = new ForStatement( e, parser.missing( "for statement", "expression", rc.getLeft() ), null, null ); :}
+	|
+	c_iteration_for_header:h c_round_close:rc
+		{: RESULT = h; h.setField( ForStatement.UPDATE, parser.missing( "for statement", "expression", rc.getLeft() )); :}
+	|
+	c_iteration_for_header:h c_expression:e c_round_close:rc
+		{: RESULT = h; 
+			h.setField( ForStatement.CONDITION, e );
+			h.setField( ForStatement.UPDATE, parser.missing( "for statement", "expression", rc.getLeft() ));  :}
+	|
+	c_iteration_for_header:h error c_round_close:rc
+		{: RESULT = h; 
+			h.setField( ForStatement.CONDITION, parser.errorNode( "for statement", "expression" )); 
+			h.setField( ForStatement.UPDATE, parser.missing( "for statement", "expression", rc.getLeft() )); :}
+	;	
+
+c_iteration_for_condition ::=
+	c_iteration_for_header:h c_expression:e c_semicolon
+		{: RESULT = h; h.setCondition( e ); :}
+	|
+	c_iteration_for_header:h c_semicolon
+		{: RESULT = h; :}
+	|
+	c_iteration_for_header:h error c_semicolon
+		{: RESULT = h; h.setField( ForStatement.CONDITION, parser.errorNode( "for statement", "expression" )); :}
+	;
+
+c_iteration_for_header ::=
+	K_FOR:rl c_round_open c_declaration:d
+		{: ForStatement result = new ForStatement( d, null, null, null );
+			RESULT = result; 
+			result.setLeft( rl.getLeft() ); :}	
+	|
+	K_FOR:rl c_round_open c_expression:e c_semicolon
+		{: ForStatement result = new ForStatement( e, null, null, null );
+			RESULT = result; 
+			result.setLeft( rl.getLeft() ); :}
+	|
+	K_FOR:rl c_round_open c_semicolon
+		{: ForStatement result = new ForStatement( null, null, null, null );
+			RESULT = result; 
+			result.setLeft( rl.getLeft() ); :}
+	;
+	
+c_jump_statement ::=
+	K_GOTO:k c_identifier:i c_semicolon
+		{: GotoStatement result = new GotoStatement( i );
+			RESULT = result;
+			result.setLeft( k.getLeft() ); :}
+	|
+	K_GOTO:k error
+		{: GotoStatement result = new GotoStatement( parser.errorNode( "goto statement", "identifier" ) );
+			RESULT = result;
+			result.setLeft( k.getLeft() ); :}
+	|
+	K_GOTO:k c_semicolon
+		{: GotoStatement result = new GotoStatement( parser.missing( "goto statement", "identifier", k.getRight() ) );
+			RESULT = result;
+			result.setLeft( k.getLeft() ); :}
+	|
+	K_CONTINUE:k c_semicolon
+		{: RESULT = new ContinueStatement( k ); :}
+	|
+	K_BREAK:k c_semicolon
+		{: RESULT = new BreakStatement( k ); :}
+	|
+	K_RETURN:rl c_semicolon:rr
+		{: ReturnStatement result = new ReturnStatement();
+			RESULT = result; 
+			result.setRanges( rl, rr ); :}
+	|
+	K_RETURN:rl c_expression:e c_semicolon:rr
+		{: ReturnStatement result = new ReturnStatement( e );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	|
+	K_RETURN:rl error c_semicolon:rr
+		{: ReturnStatement result = new ReturnStatement( parser.errorNode(  "return statement", "expression", rl.getRight(), rr.getLeft() ) );
+			RESULT = result;
+			result.setRanges( rl, rr ); :}
+	;
+	
+n_atomic_statement ::=
+	NK_ATOMIC:rl c_statement:s
+		{: RESULT = new AtomicStatement( s );
+			RESULT.setLeft( rl.getLeft() ); :}
+	;
+	
+ 	
+c_translation_unit ::=
+	c_external_declaration:i 		{: RESULT = new TranslationUnit( i ); :} 	| 	c_translation_unit:s c_external_declaration:i 		{: RESULT = s.add( i ); :} 	| 	c_translation_unit:s error 		{: RESULT = s; s.addError( parser.errorNode( "translation unit", "declaration" )); :} 	;
+ 	 	
+c_external_declaration ::=
+ 	c_function_definition:d
+ 		{: 	parser.scopes().clean();
+ 			RESULT = d; :}
+ 	|
+  	c_declaration:d
+ 		{:	parser.scopes().clean(); 	
+ 			RESULT = d; :}
+ 	|
+	c_semicolon:s
+		{: RESULT = new Declaration( null, new BaseWarningASTNode( "empty declaration", s ) ); :}
+ 	|
+  	n_interface:d
+ 		{:	parser.scopes().clean(); 	
+ 			RESULT = d; :}
+ 	|
+  	n_module:d
+ 		{:	parser.scopes().clean(); 	
+ 			RESULT = d; :}
+ 	|
+  	n_configuration:d
+ 		{:	parser.scopes().clean(); 	
+ 			RESULT = d; :}
+ 	|
+  	n_binary_component:d
+ 		{:	parser.scopes().clean(); 	
+ 			RESULT = d; :}
+ 	|
+ 	n_includes:d
+ 		{: RESULT = d; :}
+ 	;
+ 	
+c_function_definition ::=
+ 	c_declaration_specifiers:s c_declarator_typedef_name:d c_declaration_list:l c_compound_statement_recycle:cs
+ 		{: RESULT = new FunctionDefinition( s, d, l, cs ); :}
+ 	|
+  	c_declaration_specifiers:s c_declarator_typedef_name:d c_compound_statement_recycle:c
+ 		{: RESULT = new FunctionDefinition( s, d, null, c ); :}
+ 	;
+
+c_declaration_list ::=
+	c_declaration:i 		{: RESULT = new DeclarationList( i ); :} 	| 	c_declaration_list:s c_declaration:i 		{: RESULT = s.add( i ); :} 	| 	c_declaration_list:s error 		{: RESULT = s; s.addError( parser.errorNode( "declaration list", "declaration" )); :} 	;
+
+
