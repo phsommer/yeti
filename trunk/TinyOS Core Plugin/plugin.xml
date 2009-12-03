@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension-point id="Environments" name="Environments" schema="schema/Environment.exsd"/>
+   <extension-point id="Parser" name="Parser" schema="schema/Parser.exsd"/>
+   <extension-point id="Quickfixer" name="Quickfixer" schema="schema/Quickfixer.exsd"/>
+   <extension-point id="Reconciler" name="Reconciler" schema="schema/Reconciler.exsd"/>
+   <extension-point id="Editor" name="Editor" schema="schema/Editor.exsd"/>
+   <extension-point id="EditorAnnotationModelProvider" name="Editor annotation provider" schema="schema/EditorAnnotationModelProvider.exsd"/>
+   <extension-point id="EditorInputConverter" name="EditorInputConverter" schema="schema/EditorInputConverter.exsd"/>
+   <extension-point id="ProjectChecker" name="ProjectChecker" schema="schema/ProjectChecker.exsd"/>
+   <extension-point id="LaunchVeto" name="LaunchVeto" schema="schema/LaunchVeto.exsd"/>
+   <extension-point id="Formatting" name="Formatting" schema="schema/Formatting.exsd"/>
+   
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="tinyOS"
+            class="tinyos.yeti.preferences.TinyOSPreferencePage"
+            id="tinyOS.editor"
+            name="Editor">
+      </page>
+      <page
+            category="tinyOS.editor"
+            class="tinyos.yeti.preferences.HighlightingOptionsPreferencePage"
+            id="tinyOS.editor.highlight"
+            name="Highlighting"/>
+      <page
+            category="tinyOS.editor"
+            class="tinyos.yeti.preferences.TemplatePreferencePage"
+            id="tinyOS.editor.template"
+            name="Templates"/>
+      <page
+            category="tinyOS.editor"
+            class="tinyos.yeti.preferences.SyntaxHighlightPage"
+            id="tinyOS.editor.syntax"
+            name="Syntax">
+      </page>
+      <page
+            class="tinyos.yeti.preferences.GeneralPreferencePage"
+            id="tinyOS"
+            name="TinyOS">
+      </page>
+      <page
+            category="tinyOS"
+            class="tinyos.yeti.preferences.DebugPreferencePage"
+            id="tinyOS.debug"
+            name="Debug">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="tinyos.yeti.preferences.PreferenceInitializer"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="TinyOS"
+            id="tinyOS.category.main">
+      </category>
+      <view
+            allowMultiple="false"
+            category="tinyOS.category.main"
+            class="tinyos.yeti.views.MakeOptionsView"
+            icon="icons/application.png"
+            id="TinyOS.view.makeOptions"
+            name="Make Options">
+      </view>
+      <view
+            category="tinyOS.category.main"
+            class="tinyos.yeti.views.ThumbnailView"
+            icon="icons/graphs.png"
+            id="TinyOS.view.thumbnail"
+            name="TinyOS Graph Thumbnail"/>
+      <view
+            category="tinyOS.category.main"
+            class="tinyos.yeti.views.InterfacesView"
+            icon="icons/template.gif"
+            id="TinyOS.view.interfaces"
+            name="TinyOS Files">
+      </view>
+      <view
+            category="tinyOS.category.main"
+            class="tinyos.yeti.views.CacheView"
+            id="TinyOS.view.debug.cache"
+            name="TinyOS Cache">
+      </view>
+      <view
+            category="tinyOS.category.main"
+            class="tinyos.yeti.views.BasicDeclarationSetView"
+            id="tinyOS.view.declarationset"
+            name="Project resources"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="tinyos.yeti.editors.MultiPageNesCEditor"
+            contributorClass="tinyos.yeti.editors.NesCEditorContributor"
+            default="true"
+            icon="icons/nesc_file.png"
+            id="tinyos.ui.editor.nesc"
+            name="TinyOS Editor">
+            <contentTypeBinding contentTypeId="tinyos.yeti.core.nesCSource"/>
+            <contentTypeBinding contentTypeId="tinyos.yeti.core.nesCHeader"/>
+     </editor>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.Quickfixer">
+      <single
+            class="tinyos.yeti.editors.quickfixer.ErrorToInfoQuickFixer">
+      </single>
+      <multi
+            class="tinyos.yeti.editors.quickfixer.ErrorToInfoQuickFixer">
+      </multi>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.Editor">
+      <multiPagePart
+            class="tinyos.yeti.views.cgraph.ComponentGraphView"
+            debug="false">
+      </multiPagePart>
+      <multiPagePart
+            class="tinyos.yeti.editors.inspection.InspectionMultiPageEditorPart"
+            debug="true">
+      </multiPagePart>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            class="tinyos.yeti.editors.hyperlink.NesCHyperlinkDetector"
+            id="tinyos.ui.editor.hyperlink.nesc"
+            name="TinyOS NesC"
+            targetId="tinyos.ui.hyperlink.nesc">
+      </hyperlinkDetector>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="tinyos.ui.hyperlink.nesc"
+            name="NesC Editor">
+      </target>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="tinyos.yeti.views.TinyOSConsoleFactory"
+            icon="icons/nesc.png"
+            label="TinyOS Console">
+      </consoleFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="tinyos.menuActionSet"
+            label="TinyOS"
+            visible="false">
+         <menu
+               id="tinyos.menu"
+               label="&amp;TinyOS">
+            <groupMarker
+                  name="tinyos.menu.check">
+            </groupMarker>
+         </menu>
+         <action
+               class="tinyos.yeti.actions.TestAction"
+               id="test.action"
+               label="Check &amp;Installation"
+               menubarPath="tinyos.menu/tinyos.menu.check"
+               style="push">
+         </action>
+      </actionSet>
+      <actionSet
+            id="tinyos.sourceActionSet"
+            label="Source"
+            visible="false">
+         <menu
+               id="tinyos.source"
+               label="&amp;Source"
+               path="edit">
+            <groupMarker
+                  name="tinyos.source.main">
+            </groupMarker>
+         </menu>
+         <action
+               allowLabelUpdate="true"
+               definitionId="TinyOS.command.toggleComment"
+               id="TinyOS.toggleCommentAction"
+               label="Toggle Comment"
+               menubarPath="tinyos.source/tinyos.source.main"
+               retarget="true"
+               style="push">
+         </action>
+         <action
+               allowLabelUpdate="true"
+               definitionId="tinyos.yeti.command.indentCode"
+               id="tinyos.yeti.indentSourceAction"
+               label="Correct indentation"
+               menubarPath="tinyos.source/tinyos.source.main"
+               retarget="true"
+               style="push">
+         </action>
+         <action
+               allowLabelUpdate="true"
+               definitionId="TinyOS.command.formatCode"
+               id="tinyos.yeti.formatSourceAction"
+               label="Format"
+               menubarPath="tinyos.source/tinyos.source.main"
+               retarget="true"
+               style="push">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.eclipse.debug.ui.launchActionSet">
+         <part
+               id="TinyOS.view.makeOptions">
+         </part>
+         <part
+               id="TinyOS.view.thumbnail">
+         </part>
+         <part
+               id="TinyOS.view.interfaces">
+         </part>
+         <part
+               id="tinyos.ui.editor.nesc">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="tinyos.sourceActionSet">
+         <part
+               id="tinyos.ui.editor.nesc">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
+   <extension
+         id="projectbuilder"
+         name="NesC Source Files (*.nc, *.h)"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="tinyos.yeti.builder.TinyOSProjectBuilder2"/>
+      </builder>
+   </extension>
+   <extension
+         id="TinyOSProject"
+         name="TinyOS Project Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="tinyos.yeti.nature.TinyOSProject">
+         </run>
+      </runtime>
+      <builder id="tinyos.yeti.core.projectbuilder"/>
+      <options allowLinking="true"/>
+      <builder id="tinyos.yeti.core.makefilebuilder"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/nesc_nature.png"
+            id="TinyOS.TinyOSProject.image"
+            natureId="tinyos.yeti.core.TinyOSProject">
+      </image>
+      <image
+            icon="icons/nesc_nature.png"
+            id="TinyOS.TinyOSProject.image.legacy"
+            natureId="TinyOS.TinyOSProject">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            class="tinyos.yeti.editors.nesc.doc.NescDocContextType"
+            id="TinyOS.DocContextType"
+            name="Documentation Comment Templates"/>
+      <include file="templates/doc_templates.xml"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            class="tinyos.yeti.editors.NesCMarkerResolutionGenerator"
+            markerType="org.eclipse.core.resources.problemmarker"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="tinyos.yeti.perspective.PerspectiveFactory"
+            icon="icons/nesc.png"
+            id="tinyos.perspective"
+            name="TinyOS">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="tinyos.yeti.properties.ProjectPropertyPage"
+            id="tinyOS.properties.tosenv"
+            name="TinyOS Build">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.ComponentPropertyPage"
+            id="tinyOS.properties.maketarget.component"
+            name="1. Application">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.IncludesPropertyPage"
+            id="tinyOS.properties.maketarget.includes"
+            name="2. Includes">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.ExcludePropertyPage"
+            id="tinyOS.properties.maketarget.excludes"
+            name="3. Excludes">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.PlatformPropertyPage"
+            id="tinyOS.properties.maketarget.platform"
+            name="4. Platform">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.ExtraPropertyPage"
+            id="tinyOS.properties.maketarget.extras"
+            name="5. Extras">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.SensorPropertyPage"
+            id="tinyOS.properties.maketarget.sensor"
+            name="6. Sensorboard">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.MacroPropertyPage"
+            id="tinyOS.properties.maketarget.macros"
+            name="7. Macros">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.TypedefPropertyPage"
+            id="tinyOS.properties.maketarget.typedefs"
+            name="8. Typedefs">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            class="tinyos.yeti.properties.source.NesCPathPropertyPage"
+            id="tinyOS.properties.nescpaths"
+            name="TinyOS Source">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            class="tinyos.yeti.editors.nesc.NescContextType"
+            id="TinyOS.NescContextType"
+            name="NesC Templates"/>
+      <include file="templates/ctemplates.xml"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="TinyOS.category.source"
+            description="Toggle Comment"
+            id="TinyOS.command.toggleComment"
+            name="Toggle Comment"/>
+<!--  <command
+            categoryId="TinyOS.category.source"
+            description="Format Code"
+            id="TinyOS.command.formatCode"
+            name="Format"/>  -->
+      <category
+            id="TinyOS.category.source"
+            name="Source"/>
+      <command
+            categoryId="TinyOS.category.source"
+            description="Correct indentation"
+            id="tinyos.yeti.command.indentCode"
+            name="Correct indentation">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            id="TinyOS.nescEditorScope"
+            name="Editing NesC Source"
+            parentId="org.eclipse.ui.textEditorScope"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="TinyOS.command.toggleComment"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+7"/>
+      <key
+            commandId="TinyOS.command.toggleComment"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+/"/>
+      <key
+            commandId="TinyOS.command.toggleComment"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+C"/>
+      <key
+            platform="gtk"
+            sequence="ESC CTRL+C"
+            commandId="TinyOS.command.toggleComment"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            commandId="tinyos.yeti.command.indentCode"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+I">
+      </key>
+   <!--   <key
+            commandId="TinyOS.command.formatCode"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F"/>  -->
+   </extension>
+  
+   <extension
+         name="TinyOS Wizards"
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="tinyos.wizard"
+            name="TinyOS">
+      </category>
+      <wizard
+            category="tinyos.wizard"
+            class="tinyos.yeti.wizards.TinyOSNewProjectWizard"
+            finalPerspective="tinyos.perspective"
+            icon="icons/nesc.png"
+            id="tinyOS.wizards.TinyOSNewProjectWizard"
+            name="TinyOS Project"
+            preferredPerspectives="tinyos.perspective"
+            project="true"/>
+      <wizard
+            category="org.eclipse.ui.Examples"
+            class="tinyos.yeti.wizards.TinyOSExampleWizard"
+            finalPerspective="tinyos.perspective"
+            icon="icons/nesc.png"
+            id="tinyOS.wizards.TinyOSNewExampleWizard"
+            name="TinyOS Example"
+            preferredPerspectives="tinyos.perspective"
+            project="true"/>
+      <wizard
+            category="tinyos.wizard"
+            class="tinyos.yeti.wizards.NewHeaderWizard"
+            icon="icons/dot_h_file.gif"
+            id="tinyos.wizards.header"
+            name="Headerfile">
+      </wizard>
+      <wizard
+            category="tinyos.wizard"
+            class="tinyos.yeti.wizards.NewInterfaceWizard"
+            icon="icons/interface.gif"
+            id="tinyos.wizards.interface"
+            name="Interface">
+      </wizard>
+      <wizard
+            category="tinyos.wizard"
+            class="tinyos.yeti.wizards.NewModuleWizard"
+            icon="icons/module.gif"
+            id="tinyos.wizards.module"
+            name="Module">
+      </wizard>
+      <wizard
+            category="tinyos.wizard"
+            class="tinyos.yeti.wizards.NewConfigurationWizard"
+            icon="icons/configuration.gif"
+            id="tinyos.wizards.configuration"
+            name="Configuration">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <category
+            id="tinyos.wizards.importing"
+            name="TinyOS">
+      </category>
+      <wizard
+            category="tinyos.wizards.importing"
+            class="tinyos.yeti.wizards.importing.FileSystemWizard"
+            icon="icons/nesc.png"
+            id="tinyos.wizards.importing.ImportWizard"
+            name="File System">
+         <description>
+            Imports a TinyOS-project by creating a new project, and then copying all the source files from another location.
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerSeverity="2"
+            name="tinyos.error"
+            super="org.eclipse.ui.workbench.texteditor.error">
+      </type>
+      <type
+            markerSeverity="1"
+            name="tinyos.warning"
+            super="org.eclipse.ui.workbench.texteditor.warning">
+      </type>
+      <type
+            markerSeverity="0"
+            name="tinyos.info"
+            super="org.eclipse.ui.workbench.texteditor.info">
+      </type>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="tinyos.yeti.launch.BuildLaunch"
+            id="tinyos.launch.build"
+            modes="run"
+            name="TinyOS Build"
+            public="true">
+         <fileExtension
+               default="true"
+               extension="nc">
+         </fileExtension>
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="tinyos.yeti.launch.dialog.MakeTargetLaunchTabGroup"
+            id="tinyos.launch.build.standardgroup"
+            type="tinyos.launch.build">
+         <launchMode
+               mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="tinyos.launch.build"
+            icon="icons/nesc.png"
+            id="tinyos.launch.build.icon">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="tinyos.yeti.launch.BuildLaunchShortcut"
+            icon="icons/nesc.png"
+            id="tinyos.launch.build.shortcut"
+            label="TinyOS Build"
+            modes="run">
+         <configurationType
+               id="tinyos.launch.build">
+         </configurationType>
+         <description
+               description="Builds a TinyOS application"
+               mode="run">
+         </description>
+         <contextualLaunch>
+            <enablement>
+               <or>
+                  <with
+                        variable="selection">
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <adapt
+                              type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="tinyos.launch.buildable">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </or>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="tinyos.yeti.launch.Buildable"
+            id="tinyos.launch.propertyTester"
+            namespace="tinyos.launch"
+            properties="buildable"
+            type="org.eclipse.core.resources.IResource">
+      </propertyTester>
+   </extension>
+   <!-- =================================================================================== -->
+   <!-- Define Nested C files ContentTypes                                                  -->
+   <!-- =================================================================================== -->
+   <extension point="org.eclipse.core.runtime.contentTypes">
+	  <!-- declares a content type for Nested C source files -->
+	  <content-type id="nesCSource" name="Nested C Source"
+	     base-type="org.eclipse.core.runtime.text"
+         file-extensions="nc"
+         priority="high"/>
+	  <!-- declares a content type for Nested C header files -->
+      <content-type id="nesCHeader" name="Nested C Header"
+      	  base-type="org.eclipse.core.runtime.text"
+		  file-extensions="h"          
+          priority="high"/>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.EditorInputConverter">
+      <converter
+            class="tinyos.yeti.editors.editorInputConverters.FileEditorInputConverter">
+      </converter>
+      <converter
+            class="tinyos.yeti.editors.editorInputConverters.ExternalEditorInputConverter">
+      </converter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro.configExtension">
+      <configExtension
+            configId="org.eclipse.ui.intro.universalConfig"
+            content="intro/introcontent.xml">
+      </configExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="tinyos.yeti.properties.source.SourceFolderDecorator"
+            id="tinyos.yeti.source-folder-decorator"
+            label="TinyOS Source Folder"
+            lightweight="true"
+            state="true">
+      </decorator>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.ProjectChecker">
+      <checker
+            class="tinyos.yeti.make.targets.MakeTargetChecker">
+      </checker>
+      <checker
+            class="tinyos.yeti.model.NesCPathChecker">
+      </checker>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.LaunchVeto">
+      <veto
+            class="tinyos.yeti.launch.veto.SaveAllVeto">
+      </veto>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.Formatting">
+      <formatter
+            class="tinyos.yeti.editors.format.NesCFormattingStrategy2Factory">
+      </formatter>
+   </extension>
+</plugin>

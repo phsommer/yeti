@@ -1,0 +1,1751 @@
+/*
+ * Known issues:
+ *	-  only "[command|event] typeName direct_declarator"  is supoortet
+ *          "typeName [command|event] direct_declarator" is detected as error
+ *
+ *
+ *
+ * jay: 3 reduce/reduce conflicts
+ *
+ *
+ *
+ *
+ *
+ */
+
+
+
+// -----------------------------------------------------------
+// prolog
+// -----------------------------------------------------------
+%{
+
+  package tinyOS.nesc.parser;
+
+  import java.io.*;
+  import java.util.Vector;
+  import java.util.Enumeration;
+  import java.util.LinkedList;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Iterator;
+  import tinyOS.editors.nesc.language.elements.*;
+  import tinyOS.editors.NesCIcons;
+  import tinyOS.nesc.scanner.Scanner;
+  import tinyOS.nesc.scanner.Token;
+
+  /**
+   * !! 
+   * Don't edit this file directly. Instead edit the Jay-File
+   * NesCparser.jay and generate the java file using:
+   * ay -v NesCparser.jay <skeleton > NesCparser.java
+   * !! 
+   */
+
+  /** start with<br>
+	no argument to suppress debugging<br>
+	0, 1, 2, or 3 to animate trapping input, output, or both<br>
+	other to trace
+  */
+  public class NesCparser {
+	private List elementList = new LinkedList();
+	private Scanner scanner = null;
+	private NameSpace ns = null;
+	
+	public void setScanner(Scanner s) {
+		this.scanner = s;
+	}
+	
+    /** reads lines from standard input, parses, and evaluates them
+	or writes them as a Vector to standard output if -c is set.
+	@param args if -c is specified, a Vector is written.
+      */
+    public static void main (String args []) {
+    jay.yydebug.yyDebug debug = null;
+    if (args.length > 0)
+      try {
+        debug = new jay.yydebug.yyAnim("NesCparser", Integer.parseInt(args[0]));
+      } catch (NumberFormatException nfe) {
+        debug = new jay.yydebug.yyDebugAdapter();
+      }
+      Scanner scanner = new Scanner(new InputStreamReader(System.in));
+      NesCparser parser = new NesCparser();
+      scanner.setCallback(parser);
+      try {
+	    Vector vec = (Vector)parser.yyparse(scanner, debug);
+	    if (vec != null)
+	          for (Enumeration e = vec.elements() ; e.hasMoreElements() ;) {
+	            System.out.println(((Number) e.nextElement()).floatValue());
+	      }
+    } catch (IOException ie) { ie.printStackTrace(); }
+      catch (yyException ye) { System.err.println(ye); }
+    }
+    
+    
+    public boolean get_idents_only() {
+		return ns.get_idents_only();
+    }
+    
+    public int type_of_name(String text) {
+    	return ns.type_of_name(text);
+   	}
+   	
+   	public NesCparser() {
+   		ns = new NameSpace();
+   	}
+   	
+   	public NesCparser(String types[]) {
+   		ns = new NameSpace(types);;
+   	}
+   	   
+    
+%}
+
+// -----------------------------------------------------------
+// Local
+// -----------------------------------------------------------
+%{
+
+
+%}
+
+// -----------------------------------------------------------
+// C Terminal definitions
+// -----------------------------------------------------------
+
+%token <Token> BAD_TOKEN
+%token <Token> INTEGER_CONSTANT CHARACTER_CONSTANT FLOATING_CONSTANT ENUMERATION_CONSTANT STRING
+%token <Token> SIZEOF
+%token <Token> PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
+%token <Token> AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
+%token <Token> SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
+%token <Token> XOR_ASSIGN OR_ASSIGN TYPEDEF_NAME
+
+%token <Token> TYPEDEF EXTERN STATIC AUTO REGISTER
+%token <Token> CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
+%token <Token> STRUCT UNION ENUM ELLIPSIS
+
+%token <Token> CASE DEFAULT IF SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+
+%token <Token> IDENTIFIER
+
+// ------------------------------------------------------------
+// NesC Terminal Definitions
+// ------------------------------------------------------------
+%token <Token> AS CALL  COMPONENTS CONFIGURATION EVENT 
+%token <Token> INTERFACE POST PROVIDES SIGNAL TASK USES INCLUDES ATOMIC
+%token <Token> ASYNC NORACE INLINE LEFTARROW
+%token <Token> ATTRIBUTE
+
+%token COMMENT // /* */
+%token DOCCOMMENT // /** */
+%token ENDOFLINECOMMENT // 
+
+%token <Token> MODULE IMPLEMENTATION COMMAND
+
+// Precedence Declaration
+%left THEN
+%left ELSE
+
+
+// Startingpoint of Grammar
+// %start translation_unit
+%start nesc_file
+
+// -----------------------------------------------------------
+// Non-Terminal Type Definitions
+// -----------------------------------------------------------
+// Type Definition
+%type <Element> abstract_declarator 
+%type <Element> additive_expression 
+%type <Element> and_expression
+%type <Element> assignment_operator atomic_statement 
+%type <Element> attribute_list
+%type <Element> call_kind cast_expression
+%type <Element> component_line component_list
+%type <Element> compound_statement 
+%type <Element> configuration connection_list 
+%type <Element> configuration_implementation
+%type <Element> connection constant_expression
+%type <Element> declaration
+%type <Element> nesc_declaration
+%type <Element> direct_abstract_declarator
+%type <Element> direct_declarator endpoint
+%type <Element> enumerator_list 
+%type <Element> enumerator 
+%type <Element> equality_expression
+%type <Element> exclusive_or_expression 
+%type <Element> expression 
+%type <Element> expression_statement 
+%type <Element> external_declaration
+%type <Element> function_definition 
+%type <Element> includes_list
+%type <Element> inclusive_or_expression
+%type <Element> init_declarator 
+%type <Element> initializer_list 
+%type <Element> initializer
+%type <Element> interface 
+%type <Element> iteration_statement
+%type <Element> jump_statement 
+%type <Element> labeled_statement 
+%type <Element> logical_and_expression 
+%type <Element> logical_or_expression
+%type <Element> module 
+%type <Element> multiplicative_expression
+%type <Element> nesc_file
+%type <Element> pointer
+%type <Element> postfix_expression
+%type <Element> primary_expression
+%type <Element> relational_expression
+%type <Element> renamed_identifier
+%type <Element> selection_statement
+%type <Element> shift_expression
+%type <Element> single_attribute
+%type <Element> specification_element
+%type <Element> specification
+%type <Element> specifier_qualifier_list
+%type <Element> statement_list
+%type <Element> statement
+%type <Element> struct_declaration_list
+%type <Element> struct_declaration
+%type <Element> struct_declarator_list
+%type <Element> struct_declarator
+%type <Element> type_name
+%type <Element> type_qualifier_list
+%type <Element> type_qualifier
+%type <Element> unary_expression
+%type <Element> attribute
+%type <Element> nesc_function_definition
+//%type <Element> direct_function_declarator
+%type <Element> assignment_expression
+%type <Element> argument_expression_list
+%type <Element> conditional_expression 
+%type <Element> type_specifier
+%type <Element> storage_class_specifier
+%type <Element> parameter_declaration
+%type <Element> declarator
+%type <Element> module_implementation
+
+// tokens
+%type <Token> ']' '{' '}' '='  ',' ';'
+%type <Token> '(' '|' '/' '<' '>' '%' '^' '&' '*' '+' '-' '~' '!'
+%type <Token> ')'
+%type <Token> identifier_path
+%type <Token> actual_type_specifier
+%type <Token> type_adjective
+%type <Token> identifier constant
+%type <Token> struct_or_union_specifier
+%type <Token> enum_specifier
+%type <Token> struct_or_union
+
+// arraylists
+%type <ArrayList> nesc_storage_class_adjective
+%type <ArrayList> nesc_storage_class_specifier
+%type <ArrayList> components
+%type <ArrayList> identifier_list
+%type <ArrayList> includes
+%type <ArrayList> parameter_list
+%type <ArrayList> parameter_type_list
+%type <ArrayList> specification_element_list
+%type <ArrayList> specification_elements
+%type <ArrayList> translation_unit
+%type <ArrayList> uses_provides_list
+%type <ArrayList> uses_provides
+%type <ArrayList> attributes
+%type <ArrayList> nesc_declaration_specifiers
+%type <ArrayList> declaration_list 
+%type <ArrayList> declaration_specifiers 
+%type <ArrayList> init_declarator_list
+
+//integers
+%type <Integer> unary_operator
+
+// never used.. inserted to avoid untyped-warnings
+%type <Object> NS_new_parm
+
+%% 
+// -----------------------------------------------------------
+// NesC Specific Rules
+// -----------------------------------------------------------
+nesc_file 
+    : /* fix */						{ 
+    								  $$ = new RootElement();	 
+    								}
+	| includes_list interface		{
+									  $$ = new RootElement($1,$2);
+									  $<Element>$.addChildElement($1);
+									  $<Element>$.addChildElement($2);
+									} 
+	| includes_list module			{ 
+									  $$ = new RootElement($1,$2); 
+									  $<Element>$.addChildElement($1);
+									  $<Element>$.addChildElement($2);
+									}
+	| includes_list configuration 	{ 
+									  $$ = new RootElement($1,$2); 
+									  $<Element>$.addChildElement($1);
+									  $<Element>$.addChildElement($2);
+									}
+	| interface						{ 
+									  $$ = new RootElement($1);
+									  $<Element>$.addChildElement($1);
+									}
+	| module						{ 
+									  $$ = new RootElement($1); 
+									  $<Element>$.addChildElement($1);
+									}									
+	| configuration					{ 
+									  $$ = new RootElement($1); 
+									  $<Element>$.addChildElement($1);
+									}
+	;
+
+includes_list
+	: includes						{
+										$$ = new IncludesListElement($1);
+									    $<Element>$.addChilds($1);										
+									}
+									
+	| includes_list includes		{ 
+										// adding the includes-array to the resulting includes_list
+										$1.addChilds($2);
+									} 
+	;
+	
+
+includes
+	: INCLUDES identifier_list ';'			
+				{ 
+					ArrayList al = new ArrayList();
+					for (int i = 0; i < $2.size(); i++) {
+						Element e = (Element)$2.get(i);
+						IncludesElement f = new IncludesElement(e);
+
+						// parse includes and add the typenames to the scope
+						f = HeaderFileUtil.resolveIncludes(f);
+						al.add(f);
+						ns.addTypesToGlobalScope(f.getTypeNames());
+						// --------------------------------------						
+					}
+					$$ = al;
+				}
+	;
+	
+interface
+	: INTERFACE IDENTIFIER '{' declaration_list '}'	 
+			{	
+				$$ = new InterfaceElement($2.text, $1, $5);
+				$<Element>$.addChilds($4);
+			}
+	;
+	
+module
+	: MODULE IDENTIFIER specification module_implementation	
+	 		{ 
+	 		  $$ = new ModuleElement($2.text,$1,$4);
+			  $<Element>$.addChildElement($3);
+ 			  $<Element>$.addChildElement($4);	  	 
+			  
+			}													
+	;
+	
+module_implementation
+	: IMPLEMENTATION '{' translation_unit '}'	
+			{ 
+			  $$ = new ImplementationElement($1,$4);
+			  $<Element>$.addChilds($3);
+			}
+	;
+
+configuration
+	: CONFIGURATION IDENTIFIER specification configuration_implementation
+	 	  { 
+			 $$ = new ConfigurationElement($2.text, $1, $4);
+			 $<Element>$.addChildElement($3);
+			 $<Element>$.addChildElement($4); 
+		  }
+	;	
+	
+configuration_implementation
+	: IMPLEMENTATION '{' component_list connection_list '}' 
+			{ 
+			  $$ = new ConfigurationImplElement($1.text,$1, $5);
+			  $<Element>$.addChildElement($3); 
+			  $<Element>$.addChildElement($4); 																
+			} 
+	| IMPLEMENTATION '{' connection_list '}'
+			{ 
+			  $$ = new ConfigurationImplElement($1.text, $1, $4);
+			  $<Element>$.addChildElement($3); 
+			}
+	;
+	
+component_list
+	: components						
+			{ 
+			  $$ = new ComponentListElement($1);											  
+			}						
+	| component_list components			{ 
+										  $<Element>$.addChilds($2);
+										}
+	;
+	
+components
+	: COMPONENTS component_line ';'
+			{ $$ = new ArrayList();
+			  for (int i = 0; i < $<ArrayList>2.size();i++) {
+				  RenamedIdentifierElement e = (RenamedIdentifierElement)$<ArrayList>2.get(i);
+				  ComponentElement e2 = new ComponentElement((Element)e);
+				  e2.setRenamedTo(e.getRenamed());
+				  $<ArrayList>$.add(e2);
+			  } 
+			}
+	;
+	
+component_line
+	: renamed_identifier						{ 
+												  $$ = new ArrayList(); 
+												  $<ArrayList>$.add($1);
+												} 						
+	| component_line ',' renamed_identifier		{
+												  $<ArrayList>$.add($3);
+												}
+	;
+
+renamed_identifier
+	: IDENTIFIER 								
+			{
+			  $$ = new RenamedIdentifierElement($1);
+			}				
+	| IDENTIFIER AS IDENTIFIER 
+			{
+			  $$ = new RenamedIdentifierElement($1.text,$1,$3);
+			  $<RenamedIdentifierElement>$.setRenamedTo($3.text);
+   		    }
+	;	
+	
+
+connection_list
+	: connection					
+			{ 
+				$$ = new ConnectionListElement($1);
+			  	$<Element>$.addChildElement($1);
+			} 
+	| connection_list connection
+			{ 
+			    $<Element>$.addChildElement($2);
+			}
+	;
+	
+connection
+	: endpoint '=' endpoint ';'			/* nesc missing */ 
+			{ 
+				$$ = new ConnectionElement(
+					$1.getName() + " = " + $3.getName(),
+					$1,$4
+				);
+				$<ConnectionElement>$.setOperator("=");
+		   } 
+	| endpoint PTR_OP endpoint ';'		/* nesc missing */ 
+			{ 
+			    $$ = new ConnectionElement(
+					$1.getName() + " -> " + $3.getName(),
+					$1,$4
+				);
+				$<ConnectionElement>$.setOperator("->");
+			}
+	| endpoint LEFTARROW endpoint ';'	/* nesc missing */ 
+			{ 
+			    $$ = new ConnectionElement(
+				 	$1.getName() + " <- " + $3.getName(),
+					$1,$4
+				);
+				$<ConnectionElement>$.setOperator("<-");
+			}
+	;
+
+endpoint
+	:	identifier_path		
+				{	  
+					$$ = new EndpointElement($1); 
+				}								 
+	|	identifier_path '[' argument_expression_list ']'	
+				{ 
+				  	$$ = new EndpointElement($1.text+"["+ $3.getLabel(null) + "]",
+				  		$1, $4);
+				} 
+	;
+	
+identifier_path
+	:	identifier							
+											{ 
+												$$ = $1;
+											}
+	|	identifier_path '.' identifier	
+											{
+											 	$<Token>$.text += "."+$3.text; 
+												$<Token>$.end = $3.end; 
+											}
+	;
+	
+// FIX 1: uses_provides can be empty
+specification
+	: '{' uses_provides_list '}'		
+			{ 
+				$$ = new SpecificationListElement($1,$3);
+				$<Element>$.addChilds($<ArrayList>2);
+			}
+	| '{' '}'		
+			{
+				$$ = new SpecificationListElement($1,$2);
+			}
+	;
+	
+uses_provides_list
+	: uses_provides			
+			{
+			  $$ = $1;
+			} 			
+	| uses_provides_list uses_provides
+			{
+			  for (int i = 0; i < $<ArrayList>2.size(); i++) {
+				  $<ArrayList>$.add($<ArrayList>2.get(i));											  
+			  }
+			}
+	;
+	 
+uses_provides
+	:	USES specification_element_list		
+			{ 
+				$$ = new ArrayList();
+				for (int i = 0; i < $2.size(); i++) {
+ 				   ISpecificationElement t = (ISpecificationElement)$<ArrayList>2.get(i);
+ 				   t.setUses();
+					$<ArrayList>$.add(t);
+				}
+			} 
+	|	PROVIDES specification_element_list	
+			{
+				$$ = new ArrayList();
+				for (int i = 0; i < $2.size(); i++) {
+ 				   ISpecificationElement t = (ISpecificationElement)$<ArrayList>2.get(i);
+ 				   t.setProvides();
+					$<ArrayList>$.add(t);
+				}
+			} 
+	;
+	
+specification_element_list
+	: specification_element		
+			{ 
+			  $$ = new ArrayList();
+			  $<ArrayList>$.add($1);
+			} 			
+	| '{' specification_elements '}'
+			{
+				$$ = $2;
+			}	
+	;
+	
+specification_elements
+	:	specification_element	
+			{ 
+				$$ = new ArrayList(); 
+				$<ArrayList>$.add($1);
+			} 					
+	|	specification_elements specification_element	
+			{
+				 $<ArrayList>$.add($2);
+			}
+	;
+	
+specification_element
+	: 	nesc_declaration		
+			{
+			  $$ = $1;
+			}														  
+	|	INTERFACE renamed_identifier ';' /* missing ; in nesc-grammar*/ 	
+													
+			{
+			  $$ = new SpecificationElement($<RenamedIdentifierElement>2);
+			}   
+	|	INTERFACE renamed_identifier '[' parameter_type_list ']' ';'	/* missing ; in nesc-grammar*/ 
+			{
+			  $$ = new SpecificationElement($<RenamedIdentifierElement>2);
+			}
+	;
+	
+attribute_list
+	: single_attribute						{ $$ = null; } // TODO
+	| attribute_list ',' single_attribute		{ $$ = null; } // TODO
+	;
+	
+single_attribute
+	: identifier										{ $$ = null; } // TODO	
+	| identifier '(' argument_expression_list ')'		{ $$ = null; } // TODO
+	;
+
+attributes
+	: attribute					{ $$ = null; } // TODO
+	| attributes attribute		{ $$ = null; } // TODO
+	;
+	
+attribute
+	: ATTRIBUTE '(' '(' attribute_list ')' ')'		{ $$ = null; } // TODO
+	
+	
+atomic_statement
+	: ATOMIC statement				{ $$ = null; } // TODO
+	;
+	
+call_kind
+	:	CALL						{ $$ = null; } // TODO
+	| 	SIGNAL						{ $$ = null; } // TODO
+	| 	POST						{ $$ = null; } // TODO
+	
+// -----------------------------------------------------------
+// Production Rules
+// -----------------------------------------------------------
+
+/* The occurance of a type_specifier in the input turns off
+ * scanner-recognition of typedef-names as such, so that they can
+ * be re-defined within a declarator-list. The switch is called
+ * "name_space_types".
+ *
+ * The call to lex_sync() assures that the switch gets toggled after
+ * the next token is pre-fetched as a lookahead.
+ */
+
+NS_ntd :	{ 
+				scanner.lex_sync(); 
+				ns.ntd(); 
+			}
+
+
+/* Once the declarators (if any) are parsed, the scanner is returned
+ * to the state where typedef-names are recognized.
+ */
+NS_td : 	{ 
+				scanner.lex_sync(); 
+				ns.td();
+			}
+
+/* NS_scope_push creates a new scope in the id/typedef/enum-const
+ * name-space. New levels are created by function-declarators
+ * and are created and destroyed by compound-statements.
+ * Thus, every occurance of a function-declarator must be
+ * followed, at the end of the scope of that declarator,
+ * by an NS_scope_pop.
+ */
+NS_scope_enter : { 
+					ns.scope_push(); 
+					ns.td(); 
+				 }
+			   ;
+
+NS_scope_leave :  { 
+					ns.scope_pop(); 
+				 }
+			  ;
+				 
+/* NS_struct_push creates a new name-space for a struct or union
+ * NS_struct_pop finishes one.
+ */
+NS_struct_push : { 
+					ns.struct_push(); 
+					ns.td(); 
+				  }
+				;
+
+NS_struct_pop:   { 
+					ns.struct_pop(); 
+				  }
+			  ;
+				  
+
+NS_id: { 
+			ns.new_declaration(Declaration.DECLARATION_TYPE_NAME_SPACE_DECL); 
+		}
+	  ;
+
+/* Begin a new declaration of a parameter */
+NS_new_parm: { 
+				ns.new_declaration(Declaration.DECLARATION_TYPE_NAME_SPACE_DECL); 
+			  }
+			;
+
+
+/* Remember that declarators while define typedef-names. */
+NS_is_typedef: { 
+					ns.set_typedef(); 
+				}
+			  ;
+
+/* Finish a direct-declarator */
+NS_direct_decl: { 
+					ns.direct_declarator(); 
+				 }
+			   ;
+
+/* Finish a pointer-declarator */
+NS_ptr_decl: { ns.pointer_declarator(); }
+			;
+
+/* The scanner must be aware of the name-space which
+ * differentiates typedef-names from identifiers. But the
+ * distinction is only useful within limited scopes. In other
+ * scopes the distinction may be invalid, or in cases where
+ * typedef-names are not legal, the semantic-analysis phase
+ * may be able to generate a better error message if the parser
+ * does not flag a syntax error. We therefore use the following
+ * production...
+ */
+
+identifier
+	: NS_ntd TYPEDEF_NAME NS_td
+			{ $$ = $2; }
+	| IDENTIFIER		
+			{ $$ = $1; 
+				ns.declarator_id(((Token)$1).text); }				
+	| ENUMERATION_CONSTANT
+			{ $$ = $1; }
+	;
+
+
+// -----------------------------------------------------------
+// C-Grammar
+// -----------------------------------------------------------
+
+/*
+ * What follows is based on the gammar in _The C Programming Language_,
+ * Kernighan & Ritchie, Prentice Hall 1988. 
+ */
+
+translation_unit
+ : external_declaration		{
+							  $$ = new ArrayList();
+							  $<ArrayList>$.add($1);
+							}
+ | translation_unit external_declaration
+ 							{ 
+							  $<ArrayList>$.add($2);
+							}
+ ;
+
+external_declaration
+ : NS_id function_definition
+ 							{ 
+							  $$ = $2;
+							}
+ | NS_id declaration		
+ 							{ 
+							  $$ = null;
+							}
+ | NS_id untyped_declaration
+ 							{ 
+							  $$ = null;
+							}
+ ;
+
+declaration
+ : declaration_specifiers NS_td ';'		
+ 		{ 
+ 			$$ = new DeclarationElement($1,$3);
+ 			Iterator i = $<ArrayList>1.iterator();
+ 			while(i.hasNext()) {
+ 				$<DeclarationElement>$.addSpecifiers((Element)i.next());
+ 			}
+ 		}
+ | declaration_specifiers init_declarator_list NS_td ';'	
+ 		{ 
+			$$ = new DeclarationElement($1,$4);
+ 			Iterator i = $1.iterator();
+ 			while(i.hasNext()) {
+ 				$<DeclarationElement>$.addSpecifiers((Element)i.next());
+ 			}
+ 			//todo : init_declarator_list
+ 			
+ 			i = $2.iterator();
+ 			while(i.hasNext()) {
+ 				$<DeclarationElement>$.addInitDeclarator((DirectDeclaratorElement)i.next());
+ 			}
+ 			
+ 			
+		}
+ // nesc addon
+ | nesc_declaration { $$ = $1; }
+ ;
+nesc_declaration
+ : nesc_declaration_specifiers NS_td ';'			 	
+ 		{ 
+ 			$$ = new DeclarationElement($1,$3);
+ 			Iterator i = $<ArrayList>1.iterator();
+ 			while(i.hasNext()) {
+ 				$<DeclarationElement>$.addSpecifiers((Element)i.next());
+ 			}
+ 		}
+ | nesc_declaration_specifiers init_declarator_list NS_td ';'
+ 		{ 
+ 			$$ = new DeclarationElement($1,$4);
+ 			Iterator i = $<ArrayList>1.iterator();
+ 			while(i.hasNext()) {
+ 				$<DeclarationElement>$.addSpecifiers((Element)i.next());
+ 			}
+	 		//todo : init_declarator_list
+ 			i = $<ArrayList>2.iterator();
+ 			while(i.hasNext()) {
+ 				$<DeclarationElement>$.addInitDeclarator((DirectDeclaratorElement)i.next());
+ 			}
+ 		}
+ ;
+
+untyped_declaration
+ : init_declarator_list ';'
+ ;
+
+declaration_list
+ : declaration	
+ 		{ $$ = new ArrayList();
+ 		  $<ArrayList>$.add($1);
+ 		}
+ | declaration_list declaration
+ 		{ $$ = $1;
+ 		  $<ArrayList>$.add($2);
+ 		}
+ ;
+
+declaration_specifiers
+ : storage_class_specifier
+ 		{ 
+			$$ = new ArrayList();
+			$<ArrayList>$.add($1);
+		} 
+ | storage_class_specifier declaration_specifiers
+		{ 
+		  	$$ = $2;
+		  	$<ArrayList>$.add(0,$1);
+		} 
+ | type_specifier
+		{ 
+		   $$ = new ArrayList();
+		   $<ArrayList>$.add($1);
+		}
+ | type_specifier declaration_specifiers
+		{ 
+		   $$ = $2;
+		   $<ArrayList>$.add(0,$1);
+		}
+ | type_qualifier
+		{ 
+		   $$ = new ArrayList();
+		   $<ArrayList>$.add($1);
+		}
+ | type_qualifier declaration_specifiers
+		{ 
+		   $$ = $2;
+		   $<ArrayList>$.add(0,$1);
+		}
+ ;
+
+nesc_declaration_specifiers
+  /* nesc addon */
+ : DEFAULT declaration_specifiers
+ 		{ $$ = $2;
+ 		  $<ArrayList>$.add(new KeywordElement($1));
+ 		 }
+ | nesc_storage_class_specifier		
+ 		{ $$ = $1 ;}	
+ | nesc_storage_class_specifier declaration_specifiers
+ 		 { 
+ 		 	$$ = $1;
+ 		 	Iterator i = $2.iterator();
+ 		 	while(i.hasNext()) {
+ 		 		$1.add((Element)i.next());
+ 		 	}
+ 		 }
+ ;
+ 
+nesc_storage_class_specifier
+ : COMMAND									{ $$ = new ArrayList(); 
+ 											  $<ArrayList>$.add(new StorageClassSpecifierElement($1)); 
+ 											}
+ | nesc_storage_class_adjective COMMAND		{ $$ = $1;
+   											  $<ArrayList>$.add(new StorageClassSpecifierElement($2)); 
+ 											}
+ | COMMAND nesc_storage_class_adjective 	{ $$ = $2;
+ 											  $<ArrayList>$.add(new StorageClassSpecifierElement($1)); 
+ 											}
+ | EVENT									{ $$ = new ArrayList(); 
+ 											  $<ArrayList>$.add(new StorageClassSpecifierElement($1)); 
+ 											}
+ | nesc_storage_class_adjective EVENT		{ $$ = $1;
+   											  $<ArrayList>$.add(new StorageClassSpecifierElement($2)); 
+ 											}
+ | EVENT nesc_storage_class_adjective		{ $$ = $2; 
+   											  $<ArrayList>$.add(new StorageClassSpecifierElement($1)); 
+ 											}
+ | TASK										{ $$ = new ArrayList(); 
+ 											  $<ArrayList>$.add(new StorageClassSpecifierElement($1)); 
+ 											}
+ | nesc_storage_class_adjective TASK		{ $$ = $1;
+   											  $<ArrayList>$.add(new StorageClassSpecifierElement($2)); 
+ 											}
+ | TASK nesc_storage_class_adjective 		{ $$ = $2; 
+   											  $<ArrayList>$.add(new StorageClassSpecifierElement($1)); 
+ 											}
+ ;
+ 
+nesc_storage_class_adjective
+ : ASYNC  									{ $$ = new ArrayList(); $<ArrayList>$.add(new KeywordElement($1)); }
+ | DEFAULT									{ $$ = new ArrayList(); $<ArrayList>$.add(new KeywordElement($1)); }
+ | ASYNC DEFAULT							{ $$ = $$ = new ArrayList(); 
+ 											  $<ArrayList>$.add(new KeywordElement($1)); 
+ 											  $<ArrayList>$.add(new KeywordElement($2)); 
+ 											}
+ | DEFAULT ASYNC							{ $$ = new ArrayList(); 
+ 											  $<ArrayList>$.add(new KeywordElement($1)); 
+ 										      $<ArrayList>$.add(new KeywordElement($2)); 
+ 											}
+ ;
+ 
+storage_class_specifier
+ : NS_is_typedef TYPEDEF					{ $$ = new StorageClassSpecifierElement($2); }
+ | EXTERN									{ $$ = new StorageClassSpecifierElement($1); }
+ | STATIC									{ $$ = new StorageClassSpecifierElement($1); }
+ | AUTO										{ $$ = new StorageClassSpecifierElement($1); }
+ | REGISTER									{ $$ = new StorageClassSpecifierElement($1); }
+ /* nesc addons */
+ //| COMMAND								
+// | EVENT
+// | ASYNC
+// | TASK									
+ | NORACE									{ $$ = new StorageClassSpecifierElement($1); }				
+ | INLINE	/* fix for inline functions */	{ $$ = new StorageClassSpecifierElement($1); }
+ ;
+
+
+// C-Original:
+//		declaration-specifiersopt declarator declaration-listopt compound-statement
+// NesC-Addon:
+//		declaration-specifiersopt declarator attributes declaration-listopt compound-statement
+// both:
+// ->	declaration-specifiersopt declarator attributesopt declaration-listopt compound-statement
+//
+function_definition
+ : declarator compound_statement 
+ 		{	
+ 			$$ = new FunctionElement($1,$2);	
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>1);
+  			// $$.setCompoundStatement() //todo	
+ 		}
+ | declarator attributes compound_statement 
+ 		{	
+ 			$$ = new FunctionElement($1,$3);	
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>1);
+  			// $$.setCompoundStatement() //todo	
+ 		}
+ | declarator declaration_list compound_statement 
+ 		{	$$ = new FunctionElement("_todo 2",$1,$3);	}
+ | declarator attributes declaration_list compound_statement 
+ 		{	$$ = new FunctionElement("_todo 2",$1,$4);	}
+ | declaration_specifiers declarator NS_td compound_statement 
+  		{	
+  			$$ = new FunctionElement($1,$4);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+			// $$.setCompoundStatement() //todo		
+  		}
+ | declaration_specifiers declarator attributes NS_td compound_statement 
+  		{	
+  			$$ = new FunctionElement($1,$5);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+			// $$.setCompoundStatement() //todo		
+  		}
+ | declaration_specifiers declarator NS_td declaration_list compound_statement 
+  		{	
+  			$$ = new FunctionElement($1,$5);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+  			// setdeclaration_list //todo
+			// $$.setCompoundStatement() //todo		
+  		}
+ | declaration_specifiers declarator attributes NS_td declaration_list compound_statement 
+  		{	
+  			$$ = new FunctionElement($1,$6);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+  			// setdeclaration_list //todo
+			// $$.setCompoundStatement() //todo		
+  		}
+ | nesc_function_definition
+  		{	$$ = $1;	}
+//TODO attributes left out..
+// declaration_specifiersOPT declarator attributes declaratoin_ListOPT compound_statement
+ ;
+ 
+nesc_function_definition
+ : nesc_declaration_specifiers declarator NS_td compound_statement  
+ 		  {
+ 		    $$ = new FunctionElement($1,$4);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+			// $$.setCompoundStatement($4) //todo		
+		  }
+ | nesc_declaration_specifiers declarator attributes NS_td compound_statement  
+ 		  {
+ 		    $$ = new FunctionElement($1,$5);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+			// $$.setCompoundStatement($4) //todo		
+		  }
+ | nesc_declaration_specifiers declarator NS_td declaration_list compound_statement  
+ 		{
+ 		    $$ = new FunctionElement($1,$5);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+  			// declaration list //todo
+			// $$.setCompoundStatement($4) //todo		
+		  }	
+ | nesc_declaration_specifiers declarator attributes NS_td declaration_list compound_statement  
+ 		{
+ 		    $$ = new FunctionElement($1,$6);	
+  			$<FunctionElement>$.setDeclarationSpecifiers($1);
+  			$<FunctionElement>$.setDeclarator($<DirectDeclaratorElement>2);
+  			// declaration list //todo
+			// $$.setCompoundStatement($4) //todo		
+		}	
+ ;
+  
+/* Once an actual type-specifier is seen, it acts as a "trigger" to
+ * turn typedef-recognition off while scanning declarators, etc.
+ */
+type_specifier
+ : NS_ntd actual_type_specifier		{ $$ = new TypeSpecifierElement($2); }
+ | type_adjective					{ $$ = new TypeSpecifierElement($1); } 	
+ ;
+
+actual_type_specifier
+ : VOID							{ $$ = $1; } 
+ | CHAR							{ $$ = $1; } 
+ | INT							{ $$ = $1; } 
+ | FLOAT						{ $$ = $1; } 
+ | DOUBLE						{ $$ = $1; } 
+ | TYPEDEF_NAME					{ $$ = $1; } 
+ | struct_or_union_specifier	{ $$ = $1; } 		
+ | enum_specifier				{ $$ = $1; } 				
+ ;
+
+type_adjective
+ : SHORT			{ $$ = $1; } 				
+ | LONG				{ $$ = $1; } 
+ | SIGNED			{ $$ = $1; } 
+ | UNSIGNED			{ $$ = $1; } 				
+ ;
+
+type_qualifier
+ : CONST			{ $$ = new TypeQualifier($1); } 
+ | VOLATILE			{ $$ = new TypeQualifier($1); } 
+ ;
+
+struct_or_union_specifier
+ : struct_or_union NS_struct_push '{' struct_declaration_list NS_struct_pop '}'
+ 	{ $$ = $1; }
+ | struct_or_union identifier NS_struct_push '{' struct_declaration_list NS_struct_pop '}'
+  	{ $$ = $2; }
+ | struct_or_union identifier
+  	{ $$ = $2; }
+ ;
+
+struct_or_union
+ : STRUCT			{ $$ = $1; } 
+ | UNION			{ $$ = $1; } 
+ ;
+
+struct_declaration_list
+ : struct_declaration
+ | struct_declaration_list struct_declaration
+ ;
+
+init_declarator_list
+ : init_declarator 
+ 		{	
+ 			$$ = new ArrayList(); 
+ 			$<ArrayList>$.add($1);
+ 		}
+ | init_declarator_list ',' init_declarator
+		{	
+ 			$$ = $1;
+ 			$<ArrayList>$.add($3);
+ 		}
+ /* nesc  */
+// | init_declarator attributes
+// | init_declarator_list ',' init_declarator attributes
+//		{	
+// 			$$ = $1;
+// 			$<ArrayList>$.add($3);
+// 			//todo
+// 		}
+ ;
+ 
+
+//init_declarator
+// : declarator 								
+// 		{ $$ = $1; } 
+// | declarator NS_td '=' initializer	NS_ntd
+// 		{ $$ = $1; } // todo
+// ;
+//init_declarator
+// : direct_declarator NS_direct_decl
+// 		{ $$ = $1; } 
+// | direct_declarator NS_direct_decl NS_td '=' initializer NS_ntd
+//		{ $$ = $1; }
+// | direct_declarator NS_direct_decl attributes 
+// 		{ $$ = $1; } 
+// | direct_declarator NS_direct_decl NS_td '=' initializer NS_ntd attributes
+//		{ $$ = $1; }
+// | pointer direct_declarator NS_ptr_decl	
+// 		{ $$ = $2; }
+// | pointer direct_declarator NS_ptr_decl NS_td '=' initializer	NS_ntd
+//		{ $$ = $2; }
+// | pointer direct_declarator NS_ptr_decl attributes
+// 		{ $$ = $2; }
+// | pointer direct_declarator NS_ptr_decl NS_td '=' initializer	NS_ntd attributes
+//		{ $$ = $2; }
+// ;
+init_declarator
+ : direct_declarator NS_direct_decl 
+ 		{ $$ = $1; } 
+ | direct_declarator NS_direct_decl NS_td '=' initializer NS_ntd
+		{ $$ = $1; }
+ | pointer direct_declarator NS_ptr_decl	
+ 		{ $$ = $2; }
+ | pointer direct_declarator NS_ptr_decl NS_td '=' initializer	NS_ntd
+		{ $$ = $2; }
+ ;
+
+struct_declaration
+ : { ns.new_declaration(NesCparser.STRUCT); } specifier_qualifier_list struct_declarator_list NS_td ';' 
+ 		{ $$ = null; } 
+ ;
+
+specifier_qualifier_list
+ : type_specifier									{ $$ = null; } 
+ | type_specifier specifier_qualifier_list			{ $$ = null; } 
+ | type_qualifier									{ $$ = null; } 
+ | type_qualifier specifier_qualifier_list			{ $$ = null; } 
+ ;
+
+struct_declarator_list								
+ : struct_declarator								{ $$ = null; } 
+ | struct_declarator_list ',' struct_declarator		{ $$ = null; } 
+ ;
+
+struct_declarator
+ : declarator										{ $$ = null; } 
+ | ':' constant_expression							{ $$ = null; } 
+ | declarator ':' constant_expression				{ $$ = null; } 
+ ;
+
+enum_specifier									
+ : ENUM '{' enumerator_list '}'					
+ 	{ $$ = $1; } 
+ | ENUM identifier '{' enumerator_list '}'		
+ 	{ $$ = $2; } 
+ | ENUM identifier								
+ 	{ $$ = $2; } 
+ ;
+
+// bug in nesC Compiler: 
+//    also allows: enumerator_list ',' enumerator ','
+enumerator_list
+ : enumerator								{ $$ = null; } 
+ | enumerator_list ',' enumerator			{ $$ = null; } 
+ ;
+
+enumerator
+ : IDENTIFIER									{ $$ = null; } 
+ | IDENTIFIER '=' constant_expression			{ $$ = null; } 
+ ;
+
+declarator
+ : direct_declarator NS_direct_decl				
+ 		{ $$ = $1; } 
+ | pointer direct_declarator NS_ptr_decl		
+ 		{ $$ = $2; } //todo
+ ;
+
+direct_declarator
+ : IDENTIFIER
+ 	{ 
+ 	  ns.declarator_id(((Token)$1).text);  // can introduce names into name-space  	
+ 	  $$ = new DirectDeclaratorElement("",$1);
+ 	  $<DirectDeclaratorElement>$.setIdentifier($1);
+ 	}	
+ | '(' declarator ')'
+ 	{ $$ = $2; } 
+ | direct_declarator '[' ']'
+ 	{ $$ = $1; } 
+ | direct_declarator '[' constant_expression ']'
+ 	{ 
+ 		$$ = $1; 
+		$<DirectDeclaratorElement>$.setConstantExpression($3);
+ 	} 
+ | direct_declarator NS_scope_enter '(' parameter_type_list ')' NS_scope_leave
+	 { 
+	 	$$ = $1; 
+	 	$<DirectDeclaratorElement>$.setParameterTypeList($4); 
+	 } 
+ | direct_declarator NS_scope_enter '(' ')' NS_scope_leave
+ 		{ $$ = $1; } 
+ | direct_declarator NS_scope_enter '(' identifier_list ')' NS_scope_leave
+ 		{ 
+ 			$$ = $1; 
+ 			$<DirectDeclaratorElement>$.setIdentifierList($4);
+ 		} 
+ | IDENTIFIER '.' IDENTIFIER  NS_scope_enter '(' identifier_list ')' NS_scope_leave
+ 		{ 
+ 			$$ = new DirectDeclaratorElement("",$1,$3);
+			$<DirectDeclaratorElement>$.setIdentifier($1,$3); 
+ 			$<DirectDeclaratorElement>$.setIdentifierList($6);
+ 		} 
+ | IDENTIFIER '.' IDENTIFIER  NS_scope_enter '(' parameter_type_list ')' NS_scope_leave
+	 { 
+	 	$$ = new DirectDeclaratorElement("",$1,$3);
+		$<DirectDeclaratorElement>$.setIdentifier($1,$3); 
+	 	$<DirectDeclaratorElement>$.setParameterTypeList($6); 
+	 } 
+ /* nesc addon */
+ | IDENTIFIER '.' IDENTIFIER NS_scope_enter '(' ')'
+ 		{
+	 		$$ = new DirectDeclaratorElement("",$1,$3);
+			$<DirectDeclaratorElement>$.setIdentifier($1,$3);
+ 		}
+ | IDENTIFIER '.' IDENTIFIER NS_td '[' parameter_type_list ']' NS_scope_enter '(' parameter_type_list ')' NS_scope_leave
+ 		{ 
+ 			$$ = new DirectDeclaratorElement("",$1,$3);
+			$<DirectDeclaratorElement>$.setIdentifier($1,$3);
+ 			$<DirectDeclaratorElement>$.setParameters($<ArrayList>6);
+ 			$<DirectDeclaratorElement>$.setParameterTypeList($10); 
+ 		} 
+ | IDENTIFIER '.' IDENTIFIER NS_td '[' parameter_type_list ']' NS_scope_enter '(' ')' NS_scope_leave //not know if correct
+	{ 
+ 			$$ = new DirectDeclaratorElement("",$1,$3);
+			$<DirectDeclaratorElement>$.setIdentifier($1,$3); 
+ 			$<DirectDeclaratorElement>$.setParameters($<ArrayList>6);
+ 		} 
+ ;
+
+//direct_function_declarator
+// : direct_declarator NS_scope_enter '(' parameter_type_list ')'	
+// 		{ 
+// 			$$ = $1; 
+//	 		$<DirectDeclaratorElement>$.setParameterTypeList($4); 
+// 		} 
+// | direct_declarator NS_scope_enter '(' ')'						
+// 		{ $$ = $1; } 
+// | direct_declarator NS_scope_enter '(' identifier_list ')'		
+// 		{ 
+// 			$$ = $1; 
+// 			$<DirectDeclaratorElement>$.setIdentifierList($4);
+// 		} 
+// ;
+ 
+
+pointer
+ : '*'												{ $$ = null; } 
+ | '*' type_qualifier_list							{ $$ = null; } 
+ | '*' pointer										{ $$ = null; }
+ | '*' type_qualifier_list pointer					{ $$ = null; } 
+ ;
+
+type_qualifier_list
+ : type_qualifier									{ $$ = null; } 
+ | type_qualifier_list type_qualifier				{ $$ = null; } 
+ ;
+
+parameter_type_list
+ : parameter_list									{ $$ = $1; } 
+ | parameter_list ',' ELLIPSIS						{ $$ = $1; } 
+ ;
+
+parameter_list
+ : parameter_declaration
+ 		{
+			$$ = new ArrayList(); 
+			$<ArrayList>$.add($1);
+		}
+ | parameter_list ',' parameter_declaration
+ 		{ 
+			$<ArrayList>$.add($3);
+		}
+ ;
+
+parameter_declaration
+ : NS_new_parm declaration_specifiers declarator NS_td
+ 			{ 
+ 				$$ = new ParameterDeclarationElement("",$2,$3);
+ 				$<ParameterDeclarationElement>$.setDeclarationSpecifiers($2);
+ 				$<ParameterDeclarationElement>$.setDeclarator($<DirectDeclaratorElement>3);
+ 				
+ 			}
+ | NS_new_parm declaration_specifiers NS_td
+ 			{
+ 				$$ = new ParameterDeclarationElement("",$2);
+ 				$<ParameterDeclarationElement>$.setDeclarationSpecifiers($2);
+ 			
+ 			}
+ | NS_new_parm declaration_specifiers abstract_declarator NS_td
+ 			{ 
+	 			$$ = new ParameterDeclarationElement("",$2,$3);
+ 				$<ParameterDeclarationElement>$.setDeclarationSpecifiers($2);
+ 				//$<ParameterDeclaration>$.setAbstractDeclarator($3); // todo
+ 			}
+ ;
+
+identifier_list
+ : IDENTIFIER							{ 
+											$$ = new ArrayList(); 
+											$<ArrayList>$.add(
+												new IdentifierElement($1)
+											);
+									 	}
+ | identifier_list ',' IDENTIFIER		{  
+											$<ArrayList>$.add(
+												new IdentifierElement($3)
+											);
+										} 
+ ;
+
+initializer
+ : assignment_expression				{ $$ = null; } 
+ | '{' initializer_list '}'				{ $$ = null; } 
+ | '{' initializer_list ',' '}'			{ $$ = null; } 
+ ;
+
+initializer_list
+ : initializer							{ $$ = null; } 
+ | initializer_list ',' initializer		{ $$ = null; } 
+ ;
+
+type_name
+ : specifier_qualifier_list NS_td						{ $$ = null; } 
+ | specifier_qualifier_list NS_td abstract_declarator	{ $$ = null; } 
+ ;
+
+abstract_declarator
+ : pointer												{ $$ = null; } 
+ | direct_abstract_declarator							{ $$ = null; } 
+ | pointer direct_abstract_declarator					{ $$ = null; } 
+ ;
+
+direct_abstract_declarator
+ : '(' abstract_declarator ')'								{ $$ = null; } 
+ | '[' ']'													{ $$ = null; } 
+ | '[' constant_expression ']'								{ $$ = null; } 
+ | direct_abstract_declarator '[' ']'						{ $$ = null; } 
+ | direct_abstract_declarator '[' constant_expression ']'	{ $$ = null; } 
+ | '(' ')'													{ $$ = null; } 
+ | '(' parameter_type_list ')'								{ $$ = null; } 
+ | direct_abstract_declarator '(' ')'						{ $$ = null; } 
+ | direct_abstract_declarator '(' parameter_type_list ')'	{ $$ = null; } 
+ ;
+
+statement
+ : labeled_statement										{ $$ = null; } 
+ | compound_statement										{ $$ = null; } 
+ | expression_statement										{ $$ = null; } 
+ | selection_statement										{ $$ = null; } 
+ | iteration_statement										{ $$ = null; } 
+ | jump_statement											{ $$ = null; } 
+ | atomic_statement			/* nesc addon */				{ $$ = null; } 
+ ;
+
+labeled_statement
+ : identifier ':' statement									{ $$ = null; } 
+ | CASE constant_expression ':' statement					{ $$ = null; } 
+ | DEFAULT ':' statement									{ $$ = null; } 
+ ;
+
+expression_statement
+ : ';'														{ $$ = null; } 
+ | expression ';'											{ $$ = null; } 
+ ;
+
+compound_statement
+ : NS_scope_enter '{' NS_scope_leave '}'									{ $$ = null; } 
+ | NS_scope_enter '{' statement_list NS_scope_leave '}'							{ $$ = null; } 
+ | NS_scope_enter '{' declaration_list NS_scope_leave '}'						{ $$ = null; } 
+ | NS_scope_enter '{' declaration_list statement_list NS_scope_leave '}'		{ $$ = null; } 
+ ;
+
+statement_list
+ : statement							{ $$ = null; } 
+ | statement_list statement				{ $$ = null; } 
+ ;
+
+selection_statement
+ : IF '(' expression ')' statement %prec THEN				{ $$ = null; } 
+ | IF '(' expression ')' statement ELSE statement			{ $$ = null; } 
+ | SWITCH '(' expression ')' statement						{ $$ = null; } 
+ ;
+
+iteration_statement
+ : WHILE '(' expression ')' statement								{ $$ = null; } 
+ | DO statement WHILE '(' expression ')' ';'						{ $$ = null; } 
+ | FOR '(' expression_statement expression_statement ')' statement	{ $$ = null; } 
+ | FOR '(' expression_statement expression_statement expression ')' statement	{ $$ = null; } 
+;
+
+jump_statement
+ : GOTO identifier ';'						{ $$ = null; } 
+ | CONTINUE ';'								{ $$ = null; } 
+ | BREAK ';'								{ $$ = null; } 
+ | RETURN ';'								{ $$ = null; } 
+ | RETURN expression ';'					{ $$ = null; } 
+ ;
+
+expression
+ : assignment_expression						{ $$ = $1; } 
+ | expression ',' assignment_expression			{ $$ = $3; } //todo should be array 
+ ;
+
+
+assignment_expression
+ : conditional_expression										
+ 		{	$$ = new AssignmentExpression($1);	 }
+ | unary_expression assignment_operator assignment_expression	
+ 		{ 
+ 			$$ = new AssignmentExpression("",$1,$3);
+ 			$<Element>$.addChildElement($1);
+ 			$<Element>$.addChildElement($2);
+ 			$<Element>$.addChildElement($3); 			
+ 	    } 
+ ;
+
+assignment_operator
+ : '=' 				{ $$ = new AssignmentOperator($1); } 
+ | MUL_ASSIGN		{ $$ = new AssignmentOperator($1); }  
+ | DIV_ASSIGN 		{ $$ = new AssignmentOperator($1); }  
+ | MOD_ASSIGN 		{ $$ = new AssignmentOperator($1); }  
+ | ADD_ASSIGN 		{ $$ = new AssignmentOperator($1); }  
+ | SUB_ASSIGN		{ $$ = new AssignmentOperator($1); } 
+ | LEFT_ASSIGN 		{ $$ = new AssignmentOperator($1); } 
+ | RIGHT_ASSIGN 	{ $$ = new AssignmentOperator($1); }   
+ | AND_ASSIGN 		{ $$ = new AssignmentOperator($1); } 
+ | XOR_ASSIGN 		{ $$ = new AssignmentOperator($1); }  
+ | OR_ASSIGN		{ $$ = new AssignmentOperator($1); } 
+ ;
+
+conditional_expression
+ : logical_or_expression											
+ 	{ $$ = $1; } 
+ | logical_or_expression '?' expression ':' conditional_expression	
+ 	{ $$ = $1; }  // todo
+ ;
+
+constant_expression
+ : conditional_expression										
+ 	{ $$ = $1; } 
+ ;
+
+
+logical_or_expression
+ : logical_and_expression								
+ 			{ $$ = $1; } 
+ | logical_or_expression OR_OP logical_and_expression		
+ 		{  	
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+ 		 			
+		} 
+ ;
+
+logical_and_expression
+ : inclusive_or_expression								
+ 		{ $$ = $1; } 
+ | logical_and_expression AND_OP inclusive_or_expression	
+ 		{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);	 
+		} 
+ ;
+
+inclusive_or_expression
+ : exclusive_or_expression								
+ 			{ $$ = $1; } 
+ | inclusive_or_expression '|' exclusive_or_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+exclusive_or_expression
+ : and_expression								
+ 					{ $$ = $1; } 
+ | exclusive_or_expression '^' and_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+and_expression
+ : equality_expression							
+ 					{ $$ = $1; } 
+ | and_expression '&' equality_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+equality_expression
+ : relational_expression								
+ 			{ $$ = $1; } 
+ | equality_expression EQ_OP relational_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | equality_expression NE_OP relational_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+relational_expression
+ : shift_expression									
+ 				{ $$ = $1; } 
+ | relational_expression '<' shift_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | relational_expression '>' shift_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | relational_expression LE_OP shift_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | relational_expression GE_OP shift_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+shift_expression
+ : additive_expression								
+ 				{ $$ = $1; } 
+ | shift_expression LEFT_OP additive_expression		
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | shift_expression RIGHT_OP additive_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+additive_expression
+ : multiplicative_expression							
+ 			{ $$ = $1; } 	
+ | additive_expression '+' multiplicative_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | additive_expression '-' multiplicative_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+multiplicative_expression
+ : cast_expression									
+ 				{ $$ = $1; } 
+ | multiplicative_expression '*' cast_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | multiplicative_expression '/' cast_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ | multiplicative_expression '%' cast_expression	
+ 			{ 
+ 			  $$ = $1;
+ 			  $<Expression>$.addChildElement(new DelimiterElement($2));
+ 			  $<Expression>$.addChildElement($3);
+			} 
+ ;
+
+cast_expression
+ : unary_expression								
+ 					{ $$ = $1; } 
+ | '(' type_name ')' cast_expression			
+ 					{ $$ = $4; } //todo
+ ;
+
+unary_expression
+ : postfix_expression					
+ 		{ $$ = new UnaryExpression($1); } 
+ | INC_OP unary_expression				
+ 		{   $$ = $2;
+ 			$<UnaryExpression>2.setIncOp(); } 
+ | DEC_OP unary_expression				
+ 		{ 	$$ = $2;
+ 			$<UnaryExpression>2.setDecOp(); } 
+ | unary_operator cast_expression			
+ 		{ 	$$ = new UnaryExpression($2); 
+ 			/*$<UnaryExpression>$.setUnaryOperator($1);*/ } //todo
+ | SIZEOF unary_expression				
+ 		{ 	$$ = $2;
+ 			$<UnaryExpression>2.setSizeOf(); } 
+ | SIZEOF '(' type_name ')'				
+ 		{ $$ = new UnaryExpression("",$1,$4); }  // todo
+ ;
+
+unary_operator
+ : '&' 		{ $$ = new Integer('&'); } 
+ | '*' 		{ $$ = new Integer('*'); } 
+ | '+' 		{ $$ = new Integer('+'); } 
+ | '-' 		{ $$ = new Integer('-'); } 
+ | '~' 		{ $$ = new Integer('~'); }  
+ | '!'		{ $$ = new Integer('!'); } 
+ ;
+
+
+//postfix_expression
+// : primary_expression
+// | postfix_expression '[' expression ']'
+// | postfix_expression '(' ')'
+// | postfix_expression '(' argument_expression_list ')'
+// | postfix_expression '.' identifier
+// | postfix_expression PTR_OP identifier
+// | postfix_expression INC_OP
+// | postfix_expression DEC_OP
+// ;
+
+// NESC replaced by
+postfix_expression
+	: primary_expression											
+			{
+			  $$ = new PostFixExpression($<PrimaryExpression>1);
+			} 								
+	| postfix_expression '[' argument_expression_list ']'	
+			{
+			  $$ = new PostFixExpression("case11",$1,$4);
+			} 
+	| call_kind primary_expression '(' argument_expression_list ')'		
+			{
+			  $$ = new PostFixExpression($<PrimaryExpression>2, $1,$5);
+			  //todo
+			} 
+	| call_kind primary_expression '(' ')'			
+			{
+			  $$ = new PostFixExpression($<PrimaryExpression>2, $1,$4);
+			  //todo
+			} 
+	// fix for nesc															
+	| call_kind primary_expression '[' argument_expression_list ']'	
+			{
+			  $$ = new PostFixExpression("case115",$1,$5);
+			} 
+	// --------
+//	| primary_expression '(' argument_expression_list ')'	
+	| postfix_expression '(' argument_expression_list ')'	
+			{
+			  $$ = new PostFixExpression("case55",$1,$4);
+			  //todo ..
+			} 
+	//| primary_expression '(' ')'	
+	| postfix_expression '(' ')'	
+			{
+			  $$ = new PostFixExpression("case56",$1,$3);
+			} 
+	| postfix_expression '.' identifier				
+			{
+			  $$ = new PostFixExpression("case5",$1,$3);
+			} 
+	| postfix_expression PTR_OP identifier				
+			{
+			  $$ = new PostFixExpression("case4",$1,$3);
+			} 
+	| postfix_expression INC_OP					
+			{
+			  $$ = new PostFixExpression("case3",$1,$2);
+			} 
+	| postfix_expression DEC_OP						
+			{
+			  $$ = new PostFixExpression("case2",$1,$2);
+			} 
+	;
+	
+primary_expression
+ : IDENTIFIER
+  	 		{ $$ = new PrimaryExpression($1); } 
+ | IDENTIFIER '.' IDENTIFIER 
+			{ $$ = new PrimaryExpression($1); } 
+ | constant
+  	 		{ $$ = new PrimaryExpression($1); } 
+ | STRING
+  	 		{ $$ = new PrimaryExpression("\""+$1.text+"\"",$1); } 
+ | '(' expression ')'
+  	 		{ 
+  	 			$$ = new PrimaryExpression("("+$2.getName()+")",$1,$3); 
+  	 		} 
+ ;
+
+argument_expression_list
+ : assignment_expression
+ 		{ 
+			$$ = new ArgumentExpressionList($1);
+		} 
+ | argument_expression_list ',' assignment_expression
+  		{
+  			$<Element>$.addChildElement(new DelimiterElement($2));
+			$<Element>$.addChildElement($3);
+  		} 
+ ;
+
+constant
+ : INTEGER_CONSTANT		{ $$ = $1; }
+ | CHARACTER_CONSTANT	{ $$ = $1; }
+ | FLOATING_CONSTANT	{ $$ = $1; }
+ | ENUMERATION_CONSTANT	{ $$ = $1; }
+
+%%
+// -----------------------------------------------------------
+// epilog
+// -----------------------------------------------------------
+}

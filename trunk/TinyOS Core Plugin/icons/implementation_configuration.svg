@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16px"
+   height="16px"
+   id="svg2383"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="implementation_configuration.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/besigg/workspace/TinyOS Core Plugin/icons/specification.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs2385">
+    <linearGradient
+       id="linearGradient3346">
+      <stop
+         id="stop3348"
+         offset="0"
+         style="stop-color:#966507;stop-opacity:1;" />
+      <stop
+         id="stop3350"
+         offset="1"
+         style="stop-color:#ffcd7d;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3320">
+      <stop
+         style="stop-color:#8a8eff;stop-opacity:1;"
+         offset="0"
+         id="stop3322" />
+      <stop
+         style="stop-color:#c9af70;stop-opacity:1;"
+         offset="1"
+         id="stop3324" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3310">
+      <stop
+         style="stop-color:#aed2ff;stop-opacity:1;"
+         offset="0"
+         id="stop3312" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop3314" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 8 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="16 : 8 : 1"
+       inkscape:persp3d-origin="8 : 5.3333333 : 1"
+       id="perspective2391" />
+    <inkscape:perspective
+       id="perspective2527"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3310"
+       id="linearGradient3316"
+       x1="6.9367576"
+       y1="19.782457"
+       x2="6.9024749"
+       y2="1.9879024"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1305926,0,0,1.0438751,-1.3563251,-0.6792823)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3320"
+       id="linearGradient3326"
+       x1="7.8377476"
+       y1="18.926516"
+       x2="7.6683164"
+       y2="0.54631823"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1305926,0,0,1.0438751,-1.3563251,-0.6792823)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3346"
+       id="linearGradient3344"
+       x1="11.979764"
+       y1="3.2448947"
+       x2="9.510891"
+       y2="5.8127165"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.7278128,0,0,0.7278128,3.2991304,0.6146534)" />
+    <inkscape:perspective
+       id="perspective3470"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3561"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3628"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="22.197802"
+     inkscape:cx="0.22896033"
+     inkscape:cy="8"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:window-width="1600"
+     inkscape:window-height="1137"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3328" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata2388">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <path
+       style="opacity:1;fill:url(#linearGradient3316);fill-opacity:1;stroke:url(#linearGradient3326);stroke-width:1.08636892;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 10.281694,1.5041992 L 2.5695459,1.5041992 L 2.5695459,14.454774 L 13.522162,14.454774 L 13.522162,4.5940267 L 10.281694,1.5041992 z"
+       id="path2538"
+       sodipodi:nodetypes="cccccc" />
+    <path
+       style="opacity:1;fill:url(#linearGradient3344);fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 13.204951,5.0287748 L 9.952537,1.7763615 L 9.952537,5.0287748 L 13.204951,5.0287748 z"
+       id="rect2533" />
+    <image
+       y="2"
+       x="3.1272283"
+       id="image3563"
+       height="5.8727717"
+       width="5.8727717"
+       sodipodi:absref="/home/besigg/workspace/TinyOS Core Plugin/icons/component.gif"
+       xlink:href="component.gif" />
+    <image
+       y="6.7386136"
+       x="3.2707922"
+       id="image3630"
+       height="7.125247"
+       width="6.990099"
+       sodipodi:absref="/home/besigg/workspace/TinyOS Core Plugin/icons/connection.gif"
+       xlink:href="connection.gif" />
+  </g>
+</svg>

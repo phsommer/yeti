@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+<template
+		id="else"
+		name="else"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>else {
+	${cursor}
+}</template>
+<template
+		id="elseif"
+		name="elseif"
+		description="else if block"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>else if (${condition}) {
+	${cursor}
+}</template>
+<template
+		id="for"
+		name="for"
+		description="for loop"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>int ${var};
+for (${var} = 0; ${var} &lt; ${max}; ${var}++) {
+	${cursor}
+}</template>
+	<template
+		id="ifelse"
+		name="ifelse"
+		description="If else"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>if (${condition}) {
+	${cursor}
+} else {
+	
+}</template>
+	<template 
+		id="switch" 
+		name="switch" 
+		description="Switch statement"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>switch (${key}) {
+	case ${value}:
+		${cursor}
+		break;
+	default:
+		break;
+}</template>
+	<template 
+		id="while" 
+		name="while" 
+		description="while statement"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>while (${expression}) {
+		${cursor}
+}</template>
+	<template 
+		id="do-while" 
+		name="do-while" 
+		description="do while statement"
+		context="TinyOS.NescContextType"
+		enabled="true"
+	>do {
+	${cursor}
+} while (${expression});</template>
+
+<template
+		id="interface"
+		name="interface"
+		description="interface skeleton"
+		context="TinyOS.EmptyFileContextType"
+		enabled="true"
+	>/**
+ * ${description}
+ * @author ${user}
+ */
+interface ${filename} {
+
+	${cursor}
+}</template>
+<template
+		id="module"
+		name="module"
+		description="module skeleton"
+		context="TinyOS.EmptyFileContextType"
+		enabled="true"
+	>/**
+ * ${description}
+ * @author ${user}
+ */
+module ${filename} {
+	${cursor}
+}
+implementation {
+
+}</template>
+<template
+		id="configuration"
+		name="configuration"
+		description="configuration skeleton"
+		context="TinyOS.EmptyFileContextType"
+		enabled="true"
+	>/**
+ * ${description}
+ * @author ${user}
+ */
+configuration ${filename} {
+	
+}
+implementation {
+	components ${component};
+
+	${cursor}
+}</template>
+</templates>

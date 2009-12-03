@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16px"
+   height="16px"
+   id="svg2383"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="macro.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs2385">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 8 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="16 : 8 : 1"
+       inkscape:persp3d-origin="8 : 5.3333333 : 1"
+       id="perspective2391" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="44.395604"
+     inkscape:cx="8.0874383"
+     inkscape:cy="7.1465423"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:window-width="1600"
+     inkscape:window-height="1177"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2393" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata2388">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <text
+       xml:space="preserve"
+       style="font-size:34.8020134px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="9.7581654"
+       y="13.050756"
+       id="text3175"
+       transform="scale(0.8700504,1.1493588)"><tspan
+         sodipodi:role="line"
+         id="tspan3177"
+         x="9.7581654"
+         y="13.050756"
+         style="font-size:6.96040249px;font-weight:bold;-inkscape-font-specification:Bitstream Vera Sans Bold">M</tspan></text>
+    <g
+       id="g3179"
+       transform="matrix(1.1523319,0,0,1.1523319,0.3349211,0.9608408)">
+      <path
+         id="path2397"
+         d="M 4.6626238,1.1111384 C 2.6317284,8.6905444 2.5903466,8.6794564 2.5903466,8.6794564"
+         style="fill:none;fill-rule:evenodd;stroke:#003764;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         id="path3169"
+         d="M 7.7710394,1.1655934 C 5.7401441,8.7449984 5.6987621,8.7339104 5.6987621,8.7339104"
+         style="fill:none;fill-rule:evenodd;stroke:#003764;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:transform-center-x="-0.13514852"
+         id="path3171"
+         d="M 8.6619345,6.2990864 C 0.81550001,6.3724664 0.81509901,6.3296264 0.81509901,6.3296264"
+         style="fill:none;fill-rule:evenodd;stroke:#003764;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:transform-center-x="-0.13514852"
+         id="path3173"
+         d="M 9.5320804,3.2520295 C 1.6856466,3.3254095 1.6852456,3.2825697 1.6852456,3.2825697"
+         style="fill:none;fill-rule:evenodd;stroke:#003764;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

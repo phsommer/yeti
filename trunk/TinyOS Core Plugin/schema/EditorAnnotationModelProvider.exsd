@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="TinyOS" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="TinyOS" id="EditorAnnotationModelProvider" name="Editor annotation model provider"/>
+      </appinfo>
+      <documentation>
+         This extension point is used to customize the annotation model creation behavior of this plug-in&apos;s document provider. It allows to specify which annotation model factory should be used in order to create the annotation model instance of a nested C Document. Note that the given factory is used only if no default annotation model could be created.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="factory" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="factory">
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  a fully qualified name of the factory implementation class. This class must implement the &lt;code&gt;tinyos.yeti.editors.annotation.IAnnotationModelFactory&lt;/code&gt; interface.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":tinyos.yeti.editors.annotation.IAnnotationModelFactory"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="contentTypeId" type="string">
+            <annotation>
+               <documentation>
+                  the id of a content type as defined by the &lt;code&gt;org.eclipse.core.runtime.contentTypes&lt;/code&gt; extension point for which this factory should be used
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         TODO...
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;pre&gt;
+   &lt;extension
+      point=&quot;TinyOS.EditorAnnotationModelProvider&quot;&gt;
+      &lt;factory
+            class=&quot;tinyos.yeti.debug.views.annotation.DebugMarkerAnnotationModelFactory&quot;
+            contentTypeId=&quot;TinyOS.nesCSource&quot;&gt;
+      &lt;/factory&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         Annotation model factories have to implement tinyos.yeti.editors.annotation.IAnnotationModelFactory.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         -
+      </documentation>
+   </annotation>
+
+
+</schema>
