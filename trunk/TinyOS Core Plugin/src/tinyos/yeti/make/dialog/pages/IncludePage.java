@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
 
 import tinyos.yeti.editors.NesCIcons;
 import tinyos.yeti.make.MakeInclude;
@@ -284,13 +283,13 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
         info1.setText( "Checked directories are included recursively." );
         info1.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) ); */
 
-		createInfoControl( base );
+		//createInfoControl( base );
 		
 		Control table = createTableControl( base );
 		table.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
 		setControl( base );
 	}
-	
+	/*
 	private void createInfoControl( Composite parent ){
 		Label infoPath = new Label( parent, SWT.NONE );
 		Label infoNcc = new Label( parent, SWT.NONE );
@@ -309,7 +308,7 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		infoGlobal.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
 		infoInclude.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
 		infoSearch.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-	}
+	}*/
 
 	private Control createTableControl( Composite parent ){
 		baseComposite = new Composite( parent, SWT.NONE );
@@ -384,6 +383,8 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		column.getColumn().setResizable( true );
 		column.getColumn().setText( "Path" );
 		column.getColumn().setWidth( 200 );
+		column.getColumn().setToolTipText( "Path to a file or a directory to include." );
+		
 		column.setEditingSupport( new EditingSupport( includeList ){
 			@Override
 			protected boolean canEdit( Object element ){
@@ -422,6 +423,9 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		column.getColumn().setResizable( true );
 		column.getColumn().setWidth( 100 );
 		column.getColumn().setText( "Search" );
+		column.getColumn().setToolTipText( "How to traverse the directory when searching an included file.\n" +
+				"- recursive: traverse subdirectories as well.\n" +
+				"- flat: only search in top-level directory." );
 		column.setEditingSupport( new EditingSupport( includeList ){
 			private CheckboxCellEditor editor = new CheckboxCellEditor( includeList.getTable() );
 
@@ -468,6 +472,9 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		column.getColumn().setResizable( true );
 		column.getColumn().setWidth( 100 );
 		column.getColumn().setText( "ncc" );
+		column.getColumn().setToolTipText( "Whether to inform 'ncc' about the existence of this directory when building the application.\n" +
+				"- consider: the directory is included in the build path.\n" +
+				"- ignore: the directory is not included." );
 		column.setEditingSupport( new EditingSupport( includeList ){
 			private CheckboxCellEditor editor = new CheckboxCellEditor( includeList.getTable() );
 
@@ -501,7 +508,7 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 					cell.setText( "n/a" );
 				}
 				else{
-					cell.setText( entry.ncc ? "provide" : "ignore" );
+					cell.setText( entry.ncc ? "consider" : "ignore" );
 				}
 			}
 		});
@@ -514,6 +521,9 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		column.getColumn().setResizable( true );
 		column.getColumn().setWidth( 100 );
 		column.getColumn().setText( "Global" );
+		column.getColumn().setToolTipText( "Whether a source file automatically includes the file or directory.\n" +
+				"-yes: Eclipse adds an invisible '#include' directive to all source files.\n" +
+				"-no: The file receives no special treatment." );
 		column.setEditingSupport( new EditingSupport( includeList ){
 			private CheckboxCellEditor editor = new CheckboxCellEditor( includeList.getTable() );
 
@@ -555,6 +565,10 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		column.getColumn().setResizable( true );
 		column.getColumn().setWidth( 100 );
 		column.getColumn().setText( "Include" );
+		column.getColumn().setToolTipText( "How source files can include files of this directory.\n" +
+				"- never: the files cannot be included.\n" +
+				"- source: the files can be included with '#include \"file.h\"'.\n" +
+				"- system: the files can be included with '#include \"file.h\"' and with '#include <file.h>'." );
 		column.setEditingSupport( new EditingSupport( includeList ){
 			private CellEditor editor = new CellEditor(){
 				private int value = 0;
