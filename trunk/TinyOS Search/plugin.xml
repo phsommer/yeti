@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            canSearchEnclosingProjects="true"
+            class="tinyos.yeti.search.ui.SearchPage"
+            icon="icons/search.png"
+            id="tinyos.yeti.searchPage.nc"
+            label="TinyOS Search"
+            showScopeSection="true">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.search.searchResultViewPages">
+      <viewPage
+            class="tinyos.yeti.search.ui.SearchDeclarationResultPage"
+            icon="icons/search.png"
+            id="tinyos.yeti.search.ui.resultPage.declarations"
+            label="TinyOS"
+            searchResultClass="tinyos.yeti.search.model.ASTModelNodeSearchResult">
+      </viewPage>
+      <viewPage
+            class="tinyos.yeti.search.ui.SearchReferenceResultPage"
+            icon="icons/search.png"
+            id="tinyos.yeti.search.ui.resultPage.reference"
+            label="TinyOS"
+            searchResultClass="tinyos.yeti.search.model.ASTReferenceSearchResult">
+      </viewPage>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="tinyos.perspective">
+         <viewShortcut
+               id="org.eclipse.search.ui.views.SearchView">
+         </viewShortcut>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
