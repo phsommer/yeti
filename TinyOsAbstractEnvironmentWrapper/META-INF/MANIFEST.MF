@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Yeti 2 - Abstract Environment
+Bundle-SymbolicName: tinyos.yeti.environment.basic;singleton:=true
+Bundle-Version: 1.2.15
+Bundle-Activator: tinyos.yeti.environment.basic.TinyOSAbstractEnvironmentPlugin
+Bundle-Vendor: ETH Zurich, Benjamin Sigg
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.console,
+ org.eclipse.jface.text,
+ org.eclipse.draw2d,
+ org.eclipse.debug.ui,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.editors,
+ tinyos.yeti.core;bundle-version="2.2.15"
+Eclipse-LazyStart: false
+Export-Package: tinyos.yeti.environment.basic,
+ tinyos.yeti.environment.basic.checker,
+ tinyos.yeti.environment.basic.commands,
+ tinyos.yeti.environment.basic.commands.make,
+ tinyos.yeti.environment.basic.commands.ncc,
+ tinyos.yeti.environment.basic.debug,
+ tinyos.yeti.environment.basic.example,
+ tinyos.yeti.environment.basic.helper,
+ tinyos.yeti.environment.basic.path,
+ tinyos.yeti.environment.basic.path.steps,
+ tinyos.yeti.environment.basic.platform,
+ tinyos.yeti.environment.basic.preferences,
+ tinyos.yeti.environment.basic.preferences.widgets,
+ tinyos.yeti.environment.basic.progress,
+ tinyos.yeti.environment.basic.test,
+ tinyos.yeti.environment.basic.tools.widgets

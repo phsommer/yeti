@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="TinyOS.Environment.MMCU" name="TinyOS MMCU Conversion" schema="schema/TinyOS.Environment.MMCU.exsd"/>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="tinyOS"
+            class="tinyos.yeti.environment.basic.preferences.EmptyPreferencePage"
+            id="tinyos.environment"
+            name="Environments">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="ncg.project.popup"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               id="tinyos"
+               label="TinyOS">
+            <groupMarker
+                  name="tool">
+            </groupMarker>
+         </menu>
+         <action
+               class="tinyos.yeti.environment.basic.tools.ncg.NcgEditAction"
+               icon="icons/ncg.gif"
+               id="tinyos.popup.ncg"
+               label="Open NCG configuration dialog..."
+               menubarPath="tinyos/tool"
+               tooltip="NCG - extract constants from nesC files">
+         </action>
+         <action
+               class="tinyos.yeti.environment.basic.tools.mig.MigEditAction"
+               icon="icons/mig.gif"
+               id="tinyos.popup.mig"
+               label="Open MIG configuration dialog..."
+               menubarPath="tinyos/tool"
+               tooltip="MIG - generate code to process nesC messages">
+         </action>
+      </objectContribution>
+      <objectContribution
+            id="ncg.file.popup.ncg"
+            nameFilter="*.ncg"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="tinyos"
+               label="TinyOS">
+            <groupMarker
+                  name="tool">
+            </groupMarker>
+         </menu>
+         <action
+               class="tinyos.yeti.environment.basic.tools.ncg.NcgRunAction"
+               icon="icons/ncg.gif"
+               id="tinyos.popup.ncg.run"
+               label="Run NCG configuration"
+               menubarPath="tinyos/tool"
+               tooltip="NCG - extract constants from nesC files">
+         </action>
+         <action
+               class="tinyos.yeti.environment.basic.tools.ncg.NcgEditAction"
+               icon="icons/ncg.gif"
+               id="tinyos.popup.ncg.edit"
+               label="Open NCG configuration dialog..."
+               menubarPath="tinyos/tool"
+               tooltip="NCG - extract constants from nesC files">
+         </action>
+      </objectContribution>
+      <objectContribution
+            id="ncg.file.popup.mig"
+            nameFilter="*.mig"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="tinyos"
+               label="TinyOS">
+            <groupMarker
+                  name="tool">
+            </groupMarker>
+         </menu>
+         <action
+               class="tinyos.yeti.environment.basic.tools.mig.MigRunAction"
+               icon="icons/mig.gif"
+               id="tinyos.popup.mig.run"
+               label="Run MIG configuration"
+               menubarPath="tinyos/tool"
+               tooltip="MIG - generate code to process nesC messages">
+         </action>
+         <action
+               class="tinyos.yeti.environment.basic.tools.mig.MigEditAction"
+               icon="icons/mig.gif"
+               id="tinyos.popup.mig.edit"
+               label="Open MIG configuration dialog..."
+               menubarPath="tinyos/tool"
+               tooltip="MIG - generate code to process nesC messages">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="tinyos.yeti.environment.basic.tools.ncg.NcgEditor"
+            extensions="ncg"
+            icon="icons/ncg.gif"
+            id="tinyos.editor.ncg"
+            name="NCG editor">
+      </editor>
+      <editor
+            class="tinyos.yeti.environment.basic.tools.mig.MigEditor"
+            extensions="mig"
+            icon="icons/mig.gif"
+            id="tinyos.editor.mig"
+            name="MIG editor">
+      </editor>
+   </extension>
+   <extension
+         point="TinyOS.Environment.MMCU">
+      <Converter
+            class="tinyos.yeti.environment.basic.platform.mmcu.MSP430">
+      </Converter>
+      <Converter
+            class="tinyos.yeti.environment.basic.platform.mmcu.AVR">
+      </Converter>
+   </extension>
+
+</plugin>
