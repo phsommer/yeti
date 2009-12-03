@@ -1,0 +1,44 @@
+/*
+ * Yeti 2, NesC development in Eclipse.
+ * Copyright (C) 2009 ETH Zurich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Web:  http://tos-ide.ethz.ch
+ * Mail: tos-ide@tik.ee.ethz.ch
+ */
+package tinyOS.debug.launch.configuration;
+
+import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
+import org.eclipse.debug.ui.CommonTab;
+import org.eclipse.debug.ui.ILaunchConfigurationDialog;
+import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
+
+public class LaunchConfigurationTabGroup extends
+		AbstractLaunchConfigurationTabGroup {
+
+	@Override
+	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
+		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
+				new MainConfigurationTab(),
+				new GdbProxyTab(),
+				new DebuggerConfigurationTab(),
+				new SourceLookupTab(),
+				new CommonTab()
+			};
+			setTabs(tabs);
+	}
+
+}
