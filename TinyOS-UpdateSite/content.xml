@@ -1,0 +1,1852 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?metadataRepository class='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'?>
+<repository name='file:/home/besigg/workspace/TinyOS-UpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
+  <properties size='2'>
+    <property name='p2.compressed' value='false'/>
+    <property name='p2.timestamp' value='1259588211556'/>
+  </properties>
+  <references size='2'>
+    <repository url='http://tos-ide.ethz.ch/update/site.xml' type='1' options='0'/>
+    <repository url='http://tos-ide.ethz.ch/update/site.xml' type='0' options='0'/>
+  </references>
+  <units size='51'>
+    <unit id='tinyos.yeti.environment.winXP.source.feature.group' version='1.1.15' singleton='false'>
+      <update id='tinyos.yeti.environment.winXP.source.feature.group' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x in Cygwin (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Windows systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP.source.feature.group' version='1.1.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP.source' range='[1.1.15,1.1.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP.source.feature.jar' range='[1.1.15,1.1.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.unix2.source.feature.group' version='2.2.15' singleton='false'>
+      <update id='tinyos.yeti.environment.unix2.source.feature.group' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x on Unix (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Unix systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2.source.feature.group' version='2.2.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2.source' range='[2.2.15,2.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2.source.feature.jar' range='[2.2.15,2.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tooling.org.eclipse.update.feature.default' version='1.0.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' range='0.0.0' optional='true' multiple='true' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <provides size='2'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tooling.org.eclipse.update.feature.default' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.flavor' name='tooling' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' range='0.0.0' optional='true' multiple='true' greedy='false'/>
+      </requires>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <touchpoint id='null' version='0.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='install'>
+            installFeature(feature:${artifact},featureId:default,featureVersion:default)
+          </instruction>
+          <instruction key='uninstall'>
+            uninstallFeature(feature:${artifact},featureId:default,featureVersion:default)
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.search' version='1.1.15'>
+      <update id='tinyos.yeti.search' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Search'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search' version='1.1.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.search' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='6'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.search' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.core' range='2.2.15'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.search' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.search,org.eclipse.core.resources,org.eclipse.ui.ide,tinyos.yeti.core;bundle-version=&quot;2.2.15&quot;&#xA;Bundle-Activator: tinyos.yeti.search.SearchPlugin&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.1.15&#xA;Bundle-SymbolicName: tinyos.yeti.search;singleton:=true&#xA;Bundle-Name: Yeti 2 - Search&#xA;Bundle-Vendor: ETH Zurich, Benjamin Sigg&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.environment.winXP.source.feature.jar' version='1.1.15'>
+      <update id='tinyos.yeti.environment.winXP.source.feature.jar' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x in Cygwin (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Windows systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP.source.feature.jar' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.environment.winXP.source' version='1.1.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.winXP.source' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.core.source.feature.group' version='2.2.15' singleton='false'>
+      <update id='tinyos.yeti.core.source.feature.group' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Core Plugin (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The core plugin. Adds Editors, Views and Perspectives to Eclipse.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Roland Schuler, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core.source.feature.group' version='2.2.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core.source' range='[2.2.15,2.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core.source.feature.jar' range='[2.2.15,2.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.parser.nesc12' version='1.2.15'>
+      <update id='tinyos.yeti.parser.nesc12' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - NesC 1.3.x Parser'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='37'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.nesc12' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.parser.nesc12' version='1.2.15'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.collector' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.declarations' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.editor' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.nodes' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.rules' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.rules.hyperlink' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.rules.proposals' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.ep.rules.quickfix' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.lexer' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.elements' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.elements.types' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.elements.types.conversion' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.elements.values' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.declaration' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.definition' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.error' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.expression' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.general' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.nesc' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.nodes.statement' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.util' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.util.messangers' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.util.nodestack' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.util.pushers' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.util.validators' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.ast.visitors' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.parser.meta' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.view' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc12.view.comparators' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='8'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.preprocessor.nesc12' range='1.2.15'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.nesc12' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: tinyos.yeti.nesc12,tinyos.yeti.nesc12.collector,tinyos.yeti.nesc12.ep,tinyos.yeti.nesc12.ep.declarations,tinyos.yeti.nesc12.ep.editor,tinyos.yeti.nesc12.ep.nodes,tinyos.yeti.nesc12.ep.rules,tinyos.yeti.nesc12.ep.rules.hyperlink,tinyos.yeti.nesc12.ep.rules.proposals,tinyos.yeti.nesc12.ep.rules.quickfix,tinyos.yeti.nesc12.lexer,tinyos.yeti.nesc12.parser,tinyos.yeti.nesc12.parser.ast,tinyos.yeti.nesc12.parser.ast.elements,tinyos.yeti.nesc12.parser.ast.elements.types,tinyos.yeti.nesc12.parser.ast.elements.types.conversion,tinyos.yeti.nesc12.parser.ast.elements.values,tinyos.yeti.nesc12.parser.ast.nodes,tinyos.yeti.nesc12.parser.ast.nodes.declaration,tinyos.yeti.nesc12.parser.ast.nodes.definition,tinyos.yeti.nesc12.parser.ast.nodes.error,tinyos.yeti.nesc12.parser.ast.nodes.expression,tinyos.yeti.nesc12.parser.ast.nodes.general,tinyos.yeti.nesc12.parser.ast.nodes.nesc,tinyos.yeti.nesc12.parser.ast.nodes.statement,tinyos.yeti.nesc12.parser.ast.util,tinyos.yeti.nesc12.parser.ast.util.messangers,tinyos.yeti.nesc12.parser.ast.util.nodestack,tinyos.yeti.nesc12.parser.ast.util.pushers,tinyos.yeti.nesc12.parser.ast.util.validators,tinyos.yeti.nesc12.parser.ast.visitors,tinyos.yeti.nesc12.parser.meta,tinyos.yeti.nesc12.view,tinyos.yeti.nesc12.view.comparators&#xA;Bundle-Localization: plugin&#xA;Require-Bundle: org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.jface.text,org.eclipse.ui,org.eclipse.ui.ide,org.eclipse.ui.editors,tinyos.yeti.core;bundle-version=&quot;2.2.15&quot;,tinyos.yeti.preprocessor.nesc12;bundle-version=&quot;1.2.15&quot;&#xA;Bundle-Activator: tinyos_parser.NesC12ParserPlugin&#xA;Bundle-Name: Yeti 2 - NesC 1.3.x Parser&#xA;Bundle-Version: 1.2.15&#xA;Bundle-Vendor: ETH Zurich, Benjamin Sigg&#xA;Bundle-SymbolicName: tinyos.yeti.parser.nesc12;singleton:=true&#xA;Bundle-ClassPath: lib/cup/java-cup-11a-runtime.jar,.&#xA;Manifest-Version: 1.0&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='Feature_Environment.feature.jar' version='1.2.15'>
+      <update id='Feature_Environment.feature.jar' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Base Environment (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Core functionality for platform specific environments. Also brings configuration dialogs for MIG and NCG.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_Environment.feature.jar' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='Feature_Environment' version='1.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='Feature_Environment' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.core.source' version='2.2.15'>
+      <update id='tinyos.yeti.core.source' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core.source' version='2.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.core.source' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.core.source' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.core.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.2.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='env' version='0.0.0'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Environments'/>
+        <property name='org.eclipse.equinox.p2.description' value='Platform dependent environments'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='env' version='0.0.0'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Environment.feature.group' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_TosLinux_2.feature.group' range='[2.2.15,2.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.windows.environment.feature.group' range='[1.1.15,1.1.15]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='tinyos.yeti.core.source.feature.jar' version='2.2.15'>
+      <update id='tinyos.yeti.core.source.feature.jar' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Core Plugin (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The core plugin. Adds Editors, Views and Perspectives to Eclipse.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Roland Schuler, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core.source.feature.jar' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.core.source' version='2.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.core.source' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.core' version='2.2.15'>
+      <update id='tinyos.yeti.core' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Plugin'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Roland Schuler, Benjamin Sigg'/>
+      </properties>
+      <provides size='50'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' version='2.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.core' version='2.2.15'/>
+        <provided namespace='java.package' name='jay.yydebug' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.builder' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.action' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.annotation' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.format' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.markerresolutions' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.nesc' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.nesc.doc' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.nesc.util' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.editors.outline' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.figures' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.fix' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.parser.inspection' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.parser.macros' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.parser.reference' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.parser.standard' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.ep.storage' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.jobs' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.launch' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.make' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.make.dialog' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.make.dialog.pages' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.make.targets' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.model' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nature' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc.parser.language' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc.parser.language.elements' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.nesc.scanner' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.perspective' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.properties' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.utility' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.utility.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.views' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.views.cgraph' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.views.cgraph.layout' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.views.make' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.widgets' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.widgets.helper' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.wizards' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.wizards.content' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='15'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.views' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.draw2d' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.expressions' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.intro.universal' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.intro' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.core' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: jay.yydebug,tinyos.yeti; uses:=&quot;org.eclipse.core.runtime,  tinyos.yeti.make,  org.eclipse.jface.text.templates,  tinyos.yeti.editors.nesc,  org.eclipse.core.resources,  tinyos.yeti.ep.parser,  org.eclipse.ui.texteditor,  org.eclipse.jface.resource,  org.eclipse.ui.console,  org.eclipse.ui,  tinyos.yeti.ep,  org.eclipse.ui.plugin,  tinyos.yeti.utility,  org.eclipse.jface.preference,  tinyos.yeti.nesc,  tinyos.yeti.model,  org.eclipse.swt.graphics,  org.eclipse.jface.text.templates.persistence,  org.eclipse.jface.util,  org.osgi.framework,  tinyos.yeti.builder,  org.eclipse.swt.widgets,  tinyos.yeti.utility.preferences&quot;,tinyos.yeti.builder; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.core.runtime.jobs,  tinyos.yeti,  tinyos.yeti.model,  org.eclipse.core.resources,  tinyos.yeti.jobs&quot;,tinyos.yeti.editors; uses:=&quot;org.eclipse.jface.text,  org.eclipse.core.runtime,  org.eclipse.swt.custom,  org.eclipse.jface.action,  org.eclipse.core.resources,  org.eclipse.jface.viewers,  tinyos.yeti.ep.parser,  org.eclipse.ui.texteditor,  org.eclipse.jface.text.reconciler,  org.eclipse.jface.text.source,  org.eclipse.jface.resource,  org.eclipse.jface.text.formatter,  tinyos.yeti.ep,  org.eclipse.ui,  tinyos.yeti.utility,  org.eclipse.ui.part,  org.eclipse.jface.text.contentassist,  org.eclipse.jface.preference,  tinyos.yeti,  org.eclipse.jface.text.presentation,  tinyos.yeti.model,  org.eclipse.swt.graphics,  org.eclipse.jface.util,  org.eclipse.swt.widgets,  org.eclipse.ui.editors.text,  org.eclipse.jface.text.quickassist,  org.eclipse.jface.text.source.projection&quot;,tinyos.yeti.editors.action;uses:=&quot;org.eclipse.ui.texteditor,org.eclipse.jface.text.source&quot;,tinyos.yeti.editors.annotation;uses:=&quot;org.eclipse.jface.text.source,org.eclipse.core.runtime&quot;,tinyos.yeti.editors.format,tinyos.yeti.editors.markerresolutions;uses:=&quot;org.eclipse.ui,org.eclipse.core.resources&quot;,tinyos.yeti.editors.nesc; uses:=&quot;org.eclipse.jface.text,  tinyos.yeti.editors,  org.eclipse.swt.graphics,  org.eclipse.jface.text.rules,  tinyos.yeti.utility.preferences,  org.eclipse.jface.text.templates&quot;,tinyos.yeti.editors.nesc.doc; uses:=&quot;org.eclipse.jface.text,  tinyos.yeti.editors,  tinyos.yeti.editors.nesc,  org.eclipse.jface.text.rules,  tinyos.yeti.utility.preferences,  org.eclipse.jface.text.templates&quot;,tinyos.yeti.editors.nesc.util; uses:=&quot;org.eclipse.jface.text.source,  tinyos.yeti.ep.storage,  tinyos.yeti.model,  org.eclipse.swt.graphics,  tinyos.yeti.ep.figures,  tinyos.yeti.editors.nesc.language.elements,  org.eclipse.jface.text.rules,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.editors.outline; uses:=&quot;org.eclipse.jface.action,  tinyos.yeti.editors,  org.eclipse.ui.views.contentoutline,  tinyos.yeti.ep,  org.eclipse.jface.viewers,  org.eclipse.swt.widgets,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.ep; uses:=&quot;org.eclipse.jface.text,  org.eclipse.jface.text.source,  org.eclipse.core.runtime,  org.eclipse.jface.resource,  tinyos.yeti.make,  org.eclipse.jface.text.rules,  tinyos.yeti.editors.outline,  tinyos.yeti.editors.nesc,  tinyos.yeti.editors,  tinyos.yeti,  org.eclipse.jface.text.presentation,  org.eclipse.core.resources,  tinyos.yeti.ep.storage,  org.eclipse.swt.widgets,  tinyos.yeti.utility.preferences&quot;,tinyos.yeti.ep.figures; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.jface.resource,  tinyos.yeti.ep.storage,  org.eclipse.draw2d.geometry,  org.eclipse.swt.graphics,  org.eclipse.draw2d,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.ep.fix; uses:=&quot;tinyos.yeti.editors,  tinyos.yeti,  tinyos.yeti.ep,  org.eclipse.core.resources,  org.eclipse.swt.graphics,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.ep.parser; uses:=&quot;tinyos.yeti.ep.parser.inspection,  org.eclipse.jface.text,  org.eclipse.core.runtime,  org.eclipse.jface.resource,  tinyos.yeti.ep,  tinyos.yeti.model.missing,  org.eclipse.jface.text.contentassist,  org.eclipse.draw2d,  tinyos.yeti.nesc,  tinyos.yeti.editors,  tinyos.yeti,  tinyos.yeti.ep.storage,  org.eclipse.core.resources,  org.eclipse.swt.graphics,  tinyos.yeti.ep.figures&quot;,tinyos.yeti.ep.parser.inspection;uses:=&quot;org.eclipse.core.resources,org.eclipse.jface.viewers&quot;,tinyos.yeti.ep.parser.macros;uses:=&quot;tinyos.yeti.ep.parser&quot;,tinyos.yeti.ep.parser.reference,tinyos.yeti.ep.parser.standard; uses:=&quot;org.eclipse.jface.text,  org.eclipse.jface.resource,  tinyos.yeti.ep,  tinyos.yeti.ep.storage,  org.eclipse.core.resources,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.ep.storage;uses:=&quot;org.eclipse.core.runtime,tinyos.yeti,tinyOS.ep.parser&quot;,tinyos.yeti.jobs; uses:=&quot;org.eclipse.core.runtime,  tinyos.yeti.make,  org.eclipse.core.runtime.jobs,  tinyos.yeti,  tinyos.yeti.ep,  org.eclipse.core.resources,  tinyos.yeti.model,  org.eclipse.swt.widgets,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.launch,tinyos.yeti.make; uses:=&quot;org.eclipse.core.runtime,  tinyos.yeti.make.dialog,  tinyos.yeti,  tinyos.yeti.ep,  org.eclipse.core.resources,  tinyos.yeti.make.targets,  org.w3c.dom&quot;,tinyos.yeti.make.dialog; uses:=&quot;tinyos.yeti.make,  tinyos.yeti,  tinyos.yeti.ep,  org.eclipse.swt.graphics,  org.eclipse.swt.widgets,  org.eclipse.jface.dialogs&quot;,tinyos.yeti.make.dialog.pages; uses:=&quot;tinyos.yeti.make.dialog,  tinyos.yeti.make,  tinyos.yeti.ep,  tinyos.yeti.ep.parser.macros,  org.eclipse.swt.widgets,  tinyos.yeti.make.targets,  org.eclipse.jface.dialogs&quot;,tinyos.yeti.make.targets; uses:=&quot;org.eclipse.debug.core,  tinyos.yeti.make,  tinyos.yeti,  tinyos.yeti.ep,  org.eclipse.core.resources,  tinyos.yeti.utility&quot;,tinyos.yeti.model; uses:=&quot;tinyos.yeti.views,  org.eclipse.core.runtime,  tinyos.yeti.make,  tinyos.yeti.ep,  tinyos.yeti.model.missing,  IDeclaration,  tinyos.yeti.nesc,  tinyos.yeti,  tinyos.yeti.ep.storage,  org.eclipse.core.resources,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.nature;uses:=&quot;org.eclipse.core.resources&quot;,tinyos.yeti.nesc; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.jface.resource,  tinyos.yeti.ep,  tinyos.yeti,  tinyos.yeti.ep.storage,  org.eclipse.core.resources,  tinyos.yeti.editors.nesc.language.elements,  tinyos.yeti.ep.parser,  tinyos.yeti.ep.parser.standard&quot;,tinyos.yeti.nesc.parser; uses:=&quot;tinyos.yeti.nesc.scanner,  tinyos.yeti.ep,  org.eclipse.core.resources,  tinyos.yeti.editors.nesc.language.elements,  jay.yydebug,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.nesc.parser.language; uses:=&quot;org.eclipse.jface.text,  tinyos.yeti.nesc.scanner,  org.eclipse.swt.graphics,  org.eclipse.jface.text.contentassist,  tinyos.yeti.nesc.parser,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.nesc.parser.language.elements; uses:=&quot;org.eclipse.jface.text,  org.eclipse.jface.text.reconciler,  org.eclipse.core.runtime,  tinyos.yeti.nesc.scanner,  org.eclipse.jface.resource,  org.eclipse.ui.model,  tinyos.yeti.ep,  tinyos.yeti,  tinyos.yeti.model,  tinyos.yeti.ep.parser,  tinyos.yeti.ep.parser.standard&quot;,tinyos.yeti.nesc.scanner;uses:=&quot;org.eclipse.jface.text.reconciler,tinyos.yeti.editors.nesc.language.elements,tinyOS.nesc.parser&quot;,tinyos.yeti.perspective;uses:=&quot;org.eclipse.ui&quot;,tinyos.yeti.preferences; uses:=&quot;org.eclipse.ui.texteditor.templates,  org.eclipse.jface.preference,  org.eclipse.ui,  org.eclipse.core.runtime.preferences,  org.eclipse.swt.widgets&quot;,tinyos.yeti.properties;uses:=&quot;org.eclipse.ui,org.eclipse.ui.dialogs,org.eclipse.swt.widgets&quot;,tinyos.yeti.utility; uses:=&quot;org.eclipse.jface.text,  org.eclipse.core.runtime,  org.eclipse.jface.resource,  org.eclipse.ui.console,  tinyos.yeti.ep,  org.w3c.dom,  tinyos.yeti.editors,  tinyos.yeti,  org.eclipse.core.resources,  org.eclipse.swt.graphics&quot;,tinyos.yeti.utility.preferences; uses:=&quot;org.eclipse.jface.text,  org.eclipse.jface.preference,  tinyos.yeti.editors.nesc.util,  org.eclipse.swt.graphics,  org.eclipse.jface.util,  org.eclipse.jface.text.rules&quot;,tinyos.yeti.views; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.jface.resource,  org.eclipse.ui.console,  org.eclipse.ui,  org.eclipse.ui.part,  org.eclipse.jface.action,  tinyos.yeti,  org.eclipse.core.resources,  tinyos.yeti.model,  org.eclipse.jface.viewers,  org.eclipse.swt.graphics,  org.eclipse.swt.widgets,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.views.cgraph; uses:=&quot;tinyos.yeti.views,  org.eclipse.core.runtime,  tinyos.yeti.ep,  org.eclipse.draw2d,  tinyos.yeti.editors.outline,  tinyos.yeti.editors,  tinyos.yeti,  org.eclipse.jface.viewers,  org.eclipse.draw2d.geometry,  org.eclipse.swt.graphics,  org.eclipse.draw2d.graph,  org.eclipse.swt.widgets,  tinyos.yeti.ep.parser&quot;,tinyos.yeti.views.cgraph.layout;uses:=&quot;org.eclipse.swt.printing,org.eclipse.draw2d,org.eclipse.draw2d.graph&quot;,tinyos.yeti.views.make; uses:=&quot;tinyos.yeti.make,  org.eclipse.ui.console,  org.eclipse.core.resources,  org.eclipse.swt.graphics,  org.eclipse.ui.actions,  org.eclipse.jface.viewers,  org.eclipse.swt.widgets&quot;,tinyos.yeti.widgets; uses:=&quot;org.eclipse.jface.action,  org.eclipse.jface.preference,  org.eclipse.jface.viewers,  org.eclipse.swt.widgets,  org.eclipse.swt.accessibility&quot;,tinyos.yeti.widgets.helper; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.core.runtime.jobs,  org.eclipse.jface.viewers,  org.eclipse.swt.widgets,  org.eclipse.ui.progress,  tinyos.yeti.widgets&quot;,tinyos.yeti.wizards; uses:=&quot;org.eclipse.jface.wizard,  org.eclipse.jface.operation,  org.eclipse.core.runtime,  org.eclipse.jface.resource,  org.eclipse.ui,  org.eclipse.ui.wizards.newresource,  tinyos.yeti.ep,  org.eclipse.core.resources,  tinyos.yeti.wizards.content,  org.eclipse.jface.viewers,  org.eclipse.swt.widgets&quot;,tinyos.yeti.wizards.content; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.ui,  tinyos.yeti.ep,  org.eclipse.core.resources,  org.eclipse.jface.viewers,  org.eclipse.swt.widgets,  org.eclipse.jface.dialogs&quot;&#xA;Bundle-Localization: plugin&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.ui.editors,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.debug.ui,org.eclipse.ui.ide,org.eclipse.ui.views,org.eclipse.jface.text,org.eclipse.draw2d,org.eclipse.core.expressions,org.eclipse.jdt.ui,org.eclipse.ui.intro.universal,org.eclipse.ui.intro&#xA;Bundle-Activator: tinyos.yeti.TinyOSPlugin&#xA;Bundle-Name: Yeti 2 - TinyOS Plugin&#xA;Bundle-Version: 2.2.15&#xA;Bundle-Vendor: ETH Zurich, Roland Schuler, Benjamin Sigg&#xA;Bundle-SymbolicName: tinyos.yeti.core;singleton:=true&#xA;Bundle-ClassPath: .,lib/jlex.jar,lib/yydebug.jar&#xA;Manifest-Version: 1.0&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.windows.environment.feature.group' version='1.1.15' singleton='false'>
+      <update id='tinyos.windows.environment.feature.group' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x in Cygwin (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Windows systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.windows.environment.feature.group' version='1.1.15'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,3.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Environment.feature.group' range='[1.2.15,2.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic' range='1.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP.source.feature.group' range='[1.1.15,1.1.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP' range='[1.1.15,1.1.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.windows.environment.feature.jar' range='[1.1.15,1.1.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.search.feature.group' version='1.1.15' singleton='false'>
+      <update id='tinyos.yeti.search.feature.group' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Search (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Provides a search for TinyOS declarations like modules, functions, types, ...'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Benjamin Sigg, ETH Zurich'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.feature.group' version='1.1.15'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.search' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,3.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.source.feature.group' range='[1.1.15,1.1.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search' range='[1.1.15,1.1.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.feature.jar' range='[1.1.15,1.1.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2009, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tooling.osgi.bundle.default' version='1.0.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' range='0.0.0' multiple='true' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <provides size='2'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tooling.osgi.bundle.default' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.flavor' name='tooling' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' range='0.0.0' multiple='true' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='4'>
+          <instruction key='install'>
+            installBundle(bundle:${artifact})
+          </instruction>
+          <instruction key='uninstall'>
+            uninstallBundle(bundle:${artifact})
+          </instruction>
+          <instruction key='unconfigure'>
+
+          </instruction>
+          <instruction key='configure'>
+            setStartLevel(startLevel:4);
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.environment.basic' version='1.2.15'>
+      <update id='tinyos.yeti.environment.basic' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Abstract Environment'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='19'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.environment.basic' version='1.2.15'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.checker' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.commands' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.commands.make' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.commands.ncc' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.debug' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.example' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.helper' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.path' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.path.steps' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.platform' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.preferences.widgets' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.progress' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.test' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.environment.basic.tools.widgets' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.draw2d' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.core' range='2.2.15'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.ui.console,org.eclipse.jface.text,org.eclipse.draw2d,org.eclipse.debug.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.editors,tinyos.yeti.core;bundle-version=&quot;2.2.15&quot;&#xA;Bundle-Activator: tinyos.yeti.environment.basic.TinyOSAbstractEnvironmentPlugin&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.2.15&#xA;Export-Package: tinyos.yeti.environment.basic,tinyos.yeti.environment.basic.checker,tinyos.yeti.environment.basic.commands,tinyos.yeti.environment.basic.commands.make,tinyos.yeti.environment.basic.commands.ncc,tinyos.yeti.environment.basic.debug,tinyos.yeti.environment.basic.example,tinyos.yeti.environment.basic.helper,tinyos.yeti.environment.basic.path,tinyos.yeti.environment.basic.path.steps,tinyos.yeti.environment.basic.platform,tinyos.yeti.environment.basic.preferences,tinyos.yeti.environment.basic.preferences.widgets,tinyos.yeti.environment.basic.progress,tinyos.yeti.environment.basic.test,tinyos.yeti.environment.basic.tools.widgets&#xA;Bundle-SymbolicName: tinyos.yeti.environment.basic;singleton:=true&#xA;Bundle-Name: Yeti 2 - Abstract Environment&#xA;Bundle-Vendor: ETH Zurich, Benjamin Sigg&#xA;Eclipse-LazyStart: false&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='core' version='0.0.0'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Core'/>
+        <property name='org.eclipse.equinox.p2.description' value='The core library with extensions.'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='core' version='0.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Parser12.feature.group' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,2.2.15]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='Feature_TosLinux_2.feature.jar' version='2.2.15'>
+      <update id='Feature_TosLinux_2.feature.jar' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x on Unix (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Unix systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_TosLinux_2.feature.jar' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='Feature_TosLinux_2' version='2.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='Feature_TosLinux_2' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.basic.source.feature.jar' version='1.2.15'>
+      <update id='tinyos.yeti.environment.basic.source.feature.jar' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Base Environment (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Core functionality for platform specific environments. Also brings configuration dialogs for MIG and NCG.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic.source.feature.jar' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.environment.basic.source' version='1.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.basic.source' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.unix2.source.feature.jar' version='2.2.15'>
+      <update id='tinyos.yeti.environment.unix2.source.feature.jar' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x on Unix (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Unix systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2.source.feature.jar' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.environment.unix2.source' version='2.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.unix2.source' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.basic.source' version='1.2.15'>
+      <update id='tinyos.yeti.environment.basic.source' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic.source' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.environment.basic.source' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic.source' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.environment.basic.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.2.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='config.a.jre' version='1.6.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre' range='1.6.0'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='config.a.jre' version='1.6.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre' range='1.6.0'/>
+      </requires>
+      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='install'>
+
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.parser.source.feature.group' version='1.2.15' singleton='false'>
+      <update id='tinyos.yeti.parser.source.feature.group' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS NesC 1.3.x Parser (recommended)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Preprocessor and parser for NesC 1.2.x files.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.source.feature.group' version='1.2.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.source' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.source.feature.jar' range='[1.2.15,1.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.debugger.feature.group' version='1.2.15' singleton='false'>
+      <update id='tinyos.yeti.debugger.feature.group' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Debugger (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The TinyOS Debugger allows debugging applications on the nodes. This plugin requires the C Development Toolkit (CDT).'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Silvan Nellen, ETH Zurich'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.feature.group' version='1.2.15'/>
+      </provides>
+      <requires size='19'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.debug.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.filesystem' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,3.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.cdt.debug.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.cdt.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.cdt.debug.mi.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.cdt.launch' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.cdt.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.source.feature.group' range='[1.2.15,1.2.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.feature.jar' range='[1.2.15,1.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&amp;quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,&#xA;BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.winXP.source' version='1.1.15'>
+      <update id='tinyos.yeti.environment.winXP.source' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP.source' version='1.1.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.environment.winXP.source' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP.source' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.environment.winXP.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.1.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tooling.source.default' version='1.0.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='source' range='0.0.0' optional='true' multiple='true' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <provides size='2'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tooling.source.default' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.flavor' name='tooling' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='source' range='0.0.0' optional='true' multiple='true' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='install'>
+            addSourceBundle(bundle:${artifact})
+          </instruction>
+          <instruction key='uninstall'>
+            removeSourceBundle(bundle:${artifact})
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.search.source' version='1.1.15'>
+      <update id='tinyos.yeti.search.source' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.source' version='1.1.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.search.source' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.search.source' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.search.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.1.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='Feature_Parser12.feature.group' version='1.2.15' singleton='false'>
+      <update id='Feature_Parser12.feature.group' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS NesC 1.3.x Parser (recommended)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Preprocessor and parser for NesC 1.2.x files.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_Parser12.feature.group' version='1.2.15'/>
+      </provides>
+      <requires size='13'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,3.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.preprocessor.nesc12' range='1.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.source.feature.group' range='[1.2.15,1.2.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.nesc12' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.preprocessor.nesc12' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Parser12.feature.jar' range='[1.2.15,1.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='Feature_Parser12.feature.jar' version='1.2.15'>
+      <update id='Feature_Parser12.feature.jar' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS NesC 1.3.x Parser (recommended)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Preprocessor and parser for NesC 1.2.x files.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_Parser12.feature.jar' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='Feature_Parser12' version='1.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='Feature_Parser12' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.winXP' version='1.1.15'>
+      <update id='tinyos.yeti.environment.winXP' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Cygwin Wrapper'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.winXP' version='1.1.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.environment.winXP' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.environment.basic' range='1.2.15'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-Name: Yeti 2 - TinyOS Cygwin Wrapper&#xA;Bundle-Version: 1.1.15&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,tinyos.yeti.core;bundle-version=&quot;2.2.15&quot;,tinyos.yeti.environment.basic;bundle-version=&quot;1.2.15&quot;&#xA;Eclipse-LazyStart: true&#xA;Bundle-SymbolicName: tinyos.yeti.environment.winXP;singleton:=true&#xA;Manifest-Version: 1.0&#xA;Bundle-Vendor: ETH Zurich, Benjamin Sigg&#xA;Bundle-Activator: tinyos.yeti.environment.winXP.TinyOSWinXPEnvironmentWrapper&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.environment.unix2.source' version='2.2.15'>
+      <update id='tinyos.yeti.environment.unix2.source' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2.source' version='2.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.environment.unix2.source' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2.source' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.environment.unix2.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.2.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.environment.basic.source.feature.group' version='1.2.15' singleton='false'>
+      <update id='tinyos.yeti.environment.basic.source.feature.group' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Base Environment (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Core functionality for platform specific environments. Also brings configuration dialogs for MIG and NCG.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic.source.feature.group' version='1.2.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic.source' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic.source.feature.jar' range='[1.2.15,1.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.environment.unix2' version='2.2.15'>
+      <update id='tinyos.yeti.environment.unix2' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x Unix Environment'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2' version='2.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.environment.unix2' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='6'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.environment.basic' range='1.2.15'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-Name: Yeti 2 - TinyOS 2.x Unix Environment&#xA;Bundle-Version: 2.2.15&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.ui.console,tinyos.yeti.core;bundle-version=&quot;2.2.15&quot;,tinyos.yeti.environment.basic;bundle-version=&quot;1.2.15&quot;&#xA;Eclipse-LazyStart: true&#xA;Bundle-SymbolicName: tinyos.yeti.environment.unix2;singleton:=true&#xA;Manifest-Version: 1.0&#xA;Bundle-Vendor: ETH Zurich, Benjamin Sigg&#xA;Bundle-Activator: tinyos.yeti.environment.unix2.TinyOSUnixEnvironmentPlugin2&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.parser.source' version='1.2.15'>
+      <update id='tinyos.yeti.parser.source' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.source' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.parser.source' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.source' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.parser.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.2.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.debugger.source.feature.jar' version='1.2.15'>
+      <update id='tinyos.yeti.debugger.source.feature.jar' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Debugger (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The TinyOS Debugger allows debugging applications on the nodes. This plugin requires the C Development Toolkit (CDT).'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Silvan Nellen, ETH Zurich'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.source.feature.jar' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.debugger.source' version='1.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger.source' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&amp;quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,&#xA;BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.windows.environment.feature.jar' version='1.1.15'>
+      <update id='tinyos.windows.environment.feature.jar' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x in Cygwin (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Windows systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.windows.environment.feature.jar' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.windows.environment' version='1.1.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.windows.environment' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='Feature_Environment.feature.group' version='1.2.15' singleton='false'>
+      <update id='Feature_Environment.feature.group' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Base Environment (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Core functionality for platform specific environments. Also brings configuration dialogs for MIG and NCG.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_Environment.feature.group' version='1.2.15'/>
+      </provides>
+      <requires size='14'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.draw2d' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,3.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic.source.feature.group' range='[1.2.15,1.2.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Environment.feature.jar' range='[1.2.15,1.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.debugger' version='1.2.15'>
+      <update id='tinyos.yeti.debugger' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Debugger'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Silvan Nellen'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.debugger' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='14'>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.filesystem' range='1.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.cdt.debug.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.cdt.debug.mi.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.cdt.launch' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.cdt.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='tinyos.yeti.core' range='2.2.15'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.debug.core,org.eclipse.debug.ui,org.eclipse.core.runtime,org.eclipse.core.filesystem;bundle-version=&quot;1.2.0&quot;,org.eclipse.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.ide,org.eclipse.ui.editors;bundle-version=&quot;3.4.0&quot;,org.eclipse.jface.text,org.eclipse.cdt.debug.core,org.eclipse.cdt.debug.mi.core,org.eclipse.cdt.launch,org.eclipse.cdt.ui,tinyos.yeti.core;bundle-version=&quot;2.2.15&quot;&#xA;Bundle-Activator: tinyOS.debug.TinyOSDebugPlugin&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.2.15&#xA;Bundle-SymbolicName: tinyos.yeti.debugger;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: Yeti 2 - Debugger&#xA;Bundle-Vendor: Silvan Nellen&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.search.feature.jar' version='1.1.15'>
+      <update id='tinyos.yeti.search.feature.jar' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Search (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Provides a search for TinyOS declarations like modules, functions, types, ...'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Benjamin Sigg, ETH Zurich'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.feature.jar' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.search' version='1.1.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2009, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.debugger.source' version='1.2.15'>
+      <update id='tinyos.yeti.debugger.source' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.source' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.debugger.source' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger.source' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: tinyos.yeti.debugger.source; singleton=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.2.15&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='tinyos.yeti.debugger.feature.jar' version='1.2.15'>
+      <update id='tinyos.yeti.debugger.feature.jar' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Debugger (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The TinyOS Debugger allows debugging applications on the nodes. This plugin requires the C Development Toolkit (CDT).'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Silvan Nellen, ETH Zurich'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.feature.jar' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.debugger' version='1.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&amp;quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,&#xA;BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='Feature_Core_Plugin.feature.group' version='2.2.15' singleton='false'>
+      <update id='Feature_Core_Plugin.feature.group' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Core Plugin (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The core plugin. Adds Editors, Views and Perspectives to Eclipse.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Roland Schuler, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' version='2.2.15'/>
+      </provides>
+      <requires size='16'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.views' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.draw2d' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jdt.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.expressions' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core.source.feature.group' range='[2.2.15,2.2.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='[2.2.15,2.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.jar' range='[2.2.15,2.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='Feature_Core_Plugin.feature.jar' version='2.2.15'>
+      <update id='Feature_Core_Plugin.feature.jar' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Core Plugin (required)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The core plugin. Adds Editors, Views and Perspectives to Eclipse.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Roland Schuler, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.jar' version='2.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='Feature_Core_Plugin' version='2.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='Feature_Core_Plugin' version='2.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.search.source.feature.group' version='1.1.15' singleton='false'>
+      <update id='tinyos.yeti.search.source.feature.group' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Search (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Provides a search for TinyOS declarations like modules, functions, types, ...'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Benjamin Sigg, ETH Zurich'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.source.feature.group' version='1.1.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.source' range='[1.1.15,1.1.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.source.feature.jar' range='[1.1.15,1.1.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2009, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.search.source.feature.jar' version='1.1.15'>
+      <update id='tinyos.yeti.search.source.feature.jar' range='[0.0.0,1.1.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Search (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Provides a search for TinyOS declarations like modules, functions, types, ...'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Benjamin Sigg, ETH Zurich'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.source.feature.jar' version='1.1.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.search.source' version='1.1.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search.source' version='1.1.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2009, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='a.jre' version='1.6.0' singleton='false'>
+      <provides size='117'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='a.jre' version='1.6.0'/>
+        <provided namespace='java.package' name='javax.accessibility' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.activity' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.crypto' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.crypto.interfaces' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.crypto.spec' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.metadata' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.plugins.bmp' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.plugins.jpeg' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.stream' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.loading' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.modelmbean' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.monitor' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.openmbean' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.relation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.remote' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.remote.rmi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.timer' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.directory' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.ldap' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.net' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.net.ssl' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print.attribute' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print.attribute.standard' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.rmi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.rmi.CORBA' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.rmi.ssl' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.callback' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.kerberos' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.login' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.x500' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.cert' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.sasl' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.midi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.midi.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.sampled' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.sampled.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset.serial' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.border' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.colorchooser' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.filechooser' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.basic' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.metal' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.multi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.synth' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.table' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text.html' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text.html.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text.rtf' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.tree' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.undo' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.transaction' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.transaction.xa' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.datatype' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.namespace' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.parsers' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.sax' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.stream' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.validation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.xpath' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietf.jgss' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA_2_3' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA_2_3.portable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.DynAnyPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.ORBPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.portable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.TypeCodePackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CosNaming' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CosNaming.NamingContextExtPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CosNaming.NamingContextPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.Dynamic' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.DynamicAny' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.DynamicAny.DynAnyFactoryPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.DynamicAny.DynAnyPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.IOP' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.IOP.CodecFactoryPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.IOP.CodecPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.Messaging' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableInterceptor' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableInterceptor.ORBInitInfoPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.CurrentPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.POAManagerPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.POAPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.portable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.ServantLocatorPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.SendingContext' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.stub.java.rmi' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.bootstrap' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.events' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.ls' version='0.0.0'/>
+        <provided namespace='java.package' name='org.xml.sax' version='0.0.0'/>
+        <provided namespace='java.package' name='org.xml.sax.ext' version='0.0.0'/>
+        <provided namespace='java.package' name='org.xml.sax.helpers' version='0.0.0'/>
+      </provides>
+      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
+    </unit>
+    <unit id='Feature_TosLinux_2.feature.group' version='2.2.15' singleton='false'>
+      <update id='Feature_TosLinux_2.feature.group' range='[0.0.0,2.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS 2.x on Unix (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Binding between TinyOS 2.x on Unix systems and the TinyOS Eclipse Plugin.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Feature_TosLinux_2.feature.group' version='2.2.15'/>
+      </provides>
+      <requires size='11'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Core_Plugin.feature.group' range='[2.2.15,3.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_Environment.feature.group' range='[1.2.15,2.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.core' range='2.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.basic' range='1.2.15'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2.source.feature.group' range='[2.2.15,2.2.15]' optional='true'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.environment.unix2' range='[2.2.15,2.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Feature_TosLinux_2.feature.jar' range='[2.2.15,2.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.debugger.source.feature.group' version='1.2.15' singleton='false'>
+      <update id='tinyos.yeti.debugger.source.feature.group' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS Debugger (optional)'/>
+        <property name='org.eclipse.equinox.p2.description' value='The TinyOS Debugger allows debugging applications on the nodes. This plugin requires the C Development Toolkit (CDT).'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://tos-ide.ethz.ch/wiki/index.php'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Silvan Nellen, ETH Zurich'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.source.feature.group' version='1.2.15'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.source' range='[1.2.15,1.2.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.source.feature.jar' range='[1.2.15,1.2.15]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;Redistribution. &#xA;Redistribution and use in binary form, without modification,&#xA;are permitted provided that the following conditions are met:&#xA;* Redistributions must reproduce the above copyright notice and&#xA;the following disclaimer in the documentation and/or other materials&#xA;provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers&#xA;may be used to endorse or promote products derived from this&#xA;software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this&#xA;software is permitted.&#xA;DISCLAIMER. &#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&amp;quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,&#xA;BUT&#xA;NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND&#xA;FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,&#xA;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xA;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xA;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)&#xA;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED&#xA;OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.parser.source.feature.jar' version='1.2.15'>
+      <update id='tinyos.yeti.parser.source.feature.jar' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - TinyOS NesC 1.3.x Parser (recommended)'/>
+        <property name='org.eclipse.equinox.p2.description' value='Preprocessor and parser for NesC 1.2.x files.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.parser.source.feature.jar' version='1.2.15'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='tinyos.yeti.parser.source' version='1.2.15'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.parser.source' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          Copyright (c) 2008, ETH Zurich. All rights reserved.&#xA;&#xA;Redistribution. &#xA;&#xA;Redistribution and use in binary form, without modification, are permitted provided that the following conditions are met:&#xA;&#xA;* Redistributions must reproduce the above copyright notice and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xA;* Neither the name of ETH Zurich nor the names of its suppliers may be used to endorse or promote products derived from this software without specific prior written permission.&#xA;* No reverse engineering, decompilation, or disassembly of this software is permitted.&#xA;&#xA;DISCLAIMER. &#xA;&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS“ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='tinyos.yeti.preprocessor.nesc12' version='1.2.15'>
+      <update id='tinyos.yeti.preprocessor.nesc12' range='[0.0.0,1.2.15)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Preprocessor'/>
+        <property name='org.eclipse.equinox.p2.provider' value='ETH Zurich, Benjamin Sigg'/>
+      </properties>
+      <provides size='10'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.preprocessor.nesc12' version='1.2.15'/>
+        <provided namespace='osgi.bundle' name='tinyos.yeti.preprocessor.nesc12' version='1.2.15'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor.lexer' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor.lexer.macro' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor.output' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor.parser.elements' version='0.0.0'/>
+        <provided namespace='java.package' name='tinyos.yeti.preprocessor.parser.stream' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='tinyos.yeti.preprocessor.nesc12' version='1.2.15'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: tinyos.yeti.preprocessor,tinyos.yeti.preprocessor.lexer,tinyos.yeti.preprocessor.lexer.macro,tinyos.yeti.preprocessor.output,tinyos.yeti.preprocessor.parser,tinyos.yeti.preprocessor.parser.elements,tinyos.yeti.preprocessor.parser.stream&#xA;Bundle-Localization: plugin&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime&#xA;Bundle-Activator: tinyos_preprocessor.Activator&#xA;Bundle-Name: Yeti 2 - Preprocessor&#xA;Bundle-Version: 1.2.15&#xA;Bundle-Vendor: ETH Zurich, Benjamin Sigg&#xA;Bundle-SymbolicName: tinyos.yeti.preprocessor.nesc12;singleton:=true&#xA;Bundle-ClassPath: lib/cup/java-cup-11a-runtime.jar,.&#xA;Manifest-Version: 1.0&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='opt' version='0.0.0'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='Yeti 2 - Optional'/>
+        <property name='org.eclipse.equinox.p2.description' value='Optional and experimental features.'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='opt' version='0.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.search.feature.group' range='[1.1.15,1.1.15]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='tinyos.yeti.debugger.feature.group' range='[1.2.15,1.2.15]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+  </units>
+</repository>

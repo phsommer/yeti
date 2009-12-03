@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description url="http://tos-ide.ethz.ch/update/site.xml">
+      Yeti 2 update site
+   </description>
+   <feature url="features/Feature_Core_Plugin_2.2.15.jar" id="Feature_Core_Plugin" version="2.2.15">
+      <category name="core"/>
+   </feature>
+   <feature url="features/Feature_Parser12_1.2.15.jar" id="Feature_Parser12" version="1.2.15">
+      <category name="core"/>
+   </feature>
+   <feature url="features/Feature_Environment_1.2.15.jar" id="Feature_Environment" version="1.2.15">
+      <category name="env"/>
+   </feature>
+   <feature url="features/Feature_TosLinux_2_2.2.15.jar" id="Feature_TosLinux_2" version="2.2.15">
+      <category name="env"/>
+   </feature>
+   <feature url="features/tinyos.windows.environment_1.1.15.jar" id="tinyos.windows.environment" version="1.1.15">
+      <category name="env"/>
+   </feature>
+   <feature url="features/tinyos.yeti.debugger_1.2.15.jar" id="tinyos.yeti.debugger" version="1.2.15">
+      <category name="opt"/>
+   </feature>
+   <feature url="features/tinyos.yeti.search_1.1.15.jar" id="tinyos.yeti.search" version="1.1.15">
+      <category name="opt"/>
+   </feature>
+   <category-def name="core" label="Yeti 2 - Core">
+      <description>
+         The core library with extensions.
+      </description>
+   </category-def>
+   <category-def name="env" label="Yeti 2 - Environments">
+      <description>
+         Platform dependent environments
+      </description>
+   </category-def>
+   <category-def name="opt" label="Yeti 2 - Optional">
+      <description>
+         Optional and experimental features.
+      </description>
+   </category-def>
+</site>
