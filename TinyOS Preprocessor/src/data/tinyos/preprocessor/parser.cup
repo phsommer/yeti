@@ -1,0 +1,536 @@
+import java_cup.runtime.*;
+import tinyos.yeti.preprocessor.parser.elements.*;
+import tinyos.yeti.preprocessor.lexer.*;
+import tinyos.yeti.preprocessor.output.Insights;
+import tinyos.yeti.preprocessor.output.TokenSequenceToSource;
+
+parser code {: 
+	State states;
+	
+	public void setStates( State states ){
+		this.states = states;
+	}
+:}
+
+terminal PreprocessorToken WHITESPACE;
+terminal PreprocessorToken NEWLINE;
+terminal PreprocessorToken QUOTE;
+terminal PreprocessorToken TEXT;
+terminal PreprocessorToken MASKED_QUOTE;
+terminal PreprocessorToken SHARP;
+terminal PreprocessorToken CONCAT;
+terminal PreprocessorToken GREATER;
+terminal PreprocessorToken SMALLER;
+terminal PreprocessorToken VARARG;
+
+terminal PreprocessorToken IDENTIFIER;
+terminal PreprocessorToken OPEN;
+terminal PreprocessorToken CLOSE;
+terminal PreprocessorToken COMMA;
+
+terminal PreprocessorToken K_DEFINE;
+terminal PreprocessorToken K_DEFINED;
+terminal PreprocessorToken K_UNDEF;
+terminal PreprocessorToken K_IF;
+terminal PreprocessorToken K_IFDEF;
+terminal PreprocessorToken K_IFNDEF;
+terminal PreprocessorToken K_ELSE;
+terminal PreprocessorToken K_ELIF;
+terminal PreprocessorToken K_ENDIF;
+terminal PreprocessorToken K_INCLUDE;
+terminal PreprocessorToken K_LINE;
+terminal PreprocessorToken K_PRAGMA;
+terminal PreprocessorToken K_WARNING;
+terminal PreprocessorToken K_ERROR;
+
+non terminal Source					source;
+non terminal PreprocessorElement	source_element;
+non terminal TokenSequence			control_line;
+non terminal Token					control;
+non terminal 						define;
+non terminal Define					define_head;
+non terminal 						undef;
+non terminal 						line;
+non terminal 						pragma;
+non terminal						cwarning;
+non terminal 						cerror;
+non terminal 						if_part;
+non terminal						else_part;
+non terminal 						ifdef_part;
+non terminal 						ifndef_part;
+non terminal 						elif_part;
+non terminal 						endif_part;
+non terminal 						include;
+non terminal						unknown_control;
+non terminal TokenSequence			token_sequence;
+non terminal PreprocessorElement	token_sequence_element;
+non terminal IdentifierList			identifier_list;
+non terminal Identifier				widentifier;
+non terminal						wclose;
+non terminal						wcomma;
+non terminal Token					whitespace;
+non terminal TokenSequence			whitespaces;
+non terminal 						wvararg;
+
+non terminal TokenSequence			no_control_line;
+non terminal TokenSequence			no_control_begin;
+non terminal TokenSequence			sharp_line;
+non terminal PreprocessorElement	first_element;
+non terminal Token					keyword;
+
+source ::=
+	source_element:s
+		{: 
+			if( s == null ){
+				RESULT = new Source();
+			}
+			else{
+				RESULT = new Source( s ); 
+			}
+		:}
+	|
+	source:s source_element:t
+		{:
+			if( t != null ){
+				s.tokens().add( t );
+			}
+			RESULT = s; 
+		:}
+	;
+		
+source_element ::=
+	control_line:c
+		{: RESULT = c; :}
+	|
+	unknown_control
+	|
+	no_control_line:c
+		{: RESULT = c; :}
+	|
+	error NEWLINE:n
+		{: RESULT = new TokenSequence( new Token( n ));
+			parser.states.reportError( "Unknown syntax error", Insights.unknownSyntaxError(), RESULT ); :}
+	;
+	
+no_control_line ::=
+	no_control_begin:n NEWLINE:l
+		{: RESULT = n; n.tokens().add( new Token( l )); :}
+	|
+	no_control_begin:n token_sequence:t NEWLINE:l
+		{: RESULT = n; n.copy( t ); n.tokens().add( new Token( l )); :}
+	|
+	whitespaces:w NEWLINE:n
+		{: RESULT = w; w.tokens().add( new Token( n )); :}
+	|
+	NEWLINE:n
+		{: RESULT = new TokenSequence( new Token( n )); :}
+	;
+	
+no_control_begin ::=
+	whitespaces:w first_element:f
+		{: RESULT = w; w.tokens().add( f ); :}
+	|
+	first_element:f
+		{: RESULT = new TokenSequence( f ); :}
+	|
+	whitespaces:w keyword:k
+		{: RESULT = w; w.tokens().add( k ); :}
+	|
+	keyword:k
+		{: RESULT = new TokenSequence( k ); :}
+	;
+	
+unknown_control ::=
+	sharp_line NEWLINE
+	|
+	sharp_line first_element:f NEWLINE
+		{: parser.states.reportWarning( "unknown directive", Insights.unknownDirective( f.toString() ), f ); :}
+	|
+	sharp_line first_element:f token_sequence:t NEWLINE
+		{: parser.states.reportWarning( "unknown directive", Insights.unknownDirective( f.toString() ), f ); :}
+	;
+	
+	
+first_element ::=
+	QUOTE:x
+		{: RESULT = new Token( x ); :}
+	|
+	TEXT:x
+		{: RESULT = new Token( x ); :}
+	|
+	MASKED_QUOTE:x
+		{: RESULT = new Token( x ); :}
+	|
+	CONCAT:x
+		{: RESULT = new Token( x ); :}
+	|
+	IDENTIFIER:x
+		{: RESULT = new Identifier( x ); :}
+	|
+	OPEN:x
+		{: RESULT = new Token( x ); :}
+	|
+	CLOSE:x
+		{: RESULT = new Token( x ); :}
+	|
+	COMMA:x
+		{: RESULT = new Token( x ); :}
+	|
+	GREATER:x
+		{: RESULT = new Token( x ); :}
+	|
+	SMALLER:x
+		{: RESULT = new Token( x ); :}
+	|
+	VARARG:x
+		{: RESULT = new Token( x ); :}
+	;	
+
+keyword ::=
+	K_DEFINE: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_DEFINED: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_UNDEF: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_IF: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_ELSE: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_IFDEF: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_IFNDEF: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_ELIF: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_ENDIF: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_INCLUDE: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_LINE: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_PRAGMA: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_WARNING: x
+		{: RESULT = new Token( x ); :}
+	|
+	K_ERROR: x
+		{: RESULT = new Token( x ); :}
+	;
+		
+control_line ::=
+	sharp_line control:c NEWLINE:n
+		{:
+			TokenSequence t = new TokenSequence();
+			if( c != null ){
+				t.tokens().add( t );
+			}
+			t.tokens().add( new Token( n ) );
+		:}
+	|
+	sharp_line error NEWLINE:n
+		{: RESULT = new TokenSequence( new Token( n ));
+			parser.states.reportError( "Unknown syntax error in directive", Insights.unknownSyntaxError(), RESULT ); :}
+	;
+	
+sharp_line ::=
+	SHARP:s
+		{: RESULT = new TokenSequence( new Token( s )); :}
+	|
+	whitespaces:w SHARP:s
+		{: RESULT = w; w.tokens().add( new Token( s )); :}
+	|
+	SHARP:s whitespaces:t
+		{: RESULT = new TokenSequence( new Token( s )); RESULT.copy( t ); :}
+	|
+	whitespaces:w SHARP:s whitespaces:t
+		{: RESULT = w; w.tokens().add( new Token( s )); RESULT.copy( t ); :}
+	;
+	
+token_sequence ::=
+	token_sequence_element:t
+		{: RESULT = new TokenSequence( t ); :}
+	|
+	token_sequence:d token_sequence_element:t
+		{: d.tokens().add( t ); RESULT = d; :}
+	;
+
+token_sequence_element ::=
+	whitespace:x
+		{: RESULT = x; :}
+	|
+	SHARP: x
+		{: RESULT = new Token( x ); :}
+	|
+	first_element:x
+		{: RESULT = x; :}
+	|
+	keyword:k
+		{: RESULT = k; :}
+	;
+	
+control ::=
+	define
+	|
+	undef
+	|
+	include
+	|
+	if_part
+	|
+	else_part
+	|
+	ifdef_part
+	|
+	ifndef_part
+	|
+	elif_part
+	|
+	endif_part
+	|
+	cwarning
+	|
+	cerror
+	|
+	pragma
+	|
+	line
+	;
+	
+define ::=
+	define_head:h
+		{: h.setTokens( new TokenSequence() );
+			parser.states.define( h ); :}
+	|
+	define_head:h whitespace token_sequence:t
+		{: h.setTokens( t );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN wclose token_sequence:t
+		{: h.setTokens( t );
+			h.setParameters( new IdentifierList() );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN wclose 
+		{: h.setTokens( new TokenSequence() );
+			h.setParameters( new IdentifierList() );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN identifier_list:l wclose token_sequence:t
+		{: h.setParameters( l );
+			h.setTokens( t );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN identifier_list:l wclose
+		{: h.setParameters( l );
+			h.setTokens( new TokenSequence() );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN wvararg wclose token_sequence:t
+		{:  h.setTokens( t );
+			h.setParameters( new IdentifierList() );
+			h.setVarArg( Define.VarArg.YES_UNNAMED );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN wvararg wclose
+		{:  h.setTokens( new TokenSequence() );
+			h.setVarArg( Define.VarArg.YES_UNNAMED );
+			h.setParameters( new IdentifierList() );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN identifier_list:l wcomma wvararg wclose token_sequence:t
+		{: h.setParameters( l );
+			h.setTokens( t );
+			h.setVarArg( Define.VarArg.YES_UNNAMED );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN identifier_list:l wcomma wvararg wclose
+		{: h.setParameters( l );
+			h.setTokens( new TokenSequence() );
+			h.setVarArg( Define.VarArg.YES_UNNAMED );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN identifier_list:l wvararg wclose token_sequence:t
+		{: h.setParameters( l );
+			h.setTokens( t );
+			h.setVarArg( Define.VarArg.YES_NAMED );
+			parser.states.define( h ); :}
+	|
+	define_head:h OPEN identifier_list:l wvararg wclose
+		{: h.setParameters( l );
+			h.setTokens( new TokenSequence() );
+			h.setVarArg( Define.VarArg.YES_NAMED );
+			parser.states.define( h ); :}
+	;
+	
+define_head ::=
+	K_DEFINE:k whitespace IDENTIFIER:i
+		{: Define d = new Define( k, new Identifier( i ));
+			RESULT = d; :}
+	;
+	
+identifier_list ::=
+	widentifier:i
+		{: RESULT = new IdentifierList( i ); :}
+	|
+	identifier_list:l wcomma widentifier:i
+		{: l.identifiers().add( i ); RESULT = l; :}
+	;
+
+undef ::=
+	K_UNDEF:k widentifier:i
+		{: Undef d = new Undef( k, i );
+			parser.states.undef( d );  :}
+	|
+	K_UNDEF:k error
+		{: parser.states.reportError( "Directive #undef must have exactly one identifier argument", Insights.directiveUndefMissingIdentifierArgument(), new Token( k )); :}
+	;
+	
+include ::=
+	K_INCLUDE:k token_sequence:t
+		{: Include d = new Include( k, t );
+			parser.states.include( d ); :}
+	;
+	
+if_part ::=
+	K_IF:k token_sequence:t
+		{: IfPart p = new IfPart( k, t );
+			parser.states.ifpart( p );
+		:}
+	;
+	
+else_part ::=
+	K_ELSE:k
+		{: parser.states.elsepart( new Token( k ) ); :}
+	|
+	K_ELSE:k token_sequence:t
+		{: parser.states.elsepart( new Token( k ) ); 
+			parser.states.reportWarning( "Directive #else does not need any arguments", Insights.directiveElseWithArgument(), new Token( k ), t ); :}
+	;	
+	
+ifdef_part ::=
+	K_IFDEF:k widentifier:i
+		{: IfdefPart p = new IfdefPart( k, i );
+			parser.states.ifdefpart( p ); :}
+	|
+	K_IFDEF:k widentifier:i error
+		{: parser.states.reportError( "Directive #ifdef must have exactly one identifier as argument", Insights.directiveIfdefMissingIdentifierArgument(), new Token( k ));
+			parser.states.ifdefpart( new IfdefPart( k, i ) ); :}
+	|
+	K_IFDEF:k error
+		{: parser.states.reportError( "Directive #ifdef must have exactly one identifier as argument", Insights.directiveIfdefMissingIdentifierArgument(), new Token( k ));
+			parser.states.ifdefpart( new IfdefPart( k, null ) ); :}
+	|
+	K_IFDEF:k
+		{: parser.states.reportError( "Directive #ifdef must have exactly one identifier as argument", Insights.directiveIfdefMissingIdentifierArgument(), new Token( k ));
+			parser.states.ifdefpart( new IfdefPart( k, null ) ); :}
+	;
+	
+ifndef_part ::=
+	K_IFNDEF:k widentifier:i
+		{: IfndefPart p = new IfndefPart( k, i );
+			parser.states.ifndefpart( p ); :}
+	|
+	K_IFNDEF:k widentifier:i error
+		{: parser.states.reportError( "Directive #ifndef must have exactly one identifier as argument", Insights.directiveIfndefMissingIdentifierArgument(), new Token( k )); 
+			parser.states.ifndefpart( new IfndefPart( k, i ) ); :}
+	|
+	K_IFNDEF:k error
+		{: parser.states.reportError( "Directive #ifndef must have exactly one identifier as argument", Insights.directiveIfndefMissingIdentifierArgument(), new Token( k )); 
+			parser.states.ifndefpart( new IfndefPart( k, null ) ); :}
+	|
+	K_IFNDEF:k
+		{: parser.states.reportError( "Directive #ifndef must have exactly one identifier as argument", Insights.directiveIfndefMissingIdentifierArgument(), new Token( k )); 
+			parser.states.ifndefpart( new IfndefPart( k, null ) ); :}
+	;
+	
+elif_part ::=
+	K_ELIF:k token_sequence:t
+		{: ElifPart p = new ElifPart( k, t );
+			parser.states.elifpart( p );
+		:}
+	;
+	
+endif_part ::=
+	K_ENDIF:k
+		{: parser.states.endifpart( new Token( k ) ); :}
+	|
+	K_ENDIF:k whitespaces
+		{: parser.states.endifpart( new Token( k ) ); :}
+	|
+	K_ENDIF:k error
+		{: parser.states.reportError( "Directive #endif must not have arguments", Insights.directiveEndifWithArgument(), new Token( k ) );
+			parser.states.endifpart( new Token( k ) ); :}
+	;
+
+pragma ::=
+	K_PRAGMA:k token_sequence:t
+		{: parser.states.reportMessage( "Directive #pragma found and ignored", Insights.directivePragmaIgnored(), new Token( k ), t ); :}
+	;
+	
+line ::=
+	K_LINE:k token_sequence:t
+		{: Line line = new Line( k, t );
+			line.apply( parser.states ); :}
+	;
+
+cwarning ::=
+	K_WARNING:k token_sequence:t
+		{: parser.states.reportWarning( "#warning:" + TokenSequenceToSource.toString( t ), Insights.directiveWarning(), new Token( k ) ); :}
+	;
+	
+cerror ::=
+	K_ERROR:k token_sequence:t
+		{: parser.states.reportWarning( "#error:" + TokenSequenceToSource.toString( t ), Insights.directiveError(), new Token( k ) ); :}
+	;
+	
+wvararg ::=
+	VARARG
+	|
+	whitespaces VARARG
+	;
+	
+widentifier ::=
+	IDENTIFIER:i
+		{: RESULT = new Identifier( i ); :}
+	|
+	whitespaces IDENTIFIER:i
+		{: RESULT = new Identifier( i ); :}
+	;
+	
+wcomma ::=
+	COMMA
+	|
+	whitespaces COMMA
+	;
+
+wclose ::=
+	CLOSE
+	|
+	whitespaces CLOSE
+	;
+	
+whitespace ::=
+	WHITESPACE:w
+		{: RESULT = new Token( w ); :}
+	;
+	
+whitespaces ::=
+	whitespace:w
+		{: RESULT = new TokenSequence( w ); :}
+	|
+	whitespaces:w whitespace:s
+		{: RESULT = w; w.tokens().add( s ); :}
+	;

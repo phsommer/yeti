@@ -1,0 +1,168 @@
+import java_cup.runtime.*;
+import tinyos.yeti.preprocessor.lexer.State;
+import tinyos.yeti.preprocessor.output.Insights;
+
+parser code {: 
+	ExprState states;
+	
+	public void setStates( ExprState states ){
+		this.states = states;
+	}
+:}
+
+terminal		PLUS;
+terminal 		MINUS;
+terminal 		TIMES;
+terminal 		DIVISION;
+terminal 		MOD;
+terminal 		BIT_OR;
+terminal 		OR;
+terminal 		BIT_AND;
+terminal 		AND;
+terminal 		NOT;
+terminal 		XOR;
+terminal 		BIT_REVERSE;
+terminal 		EQ;
+terminal 		NEQ;
+terminal 		GREATER;
+terminal 		GREATER_EQ;
+terminal 		LESS;
+terminal 		LESS_EQ;
+terminal 		OPEN;
+terminal 		CLOSE;
+terminal		SHIFT_RIGHT;
+terminal 		SHIFT_LEFT;
+terminal 		DEFINED;
+terminal 		QUESTION;
+terminal		COLON;
+terminal String	INTEGER;
+terminal String	IDENTIFIER;
+terminal String	CHARACTER;
+terminal String ERROR;
+
+non terminal Lazy    expr;
+
+precedence left QUESTION, COLON;
+precedence left OR;
+precedence left AND;
+precedence left BIT_OR;
+precedence left XOR;
+precedence left BIT_AND;
+precedence left EQ, NEQ;
+precedence left GREATER, GREATER_EQ, LESS, LESS_EQ;
+precedence left SHIFT_LEFT, SHIFT_RIGHT;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVISION, MOD;
+precedence right NOT, BIT_REVERSE;
+
+expr      ::= 
+				expr:a PLUS expr:b
+					{: RESULT = Lazy.addition( a, b ); :}
+				|
+				PLUS expr:a
+					{: RESULT = a; :}
+				|
+				expr:a MINUS expr:b
+					{: RESULT = Lazy.subtraction( a, b ); :}
+				|
+				MINUS expr:a
+					{: RESULT = Lazy.neg( a ); :}
+				|
+				expr:a MOD expr:b
+					{: RESULT = Lazy.mod( a, b ); :}
+				|
+				expr:a TIMES expr:b
+					{: RESULT = Lazy.multiplication( a, b ); :}
+				|
+				expr:a DIVISION expr:b
+					{: RESULT = Lazy.division( a, b ); :}
+				|
+				expr:a BIT_OR expr:b
+					{: RESULT = Lazy.bitor( a, b ); :}
+				|
+				expr:a OR expr:b
+					{: RESULT = Lazy.or( a, b ); :}
+				|
+				expr:a BIT_AND expr:b
+					{: RESULT = Lazy.bitand( a, b ); :}
+				|
+				expr:a AND expr:b
+					{: RESULT = Lazy.and( a, b ); :}
+				|
+				NOT expr:a
+					{: RESULT = Lazy.not( a ); :}
+				|
+				expr:a XOR expr:b
+					{: RESULT = Lazy.xor( a, b ); :}
+				|
+				BIT_REVERSE expr:a
+					{: RESULT = Lazy.bitreverse( a ); :}
+				|
+				expr:a EQ expr:b
+					{: RESULT = Lazy.eq( a, b ); :}
+				|
+				expr:a NEQ expr:b
+					{: RESULT = Lazy.neq( a, b ); :}
+				|
+				expr:a GREATER expr:b
+					{: RESULT = Lazy.greater( a, b ); :}
+				|
+				expr:a GREATER_EQ expr:b
+					{: RESULT = Lazy.greatereq( a, b ); :}
+				|
+				expr:a LESS expr:b
+					{: RESULT = Lazy.less( a, b ); :}
+				|
+				expr:a LESS_EQ expr:b
+					{: RESULT = Lazy.lesseq( a, b ); :}
+				|
+				expr:a SHIFT_RIGHT expr:b
+					{: RESULT = Lazy.shiftright( a, b ); :}
+				|
+				expr:a SHIFT_LEFT expr:b
+					{: RESULT = Lazy.shiftleft( a, b ); :}
+				|
+				expr:c QUESTION expr:t COLON expr:f
+					{: RESULT = Lazy.condition( c, t, f ); :}
+				|
+				OPEN expr:a CLOSE
+					{: RESULT = a; :}
+				|
+				OPEN CLOSE
+					{:  parser.states.reportError( "Empty brackets", Insights.expressionEmptyBrackets() );
+						RESULT = Lazy.zero(); :}
+				|
+				IDENTIFIER:i
+					{: RESULT = Lazy.identifier( i ); :}
+				|
+				CHARACTER:c
+					{: RESULT = Lazy.character( c ); :}
+				|
+				INTEGER:i
+					{: RESULT = Lazy.number( i ); :}
+				|
+				DEFINED IDENTIFIER:i
+					{: RESULT = Lazy.macro( i ); :}
+				|
+				DEFINED OPEN IDENTIFIER:i CLOSE
+					{: RESULT = Lazy.macro( i ); :}
+				|
+				ERROR:e
+					{:
+						parser.states.reportError( e, Insights.expressionInvalid() );
+						RESULT = Lazy.zero();
+					:}
+				|
+				error:e
+					{: 
+						if( e == null ){
+							parser.states.reportError( "Invalid expression: no further details available", Insights.expressionInvalid() );
+						}
+						else{
+							parser.states.reportError( "Invalid expression: " + e, Insights.expressionInvalid() );
+						}
+						
+						RESULT = Lazy.zero();
+					:}
+			    ;
+			    

@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Yeti 2 - Preprocessor
+Bundle-SymbolicName: tinyos.yeti.preprocessor.nesc12;singleton:=true
+Bundle-Version: 1.2.15
+Bundle-Activator: tinyos_preprocessor.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-LazyStart: true
+Bundle-ClassPath: lib/cup/java-cup-11a-runtime.jar,
+ .
+Bundle-Vendor: ETH Zurich, Benjamin Sigg
+Export-Package: tinyos.yeti.preprocessor,
+ tinyos.yeti.preprocessor.lexer,
+ tinyos.yeti.preprocessor.lexer.macro,
+ tinyos.yeti.preprocessor.output,
+ tinyos.yeti.preprocessor.parser,
+ tinyos.yeti.preprocessor.parser.elements,
+ tinyos.yeti.preprocessor.parser.stream

@@ -1,0 +1,29 @@
+Ideas...
+This file contains only ideas, they might not (yet/ever) been implemented.
+
+Dataflow
+
+Data: a bunch of *.nc, *.h files
+run Preprocessor-Lexer
+Data: + tokens "define", "text", ...
+run Preprocessor
+Data: + a bunch of "file fragments". Each fragment remembers where it comes from.
+	  + maybe these fragments are collected in some sort of list/map/set?
+	  - the file fragments contains valid NesC code, without any preprocessor statements
+run NesC-Lexer
+Data: + the fragments are divided into tokens. Each token remembers his fragment
+run NesC-Parser
+Data: + an AST of the fragments. Use the information where the fragments/tokens came from to 
+		make syntaxhighlighting or other funny stuff
+		
+
+		
+Preprocessor
+- as soon as the parser hits an identifier that is #defined
+- the PushableLexer is used to read out elements until the argument clause is complet
+- the definition is used to change the tokens
+- the PushableLexer is used to put the tokens again in use (note: have to put in from the head)
+
+- what about the identifier? it is already read, and must not be processed
+  by the parser. The parser must not know that an identifier exists. Therefore
+  this step of exchanging identifiers has to be placed inside the lexer itself.
