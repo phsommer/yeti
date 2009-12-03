@@ -1,0 +1,851 @@
+/*
+ * Known issues:
+ *	-  only "[command|event] typeName direct_declarator"  is supoortet
+ *          "typeName [command|event] direct_declarator" is detected as error
+ *
+ *
+ *
+ * jay: 0 reduce/reduce conflicts
+ *
+ * jay -tv /cygdrive/c/Documents\ and\ Settings/dcg/workspace2/TinyOS/src/tinyOS/nesc/parser/HeaderFileParser.jay < /cygdrive/c/Documents\ and\ Settings/dcg/workspace2/TinyOS/src/tinyOS/nesc/parser/skeleton > /cygdrive/c/Documents\ and\ Settings/dcg/workspace2/TinyOS/src/tinyOS/nesc/parser/HeaderFileParser.java
+ *
+ *
+ *
+ */
+
+
+
+// -----------------------------------------------------------
+// prolog
+// -----------------------------------------------------------
+%{
+
+  package tinyOS.nesc.parser;
+
+  import java.io.*;
+  import java.util.Vector;
+  import java.util.Enumeration;
+  import java.util.LinkedList;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Iterator;
+  import java.util.Hashtable;
+  import tinyOS.editors.nesc.language.elements.*;
+  import tinyOS.editors.NesCIcons;
+  import tinyOS.nesc.scanner.Scanner;
+  import jay.yydebug.yyDebug;
+  import tinyOS.nesc.scanner.Token;
+  import org.eclipse.core.resources.IResource;
+  import tinyOS.nesc.scanner.ITokenInfo;
+
+  /**
+   * !! 
+   * Don't edit this file directly. Instead edit the Jay-File
+   * HeaderFileParser.jay and generate the java file using:
+   * ay -v HeaderFileParser.jay <skeleton > HeaderFileParser.java
+   * !! 
+   */
+
+  /** start with<br>
+	no argument to suppress debugging<br>
+	0, 1, 2, or 3 to animate trapping input, output, or both<br>
+	other to trace
+  */
+  public class HeaderFileParser implements IParser {
+	private List elementList = new LinkedList();
+	private Scanner scanner = null;
+	private NameSpace ns = null;
+	private IResource resourceOrigin = null;
+	
+	/** to prevent cycles */
+	private LinkedList fileHistory = null;
+	
+	/** the current file */
+	File file = null;
+	
+	public void setScanner(Scanner s) {
+		this.scanner = s;
+	}
+    
+    public NameSpace getNameSpace() {
+		return ns;
+    }
+    
+    public IResource getOrigin() {
+    	return resourceOrigin;
+    }
+    public void setOrigin(IResource r) {
+    	this.resourceOrigin = r;
+    }
+    
+    public boolean get_idents_only() {
+		return ns.get_idents_only();
+    }
+    
+    public int type_of_name(String text) {
+    	return ns.type_of_name(text);
+   	}
+   	
+   	private HeaderFileParser(LinkedList fileHistory) {
+   		this.fileHistory = fileHistory;
+   		ns = new NameSpace(file);
+   	}
+   	
+   	public HeaderFileParser(File f, String types[], LinkedList fileHistory) {
+   		this.fileHistory = fileHistory;
+   		this.file = f;
+   		ns = new NameSpace(types, file);
+   		this.fileHistory.add(f.getName());
+   	}
+   	
+   	public HeaderFileParser(IResource resource, File f, LinkedList fileHistory) {
+		this.fileHistory = fileHistory;
+   		this.file = f;
+   		ns = new NameSpace(file);
+   		this.resourceOrigin = resource;
+   		this.fileHistory.add(f.getName());
+   	}
+
+	public HeaderFileParser(File f, LinkedList fileHistory) {
+		this.fileHistory = fileHistory;
+	    this.file = f;
+	    ns = new NameSpace(file);
+	    this.fileHistory.add(f.getName());
+	}
+   	
+	boolean debug = true;
+
+	boolean followIncludes = true;
+	
+	public void setFollowIncludes(boolean t) {
+		followIncludes = t;
+	}
+
+   	   
+%}
+
+// -----------------------------------------------------------
+// Local
+// -----------------------------------------------------------
+%{
+
+
+%}
+
+// -----------------------------------------------------------
+// Non-Terminal Type Definitions
+// -----------------------------------------------------------
+// Type Definition
+
+
+%token  <Token> BAD_TOKEN
+%token  <Token> INTEGER_CONSTANT CHARACTER_CONSTANT FLOATING_CONSTANT ENUMERATION_CONSTANT STRING
+%token  <Token> SIZEOF
+%token  <Token> PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
+%token  <Token> AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
+%token  <Token> SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
+%token  <Token> XOR_ASSIGN OR_ASSIGN TYPEDEF_NAME
+
+%token  <Token> TYPEDEF EXTERN STATIC AUTO REGISTER
+%token  <Token> CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
+%token  <Token> STRUCT UNION ENUM ELLIPSIS
+
+%token  <Token> CASE DEFAULT IF SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+%token  <Token> ATTRIBUTE
+%token  <Token> IDENTIFIER
+
+%type <Token> identifier
+
+
+%type <Token> abstract_declarator 
+%type <Token> additive_expression 
+%type <Token> and_expression
+%type <Token> assignment_operator 
+%type <Token> cast_expression
+%type <Token> compound_statement 
+%type <Token> constant_expression
+%type <Token> declaration
+%type <Token> direct_abstract_declarator
+%type <Token> direct_declarator
+%type <Token> enumerator_list 
+%type <Token> enumerator 
+%type <Token> equality_expression
+%type <Token> exclusive_or_expression 
+%type <Token> expression 
+%type <Token> expression_statement 
+%type <Token> external_declaration
+%type <Token> function_definition 
+%type <Token> inclusive_or_expression
+%type <Token> init_declarator 
+%type <Token> initializer_list 
+%type <Token> initializer
+%type <Token> iteration_statement
+%type <Token> jump_statement 
+%type <Token> labeled_statement 
+%type <Token> logical_and_expression 
+%type <Token> logical_or_expression
+%type <Token> multiplicative_expression
+%type <Token> pointer
+%type <Token> postfix_expression
+%type <Token> primary_expression
+%type <Token> relational_expression
+%type <Token> selection_statement
+%type <Token> untyped_declaration
+%type <Token> shift_expression
+%type <Token> specifier_qualifier_list
+%type <Token> statement
+%type <Token> struct_declaration_list
+%type <Token> struct_declaration
+%type <Token> struct_declarator_list
+%type <Token> struct_declarator
+%type <Token> type_name
+%type <Token> type_qualifier_list
+%type <Token> type_qualifier
+%type <Token> unary_expression
+%type <Token> assignment_expression
+%type <Token> argument_expression_list
+%type <Token> conditional_expression 
+%type <Token> type_specifier
+%type <Token> storage_class_specifier
+%type <Token> parameter_declaration
+%type <Token> declarator
+%type <Token> ']' '{' '}' '='  ',' ';'
+%type <Token> '(' '|' '/' '<' '>' '%' '^' '&' '*' '+' '-' '~' '!'
+%type <Token> ')'
+%type <Token> actual_type_specifier
+%type <Token> type_adjective
+%type <Token> identifier constant
+%type <Token> struct_or_union_specifier
+%type <Token> enum_specifier
+%type <Token> struct_or_union
+%type <Token> init_declarator_list
+%type <Token> statement_list
+%type <Token> identifier_list
+%type <Token> parameter_list
+%type <Token> parameter_type_list
+%type <Token> declaration_list 
+%type <Token> declaration_specifiers 
+%type <Token> init_declarator_list
+%type <Token> preprocessor_statements
+%type <Token> unary_operator
+
+// Preprocessor
+%token <Token> PATH HEADERFILE INCLUDE
+
+%token <Token> UNION
+
+// ------------------------------------------------------------
+// NesC Terminal Definitions
+// ------------------------------------------------------------
+
+// Precedence Declaration
+%left THEN
+%left ELSE
+
+
+// Startingpoint of Grammar
+// %start translation_unit
+%start translation_unit
+
+%% 
+// -----------------------------------------------------------
+// Production Rules
+// -----------------------------------------------------------
+
+/* The occurance of a type_specifier in the input turns off
+ * scanner-recognition of typedef-names as such, so that they can
+ * be re-defined within a declarator-list. The switch is called
+ * "name_space_types".
+ *
+ * The call to lex_sync() assures that the switch gets toggled after
+ * the next token is pre-fetched as a lookahead.
+ */
+
+NS_ntd :	{   
+				//scanner.lex_sync(); 
+				ns.ntd(); 
+			}
+
+
+/* Once the declarators (if any) are parsed, the scanner is returned
+ * to the state where typedef-names are recognized.
+ */
+NS_td : 	{ 
+				//scanner.lex_sync(); 
+				ns.td();
+			}
+
+/* NS_scope_push creates a new scope in the id/typedef/enum-const
+ * name-space. New levels are created by function-declarators
+ * and are created and destroyed by compound-statements.
+ * Thus, every occurance of a function-declarator must be
+ * followed, at the end of the scope of that declarator,
+ * by an NS_scope_pop.
+ */
+NS_scope_enter 
+ :										{  ns.scope_push(); ns.td();  }
+ ;
+
+NS_scope_leave 
+ :  									{ ns.scope_pop();  } 
+ ;
+				 
+/* NS_struct_push creates a new name-space for a struct or union
+ * NS_struct_pop finishes one.
+ */
+NS_struct_push 
+ : 										{ ns.struct_push();  ns.td();  }
+ ;
+
+NS_struct_pop
+ :   									{ ns.struct_pop();  }
+ ;
+				  
+
+NS_id
+ : 		{ 
+			ns.new_declaration(Declaration.DECLARATION_TYPE_NAME_SPACE_DECL); 
+		}
+ ;
+
+/* Begin a new declaration of a parameter */
+NS_new_parm
+ : 			  { 
+				ns.new_declaration(Declaration.DECLARATION_TYPE_NAME_SPACE_DECL); 
+			  }
+ ;
+
+
+/* Remember that declarators while define typedef-names. */
+NS_is_typedef
+ : 												{ ns.set_typedef(); }
+ ;
+
+/* Finish a direct-declarator */
+NS_direct_decl
+ : 												{ ns.direct_declarator(); }
+ ;
+
+/* Finish a pointer-declarator */
+NS_ptr_decl
+ :												{ ns.pointer_declarator(); }
+ ;
+
+identifier
+	: NS_ntd TYPEDEF_NAME NS_td				{ $$ = $2; }
+	| IDENTIFIER							{ $$ = $1; ns.declarator_id(((Token)$1).text); }
+	| ENUMERATION_CONSTANT					{ $$ = $1; }
+	;
+
+
+translation_unit							
+ : external_declaration							{ /* ignore */ }
+ | translation_unit external_declaration		{ /* ignore */ }
+ | preprocessor_statements						{ /* ignore */ }
+ | translation_unit preprocessor_statements		{ /* ignore */ }
+ | error										{ System.out.println("ERROR:Current FILE - "+file.getAbsolutePath()); }
+ ;
+ 
+preprocessor_statements
+ : INCLUDE '<' HEADERFILE '>'					{ 
+ 												  if (followIncludes) {
+ 												  /* parse included file and add typedefs and
+ 												     enumeration constants to current parse */
+ 												     System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+ 												  if (fileHistory.contains($3.text) == false) {
+ 												  	fileHistory.add($3.text);
+ 												  	System.out.println("  TO PARSE -> "+$3.text);
+	 												Declaration[] dd = HeaderFileUtil.resolveCTypes($3.text, this, false, fileHistory);
+	 												ns.setTypeDefs(dd);
+	 												System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+	 											  }
+	 											  }
+ 	
+ 												}
+ | INCLUDE '"' HEADERFILE '"'					{  	
+ 												  if (followIncludes) {
+ 												     System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+												  if (fileHistory.contains($3.text) == false) {
+ 												  	fileHistory.add($3.text);
+ 												  	System.out.println("  TO PARSE -> "+$3.text); 												  	
+ 											  	    Declaration[] dd = HeaderFileUtil.resolveCTypes($3.text, this, true, fileHistory); 
+   	 												ns.setTypeDefs(dd);
+   	 												System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+ 											  	  }
+ 											  	  }
+ 											  	}
+ | INCLUDE '<' PATH HEADERFILE '>'				{ 
+ 												  if(followIncludes) {
+ 												     System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+												  if (fileHistory.contains($3.text+$4.text) == false) {
+ 												  	fileHistory.add($3.text+$4.text);
+ 												  	System.out.println("  TO PARSE -> "+$3.text+$4.text);
+ 												  	Declaration[] dd = HeaderFileUtil.resolveCTypes($3.text,$4.text, this, false, fileHistory);  
+   	 												ns.setTypeDefs(dd);
+   	 												System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+ 												  }
+ 												  }
+ 												}
+ | INCLUDE '"' PATH HEADERFILE '"'				{ 
+ 												  if (followIncludes) {
+ 												     System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+												  if (fileHistory.contains($3.text+$4.text) == false) {
+ 												  	fileHistory.add($3.text+$4.text);
+ 												  	System.out.println("  TO PARSE -> "+$3.text+$4.text);
+ 												    Declaration[] dd = HeaderFileUtil.resolveCTypes($3.text,$4.text, this, true, fileHistory);   		
+ 												    ns.setTypeDefs(dd);
+ 												    System.out.println("Current File -> "+file.getName() + "  ("+file.getAbsolutePath()+")");
+ 												  }
+ 												  }
+ 												}
+ ;
+
+external_declaration
+ : NS_id function_definition				{ /* ignore */ }
+ | NS_id declaration						{ /* ignore */ }
+ | NS_id untyped_declaration				{ /* ignore */ }
+ ;
+ 
+
+declaration
+ : declaration_specifiers NS_td ';'								{ /* ignore */ }
+ | declaration_specifiers init_declarator_list NS_td ';'		{ /* ignore */ }
+ ;
+
+
+untyped_declaration
+ : init_declarator_list ';'						{ /* ignore */ }
+ ;
+
+declaration_list
+ : declaration										{ /* ignore */ }
+ | declaration_list declaration						{ /* ignore */ }
+ ;
+
+declaration_specifiers
+ : storage_class_specifier								{ /* ignore */ }
+ | storage_class_specifier declaration_specifiers		{ /* ignore */ }
+ | type_specifier										{ /* ignore */ }
+ | type_specifier declaration_specifiers				{ /* ignore */ }
+ | type_qualifier										{ /* ignore */ }
+ | type_qualifier declaration_specifiers				{ /* ignore */ }
+ ;
+ 
+storage_class_specifier
+ : NS_is_typedef TYPEDEF	{ /* ignore */ }
+ | EXTERN					{ /* ignore */ }
+ | STATIC					{ /* ignore */ }
+ | AUTO						{ /* ignore */ }
+ | REGISTER					{ /* ignore */ }					
+ ;
+
+
+function_definition
+ : declarator compound_statement 												{ /* ignore */ }
+ | declarator declaration_list compound_statement 								{ /* ignore */ }
+ | declaration_specifiers declarator NS_td compound_statement 					{ /* ignore */ }
+ | declaration_specifiers declarator NS_td declaration_list compound_statement 	{ /* ignore */ }
+ ;
+
+  
+/* Once an actual type-specifier is seen, it acts as a "trigger" to
+ * turn typedef-recognition off while scanning declarators, etc.
+ */
+type_specifier
+ : NS_ntd actual_type_specifier			{ /* ignore */ }
+ | type_adjective						{ /* ignore */ }
+ ;	
+
+actual_type_specifier
+ : VOID									{ /* ignore */ }
+ | CHAR									{ /* ignore */ }
+ | INT									{ /* ignore */ }
+ | FLOAT								{ /* ignore */ }
+ | DOUBLE								{ /* ignore */ }
+ | TYPEDEF_NAME							{ /* ignore */ }
+ | struct_or_union_specifier			{ /* ignore */ }
+ | enum_specifier						{ /* ignore */ }
+ ;
+
+type_adjective
+ : SHORT						{ /* ignore */ }
+ | LONG							{ /* ignore */ }
+ | SIGNED						{ /* ignore */ }
+ | UNSIGNED						{ /* ignore */ }
+ ;
+
+type_qualifier
+ : CONST			{ /* ignore */ }
+ | VOLATILE			{ /* ignore */ }
+ ;
+
+struct_or_union_specifier	
+ : struct_or_union NS_struct_push '{' struct_declaration_list NS_struct_pop '}'				{ /* ignore */ }
+ | struct_or_union identifier NS_struct_push '{' struct_declaration_list NS_struct_pop '}'	{ /* ignore */ }
+ | struct_or_union identifier																{ /* ignore */ }
+ ;
+
+struct_or_union
+ : STRUCT			{ /* ignore */ }
+ | UNION			{ /* ignore */ }
+ ;
+
+struct_declaration_list
+ : struct_declaration								{ /* ignore */ }
+ | struct_declaration_list struct_declaration		{ /* ignore */ }
+ | error											{ /* if something goes wrong, catch it.. -> struct still can be recognized */ }
+ ;
+
+init_declarator_list
+ : init_declarator 												{ /* ignore */ }
+ | init_declarator_list ',' init_declarator						{ /* ignore */ }
+ ;
+ 
+
+init_declarator
+ : direct_declarator  NS_direct_decl									{ /* ignore */ }
+ | direct_declarator NS_direct_decl NS_td '=' initializer NS_ntd		{ /* ignore */ }
+ | pointer direct_declarator NS_ptr_decl 								{ /* ignore */ }
+ | pointer direct_declarator  NS_ptr_decl NS_td '=' initializer	NS_ntd	{ /* ignore */ }
+
+ ;
+
+struct_declaration
+ : { ns.new_declaration(HeaderFileParser.STRUCT); } specifier_qualifier_list struct_declarator_list NS_td ';' 	{ /* ignore */ }
+ ;
+
+specifier_qualifier_list
+ : type_specifier									{ /* ignore */ }
+ | type_specifier specifier_qualifier_list			{ /* ignore */ }
+ | type_qualifier								 	{ /* ignore */ }
+ | type_qualifier specifier_qualifier_list			{ /* ignore */ }
+ ;
+
+struct_declarator_list								
+ : struct_declarator								{ /* ignore */ }
+ | struct_declarator_list ',' struct_declarator		{ /* ignore */ }
+ ;
+
+struct_declarator
+ : declarator									{ /* ignore */ }		
+ | ':' constant_expression						{ /* ignore */ }		
+ | declarator ':' constant_expression			{ /* ignore */ }		
+ ;
+
+enum_specifier									
+ : ENUM '{' enumerator_list '}'					{ /* ignore */ }	
+ | ENUM '{' enumerator_list ',' '}'				{ /* ignore */ }		
+ | ENUM identifier '{' enumerator_list '}'		{ /* ignore */ }
+ | ENUM identifier '{' enumerator_list ',' '}'	{ /* ignore */ }
+ | ENUM identifier								{ /* ignore */ }
+
+ ;
+
+enumerator_list
+ : enumerator								{ /* ignore */ } 
+ | enumerator_list ',' enumerator			{ /* ignore */ }
+ ;
+
+enumerator
+ : IDENTIFIER								{ ns.putDefineConstant($1); }	
+ | IDENTIFIER '=' constant_expression		{ ns.putDefineConstant($1,$3.text);
+ 											}
+ ;
+
+declarator
+ : direct_declarator  NS_direct_decl		{ /* ignore */ }
+ | pointer direct_declarator NS_ptr_decl	{ /* ignore */ }	
+ ;
+
+direct_declarator
+ : IDENTIFIER							{  $$ = $1; 
+ 	 						 			   ns.declarator_id(((Token)$1).text);  // can introduce names into name-space  	
+ 	  									}	
+ | '(' declarator ')'															{ /* ignore */ }
+ | direct_declarator '[' ']'													{ /* ignore */ }
+ | direct_declarator '[' constant_expression ']'								{ /* ignore */ }
+ | direct_declarator NS_scope_enter '(' parameter_type_list ')' NS_scope_leave	{ /* ignore */ }
+ | direct_declarator NS_scope_enter '(' ')' NS_scope_leave						{ /* ignore */ }
+ | direct_declarator NS_scope_enter '(' identifier_list ')' NS_scope_leave		{ /* ignore */ }
+ ;
+
+pointer
+ : '*'												{ /* ignore */ }
+ | '*' type_qualifier_list							{ /* ignore */ }
+ | '*' pointer										{ /* ignore */ }
+ | '*' type_qualifier_list pointer					{ /* ignore */ }
+ ;
+
+type_qualifier_list
+ : type_qualifier									{ /* ignore */ }
+ | type_qualifier_list type_qualifier				{ /* ignore */ }
+ ;
+
+parameter_type_list
+ : parameter_list									{ /* ignore */ }
+ | parameter_list ',' ELLIPSIS						{ /* ignore */ }
+ ;
+
+parameter_list
+ : parameter_declaration							{ /* ignore */ }
+ | parameter_list ',' parameter_declaration			{ /* ignore */ }
+ ;
+
+// added error 
+parameter_declaration
+ : NS_new_parm declaration_specifiers declarator NS_td				{ /* ignore */ }
+ | NS_new_parm declaration_specifiers NS_td							{ /* ignore */ }
+ | NS_new_parm declaration_specifiers abstract_declarator NS_td		{ /* ignore */ }
+ ;
+
+identifier_list
+ : IDENTIFIER						{ $$ = $1; }
+ | identifier_list ',' IDENTIFIER	{ /* ignore */ }
+ ;
+
+initializer
+ : assignment_expression			{ /* ignore */ }	
+ | '{' initializer_list '}'			{ /* ignore */ }
+ | '{' initializer_list ',' '}'		{ /* ignore */ }	
+ ;
+
+initializer_list
+ : initializer						{ /* ignore */ }
+ | initializer_list ',' initializer	{ /* ignore */ }
+ ;
+
+type_name
+ : specifier_qualifier_list NS_td						{ /* ignore */ }
+ | specifier_qualifier_list NS_td abstract_declarator	{ /* ignore */ }
+ ;
+
+abstract_declarator
+ : pointer											{ /* ignore */ }	 
+ | direct_abstract_declarator						{ /* ignore */ }
+ | pointer direct_abstract_declarator				{ /* ignore */ }	
+ ;
+
+direct_abstract_declarator
+ : '(' abstract_declarator ')'								{ /* ignore */ }
+ | '[' ']'													{ /* ignore */ }
+ | '[' constant_expression ']'								{ /* ignore */ }
+ | direct_abstract_declarator '[' ']'						{ /* ignore */ }
+ | direct_abstract_declarator '[' constant_expression ']'	{ /* ignore */ }
+ | '(' ')'													{ /* ignore */ }
+ | '(' parameter_type_list ')'								{ /* ignore */ }
+ | direct_abstract_declarator '(' ')'						{ /* ignore */ }
+ | direct_abstract_declarator '(' parameter_type_list ')'	{ /* ignore */ }
+ ;
+
+statement
+ : labeled_statement					{ /* ignore */ }					 
+ | compound_statement					{ /* ignore */ }				
+ | expression_statement					{ /* ignore */ }				 
+ | selection_statement					{ /* ignore */ }				
+ | iteration_statement					{ /* ignore */ }				
+ | jump_statement						{ /* ignore */ }					
+ ;
+
+labeled_statement
+ : identifier ':' statement						{ /* ignore */ }				
+ | CASE constant_expression ':' statement		{ /* ignore */ }			
+ | DEFAULT ':' statement						{ /* ignore */ }					
+ ;
+
+expression_statement	
+ : ';'									{ /* ignore */ }						
+ | expression ';'						{ /* ignore */ }				
+ ;
+
+compound_statement
+ : NS_scope_enter '{' NS_scope_leave '}'									{ /* ignore */ }
+ | NS_scope_enter '{' statement_list NS_scope_leave '}'						{ /* ignore */ }
+ | NS_scope_enter '{' declaration_list NS_scope_leave '}'					{ /* ignore */ }
+ | NS_scope_enter '{' declaration_list statement_list NS_scope_leave '}'	{ /* ignore */ }
+ ;
+
+statement_list
+ : statement							{ /* ignore */ }
+ | statement_list statement				{ /* ignore */ }
+ ;
+
+selection_statement
+ : IF '(' expression ')' statement %prec THEN			{ /* ignore */ }	
+ | IF '(' expression ')' statement ELSE statement		{ /* ignore */ }	
+ | SWITCH '(' expression ')' statement					{ /* ignore */ }	
+ ;
+
+iteration_statement			
+ : WHILE '(' expression ')' statement											{ /* ignore */ }	
+ | DO statement WHILE '(' expression ')' ';'									{ /* ignore */ }	
+ | FOR '(' expression_statement expression_statement ')' statement				{ /* ignore */ }	
+ | FOR '(' expression_statement expression_statement expression ')' statement   { /* ignore */ }	
+;
+
+jump_statement
+ : GOTO identifier ';'					{ /* ignore */ }	
+ | CONTINUE ';'							{ /* ignore */ }	
+ | BREAK ';'							{ /* ignore */ }	
+ | RETURN ';'							{ /* ignore */ }	
+ | RETURN expression ';'				{ /* ignore */ }	
+ ;
+
+expression
+ : assignment_expression					{ $$ = $1; }
+ | expression ',' assignment_expression		{ /* ignore */ }
+ ;
+
+
+assignment_expression
+ : conditional_expression										{ $$ = $1; }
+ | unary_expression assignment_operator assignment_expression	{ $$ = $1; 
+ 																  $<Token>$.text +=$2.text+$3.text;
+ 																}
+ ;
+
+assignment_operator
+ : '=' 				{ $$ = $1; }
+ | MUL_ASSIGN		{ $$ = $1; }
+ | DIV_ASSIGN 	  	{ $$ = $1; }
+ | MOD_ASSIGN 		{ $$ = $1; }
+ | ADD_ASSIGN 		{ $$ = $1; }
+ | SUB_ASSIGN		{ $$ = $1; }
+ | LEFT_ASSIGN 		{ $$ = $1; }
+ | RIGHT_ASSIGN 	{ $$ = $1; }
+ | AND_ASSIGN 		{ $$ = $1; }
+ | XOR_ASSIGN 		{ $$ = $1; }
+ | OR_ASSIGN		{ $$ = $1; }
+ ;
+
+conditional_expression
+ : logical_or_expression											{ $$ = $1; }
+ | logical_or_expression '?' expression ':' conditional_expression	{ $$ = $1; $<Token>$.text+="?"+$3.text+":"+$5.text; }
+ ;
+
+constant_expression									
+ : conditional_expression									{ $$ = $1; }	
+ ;
+
+
+logical_or_expression
+ : logical_and_expression									{ $$ = $1; }
+ | logical_or_expression OR_OP logical_and_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+logical_and_expression
+ : inclusive_or_expression								{ $$ = $1; }
+ | logical_and_expression AND_OP inclusive_or_expression	{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+inclusive_or_expression
+ : exclusive_or_expression								{ $$ = $1; }
+ | inclusive_or_expression '|' exclusive_or_expression	{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+exclusive_or_expression
+ : and_expression								{ $$ = $1; }
+ | exclusive_or_expression '^' and_expression	{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+and_expression
+ : equality_expression							{ $$ = $1; }
+ | and_expression '&' equality_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+equality_expression
+ : relational_expression								{ $$ = $1; }
+ | equality_expression EQ_OP relational_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ | equality_expression NE_OP relational_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+relational_expression
+ : shift_expression									{ $$ = $1; }
+ | relational_expression '<' shift_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ | relational_expression '>' shift_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ | relational_expression LE_OP shift_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ | relational_expression GE_OP shift_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+shift_expression
+ : additive_expression								{ $$ = $1; }
+ | shift_expression LEFT_OP additive_expression		{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ | shift_expression RIGHT_OP additive_expression	{ $$ = $1; $<Token>$.text+=$2.text+$3.text; }
+ ;
+
+additive_expression
+ : multiplicative_expression							{ $$ = $1; }
+ | additive_expression '+' multiplicative_expression	{ $$ = $1; $<Token>$.text+="+"+$3.text; }
+ | additive_expression '-' multiplicative_expression	{ $$ = $1; $<Token>$.text+="-"+$3.text; }
+ ;
+
+multiplicative_expression
+ : cast_expression									{ $$ = $1; }
+ | multiplicative_expression '*' cast_expression	{ $$ = $1; $<Token>$.text+="*"+$3.text; }
+ | multiplicative_expression '/' cast_expression	{ $$ = $1; $<Token>$.text+="/"+$3.text;  }
+ | multiplicative_expression '%' cast_expression	{ $$ = $1; $<Token>$.text+="%"+$3.text;  }
+ ;
+
+cast_expression
+ : unary_expression								{ $$ = $1; }
+ | '(' type_name ')' cast_expression			{ $$ = $4; }
+ ;
+
+unary_expression
+ : postfix_expression					{ $$ = $1; }
+ | INC_OP unary_expression				{ $$ = $1; $<Token>$.text+=$2.text; }
+ | DEC_OP unary_expression				{ $$ = $1; $<Token>$.text+=$2.text; }
+ | unary_operator cast_expression		{ $$ = $1; $<Token>$.text+=$2.text; }
+ | SIZEOF unary_expression				{ $$ = $1; $<Token>$.text+=$2.text; }
+ | SIZEOF '(' type_name ')'				{ $$ = $1; $<Token>$.text+=$2.text; }			
+ ;
+
+unary_operator
+ : '&' 		{ $$ = $1; }
+ | '*'		{ $$ = $1; }
+ | '+' 		{ $$ = $1; }
+ | '-' 		{ $$ = $1; }
+ | '~' 		{ $$ = $1; }
+ | '!'		{ $$ = $1; }
+ ;
+
+// errormsg fix of  return offsetof(TOS_Msg, strength);
+postfix_expression
+	: primary_expression											{ $$ = $1; }
+	| postfix_expression '[' argument_expression_list ']'			{ $$ = $1; }
+	| postfix_expression '(' argument_expression_list ')'			{ $$ = $1; }
+	| postfix_expression '(' error ')'			{ $$ = $1; }
+	| postfix_expression '(' ')'									{ $$ = $1; }
+	| postfix_expression '.' identifier								{ $$ = $1; }
+	| postfix_expression PTR_OP identifier							{ $$ = $1; }
+	| postfix_expression INC_OP										{ $$ = $1; }
+	| postfix_expression DEC_OP										{ $$ = $1; }			
+	;
+	
+primary_expression
+ : IDENTIFIER									{ $$ = $1; }
+ | constant										{ $$ = $1; }
+ | STRING										{ $$ = $1; }
+ | '(' expression ')'							{ $$ = $1; 
+ 												  $<Token>$.text += $2.text + ")";
+ 												}
+ ;
+
+// added: struct_or_union identifier because of : enum {  MSG_DATA_SIZE = offsetof(struct TOS_Msg, crc) + sizeof(uint16_t) }
+argument_expression_list
+ : assignment_expression									{ $$ = $1; }
+ | struct_or_union identifier								{			}
+ | argument_expression_list ',' assignment_expression		{ /* ignore */ }
+  | argument_expression_list ',' struct_or_union identifier		{ /* ignore */ }
+ ;
+
+constant
+ : INTEGER_CONSTANT								{ $$ = $1; }
+ | CHARACTER_CONSTANT							{ $$ = $1; }
+ | FLOATING_CONSTANT							{ $$ = $1; }
+ | ENUMERATION_CONSTANT							{ $$ = $1; }
+ 
+%%
+// -----------------------------------------------------------
+// epilog
+// -----------------------------------------------------------
+}

@@ -1,0 +1,360 @@
+#a3
+- External files are parsed as well
+- Outline view updates its content no longer in the UI-thread
+- Outline view provides better links to editor (which region of the file belongs to which node, etc...)
+- File cache:
+  + the two caches (AST-Model, Wiring) can now backup their data on the disk.
+    Result AST-Model: becomes faster, a lot
+    Wiring: no difference to see
+    R20 Startup: becomes faster
+- Projects divided in src and bin folder
+- R6: resolved, although the new behavior does not follow exactly Standard C
+- R9: resolved
+- R2: Faster cancellation of parsing, preprocessor can be canceled as well
+- No parsing when closing an editor-view
+- R4, R15, R19, R21: internal handling of jobs changed, hopefully makes a difference
+- R13: resolved, can now also put in the '*/', but not if there is already a '*/'
+- Leds.name() "missing call, not Leds": additional message "maybe missing keyword 'call'?"
+- Simple control flow analysis (experimental)
+- Maketarget dialog: checks validity of input (experimental)
+
+#a4
+- a big set of new hyperlinks: local/global fields, types and type-tags, interface/component references, ...
+- error detection finds references to not yet existing component references
+- the missing resources are stored in a file-cache: triggers a rebuild if missing resources were found
+- the build modification time stamp of the last built is stored (and gets deleted as soon as a file comes into the build-queue) 
+	+ allows to restart a build job when eclipse was closed
+	+ if a build job is canceled, not all builds are lost
+- better support for automatic insertion of }: the number of { and } are counted before inserting a }
+- Commands are handled with a separate bash-job in Linux, should stop any blocking of commands and give better output
+- Closing project / Deleting resource will also close its editor
+- outline: open initial tree automatically (does not open references)
+
+#a5
+- upgrade of Maketarget-Dialog
+- calling ncc is now possible
+- Incomplete types in functions (as result or arguments) detected
+- Checks also interface-indices (like "uses interface X[int id]")
+- Quickfixes for missing interface-functions and for missing header files
+
+#a6
+- update Make-Includes: recursive and system includes possible
+- some errors repaired: parameterized interfaces, bool = uint8_t, range of typedefs
+
+#a7
+- when building the basic types, take existing files like tos.h into consideration. Use the best declaration of basic types, not the first one.
+- on full rebuild: rebuild basic types as well, since they might have been changed as well
+- Hyperlinks work also for basic types
+- Basic types are present in *.h files
+- unknown directives like #blublup give a warning
+
+#a8
+- when closing editor during initialization: file gets rebuilt
+- proposal for typedefs
+- various bugs found by Nicolas
+
+#b0
+- Templates activated
+- Proposals ordered by origin (int the same file or not)
+- Advanced proposals for function calls
+
+#b1
+- Management of Make-Options changed, options after project creation no longer missing
+- Import-Wizard for "normal" projects (just copies everything to the src-directory)
+- Example-Wizard respects directory structure when copying a project
+- When changing a Make-Option a full rebuild is only performed if certain attributes changed (there is no longer a rebuilt just for clicking "ok" on the dialog)
+- The rule for "interfacename."<proposals> does no longer work with the AST but directly with the document, should make the rule more robust.
+- Automatically inserting ), ], ' and ".
+- More preferences concerning syntax highlighting, are applied without the need of restarting Eclipse
+- Do build when *not* saving changed document
+- Attributes shown in outline as well
+- Better support for typedefs in outline
+- Declarations of global included files were not included in some search-algorithms
+- Can explicitly remove directories from include path
+- Resources outside the src-folder can no longer be built
+- Can define typedefs that are available in all files
+
+#b2
+- Hyperlinks for "post"
+- Some additional error messages
+- Internal refactoring of the environment-plugin, does not affect users
+- Ncg, Mig-dialog
+
+#b3
+- Make Options: Make Extras in scrollable panel, explanation what a checked directory in the import page means always visible.
+- The same proposal was shown multiple times when writing "<interface>."
+- Proposals for implementing interface functions in modules replaced to many characters
+- Additional way to specify include directories
+
+#b10
+- Hyperlinks for attributes
+- TOSDIR is filtered out when making suggestions in the preference dialog (unix 2 environment)
+- dependency cache gets not rebuilt during startup, instead the file is marked as unbuilt: the dependency cache is only good for triggering the built of a file, there is no harm if it is initialized later. Also a missing dependency cache and being not built happens often at the same time, so in fact amount of work gets reduced.
+- more updates of the progress bar during a built. Should help against the "nothing happens feeling".
+- Numbers ending with L (like 123L) were not understood
+ 
+#b11
+- Preprocessor did not handle '#elif defined' correctly
+- Architectures are read directly from platform files
+- Sensor boards are read from <tosdir>/tos/sensorboards
+ 
+#b12
+- No restart required after path change
+- Windows environment
+- Architectures no longer hard coded
+ 
+#b13
+- Graph View: outline selects only one element. Elements of the same kind are marked with another color, and the path to the selected element is marked as well
+- Autoinsert of commands/events in modules did use the wrong types (for typedef and generic types)
+- Folding for functions, interface, module, configuration, binary component, multi line comments
+
+#b14
+- Completion Proposals updated when open and editor reconciled
+- Platforms can define global includes, like hardware.h 
+
+#b15
+- Auto-insert of field of interface-reference did not use the name of the reference
+- Stop-button for invoke-make-job should work
+- Some paths were not translated correct on windows
+
+#b16
+- The platforms are no longer found by invoking 'ncc -print-platforms' but by scanning the tosdir/platforms folder for '.platform' files. This also takes '.family' files into consideration.
+- Make-Extras were not found in Windows
+
+#b17
+- .sensor files are parsed as well
+- unknown (wrong?) nesdoc keywords can be syntax-highlighted in a different color
+- All access to Eclipse internal source code removed. This will not have any effect for users right now, but it ensures that the plugin works with future Eclipse versions as well.
+- Cache mapping of file <-> path under Windows/Cygwin.
+
+#b18
+- Folding did go one character too far, as a result EOF was reached and produced missing foldings
+- Typedefs got replaced too eagerly, as a result sometimes the base type rather than the typedef-name was used
+- NewXYZ-dialogs now ensure that the name-textfield initially has the focus
+- Clean can run in two modes: clean only project files or clean all files
+- Cleans are more forceful now, they do explicitly delete cache files as well
+- Graph view: Interfaces have used/provided-icon
+- Graph view: Components use their renamed name
+- Graph view: Alternative selection was not always recognized
+- Thumbnail view: deletes contents when original no longer shown
+- Thumbnail view: automatic show up can be disabled in preferences
+
+#b19
+- Many bugs concerning code completion fixed
+
+#b20
+- Parser can handle ({ <statements> }) as expression
+- A list of __builtin_-functions has been declared, these functions are ignored during error detection
+- Preprocessor view: applies global macros as well
+- Preprocessor view: never has more than one empty line in a row 
+- General Preference Page of Core plugin works as well
+
+#b21
+- Can instruct win/unix environment to use tos 1.x tree
+- Win Preference page: did access gui in wrong thread, as a result updating the architecture paths did not work
+- Collector did not jump over whole {}-blocks and as a result sometimes including files did break
+
+#b22
+- Bugfix, strange paths were used when combining cygwin and TinyOS 1.x, these paths have lead to a malfunction of cygpath
+- AST and Binding-View visible when in Debug-mode.
++ Final Release Candidate
+
+#b23
+- Bugfix: context sensitive syntax-highlighting did not work in functions
+- Bugfix: interfacename<const type> did not work
+- Bugfix: Newline in string using \ was not processed by preprocessor
+- Bugfix: ".field = 3" did not work correct in initializer
+
+#b24
+- TinyOS-Menu only visible when TinyOS Perspective selected
+- Source-Menu only visible when nesc-editor selected
+- Bugfix: field access in initializer with ':' were not handled, e.g. "{ field : 2 }" was not handled
+- Bugfix: ranges in initializer were not handled, e.g. "{ [1 ... 3] = 3 }"
+
+#b25
+- Default paths of environments set a bit later, Eclipse has a better startup and there are not progress bars shown twice
+- New hyperlinks for initializers like "{ .x = 3; }"
+- Bugfix: a deadlook could occur when many threads wrote much output into the tinyos-console
+
+#b26
+- Literals like 100.0f not correctly handled, the f was sometimes interpreted as identifier
+- const modifier in command/events allowed
+- preprocessor can handle function-macros with no arguments
+- asm statement takes any expression if using the form '"x" (y)' as 'y'. This is not quit correct (there are restrictions what expressions are allowed), put prevents false error messages.
+- empty initializer possible
+- scalar values can initialize non scalar types, like in 'char str[4] = "abc";'
+
+#b27
+- Horizontal scrollbar does no longer jump back to position 0 when the folding structure updates
+- Missing error message for initializers with no value (i.e. "int x = ;")
+- Restrictions on enumeration comparison lessened, removes some false error messages with parameterized interfaces
+- MMCU-option of .platform file gets read and translated into the macro that would be used when compiling with gcc (for AVR and MSP430 only).
+- Macro- and Typdef-Dialog (both are children of the make-options-dialog) are no longer without title and border
+- Warning: "Potential overflow or loss of precision because of implicit cast" now also tells what type was converted into what type
+
+#b28
+- Compiled with Java 1.5
+
+#b29
+- Updated error messages
+- Make-Options: no longer forced to select any sensorboard at all
+- Windows: could not compile applications
+- Windows: temporary files are now stored in the systems temp-folder, no longer in the cygwin-folder
+- Copy&Paste support for Make Options
+- Error message when opening an nc-file with no associated project
+- External files opened through "File > Open File" are at least shown, but they do still not receive anything more than basic syntax highlighting
+
+#b30
+- Enhanced range description, allows error/warning messages to forward more informations.
+- Additional error messages when redefining a component in a configuration
+- Fixed a bug concerning a missing icon
+- Reduced flickering of outline view
+
+#b32
+- Only half as many files automatically included than before
+- Fix in error message concerning enumerations and parameters of generic modules
+- New syntax highlighting algorithm, handles interlacing of comments and preprocessor directives
+- Bugfix: syntax highlighting in doc-comments was wrong when using some characters like $
+- Preprocessor view applies syntax highlighting as well
+- Bugfix: Component graph does no longer throw exception when made invisible while building up the image
+- Bugfix: preprocessor could not handle directive #endif with arguments 
+
+#b32.(a,b)
+- Bugfixes in the preprocessor and the parser
+
+#b33
+- Bugfix: Preprocessor handles $ in identifiers
+- Bugfix: Lexer will no longer mark its errors as created by the preprocessor
+- Bugfix: Parser treats characters now as characters and not as strings, also recognizes now wide characters/string (wchar_t/wchar_t*).
+
+#b34
+- Bugfix: Preprocessor does no longer replace macros within blocks that should be ignored by the preprocessor (e.g. in an #if #endif-block where the condition of the #if was false)
+- Bugfix: Implicit resolution of wiring makes stronger type check, weak type check lead to problems with typedefs that are equal, like TMilli and T32khz.
+- Bugfix: RangeDescriptionBuilder could be stuck in infinite loop
+- Array-type can have length "specified unknown", e.g. in a module with parameters and the size is a parameter
+- New code to translate Dataobject-types into text in the outline view
+- Linux Environment: uses interactive bash to read default values of paths at startup, does no longer use shell to invoke make, ncc, mig, etc...
+
+#b35
+- Feature: Support launch configurations
+- API: MakeTarget rewritten, is now much more generic
+
+#b36
+- Bugfix: DeclarationResolver of ModelNode was not set properly when loading from cache
+- API: New inspection API in core, allows type safe high level inspection of code (e.g. what fields has a module). This is primarily a wrapper around the binding-mechanism of the parser-plugin.
+- Bugfix: when executing "echo" to read variables like TOSROOT, only the last line is considered to be part of the variable. This prevents the unnecessary and ill placed message "Setting up for TinyOS 2.1.0" to show up...
+- Bugfix: Deadlock could occur when saving the file and at the same time a file is being updated. The deadlock required several random events to happen at the correct time in the correct order.
+- Bugfix: now also supporting the very peculiar case of an unnamed data object 'a' in a data objects 'b', where 'b' "inherits" the fields of 'a'.
+- Bugfix: folding in the NesC-Editor now checks outdated information thus preventing illegal folding regions.
+
+#b36.a
+- Bugfix: Folding regions do no longer expand when a document is changed
+- Bugfix: No timeout when starting up Eclipse (one of the plugins implicitly triggered the ClassLoader of another plugin at a bad time which resulted in a deadlock situation)
+- Bugfix: the outline was not updated correctly, this bug was caused because an "equals" operation was miswritten as a "endsWith" operation...
+- API: error, warning, info-messages of resources are now updated in the UI thread hopefully preventing a racecondition
+
+#b36.b
+- Bugfix: Names of function arguments were not resolved if the function returned a pointer
+
+#b36.c
+- Bugfix: 'post xyz' is of type "error_t", not "void".
+- Feature: new proposal rule: "interface in module", fixes on existing proposals
+- Bugfix: Another potential cause for UI errors resolved
+
+#b42
+- Bugfix: Files opened by debugger are reconciled as well.
+
+#0
+- Bugfix: preprocessor did not handle macros in elif correct.
+- Bugfix: example dialog could not start if environment could not find example directory
+- Bugfix: Ncg, Mig-Dialog now support selecting the project-target
+- Feature: The source-folder is no longer hard-wired. Now a project can have many source-folders. Also source folders can be linked from outside the workspace.s
+
+#1
+- Bugfix: Project nature was incorrect due to renaming of plugin id, project natures now get automatically updated as soon as an open project is found.
+
+#2
+- Bugfix: New method to find out where an element (e.g. a variable) is from (file, line), hopefully more accurate than before
+- Bugfix: Initializer type in situations like "uint32_t x = ..." determined in a new way, this should prevent typedefs to be replaced by their raw type and leading to wrong casting errors.
+- Bugfix: Launch configuration could not handle situation where no project was not selected
+- Feature: support for MSP430 debugging
+
+#3
+- Feature: before starting a debug session, one of the make-options or launch configurations can be run automatically.
+- Feature: any new files and directories of the .cache folder are marked 'derived' which excludes them from versioning.
+- Regression: The TINYOS_PLUGIN_MAKEFILE is no longer parsed and analyzed for included directories, this has to be done through the properties/make-options. Reasons for this step are: 1. it is not intuitive to modify this file, 2. the makefile-parser was limited at best.
+- Bugfix: attributes, an expression like '@a( x )' was interpreted as 'a = x' instead of 'a = {x}' which lead to the error 'scalar initializer for non-scaler type'.
+- Feature, API: new ProjectCheckers. 1: check paths associated with projects (like source folders, TOSROOT...) and mark the project as having errors if these paths are not pointing to existing files/directories. 2: check make-options and display errors.
+- Bugfix: Deadlock when loading environments
+
+#4
+- Bugfix: error when selecting debug-configuration with no project set.
+
+#5
+- Bugfix: NPE when resolving init declaration with unknown type on the right side
+- Bugfix: changing paths like <All Platforms> did not trigger an update of the project if the project is using the default make options.
+- Feature: Preferences, if tosroot is the prefix for tosdir, tosapps or makerules; then editing tosroot automatically edits the other paths as well.
+
+#6
+- Bugfix, Feature: relative paths in .platform, .family and .sensor are mapped to paths pointing into the source directories of a file. If there is more than one source directory, one path is mapped to many paths. If there are directories within a source directory, then these inner directories are ignored for the mapping.
+- Feature: Example dialog issues error message if no examples were found
+- Bugfix: Examples are reloaded if an environment is reinitialized
+
+#7
+- Bugfix: Architecture include paths have additional filter rules, which should prevent any path defined in a .platform file to appear.
+
+#8
+- Bugfix: NPE when analyzing documented function with incorrect header, like "x( message* ab cd )".
+- Feature: Also semi-correct documentation using "@param 'type name'" gets now parsed.
+- Bugfix: Warnings related to documentation was not stored when saving a modified file.
+- Feature: The user may now choose whether icons in a hover or in a graph view are decorated if the underlying element has an error or warning attached.
+- Feature: Tooltips in the graph view do not close after 5 seconds, tooltips use bold font and show icons.
+- Bugfix/Feature: rules to find links to files in text printed on the console updated, they now find more links.
+- Bugfix: Attributed attributes where not detected (e.g. 'struct @x @y() {}' would create a syntax error). 
+- Bugfix: deadlock, a secure thread waiting for an UI job could collide with an UI job trying to become secure. Now there should be no longer any secure thread be waiting for an UI job.
+- Feature: documentation shown in hovers more accurate: 
+  - Editor: for a function it is now first checked whether it has documentation, afterwards whether there is a reference to an element with documentation
+  - Graph: if an item has no documentation, than the INesCInspector is used to find a second item related to the first item, which has a documentation; e.g. if a function in a module has no documentation, then the function in an interface might have.
+  
+#9  
+- Bugfix: Component Variables Browser orders its content more intelligent and respects the indices of variables in arrays.
+- UI: New action 'Edit default target' in Make Options View. The action opens the properties dialog of the associated project. The root (=default) target must now be edited in the properties dialog, the make-target-dialog is no longer available for it.
+- Bugfix: Another deadlock, caused by MessageClear, a job running in the UI thread and blocking the project.
+- Feature: MakeOptionsView stores the expanded state of the make-options persistently.
+
+#10
+- Feature: Error "shadowing fields" provides quick link to the fields (or functions) which have issues.
+- Feature: Save all dialog offers "never ask again"-box.
+- Bugfix: analyzing the output written in the console could throw a NumberFormatException
+- Bugfix: paths containing whitespaces are also recognized in the console
+- Feature: some attributes are recognized and marked graphically in various views
+- Feature: documentation of function parameters appears in hover
+- Bugfix: windows environment: some paths were not translated into cygwin, causing problems when compiling an application.
+- Bugfix: compiling did not work if component file had whitespace in path
+
+#11
+- Feature: additional set of hovers for various elements
+- Feature: nesc-doc better handled in hovers
+- Bugfix: Icons in hover and graph have no empty spacing if they are undecorated
+- UI: automatic expansion of items in graph view restricted to 5 levels
+- Bugfix: Icon for parameters had wrong size
+
+#12
+- Feature: additional set of icons for attributes
+- Behavior: Most modules of Yeti now refuse on working with non-TinyOS projects. This ensures that meta-data is not created for those projects and removes a number of problems associated with missing information in a non-TinyOS project.
+
+#13 
+- Bugfix: Builder did sometimes throw a NPE and did not update the project
+- Bugfix: Checking whether a string in the console is a filename did sometimes throw a NPE
+- Feature: Model uses new datastructure reducing the runtime of some operations
+
+#14
+- Bugfix
+
+#15
+- Migrate to GPL
+- Feature: additional completion-proposals.
+- Bugfix/Feature: old completion proposals get reused if file is reparsed, leads to more proposals in some cases
+- Bugfix: some icons got streched in the search view
+- UI: When searching for an element, the file in which the element is declared carries now more weight than the file in which the element was first seen due to inclusion.
+- Feature: Types anaylzed more carefully when resolving implicit connections, leads to less false, and more exact error messages.

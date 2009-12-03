@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+	<template 
+		id="author" 
+		name="author" 
+		description="Lists an author of the file"
+		context="TinyOS.DocContextType"
+		enabled="true"
+	>@author ${user}</template>
+	<template 
+		id="modified" 
+		name="modified" 
+		description="Lists a modification."
+		context="TinyOS.DocContextType"
+		enabled="true"
+	>@modified ${date} ${description}</template>
+	<template 
+		id="return" 
+		name="return" 
+		description="Describes the return value of a function"
+		context="TinyOS.DocContextType"
+		enabled="true"
+	>@return ${text}</template>
+	<template 
+		id="param" 
+		name="param" 
+		description="Describes a parameter to a function"
+		context="TinyOS.DocContextType"
+		enabled="true"
+	>@param ${paramname} ${text}</template>
+</templates>

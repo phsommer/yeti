@@ -1,0 +1,3 @@
+
+a#yeti2-introLink img { background-image : url(graphics/yeti2.png); }
+a#yeti2-introLink:hover img { background-image : url(graphics/yeti2_hov.png); }
