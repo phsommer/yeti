@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="tinyos.yeti.core.Environments">
+      <environment
+            class="tinyos.yeti.environment.winXP.Environment">
+      </environment>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="tinyos.yeti.environment.winXP.preference.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="tinyos.environment"
+            class="tinyos.yeti.environment.winXP.preference.EnvironmentPreferencePage"
+            id="TinyOsWnXPEnvironmentWrapper.paths"
+            name="TinyOS 2.x win-environment">
+      </page>
+      <page
+            category="TinyOsWnXPEnvironmentWrapper.paths"
+            class="tinyos.yeti.environment.winXP.preference.PlatformIncludePathsPreferencePage"
+            id="TinyOsWinXPEnvironmentWrapper.platforms"
+            name="Platform Paths">
+      </page>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.ProjectChecker">
+      <checker
+            class="tinyos.yeti.environment.winXP.checker.EnvironmentChecker">
+      </checker>
+   </extension>
+
+</plugin>
