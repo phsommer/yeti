@@ -358,3 +358,8 @@
 - Bugfix: some icons got streched in the search view
 - UI: When searching for an element, the file in which the element is declared carries now more weight than the file in which the element was first seen due to inclusion.
 - Feature: Types anaylzed more carefully when resolving implicit connections, leads to less false, and more exact error messages.
+
+#16
+- Feature: the include-page has been rewritten. It allows settings with the same effect as previous but with less clicks. It also allows new combinations of settings that were not supported previously.
+- Bugfix: character '\0' was not recognized as a character with length 1, because 0 was interpreted as string-terminating symbol.
+- Bugfix: platform dependend include paths were not stored properly.

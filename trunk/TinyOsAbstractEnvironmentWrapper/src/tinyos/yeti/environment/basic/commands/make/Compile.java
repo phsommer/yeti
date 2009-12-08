@@ -35,6 +35,8 @@ import tinyos.yeti.environment.basic.AbstractEnvironment;
 import tinyos.yeti.environment.basic.TinyOSAbstractEnvironmentPlugin;
 import tinyos.yeti.environment.basic.commands.AbstractCommand;
 import tinyos.yeti.environment.basic.commands.IExecutionResult;
+import tinyos.yeti.ep.IPlatform;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.IMakeTarget;
 
 public class Compile extends AbstractCommand<Object>{
@@ -61,6 +63,7 @@ public class Compile extends AbstractCommand<Object>{
         setCommand( command.toArray( new String[ command.size() ] ) );
         
         putEnvironmentParameters( environment.getPathManager().getEnvironmentVariables() );
+        
         putEnvironmentParameter( "ECLIPSE_PROJECT", directoryName );
         
         IFile componentFile = target.getComponentFile();
@@ -90,6 +93,23 @@ public class Compile extends AbstractCommand<Object>{
         }
         
         putEnvironmentParameter( "PFLAGS", builder.toString() );
+        
+        IPlatform platform = target.getPlatform();
+        if( platform != null ){
+        	EnvironmentVariable[] variables = platform.getDefaultEnvironmentVariables();
+        	if( variables != null ){
+        		for( EnvironmentVariable variable : variables ){
+        			putEnvironmentParameter( variable.getKey(), variable.getValue() );
+        		}
+        	}	 
+        }
+        
+        EnvironmentVariable[] variables = target.getEnvironmentVariables();
+        if( variables != null ){
+        	for( EnvironmentVariable variable : variables ){
+        		putEnvironmentParameter( variable.getKey(), variable.getValue() );
+        	}
+        }
         
         setAssumesInteractive( false );
     }

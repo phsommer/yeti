@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import tinyos.yeti.environment.basic.platform.AbstractPlatform;
 import tinyos.yeti.environment.basic.platform.MMCUConverter;
 import tinyos.yeti.environment.basic.platform.SensorBoard;
@@ -35,8 +37,8 @@ public class Platform extends AbstractPlatform{
     
     private Environment environment;
     
-    public Platform( Environment environment, File directory, File top, MMCUConverter converter ){
-        super( environment, directory, top, converter );
+    public Platform( Environment environment, File directory, File top, MMCUConverter converter, IPreferenceStore store ){
+        super( environment, directory, top, converter, store );
         this.environment = environment;
     }
     

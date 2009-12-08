@@ -433,6 +433,21 @@
          </enabledWhen>
       </page>
       <page
+            category="tinyOS.properties.tosenv"
+            class="tinyos.yeti.properties.make.EnvironmentVariablesPropertyPage"
+            id="tinyOS.properties.maketarget.typedefs"
+            name="9. Environment Variables">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="tinyos.yeti.core.TinyOSProject">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
             class="tinyos.yeti.properties.source.NesCPathPropertyPage"
             id="tinyOS.properties.nescpaths"
             name="TinyOS Source">

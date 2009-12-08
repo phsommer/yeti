@@ -38,6 +38,7 @@ import tinyos.yeti.environment.winXP.Environment;
 import tinyos.yeti.environment.winXP.TinyOSWinXPEnvironmentWrapper;
 import tinyos.yeti.environment.winXP.path.PathSetting;
 import tinyos.yeti.ep.IPlatform;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 
 public class PlatformManager extends AbstractPlatformManager{
@@ -46,6 +47,7 @@ public class PlatformManager extends AbstractPlatformManager{
     public PlatformManager( Environment environment ){
         this.environment = environment;
         setDefaultMakeIncludes( PlatformUtility.loadGeneral( getStore() ) );
+        setDefaultVariables( PlatformUtility.loadGeneralEnvironmentVariables( getStore() ) );
     }
     
     @Override
@@ -55,6 +57,7 @@ public class PlatformManager extends AbstractPlatformManager{
         super.setDefaultMakeIncludes( defaultMakeIncludes );
 
         if( change ){
+            PlatformUtility.storeGeneral( defaultMakeIncludes, getStore() );
             IPlatform[] platforms = getCurrentPlatforms();
             if( platforms != null ){
                 for( IPlatform platform : platforms ){
@@ -64,7 +67,15 @@ public class PlatformManager extends AbstractPlatformManager{
         }
     }
     
-
+    @Override
+    public void setDefaultVariables( EnvironmentVariable[] defaultVariables ){
+    	boolean change = !Arrays.equals( defaultVariables, getDefaultEnvironmentVariables() );
+    	if( change ){
+    		super.setDefaultVariables( defaultVariables );
+    		PlatformUtility.storeGeneral( defaultVariables, getStore() );
+    	}
+    }
+    
     public Platform[] getPlatformsByArchitecture( String architecture ){
     	List<Platform> platforms = new ArrayList<Platform>();
     	
@@ -131,9 +142,10 @@ public class PlatformManager extends AbstractPlatformManager{
         
         IPlatform[] platforms = new IPlatform[ candidates.length ];
         MMCUConverter converter = createDefaultMMCUConverter();
+        IPreferenceStore store = getStore();
         
         for( int i = 0, n = candidates.length; i<n; i++ ){
-            platforms[i] = new Platform( environment, null, candidates[i], root, converter );
+            platforms[i] = new Platform( environment, null, candidates[i], root, converter, store );
         }
         
         return platforms;

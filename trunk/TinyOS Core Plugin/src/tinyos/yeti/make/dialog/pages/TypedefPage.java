@@ -20,206 +20,80 @@
  */
 package tinyos.yeti.make.dialog.pages;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
+import java.util.ArrayList;
+import java.util.List;
 
+import tinyos.yeti.TinyOSPlugin;
+import tinyos.yeti.ep.parser.IDeclaration;
+import tinyos.yeti.ep.parser.INesCParserFactory;
 import tinyos.yeti.make.MakeTypedef;
-import tinyos.yeti.make.dialog.AbstractMakeTargetDialogPage;
-import tinyos.yeti.make.dialog.IMakeTargetInformation;
-import tinyos.yeti.make.dialog.pages.CustomizationControls.Selection;
 import tinyos.yeti.make.targets.MakeTargetPropertyKey;
-import tinyos.yeti.make.targets.MakeTargetSkeleton;
 
-public class TypedefPage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton> implements ICustomizeablePage{
-    private static final String ID_ADD = "add";
-    private static final String ID_EDIT = "edit";
-    private static final String ID_DELETE = "delete";
-    private static final String ID_UP = "up";
-    private static final String ID_DOWN = "down";
-    
-    private Table table;
-    private Buttons buttons;
-    
-    private CustomizationControls customization;
-    
+public class TypedefPage extends KeyValuePage<MakeTypedef>{
     public TypedefPage( boolean showCustomization ){
-        super( "Typedefs" );
-        
-        setDefaultMessage( "Types which are used in any file of this plugin, but are not forwarded to 'ncc'" );
-        
-        if( showCustomization ){
-        	customization = new CustomizationControls();
-        	customization.setPage( this );
-        }
+        super( showCustomization, "Typedefs", "Types which are used in any file of this plugin, but are not forwarded to 'ncc'" );
     }
     
-    public void setCustomEnabled( boolean enabled ){
-    	table.setEnabled( enabled );
-    	buttons.setCustomEnabled( enabled );
-    	contentChanged();
-    }
-
-    public void createControl( Composite parent ){
-        Composite base = new Composite( parent, SWT.NONE );
-        base.setLayout( new GridLayout( 2, false ) );
-        setControl( base );
-        
-    	if( customization != null ){
-    		customization.createControl( base, true );
-    		customization.getControl().setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 2, 1 ) );
+    @Override
+    public String checkValid( String[] keys, String[] values ){
+    	INesCParserFactory factory = TinyOSPlugin.getDefault().getParserFactory();
+    	
+    	List<IDeclaration> declarations = new ArrayList<IDeclaration>();
+    	for( int i = 0; i < keys.length; i++ ){
+    		try{
+    			IDeclaration next = factory.toBasicType( values[i], keys[i], declarations.toArray( new IDeclaration[ declarations.size() ] ));
+    			declarations.add( next );
+    		}
+    		catch( IllegalArgumentException ex ){
+    			return "Unable to parse '" + values[i] + "'";
+    		}
     	}
+    	
+    	return null;
+    }
         
-        table = new Table( base, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI );
-        table.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-        table.setHeaderVisible( true );
-        
-        TableColumn name = new TableColumn( table, SWT.LEFT );
-        name.setText( "Name" );
-        name.setResizable( true );
-        name.setMoveable( false );
-        name.setWidth( 100 );
-        
-        TableColumn type = new TableColumn( table, SWT.LEFT );
-        type.setText( "Type" );
-        type.setResizable( true );
-        type.setMoveable( false );
-        type.setWidth( 200 );
-        
-        buttons = new Buttons();
-        buttons.createControl( base );
-        buttons.getControl().setLayoutData( new GridData( SWT.CENTER, SWT.CENTER, false, false ) );
+    @Override
+    public String getDialogExample(){
+	    return "Example: 'typedef int x[47]' becomes 'name = x', 'type = int[47]'"; 
     }
     
-    protected void doAdd(){
-        TypedefDialog dialog = new TypedefDialog( getControl().getShell() );
-        if( dialog.open( null, null )){
-            String name = dialog.getName();
-            String type = dialog.getType();
-            
-            if( name.length() > 0 && type.length() > 0 ){
-                TableItem item = new TableItem( table, SWT.NONE );
-                item.setText( new String[]{ name, type } );
-            }
-            contentChanged();
-        }
+    @Override
+    public String getEditDialogTitle(){
+	    return "Edit typedef";
     }
     
-    protected void doEdit(){
-        int index = table.getSelectionIndex();
-        if( index >= 0 ){
-            TableItem item = table.getItem( index );
-            TypedefDialog dialog = new TypedefDialog( getControl().getShell() );
-            if( dialog.open( item.getText( 1 ), item.getText( 0 ))){
-                item.setText( new String[]{ dialog.getName(), dialog.getType() } );
-            }
-            contentChanged();
-        }
+    @Override
+    public String getKeyName(){
+    	return "Name";
     }
     
-    protected void doDelete(){
-        int[] indices = table.getSelectionIndices();
-        if( indices != null ){
-            table.remove( indices );
-            contentChanged();
-        }
+    @Override
+    public String getNewDialogTitle(){
+    	return "Create new typedef";
     }
     
-    protected void doUp(){
-        doMove( -1 );
+    @Override
+    public String getValueName(){
+    	return "Type";
     }
     
-    protected void doDown(){
-        doMove( 1 );
+    @Override
+    protected MakeTargetPropertyKey<MakeTypedef[]> getKey(){
+    	return MakeTargetPropertyKey.TYPEDEFS;
     }
     
-    protected void doMove( int delta ){
-        int index = table.getSelectionIndex();
-        if( index < 0 )
-            return;
-        
-        int next = index + delta;
-        if( next < 0 || next >= table.getItemCount() )
-            return;
-        
-        TableItem first = table.getItem( index );
-        TableItem second = table.getItem( next );
-        
-        String[] firstTemp = new String[]{ first.getText( 0 ), first.getText( 1 ) };
-        String[] secondTemp = new String[]{ second.getText( 0 ), second.getText( 1 ) };
-        
-        first.setText( secondTemp );
-        second.setText( firstTemp );
-        
-        table.setSelection( next );
-        contentChanged();
-    }
-
-    public void show( MakeTargetSkeleton maketarget, IMakeTargetInformation information ){
-        table.removeAll();
-        
-        MakeTypedef[] typedefs = maketarget.getCustomTypedefs();
-        if( typedefs != null ){
-            for( MakeTypedef typedef : typedefs ){
-                TableItem item = new TableItem( table, SWT.NONE );
-                item.setText( new String[]{ typedef.getName(), typedef.getType() } );
-            }
-        }
-        
-        if( customization != null ){
-        	customization.setSelection(
-        			maketarget.isUseLocalProperty( MakeTargetPropertyKey.TYPEDEFS ),
-        			maketarget.isUseDefaultProperty( MakeTargetPropertyKey.TYPEDEFS ));
-        }
-    }
-
-    public void store( MakeTargetSkeleton maketarget ){
-        int size = table.getItemCount();
-        MakeTypedef[] typedefs = new MakeTypedef[ size ];
-        for( int i = 0; i < size; i++ ){
-            TableItem item = table.getItem( i );
-            typedefs[i] = new MakeTypedef( item.getText( 1 ), item.getText( 0 ) );
-        }
-        
-        maketarget.setCustomTypedefs( typedefs );
-        
-        if( customization != null ){
-        	Selection selection = customization.getSelection();
-        	maketarget.setUseLocalProperty( MakeTargetPropertyKey.TYPEDEFS, selection.isLocal() );
-        	maketarget.setUseDefaultProperty( MakeTargetPropertyKey.TYPEDEFS, selection.isDefaults() );
-        }
+    @Override
+    protected String getKey( MakeTypedef entry ){
+    	return entry.getName();
     }
     
-    private class Buttons extends NavigationButtons{
-        public Buttons(){
-            super( new String[]{
-                    ID_ADD, ID_EDIT, ID_DELETE, ID_UP, ID_DOWN
-            }, new String[]{
-                    "Add", "Edit", "Delete", "Up", "Down"
-            } );
-        }
-        
-        @Override
-        protected void doOperation( String id ){
-            if( ID_ADD.equals( id )){
-                doAdd();
-            }
-            if( ID_EDIT.equals( id )){
-                doEdit();
-            }
-            if( ID_DELETE.equals( id )){
-                doDelete();
-            }
-            if( ID_UP.equals( id )){
-                doUp();
-            }
-            if( ID_DOWN.equals( id )){
-                doDown();
-            }
-        }
+    @Override
+    protected String getValue( MakeTypedef entry ){
+	    return entry.getType();
+    }
+    
+    @Override
+    protected MakeTypedef create( String key, String value ){
+    	return new MakeTypedef( value, key );
     }
 }

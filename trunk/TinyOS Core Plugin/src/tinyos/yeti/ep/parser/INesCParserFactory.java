@@ -171,7 +171,8 @@ public interface INesCParserFactory {
      * @param type the type of the definition
      * @param name the name of the definition
      * @param typedefs other typedefs created by this method that might influence the parsing
-     * @return a declaration for the typedef 
+     * @return a declaration for the typedef
+     * @throws IllegalArgumentException if the type cannot be parsed 
      */
     public IDeclaration toBasicType( String type, String name, IDeclaration[] typedefs );
 }

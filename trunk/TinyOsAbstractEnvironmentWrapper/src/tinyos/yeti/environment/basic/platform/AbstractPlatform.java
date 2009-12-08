@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import tinyos.yeti.environment.basic.AbstractEnvironment;
@@ -40,11 +41,12 @@ import tinyos.yeti.ep.IPlatform;
 import tinyos.yeti.ep.IPlatformListener;
 import tinyos.yeti.ep.ISensorBoard;
 import tinyos.yeti.ep.parser.IMacro;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 
 /**
- * An implementation of {@link IPlatform} that lazily loads its {@link IMakeExtra}s
- * and {@link ISensorBoard}s but stores them after they were loaded. 
+ * An implementation of {@link IPlatform} that lazily loads its content
+ * but stores them after they were loaded. 
  * @author Benjamin Sigg
  */
 public abstract class AbstractPlatform implements IExtendedPlatform{
@@ -61,6 +63,7 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
     
     private List<IPlatformListener> listeners = new ArrayList<IPlatformListener>();
     private MakeInclude[] includes;
+    private EnvironmentVariable[] variables;
     
     private IPlatformFile platformFile;
     private IMacro[] macros;
@@ -69,6 +72,8 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
     private File baseFamilyFile;
     
     private String nestedCVariableSeparator = null;
+    
+    private IPreferenceStore store;
 
 	/**
      * Creates a new platform. This constructor searches for a <code>.platform</code>
@@ -82,9 +87,12 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
      * @param converter the {@link MMCUConverter} that will be used to read mmcu parameters from
      * the platform file. See {@link AbstractPlatformManager#createDefaultMMCUConverter()}, can be 
      * <code>null</code>.
+     * @param store to read and store user content
      */
-    public AbstractPlatform( AbstractEnvironment environment, File directory, File top, MMCUConverter converter ){
+    public AbstractPlatform( AbstractEnvironment environment, File directory, File top, MMCUConverter converter, IPreferenceStore store ){
         this.environment = environment;
+        this.store = store;
+        
         if( directory != null ){
             setBasePlatformFile( new File( directory, ".platform" ) );
             
@@ -113,6 +121,8 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
         		addMacros(converter.convert( platformFile ));
         	}
         }
+        includes = PlatformUtility.load( this, store );
+        variables = PlatformUtility.loadEnvironmentVariables( this, store );
     }
     
     public void addPlatformListener( IPlatformListener listener ){
@@ -131,6 +141,15 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
     public MakeInclude[] getIncludes(){
         return includes;
     }
+    
+    public EnvironmentVariable[] getDefaultEnvironmentVariables(){
+    	EnvironmentVariable[] defaults = environment.getPlatformManager().getDefaultEnvironmentVariables();
+    	return EnvironmentVariable.combine( variables, defaults );
+    }
+    
+    public EnvironmentVariable[] getEnvironmentVariables(){
+		return variables;
+	}
     
     @Deprecated
     public void setMacros( IMacro[] macros ){
@@ -159,11 +178,19 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
         // check whether something changes
         boolean changed = !Arrays.equals( includes, this.includes );
         
-        this.includes = includes;
-        
         if( changed ){
+        	this.includes = includes;
+        	PlatformUtility.store( this, this.includes, store );
             fireMakeIncludesChanged();
         }
+    }
+    
+    public void setEnvironmentVariables( EnvironmentVariable[] variables ){
+    	boolean changed = !Arrays.equals( variables, this.variables );
+    	if( changed ){
+    		this.variables = variables;
+    		PlatformUtility.store( this, this.variables, store );
+    	}
     }
     
     public File[] getGlobalIncludes(){

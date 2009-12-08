@@ -89,8 +89,12 @@ public class CharacterConstant extends AbstractTokenASTNode implements Expressio
                 text = text.substring( 1, text.length()-1 );
             value = StringValue.character( text, wide, stack );
             
-            if( value != null && value.getStringLength() != 1 ){
-            	stack.error( "A character constant should consist of exactly one character", this );
+            if( value != null ){
+            	if( !value.isNullCharacter()){
+	            	if( value.getStringLength() != 1 ){
+	            		stack.error( "A character constant should consist of exactly one character", this );
+	            	}
+            	}
             }
         }
     }

@@ -139,6 +139,7 @@ public class NesCIcons extends Icons{
     public static final String ICON_NESC = "icon_nesc";
     public static final String ICON_NESC_FILE = "icon_nesc_file";
     public static final String ICON_NESC_DECORATION = "icon_nesc_decoration";
+    public static final String ICON_ENVIRONMENT_VARIABLE = "icon_environment_variable";
     
     public static final String ICON_ATLEASTONCE = "icon_nesc_atleastonce";
     public static final String ICON_ATMOSTONCE = "icon_nesc_atmostonce";
@@ -271,6 +272,7 @@ public class NesCIcons extends Icons{
         declareRegistryImage( ICON_CONVERT_TO_INFO, "convertToInfo.png" );
         
         declareRegistryImage( ICON_SENSOR, "sensor.png" );
+        declareRegistryImage( ICON_ENVIRONMENT_VARIABLE, "environment_variable.png" );
         declareRegistryImage( ICON_EXTRAS, "extras.png" );
         declareRegistryImage( ICON_APPLICATION, "application.png" );
         declareRegistryImage( ICON_NESC, "nesc.png" );

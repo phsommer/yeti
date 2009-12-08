@@ -35,6 +35,7 @@ import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.ep.parser.macros.ConstantMacro;
 import tinyos.yeti.make.IMakeTarget;
 import tinyos.yeti.make.IProjectMakeTargets;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeExclude;
 import tinyos.yeti.make.MakeInclude;
 import tinyos.yeti.make.MakeTarget;
@@ -343,6 +344,18 @@ public class MakeTargetSkeleton implements ILocalMutableMakeTargetProperties, IM
     
     public void setCustomTypedefs( MakeTypedef[] typedefs ){
         putLocalProperty( MakeTargetPropertyKey.TYPEDEFS, typedefs );
+    }
+    
+    public EnvironmentVariable[] getEnvironmentVariables(){
+    	return getProperty( MakeTargetPropertyKey.ENVIRONMENT_VARIABLES );
+    }
+    
+    public EnvironmentVariable[] getCustomEnvironmentVariables(){
+    	return getLocalProperty( MakeTargetPropertyKey.ENVIRONMENT_VARIABLES );
+    }
+    
+    public void setCustomEnvironmentVariables( EnvironmentVariable[] variables ){
+    	putLocalProperty( MakeTargetPropertyKey.ENVIRONMENT_VARIABLES, variables );
     }
     
     public MakeTypedef[] getCustomTypedefs(){

@@ -37,6 +37,7 @@ import tinyos.yeti.launch.LaunchConverter;
 import tinyos.yeti.make.MakeTarget;
 import tinyos.yeti.make.dialog.IMakeTargetInformation;
 import tinyos.yeti.make.dialog.pages.ComponentPage;
+import tinyos.yeti.make.dialog.pages.EnvironmentVariablesPage;
 import tinyos.yeti.make.dialog.pages.ExcludePage;
 import tinyos.yeti.make.dialog.pages.ExtraPage;
 import tinyos.yeti.make.dialog.pages.IncludePage;
@@ -89,6 +90,7 @@ public class MakeTargetLaunchTabGroup extends AbstractLaunchConfigurationTabGrou
 				new MakeTargetLaunchTab( new PlatformPage( true ), this ),
 				new MakeTargetLaunchTab( new ExtraPage( true ), this ),
 				new MakeTargetLaunchTab( new SensorPage( true ), this ),
+				new MakeTargetLaunchTab( new EnvironmentVariablesPage( true ), this ),
 		};
 		
 		List<ILaunchConfigurationTab> tabs = new ArrayList<ILaunchConfigurationTab>();

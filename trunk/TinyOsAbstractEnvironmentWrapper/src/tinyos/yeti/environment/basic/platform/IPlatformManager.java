@@ -21,6 +21,7 @@
 package tinyos.yeti.environment.basic.platform;
 
 import tinyos.yeti.ep.IPlatform;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 
 /**
@@ -39,4 +40,10 @@ public interface IPlatformManager{
      * @return the list of includes, can be <code>null</code> or empty
      */
     public MakeInclude[] getDefaultMakeIncludes();
+    
+    /**
+     * Gets a list of environment variables that should be set on all platforms.
+     * @return the list of variables, may be <code>null</code> or empty
+     */
+    public EnvironmentVariable[] getDefaultEnvironmentVariables();
 }

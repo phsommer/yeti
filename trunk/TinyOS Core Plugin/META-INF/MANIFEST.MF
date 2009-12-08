@@ -219,6 +219,7 @@ Export-Package: jay.yydebug,
    tinyos.yeti.ep,
    org.eclipse.core.resources,
    tinyos.yeti.utility",
+ tinyos.yeti.make.targets.factories,
  tinyos.yeti.model;
   uses:="tinyos.yeti.views,
    org.eclipse.core.runtime,
