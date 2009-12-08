@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import tinyos.yeti.environment.basic.path.IPathTranslator;
 import tinyos.yeti.environment.basic.platform.AbstractPlatform;
 import tinyos.yeti.environment.basic.platform.MMCUConverter;
@@ -35,8 +37,8 @@ public class Platform extends AbstractPlatform{
     private Environment environment;
     private IPathTranslator translator;
     
-    public Platform( Environment environment, IPathTranslator translator, File directory, File top, MMCUConverter converter ){
-        super( environment, directory, top, converter );
+    public Platform( Environment environment, IPathTranslator translator, File directory, File top, MMCUConverter converter, IPreferenceStore store ){
+        super( environment, directory, top, converter, store );
 
         if( translator == null )
             translator = environment;

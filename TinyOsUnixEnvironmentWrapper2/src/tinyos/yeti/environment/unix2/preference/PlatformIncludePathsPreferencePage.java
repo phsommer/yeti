@@ -78,11 +78,9 @@ public class PlatformIncludePathsPreferencePage extends AbstractPlatformIncludeP
     protected void setIncludes( IPlatform platform, MakeInclude[] includes ){
         if( platform == null ){
             getManager().setDefaultMakeIncludes( includes );
-            PlatformUtility.storeGeneral( includes, getStore() );
         }
         else{
             ((Platform)platform).setIncludes( includes );
-            PlatformUtility.store( platform, includes, getStore() );
         }
     }
 

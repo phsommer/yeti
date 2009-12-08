@@ -121,6 +121,12 @@ public interface IMakeTarget extends IMakeTargetMorpheable{
     public String[] getBoards();
     
     /**
+     * Gets a set of environment variables to be used when compiling the project.
+     * @return the variables, might be <code>null</code>
+     */
+    public EnvironmentVariable[] getEnvironmentVariables();
+    
+    /**
      * Gets the list of sensor boards which are known and used by this option.
      * @return the list of boards
      */

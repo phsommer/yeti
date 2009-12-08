@@ -31,6 +31,7 @@ import tinyos.yeti.environment.basic.TinyOSAbstractEnvironmentPlugin;
 import tinyos.yeti.environment.basic.path.IPlatformFile;
 import tinyos.yeti.ep.IPlatform;
 import tinyos.yeti.ep.parser.IMacro;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 
 /**
@@ -40,6 +41,7 @@ import tinyos.yeti.make.MakeInclude;
 public abstract class AbstractPlatformManager implements IPlatformManager{
     private IPlatform[] platforms;
     private MakeInclude[] defaultMakeIncludes;
+    private EnvironmentVariable[] defaultVariables;
     private List<MMCUConverter> mmcuConverters = new ArrayList<MMCUConverter>();
     
     public AbstractPlatformManager(){
@@ -151,5 +153,13 @@ public abstract class AbstractPlatformManager implements IPlatformManager{
     
     public MakeInclude[] getDefaultMakeIncludes(){
         return defaultMakeIncludes;
+    }
+    
+    public void setDefaultVariables( EnvironmentVariable[] defaultVariables ){
+		this.defaultVariables = defaultVariables;
+	}
+    
+    public EnvironmentVariable[] getDefaultEnvironmentVariables(){
+	    return defaultVariables;
     }
 }

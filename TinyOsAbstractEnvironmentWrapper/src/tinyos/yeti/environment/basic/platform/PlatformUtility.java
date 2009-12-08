@@ -23,8 +23,12 @@ package tinyos.yeti.environment.basic.platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import tinyos.yeti.ep.IPlatform;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 import tinyos.yeti.make.MakeInclude.Include;
+import tinyos.yeti.make.targets.IStringMakeTargetPropertyFactory;
+import tinyos.yeti.make.targets.factories.EnvironmentVariableFactory;
+import tinyos.yeti.make.targets.factories.IncludeFactory;
 
 public final class PlatformUtility{
 	private PlatformUtility(){
@@ -32,49 +36,41 @@ public final class PlatformUtility{
 	}
 
 	public static void store( IPlatform platform, MakeInclude[] includes, IPreferenceStore store ){
-		store( "makeincludes.platform." + platform.getName(), includes, store );
+		store( "makeincludes.platform." + platform.getName(), includes, new IncludeFactory(), store );
 	}
 
 	public static void storeGeneral( MakeInclude[] includes, IPreferenceStore store ){
-		store( "makeincludes.general", includes, store );
+		store( "makeincludes.general", includes, new IncludeFactory(), store );
 	}
 
-	public static void store( String key, MakeInclude[] includes, IPreferenceStore store ){
+	public static void store( IPlatform platform, EnvironmentVariable[] variables, IPreferenceStore store ){
+		store( "environment_variables.platform." + platform.getName(), variables, new EnvironmentVariableFactory(), store );
+	}
+	
+	public static void storeGeneral( EnvironmentVariable[] variables, IPreferenceStore store ){
+		store( "environment_variables.general", variables, new EnvironmentVariableFactory(), store );
+	}
+	
+	public static <T> void store( String key, T[] values, IStringMakeTargetPropertyFactory<T> factory, IPreferenceStore store ){
 		StringBuilder builder = new StringBuilder();
-		if( includes == null ){
+		builder.append( "v2." );
+		if( values == null ){
 			builder.append( 0 );
 			builder.append( "." );
 		}
 		else{
-			builder.append( includes.length );
+			builder.append( values.length );
 			builder.append( "." );
-
-			for( MakeInclude include : includes ){
-				builder.append( 'v' );
-				builder.append( include.isRecursive() ? '+' : '-' );
-				builder.append( include.isNcc() ? 't' : 'f' );
-				builder.append( include.isGlobal() ? 't' : 'f' );
-				switch( include.getInclude() ){
-					case NONE:
-						builder.append( 'n' );
-						break;
-					case SOURCE:
-						builder.append( 's' );
-						break;
-					case SYSTEM:
-						builder.append( 'y' );
-						break;
-				}
-				
-				builder.append( include.getPath().length() );
+			for( T value : values ){
+				String content = factory.write( value );
+				builder.append( content.length() );
 				builder.append( "." );
-				builder.append( include.getPath() );
+				builder.append( content );
 			}
 		}
-
 		store.setValue( key, builder.toString() );
 	}
-
+	
 	public static MakeInclude[] load( IPlatform platform, IPreferenceStore store ){
 		return load( "makeincludes.platform." + platform.getName(), store );
 	}
@@ -82,11 +78,19 @@ public final class PlatformUtility{
 	public static MakeInclude[] loadGeneral( IPreferenceStore store ){
 		return load( "makeincludes.general", store );
 	}
-
-	public static MakeInclude[] load( String key, IPreferenceStore store ){
-		return decode( store.getString( key ) );
+	
+	private static MakeInclude[] load( String key, IPreferenceStore store ){
+		return decode( store.getString( key ), new IncludeFactory(), store );
 	}
 
+	public static EnvironmentVariable[] loadEnvironmentVariables( IPlatform platform, IPreferenceStore store ){
+		return decode( store.getString( "environment_variables.platform." + platform.getName() ), new EnvironmentVariableFactory(), store );
+	}
+	
+	public static EnvironmentVariable[] loadGeneralEnvironmentVariables( IPreferenceStore store ){
+		return decode( store.getString( "environment_variables.general" ), new EnvironmentVariableFactory(), store );
+	}
+	
 	public static MakeInclude[] loadDefault( IPlatform platform, IPreferenceStore store ){
 		return loadDefault( "makeincludes.platform." + platform.getName(), store );
 	}
@@ -95,11 +99,46 @@ public final class PlatformUtility{
 		return loadDefault( "makeincludes.general", store );
 	}
 
-	public static MakeInclude[] loadDefault( String key, IPreferenceStore store ){
-		return decode( store.getDefaultString( key ) );
+	private static MakeInclude[] loadDefault( String key, IPreferenceStore store ){
+		return decode( store.getDefaultString( key ), new IncludeFactory(), store );
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	private static <T> T[] decode( String value, IStringMakeTargetPropertyFactory<T> factory, IPreferenceStore store ){
+		if( value == null )
+			return factory.array( 0 );
+		
+		if( value.length() == 0 )
+			return factory.array( 0 );
+		
+		if( value.startsWith( "v2." )){
+			value = value.substring( 3 );
+			
+			int offset = value.indexOf( '.' );
+			if( offset < 0 )
+				return factory.array( 0 );
+
+			int size = Integer.parseInt( value.substring( 0, offset++ ) );
+			T[] result = factory.array( size );
+			
+			for( int i = 0; i < size; i++ ){
+				int end = value.indexOf( '.', offset );
+				int length = Integer.parseInt( value.substring( offset, end ) );
+				offset = end+1;
+				String content = value.substring( offset, offset+length );
+				offset += length;
+				result[i] = factory.read( content );
+			}
+			
+			return result;
+		}
+		else{
+			// old version, must be a make-include
+			return (T[])decode( value );
+		}
 	}
 
-	public static MakeInclude[] decode( String value ){
+	private static MakeInclude[] decode( String value ){
 		if( value == null )
 			return new MakeInclude[]{};
 

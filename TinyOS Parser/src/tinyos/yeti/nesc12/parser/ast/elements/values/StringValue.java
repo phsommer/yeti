@@ -33,6 +33,10 @@ public class StringValue extends AbstractValue{
     private int[] value;
     private boolean character = false;
     
+    public static void main( String[] args ){
+		StringValue v = character( "\\0", false, null );
+	}
+    
     public StringValue( Type type, boolean character, int[] value ){
         this.type = type;
         this.character = character;
@@ -292,6 +296,15 @@ public class StringValue extends AbstractValue{
             return value.length-1;
         
         return value.length;
+    }
+    
+    public boolean isNullCharacter(){
+    	if( value == null )
+    		return false;
+    	if( value.length != 1 )
+    		return false;
+    	
+    	return value[ 0 ] == 0;
     }
     
     public int[] getValue() {

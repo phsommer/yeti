@@ -37,6 +37,7 @@ import tinyos.yeti.environment.basic.platform.PlatformUtility;
 import tinyos.yeti.environment.unix2.Environment;
 import tinyos.yeti.environment.unix2.TinyOSUnixEnvironmentPlugin2;
 import tinyos.yeti.ep.IPlatform;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 
 public class PlatformManager extends AbstractPlatformManager{
@@ -45,6 +46,7 @@ public class PlatformManager extends AbstractPlatformManager{
     public PlatformManager( Environment environment ){
         this.environment = environment;
         setDefaultMakeIncludes( PlatformUtility.loadGeneral( getStore() ) );
+        setDefaultVariables( PlatformUtility.loadGeneralEnvironmentVariables( getStore() ) );
     }
     
     @Override
@@ -54,13 +56,23 @@ public class PlatformManager extends AbstractPlatformManager{
         super.setDefaultMakeIncludes( defaultMakeIncludes );
 
         if( change ){
-            IPlatform[] platforms = getCurrentPlatforms();
+            PlatformUtility.storeGeneral( defaultMakeIncludes, getStore() );
+        	IPlatform[] platforms = getCurrentPlatforms();
             if( platforms != null ){
                 for( IPlatform platform : platforms ){
                     ((Platform)platform).fireMakeIncludesChanged();
                 }
             }
         }
+    }
+    
+    @Override
+    public void setDefaultVariables( EnvironmentVariable[] defaultVariables ){
+    	boolean change = !Arrays.equals( defaultVariables, getDefaultEnvironmentVariables() );
+    	if( change ){
+    		super.setDefaultVariables( defaultVariables );
+    		PlatformUtility.storeGeneral( defaultVariables, getStore() );
+    	}
     }
     
     protected IPreferenceStore getStore(){
@@ -118,9 +130,10 @@ public class PlatformManager extends AbstractPlatformManager{
         
         IPlatform[] platforms = new IPlatform[ candidates.length ];
         MMCUConverter converter = createDefaultMMCUConverter();
+        IPreferenceStore store = getStore();
         
         for( int i = 0, n = candidates.length; i<n; i++ ){
-            platforms[i] = new Platform( environment, candidates[i], root, converter );
+            platforms[i] = new Platform( environment, candidates[i], root, converter, store );
         }
         
         return platforms;

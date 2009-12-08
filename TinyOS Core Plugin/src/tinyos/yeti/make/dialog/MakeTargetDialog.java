@@ -45,6 +45,7 @@ import tinyos.yeti.make.MakeTarget;
 import tinyos.yeti.make.SharedMakeTarget;
 import tinyos.yeti.make.dialog.pages.ComponentPage;
 import tinyos.yeti.make.dialog.pages.ConstantMacroPage;
+import tinyos.yeti.make.dialog.pages.EnvironmentVariablesPage;
 import tinyos.yeti.make.dialog.pages.ExcludePage;
 import tinyos.yeti.make.dialog.pages.ExtraPage;
 import tinyos.yeti.make.dialog.pages.GeneralPage;
@@ -86,7 +87,8 @@ public class MakeTargetDialog<M extends MakeTargetSkeleton> extends TitleAreaDia
 	                new ExtraPage( true ),
 	                new SensorPage( true ),
 	                new ConstantMacroPage( true ),
-	                new TypedefPage( true )
+	                new TypedefPage( true ),
+	                new EnvironmentVariablesPage( true ),
 	        };
 	    }
 	}

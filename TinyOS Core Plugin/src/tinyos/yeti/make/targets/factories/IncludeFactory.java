@@ -34,11 +34,12 @@ import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.make.MakeInclude;
 import tinyos.yeti.make.MakeInclude.Include;
 import tinyos.yeti.make.targets.IMakeTargetPropertyFactory;
+import tinyos.yeti.make.targets.IStringMakeTargetPropertyFactory;
 import tinyos.yeti.make.targets.MakeTargetPropertyKey;
 import tinyos.yeti.utility.XReadStack;
 import tinyos.yeti.utility.XWriteStack;
 
-public class IncludeFactory implements IMakeTargetPropertyFactory<MakeInclude[]>{
+public class IncludeFactory implements IMakeTargetPropertyFactory<MakeInclude[]>, IStringMakeTargetPropertyFactory<MakeInclude>{
 	public boolean supportsXML(){
 		return true;
 	}
@@ -160,5 +161,69 @@ public class IncludeFactory implements IMakeTargetPropertyFactory<MakeInclude[]>
 			TinyOSPlugin.log( e.getStatus() );
 			return new MakeInclude[]{};
 		}
+	}
+	
+	public String write( MakeInclude include ){
+		StringBuilder builder = new StringBuilder();
+		builder.append( "1" );
+		builder.append( include.isRecursive() ? '+' : '-' );
+		builder.append( include.isNcc() ? 't' : 'f' );
+		builder.append( include.isGlobal() ? 't' : 'f' );
+		switch( include.getInclude() ){
+			case NONE:
+				builder.append( 'n' );
+				break;
+			case SOURCE:
+				builder.append( 's' );
+				break;
+			case SYSTEM:
+				builder.append( 'y' );
+				break;
+		}
+		
+		builder.append( include.getPath().length() );
+		builder.append( "." );
+		builder.append( include.getPath() );
+		return builder.toString();
+	}
+	
+	public MakeInclude read( String value ){
+		boolean recursive = false;
+		boolean ncc = false;
+		boolean global = false;
+		Include include = Include.NONE;
+		
+		int index = 0;
+		
+		if( value.charAt( index ) == '1' ){
+			index++;
+			recursive = value.charAt( index++ ) == '+';
+			ncc = value.charAt( index++ ) == 't';
+			global = value.charAt( index++ ) == 't';
+			
+			switch( value.charAt( index++ ) ){
+				case 'n':
+					include = Include.NONE;
+					break;
+				case 's':
+					include = Include.SOURCE;
+					break;
+				case 'y':
+					include = Include.SYSTEM;
+					break;
+			}
+		}
+
+		int point = value.indexOf( '.', index );
+		int length = Integer.parseInt( value.substring( index, point ) );
+
+		String path = value.substring( point+1, point+1+length );
+		index = point+1+length;
+
+		return new MakeInclude( path, include, recursive, ncc, global );
+	}
+	
+	public MakeInclude[] array( int size ){
+		return new MakeInclude[ size ];
 	}
 }

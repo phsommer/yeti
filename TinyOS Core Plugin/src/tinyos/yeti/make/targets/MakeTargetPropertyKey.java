@@ -28,11 +28,13 @@ import org.eclipse.core.resources.IProject;
 
 import tinyos.yeti.ep.MakeExtra;
 import tinyos.yeti.ep.parser.IMacro;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeExclude;
 import tinyos.yeti.make.MakeInclude;
 import tinyos.yeti.make.MakeTypedef;
 import tinyos.yeti.make.targets.factories.BoardFactory;
 import tinyos.yeti.make.targets.factories.BooleanFactory;
+import tinyos.yeti.make.targets.factories.EnvironmentVariableFactory;
 import tinyos.yeti.make.targets.factories.ExcludeFactory;
 import tinyos.yeti.make.targets.factories.FileFactory;
 import tinyos.yeti.make.targets.factories.IncludeFactory;
@@ -92,6 +94,14 @@ public class MakeTargetPropertyKey<T>{
 				return new IMacro[ size ];
 			}
 		};
+		
+	public static final MakeTargetPropertyKey<EnvironmentVariable[]> ENVIRONMENT_VARIABLES =
+		new MakeTargetPropertyKey<EnvironmentVariable[]>( "environment_variables", true, false, new EnvironmentVariableFactory() ){
+			@Override
+			public EnvironmentVariable[] array( int size ){
+				return new EnvironmentVariable[ size ];
+			}
+		};
 	
 	public static final MakeTargetPropertyKey<String[]> BOARDS =
 		new MakeTargetPropertyKey<String[]>( "boards", true, false, new BoardFactory() ){
@@ -134,7 +144,8 @@ public class MakeTargetPropertyKey<T>{
 		COMPONENT,
 		COMPONENT_FILE,
 		INCLUDE_LAST_BUILD,
-		INCLUDE_ENVIRONMENT_DEFAULT_PATHS
+		INCLUDE_ENVIRONMENT_DEFAULT_PATHS,
+		ENVIRONMENT_VARIABLES
 	};
 	
 	private String name;

@@ -25,6 +25,7 @@ import java.io.File;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import tinyos.yeti.ep.parser.IMacro;
+import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
 
 public interface IPlatform {
@@ -56,6 +57,13 @@ public interface IPlatform {
 	 * @return includes set automatically by the system, can be <code>null</code>
 	 */
 	public File[] getGlobalIncludes();
+	
+	/**
+	 * Gets the environment variables that are to be used when building
+	 * an application.
+	 * @return the variables, may be <code>null</code>
+	 */
+	public EnvironmentVariable[] getDefaultEnvironmentVariables();
 	
 	/**
 	 * Gets the macros that should be used when compiling for this
