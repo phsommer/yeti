@@ -212,16 +212,7 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
     protected abstract T create( String key, String value );
     
     public void show( MakeTargetSkeleton maketarget, IMakeTargetInformation information ){
-        table.removeAll();
-        
         MakeTargetPropertyKey<T[]> key = getKey();
-        T[] entries = maketarget.getLocalProperty( key );
-        if( entries != null ){
-            for( T entry : entries ){
-                TableItem item = new TableItem( table, SWT.NONE );
-                item.setText( new String[]{ getKey( entry ), getValue( entry ) } );
-            }
-        }
         
         if( customization != null ){
         	customization.setSelection(
@@ -229,18 +220,26 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         			maketarget.isUseDefaultProperty( key ));
         }
         
-        recheckValid();
+        T[] entries = maketarget.getLocalProperty( key );
+        show( entries, information );
+    }
+    
+    public void show( T[] entries, IMakeTargetInformation information ){
+    	table.removeAll();
+
+    	if( entries != null ){
+    		for( T entry : entries ){
+    			TableItem item = new TableItem( table, SWT.NONE );
+    			item.setText( new String[]{ getKey( entry ), getValue( entry ) } );
+    		}
+    	}
+
+    	recheckValid();	
     }
 
     public void store( MakeTargetSkeleton maketarget ){
-        int size = table.getItemCount();
-
         MakeTargetPropertyKey<T[]> key = getKey();
-        T[] entries = key.array( size );
-        for( int i = 0; i < size; i++ ){
-            TableItem item = table.getItem( i );
-            entries[i] = create( item.getText( 0 ), item.getText( 1 ) );
-        }
+        T[] entries = getEntries();
         
         maketarget.putLocalProperty( key, entries );
         
@@ -249,6 +248,19 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         	maketarget.setUseLocalProperty( key, selection.isLocal() );
         	maketarget.setUseDefaultProperty( key, selection.isDefaults() );
         }
+    }
+    
+    public T[] getEntries(){
+    	int size = table.getItemCount();
+
+        MakeTargetPropertyKey<T[]> key = getKey();
+        T[] entries = key.array( size );
+        for( int i = 0; i < size; i++ ){
+            TableItem item = table.getItem( i );
+            entries[i] = create( item.getText( 0 ), item.getText( 1 ) );
+        }
+        
+        return entries;
     }
     
     private class Buttons extends NavigationButtons{

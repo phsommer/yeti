@@ -21,6 +21,12 @@
             id="TinyOsUnixEnvironmentWrapper2.platforms"
             name="Platform Paths">
       </page>
+      <page
+            category="TinyOsUnixEnvironmentWrapper2.paths"
+            class="tinyos.yeti.environment.unix2.preference.PlatformEnvironmentVariablesPreferencePage"
+            id="TinyOsUnixEnvironmentWrapper2.variables"
+            name="Environment Variables">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

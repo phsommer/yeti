@@ -46,13 +46,13 @@ public class PlatformManager extends AbstractPlatformManager{
     
     public PlatformManager( Environment environment ){
         this.environment = environment;
-        setDefaultMakeIncludes( PlatformUtility.loadGeneral( getStore() ) );
-        setDefaultVariables( PlatformUtility.loadGeneralEnvironmentVariables( getStore() ) );
+        super.setDefaultMakeIncludes( PlatformUtility.loadGeneral( getStore() ) );
+        super.setDefaultVariables( PlatformUtility.loadGeneralEnvironmentVariables( getStore() ) );
     }
     
     @Override
     public void setDefaultMakeIncludes( MakeInclude[] defaultMakeIncludes ){
-        boolean change = !Arrays.equals( defaultMakeIncludes, getDefaultMakeIncludes() );super.setDefaultMakeIncludes( defaultMakeIncludes );
+        boolean change = !Arrays.equals( defaultMakeIncludes, getDefaultMakeIncludes() );
         
         super.setDefaultMakeIncludes( defaultMakeIncludes );
 
@@ -70,8 +70,8 @@ public class PlatformManager extends AbstractPlatformManager{
     @Override
     public void setDefaultVariables( EnvironmentVariable[] defaultVariables ){
     	boolean change = !Arrays.equals( defaultVariables, getDefaultEnvironmentVariables() );
+    	super.setDefaultVariables( defaultVariables );
     	if( change ){
-    		super.setDefaultVariables( defaultVariables );
     		PlatformUtility.storeGeneral( defaultVariables, getStore() );
     	}
     }
