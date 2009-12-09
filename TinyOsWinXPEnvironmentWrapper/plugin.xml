@@ -27,6 +27,12 @@
             id="TinyOsWinXPEnvironmentWrapper.platforms"
             name="Platform Paths">
       </page>
+      <page
+            category="TinyOsWnXPEnvironmentWrapper.paths"
+            class="tinyos.yeti.environment.winXP.preference.PlatformEnvironmentVariablesPreferencePage"
+            id="TinyOsWinXPEnvironmentWrapper.variables"
+            name="Environment Variables">
+      </page>
    </extension>
    <extension
          point="tinyos.yeti.core.ProjectChecker">
