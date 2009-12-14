@@ -24,6 +24,7 @@ import tinyos.yeti.ep.NullParseFile;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.ep.parser.IFileRegion;
 import tinyos.yeti.ep.parser.IDeclaration.Kind;
+import tinyos.yeti.ep.parser.standard.FileHyperlink;
 import tinyos.yeti.nesc12.ep.DeclarationResolver;
 import tinyos.yeti.nesc12.ep.INesC12Location;
 import tinyos.yeti.nesc12.ep.NesC12AST;

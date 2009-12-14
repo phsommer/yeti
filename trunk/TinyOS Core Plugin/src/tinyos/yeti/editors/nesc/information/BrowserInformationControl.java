@@ -56,6 +56,7 @@ import tinyos.yeti.utility.Icon;
  * @author Benjamin Sigg
  * @deprecated for now this control is not in use as it requires some additional attention.
  */
+@Deprecated
 public class BrowserInformationControl extends AbstractInformationControl{
 	public static class HoverFactory implements INesCInformationControlFactory<IHoverInformation>{
 		public INesCInformationControl create( Composite parent, IHoverInformation input, INesCInformationControlOwner owner ){
@@ -109,9 +110,8 @@ public class BrowserInformationControl extends AbstractInformationControl{
 		return fgIsAvailable;
 	}
 	
-	// disable browser for now
 	private static boolean fgIsAvailable= false;
-	// private static boolean fgAvailabilityChecked = false;
+//	private static boolean fgAvailabilityChecked = false;
 	private static boolean fgAvailabilityChecked = true;
 	
 	private Composite headComposite;
@@ -130,7 +130,13 @@ public class BrowserInformationControl extends AbstractInformationControl{
 		setColorAndFont( parent );
 		
 		if( html != null ){
-			browser.setText( finalize( html, parent.getBackground(), JFaceResources.getDialogFont() ) );
+//			Font font = browser.getFont();
+//			FontData[] fontData = font.getFontData();
+//			for (int i = 0; i < fontData.length; i++)
+//				fontData[i].setHeight( (int)(fontData[i].height + 5 ));
+//			font = new Font( owner.getShell().getDisplay(), fontData );
+//			browser.setFont( font );
+			browser.setText( finalize( html, parent.getBackground(), browser.getFont() ) );
 		}
 		
 		computeSizeHint();
@@ -138,6 +144,7 @@ public class BrowserInformationControl extends AbstractInformationControl{
 	
 	public void dispose(){
 		if( textLayout != null ){
+			boldStyle.font.dispose();
 			textLayout.dispose();
 			textLayout = null;
 		}

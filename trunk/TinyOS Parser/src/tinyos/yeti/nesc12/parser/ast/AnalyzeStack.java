@@ -78,6 +78,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.Flag;
 import tinyos.yeti.nesc12.parser.ast.nodes.Key;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.AttributeDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.IAttributeResolve;
 import tinyos.yeti.nesc12.parser.ast.util.DeclarationStack;
 import tinyos.yeti.nesc12.parser.ast.util.NodeStack;
 import tinyos.yeti.nesc12.parser.ast.util.pushers.FieldPusher;
@@ -93,6 +94,7 @@ import tinyos.yeti.nesc12.parser.preprocessor.macro.MacroLinker;
 import tinyos.yeti.preprocessor.IncludeProvider;
 import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.preprocessor.output.Insight;
+import tinyos_parser.NesC12ParserPlugin;
 
 public class AnalyzeStack {
     /** index for map containing {@link Key} - value pairs */
@@ -141,6 +143,8 @@ public class AnalyzeStack {
     private DeclarationResolver declarationResolver;
 
     private AnalyzeBindingResolver bindingResolver;
+    
+    private Map<String, IAttributeResolve> attributeResolve;
 
     private List<BaseDeclaration> predefinedDeclarations = new ArrayList<BaseDeclaration>();
 
@@ -253,6 +257,15 @@ public class AnalyzeStack {
     public BindingResolver getBindingResolver(){
         return bindingResolver;
     }
+    
+
+	public IAttributeResolve getAttributeResolve( String name ){
+		if( attributeResolve == null ){
+			attributeResolve = NesC12ParserPlugin.getDefault().getAttributeResolve();
+		}
+		
+		return attributeResolve.get( name );
+	}
 
     public LazyRangeDescription range( ASTNode location ){
         return new LazyRangeDescription( location, getParser() );

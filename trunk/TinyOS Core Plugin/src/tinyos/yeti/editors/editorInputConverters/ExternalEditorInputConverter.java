@@ -37,6 +37,8 @@ public class ExternalEditorInputConverter implements IEditorInputConverter{
 	}
 	
 	public IProject getProject( IEditorInput input ){
+		if( input == null )
+			return null;
 		return ((ExternalEditorInput)input).getProject();
 	}
 	

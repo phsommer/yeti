@@ -18,7 +18,7 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.nesc12.ep.rules.hyperlink;
+package tinyos.yeti.ep.parser.standard;
 
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.IFileHyperlink;

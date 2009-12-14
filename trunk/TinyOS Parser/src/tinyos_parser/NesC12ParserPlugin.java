@@ -21,7 +21,9 @@
 package tinyos_parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -38,6 +40,7 @@ import tinyos.yeti.nesc12.ep.rules.hyperlink.IHyperlinkRule;
 import tinyos.yeti.nesc12.ep.rules.proposals.IProposalRule;
 import tinyos.yeti.nesc12.ep.rules.quickfix.IMultiQuickfixRule;
 import tinyos.yeti.nesc12.ep.rules.quickfix.ISingleQuickfixRule;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.IAttributeResolve;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -56,6 +59,8 @@ public class NesC12ParserPlugin extends AbstractUIPlugin {
     
     private ISingleQuickfixRule[] singleQuickfixes;
     private IMultiQuickfixRule[] multiQuickfixes;
+    
+    private Map<String, IAttributeResolve> attributeResolve;
     
     /**
      * The constructor
@@ -124,6 +129,12 @@ public class NesC12ParserPlugin extends AbstractUIPlugin {
         }
     }
 
+	public Map<String, IAttributeResolve> getAttributeResolve(){
+		if( attributeResolve == null ){
+			attributeResolve = loadExtensionPoints( "nesc12.parser.attributes", "resolve", "name", "class" );
+		}
+		return attributeResolve;
+	}
 
     @SuppressWarnings( "unchecked" )
     private <E> List<E> loadExtensionPoints( String point, String extension, String executableAttribute ){
@@ -146,7 +157,32 @@ public class NesC12ParserPlugin extends AbstractUIPlugin {
 
         return result;
     }
+    
+    @SuppressWarnings( "unchecked" )
+    private <E> Map<String, E> loadExtensionPoints( String point, String extension, String keyAttribute, String executableAttribute ){
+        IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IExtensionPoint extPoint = reg.getExtensionPoint( point );
+        Map<String, E> result = new HashMap<String, E>();
 
+        for( IExtension ext : extPoint.getExtensions() ){
+            for( IConfigurationElement element : ext.getConfigurationElements()){
+                if( element.getName().equals( extension )){
+                    try{
+                    	String key = element.getAttribute( keyAttribute );
+                    	if( key != null ){
+                    		result.put( key, (E)element.createExecutableExtension( executableAttribute ) );
+                    	}
+                    }
+                    catch( CoreException e ){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+    
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);

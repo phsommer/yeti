@@ -26,6 +26,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 
 import tinyos.yeti.ep.IParseFile;
+import tinyos.yeti.ep.parser.standard.FileHyperlink;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.ep.rules.RuleUtility;
 import tinyos.yeti.nesc12.parser.FileRegion;

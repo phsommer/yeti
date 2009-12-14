@@ -45,7 +45,8 @@ public abstract class AbstractInformationControl implements INesCInformationCont
 	 * @param control the control whose colors should be forwarded
 	 */
 	protected void setColorAndFont( Control control ){
-		setColorAndFont( control, control.getForeground(), control.getBackground(), JFaceResources.getDialogFont() );
+		// setColorAndFont( control, control.getForeground(), control.getBackground(), JFaceResources.getDialogFont() );
+		setColorAndFont( control, control.getForeground(), control.getBackground(), control.getDisplay().getSystemFont() );
 	}
 	
 	/**

@@ -73,8 +73,8 @@ import tinyos.yeti.jobs.PublicJob;
 import tinyos.yeti.model.ProjectModel;
 
 /**
- * This {@link ITextHover} searches for various {@link Annotation}s and returns
- * either their message or {@link IQuickFixInformation}s.
+ * This {@link ITextHover} searches for various elements that can be displayed
+ * by a {@link NesCInformationControl}.
  * @author Benjamin Sigg
  */
 public class NesCHover extends DefaultTextHover implements ITextHoverExtension, ITextHoverExtension2, INesCEditorParserClient{

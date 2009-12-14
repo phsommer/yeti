@@ -96,6 +96,7 @@ import tinyos.yeti.ep.parser.IMessage;
 import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.inspection.INesCInspector;
+import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.ep.parser.standard.ASTModel;
 import tinyos.yeti.jobs.CancelingJob;
 import tinyos.yeti.model.ProjectModel;
@@ -129,6 +130,9 @@ public class NesCEditor extends TextEditor {
     /** the high level view of {@link #ast} */
     private IASTModel astModel;
 
+    /** references within the current document */
+    private IASTReference[] references;
+    
     /** The outline page */
     private NesCOutlinePage outlinePage;
 
@@ -362,6 +366,7 @@ public class NesCEditor extends TextEditor {
      */
     public void setupParser( INesCParser parser ){
         parser.setCreateAST( true );
+        parser.setCreateReferences( true );
 
         ProjectTOS tos = getProjectTOS();
         if( tos != null ){
@@ -390,6 +395,7 @@ public class NesCEditor extends TextEditor {
     public void closeParser( boolean result, INesCParser parser ){
         this.ast = parser.getAST();
         this.astModel = parser.getASTModel();
+        this.references = parser.getReferences();
 
         INesCInspector inspector = parser.getInspector();
         if( inspector != null )
@@ -424,6 +430,15 @@ public class NesCEditor extends TextEditor {
         job.setPriority( Job.INTERACTIVE );
         job.schedule();
     }
+    
+    /**
+     * Gets the references which were present when parsing this document the
+     * last time.
+     * @return the references, may be <code>null</code>.
+     */
+    public IASTReference[] getReferences(){
+		return references;
+	}
 
     /**
      * Gets the abstract syntax tree that describes the contents of this editor.

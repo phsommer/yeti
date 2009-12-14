@@ -125,6 +125,15 @@ public class DataObject extends AbstractValue{
         return null;
     }
     
+    public Value getValue( String identifier ){
+    	for( int i = 0, n = type.getFieldCount(); i<n; i++ ){
+            if( identifier.equals( Name.toIdentifier( type.getField( i ).getName() ) ) )
+                return getValue( i );
+        }
+        
+        return null;
+    }
+    
     public Value getValue( int field ){
         return values[field];
     }
