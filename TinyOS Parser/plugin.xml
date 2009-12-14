@@ -5,6 +5,7 @@
    <extension-point id="nesc12.parser.hyperlinks" name="Hyperlink rules" schema="schema/nesc12.parser.hyperlinks.exsd"/>
    <extension-point id="nesc12.parser.quickfixes" name="Quickfixes" schema="schema/nesc12.parser.quickfix.exsd"/>
    <extension-point id="nesc12.parser.hover" name="Hover rules" schema="schema/nesc12.parser.hover.exsd"/>
+   <extension-point id="nesc12.parser.attributes" name="Attribute resolving" schema="schema/nesc12.parser.attributes.exsd"/>
 
    <extension
          point="tinyos.yeti.core.Parser">
@@ -173,6 +174,13 @@
       <rule
             class="tinyos.yeti.nesc12.ep.rules.hover.InterfaceParameterHover">
       </rule>
+   </extension>
+   <extension
+         point="nesc12.parser.attributes">
+      <resolve
+            class="tinyos.yeti.nesc12.ep.attributes.Combine"
+            name="combine">
+      </resolve>
    </extension>
 
 </plugin>

@@ -26,6 +26,7 @@ import org.eclipse.jface.text.BadLocationException;
 
 import tinyos.yeti.editors.IDocumentMap;
 import tinyos.yeti.ep.parser.IFileRegion;
+import tinyos.yeti.ep.parser.standard.FileHyperlink;
 import tinyos.yeti.nesc12.ep.INesC12Location;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.ep.rules.RuleUtility;

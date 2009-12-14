@@ -334,7 +334,15 @@ public class StringValue extends AbstractValue{
         
         StringBuilder builder = new StringBuilder( value.length+5 );
         builder.append( close );
-        loop: for( int v : value ){
+        builder.append( getString() );
+        builder.append( close );
+        return builder.toString();
+    }
+    
+    public String getString(){
+    	StringBuilder builder = new StringBuilder();
+    	
+    	loop: for( int v : value ){
             boolean done = false;
             switch( v ){
                 case 7:
@@ -395,7 +403,6 @@ public class StringValue extends AbstractValue{
                 }
             }
         }
-        builder.append( close );
-        return builder.toString();
+    	return builder.toString();
     }
 }

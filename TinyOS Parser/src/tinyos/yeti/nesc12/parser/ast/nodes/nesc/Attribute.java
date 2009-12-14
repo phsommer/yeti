@@ -143,6 +143,13 @@ public class Attribute extends AbstractFixedASTNode{
             stack.remove( Initializer.INITIALIZER_COUNTER );
             resolved( "value", counter.result( getNoError( 1 )) );
         }
+        
+        if( name != null ){
+        	IAttributeResolve resolve = stack.getAttributeResolve( name.getName() );
+        	if( resolve != null ){
+        		resolve.resolve( this, stack );
+        	}
+        }
     }
     
     public void setName( Identifier name ){

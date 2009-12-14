@@ -82,12 +82,14 @@
       <view
             category="tinyOS.category.main"
             class="tinyos.yeti.views.CacheView"
+            icon="icons/application.png"
             id="TinyOS.view.debug.cache"
             name="TinyOS Cache">
       </view>
       <view
             category="tinyOS.category.main"
             class="tinyos.yeti.views.BasicDeclarationSetView"
+            icon="icons/application.png"
             id="tinyOS.view.declarationset"
             name="Project resources"
             restorable="true">
@@ -203,7 +205,7 @@
          </action>
          <action
                allowLabelUpdate="true"
-               definitionId="TinyOS.command.formatCode"
+               definitionId="tinyos.yeti.command.formatCode"
                id="tinyos.yeti.formatSourceAction"
                label="Format"
                menubarPath="tinyos.source/tinyos.source.main"
@@ -491,6 +493,12 @@
             id="tinyos.yeti.command.indentCode"
             name="Correct indentation">
       </command>
+      <command
+            categoryId="TinyOS.category.source"
+            description="Format the source code"
+            id="tinyos.yeti.command.formatCode"
+            name="Format">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">
@@ -527,6 +535,12 @@
             contextId="TinyOS.nescEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+I">
+      </key>
+      <key
+            commandId="tinyos.yeti.command.formatCode"
+            contextId="TinyOS.nescEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
       </key>
    <!--   <key
             commandId="TinyOS.command.formatCode"

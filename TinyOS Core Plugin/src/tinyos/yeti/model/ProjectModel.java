@@ -58,6 +58,7 @@ import tinyos.yeti.ep.parser.IASTModelNode;
 import tinyos.yeti.ep.parser.IASTModelNodeConnection;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
+import tinyos.yeti.ep.parser.IFileRegion;
 import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.ep.parser.IMessage;
 import tinyos.yeti.ep.parser.INesCInitializer;
@@ -573,6 +574,36 @@ public class ProjectModel {
             
             lock.leave();
         }
+    }
+    
+    /**
+     * Tries to find the region to which <code>path</code> points. 
+     * @param path the path to some node
+     * @param monitor to report progress
+     * @return the region or <code>null</code> if not found
+     */
+    public IFileRegion getRegion( IASTModelPath path, IProgressMonitor monitor ){
+        Monitor lock = enter();
+
+        if( monitor == null )
+        	monitor = new NullProgressMonitor();
+        
+        monitor.beginTask( "Region", 10 );
+        
+        try{
+        	IASTModelNode node = getNode( path, new SubProgressMonitor( monitor, 9 ) );
+        	if( node == null )
+        		return null;
+        	
+        	return node.getRegion();
+        }
+        finally{
+            if( path != null && path.getParseFile() != null )
+                melt( path.getParseFile() );
+            
+            lock.leave();
+            monitor.done();
+        }    	
     }
 
     /**
