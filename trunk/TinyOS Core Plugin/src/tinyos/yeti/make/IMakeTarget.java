@@ -116,7 +116,7 @@ public interface IMakeTarget extends IMakeTargetMorpheable{
      */
     public MakeTypedef[] getTypedefs();
     
-    public IMacro[] getMacros();
+    public MakeMacro[] getMacros();
 
     public String[] getBoards();
     

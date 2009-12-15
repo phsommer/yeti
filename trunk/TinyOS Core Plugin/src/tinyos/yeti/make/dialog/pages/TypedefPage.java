@@ -23,6 +23,9 @@ package tinyos.yeti.make.dialog.pages;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.ep.parser.INesCParserFactory;
@@ -35,7 +38,10 @@ public class TypedefPage extends KeyValuePage<MakeTypedef>{
     }
     
     @Override
-    public String checkValid( String[] keys, String[] values ){
+    public String checkValid( String[][] table ){
+    	String[] keys = table[0];
+    	String[] values = table[1];
+    	
     	INesCParserFactory factory = TinyOSPlugin.getDefault().getParserFactory();
     	
     	List<IDeclaration> declarations = new ArrayList<IDeclaration>();
@@ -50,6 +56,20 @@ public class TypedefPage extends KeyValuePage<MakeTypedef>{
     	}
     	
     	return null;
+    }
+    
+    @Override
+    protected KeyValueDialog<MakeTypedef> createDialog( Shell shell ){
+    	return new KeyValueDialog<MakeTypedef>( shell, this ){
+			@Override
+			protected MakeTypedef create( String key, String value ){
+				return new MakeTypedef( value, key );
+			}
+			@Override
+			protected boolean checkOk( String key, String value ){
+				return key.length() > 0 && value.length() > 0;
+			}
+		};
     }
         
     @Override
@@ -93,7 +113,7 @@ public class TypedefPage extends KeyValuePage<MakeTypedef>{
     }
     
     @Override
-    protected MakeTypedef create( String key, String value ){
+    protected MakeTypedef create( String key, String value, TableItem item ){
     	return new MakeTypedef( value, key );
     }
 }

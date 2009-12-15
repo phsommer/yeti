@@ -20,175 +20,122 @@
  */
 package tinyos.yeti.make.dialog.pages;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import tinyos.yeti.ep.parser.macros.ConstantMacro;
-import tinyos.yeti.make.dialog.AbstractMakeTargetDialogPage;
-import tinyos.yeti.make.dialog.IMakeTargetInformation;
-import tinyos.yeti.make.dialog.pages.CustomizationControls.Selection;
+import tinyos.yeti.make.MakeMacro;
 import tinyos.yeti.make.targets.MakeTargetPropertyKey;
-import tinyos.yeti.make.targets.MakeTargetSkeleton;
 
-public class ConstantMacroPage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton> implements ICustomizeablePage{
-    private org.eclipse.swt.widgets.List list;
-    private List<ConstantMacro> macros = new LinkedList<ConstantMacro>();
-    
-    private Button buttonAdd;
-    private Button buttonEdit;
-    private Button buttonDelete;
-    
-    private CustomizationControls customization;
-    
+public class ConstantMacroPage extends KeyValuePage<MakeMacro>{
+    private final String TRUE = "visible";
+    private final String FALSE = "ignore";
+	
     public ConstantMacroPage( boolean showCustomization ){
-        super( "Macros" );
-        setDefaultMessage( "Macros which are applied to any file that gets parsed by Eclipse. Note that ncc will not be affected by these settings." );
-        if( showCustomization ){
-        	customization = new CustomizationControls();
-        	customization.setPage( this );
-        }
+    	super( showCustomization, "Macros", "Macros that may be visible in any file." );
     }
     
-    public void setCustomEnabled( boolean enabled ){
-	    list.setEnabled( enabled );
-	    buttonAdd.setEnabled( enabled );
-	    buttonEdit.setEnabled( enabled );
-	    buttonDelete.setEnabled( enabled );
-	    contentChanged();
-    }
-    
-    public void show( MakeTargetSkeleton maketarget, IMakeTargetInformation information ){
-        list.removeAll();
-        macros.clear();
+    @Override
+    protected void createTableColumns( Table table ){
+    	super.createTableColumns( table );
+    	
+        TableColumn yeti = new TableColumn( table, SWT.LEFT );
+        yeti.setText( "Eclipse" );
+        yeti.setResizable( true );
+        yeti.setMoveable( false );
+        yeti.setWidth( 75 );
         
-        ConstantMacro[] macros = maketarget.getCustomMacros();
-        if( macros != null ){
-            for( ConstantMacro macro : macros ){
-                list.add( toString( macro ) );
-                this.macros.add( macro );
-            }
-        }
-        
-        if( customization != null ){
-        	customization.setSelection( 
-        			maketarget.isUseLocalProperty( MakeTargetPropertyKey.MACROS ),
-        			maketarget.isUseDefaultProperty( MakeTargetPropertyKey.MACROS ) );
-        }
+        TableColumn ncc = new TableColumn( table, SWT.LEFT );
+        ncc.setText( "ncc" );
+        ncc.setResizable( true );
+        ncc.setMoveable( false );
+        ncc.setWidth( 75 ); 
     }
 
-    public void store( MakeTargetSkeleton maketarget ){
-        maketarget.setCustomMacros( macros.toArray( new ConstantMacro[ macros.size() ] ) );
-        
-        if( customization != null ){
-        	Selection selection = customization.getSelection();
-        	maketarget.setUseLocalProperty( MakeTargetPropertyKey.MACROS, selection.isLocal() );
-        	maketarget.setUseDefaultProperty( MakeTargetPropertyKey.MACROS, selection.isDefaults() );
-        }
+    @Override
+    protected KeyValueDialog<MakeMacro> createDialog( Shell shell ){
+    	return new ConstantMacroDialog( shell, this );
     }
     
-    private String toString( ConstantMacro macro ){
-        return macro.getName() + ": " + macro.getConstant();
-    }
     
-    private void handleAdd(){
-        ConstantMacroDialog dialog = new ConstantMacroDialog( getControl().getShell() );
-        ConstantMacro macro = dialog.open( null );
-        if( macro != null ){
-            list.add( toString( macro ));
-            macros.add( macro );
-            contentChanged();
-        }
-    }
+	@Override
+	protected String checkValid( String[][] table ){
+		String[] names = table[0];
+		for( String name : names ){
+			int length = name.length();
+			if( length == 0 )
+				return "Variable without name";
+			
+			if( !Character.isJavaIdentifierStart( name.charAt( 0 ) ))
+				return "Illegal name: '" + name + "'";
+			
+			for( int i = 1; i < length; i++ ){
+				if( !Character.isJavaIdentifierPart( name.charAt( i ) ))
+					return "Illegal name: '" + name + "'";
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	protected MakeMacro create( String key, String value, TableItem row ){
+		ConstantMacro macro = new ConstantMacro( key, value );
+		boolean yeti = TRUE.equals( row.getText( 2 ) );
+		boolean ncc = TRUE.equals( row.getText( 3 ) );
+		return new MakeMacro( macro, yeti, ncc );
+	}
+
+	@Override
+	protected void show( MakeMacro entry, TableItem item ){
+		item.setText( new String[]{ getKey( entry ), getValue( entry ), getBoolean( entry.isIncludeYeti() ), getBoolean( entry.isIncludeNcc() ) } );
+	}
+	
+	private String getBoolean( boolean value ){
+		return value ? TRUE : FALSE;
+	}
+	
+	@Override
+	public String getDialogExample(){
+		return "Example: '#define PI 3.14' would be 'name=PI', 'value=3.14'";
+	}
+
+	@Override
+	public String getEditDialogTitle(){
+		return "Edit macro";
+	}
+
+	@Override
+	protected String getKey( MakeMacro entry ){
+		return entry.getMacro().getName();
+	}
+
+	@Override
+	protected MakeTargetPropertyKey<MakeMacro[]> getKey(){
+		return MakeTargetPropertyKey.MACROS;
+	}
+
+	@Override
+	public String getKeyName(){
+		return "Name";
+	}
+
+	@Override
+	public String getNewDialogTitle(){
+		return "Create new macro";
+	}
+
+	@Override
+	protected String getValue( MakeMacro entry ){
+		return ((ConstantMacro)entry.getMacro()).getConstant();
+	}
+
+	@Override
+	public String getValueName(){
+		return "Value";
+	}
     
-    private void handleEdit(){
-        int index = list.getSelectionIndex();
-        if( index >= 0 ){
-            ConstantMacroDialog dialog = new ConstantMacroDialog( getControl().getShell() );
-            ConstantMacro macro = dialog.open( macros.get( index ) );
-            if( macro != null ){
-                list.setItem( index, toString( macro ) );
-                macros.set( index, macro );
-                contentChanged();
-            }
-        }
-    }
-    
-    private void handleDelete(){
-        int index = list.getSelectionIndex();
-        if( index >= 0 ){
-            list.remove( index );
-            macros.remove( index );
-            contentChanged();
-        }
-    }
-    
-    public void createControl( Composite parent ){
-        Composite pane = new Composite( parent, SWT.NONE );
-        setControl( pane );
-        pane.setLayout( new GridLayout( 2, false ) );
-        
-        Label description = new Label( pane, SWT.NONE );
-        description.setText( "Macros used in each file" );
-        description.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 2, 1 ) );
-        
-        if( customization != null ){
-        	customization.createControl( pane, true );
-        	customization.getControl().setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 2, 1 ) );
-        }
-        
-        list = new org.eclipse.swt.widgets.List( pane, SWT.BORDER | SWT.SINGLE );
-        list.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 1, 1 ) );
-        
-        Composite buttons = new Composite( pane, SWT.NONE );
-        buttons.setLayout( new GridLayout( 1, true ) );
-        buttons.setLayoutData( new GridData( SWT.CENTER, SWT.CENTER, false, false, 1, 1 ) );
-        
-        buttonAdd = new Button( buttons, SWT.PUSH );
-        buttonAdd.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-        buttonAdd.setText( "Add" );
-        
-        buttonEdit = new Button( buttons, SWT.PUSH );
-        buttonEdit.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-        buttonEdit.setText( "Edit" );
-        
-        buttonDelete = new Button( buttons, SWT.PUSH );
-        buttonDelete.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-        buttonDelete.setText( "Delete" );
-        
-        buttonAdd.addSelectionListener( new SelectionListener(){
-            public void widgetSelected( SelectionEvent e ){
-                handleAdd();
-            }
-            public void widgetDefaultSelected( SelectionEvent e ){
-                handleAdd();
-            }
-        });
-        
-        buttonEdit.addSelectionListener( new SelectionListener(){
-            public void widgetSelected( SelectionEvent e ){
-                handleEdit();
-            }
-            public void widgetDefaultSelected( SelectionEvent e ){
-                handleEdit();
-            }
-        });
-        
-        buttonDelete.addSelectionListener( new SelectionListener(){
-            public void widgetSelected( SelectionEvent e ){
-                handleDelete();
-            }
-            public void widgetDefaultSelected( SelectionEvent e ){
-                handleDelete();
-            }
-        });
-    }   
 }

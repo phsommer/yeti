@@ -722,6 +722,22 @@ public class TinyOSPlugin extends AbstractUIPlugin{
     	return formattings;
     }
     
+    public INesCFormattingStrategyFactory getFormattingFactory(){
+    	String name = getPreferenceStore().getString( PreferenceConstants.CF_CODE_FORMATTING_STRATEGY );
+    	INesCFormattingStrategyFactory[] factories = getFormattingFactories();
+    	for( INesCFormattingStrategyFactory factory : factories ){
+    		if( factory.getId().equals( name ) && factory.isFormatter() )
+    			return factory;
+    	}
+    	
+    	for( INesCFormattingStrategyFactory factory : factories ){
+    		if( factory.isFormatter() )
+    			return factory;
+    	}
+    	
+    	return null;
+    }
+    
     public boolean formattingStrategyExists(){
     	INesCFormattingStrategyFactory[] factories = getFormattingFactories();
     	if( factories == null )
@@ -732,6 +748,22 @@ public class TinyOSPlugin extends AbstractUIPlugin{
     		}
     	}
     	return false;
+    }
+    
+    public INesCFormattingStrategyFactory getIndenterFactory(){
+    	String name = getPreferenceStore().getString( PreferenceConstants.CF_INDENTATION_STRATEGY );
+    	INesCFormattingStrategyFactory[] factories = getFormattingFactories();
+    	for( INesCFormattingStrategyFactory factory : factories ){
+    		if( factory.getId().equals( name ) && factory.isIndenter() )
+    			return factory;
+    	}
+    	
+    	for( INesCFormattingStrategyFactory factory : factories ){
+    		if( factory.isIndenter() )
+    			return factory;
+    	}
+    	
+    	return null;
     }
     
     public boolean intendingStrategyExists(){

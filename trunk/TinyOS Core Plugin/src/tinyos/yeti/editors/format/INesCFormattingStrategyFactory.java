@@ -65,4 +65,10 @@ public interface INesCFormattingStrategyFactory{
 	 * @return the name
 	 */
 	public String getName();
+	
+	/**
+	 * Gets a unique id. 
+	 * @return the unique identifier
+	 */
+	public String getId();
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="tinyos.yeti.formatter"
-      label="TinyOS Formatter"
+      label="TinyOS Formatter (Optional)"
       version="1.0.0"
       provider-name="ETH Zurich, Jianyuan Li">
 
@@ -689,6 +689,11 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;http://www.gnu.org/philosophy/why-not-lgpl.html&gt;.
    </license>
+   
+   <includes
+         id="tinyos.yeti.formatter.source"
+         version="0.0.0"
+         optional="true"/>
 
    <requires>
       <import plugin="org.eclipse.core.runtime"/>

@@ -59,6 +59,10 @@ public class NesCFormattingStrategy2Factory implements INesCFormattingStrategyFa
 	}
 
 	public String getName(){
-		return "Simple indenter"; 
+		return "Yeti 2 - simple default"; 
+	}
+	
+	public String getId(){
+		return "tinyos.yeti.default";
 	}
 }

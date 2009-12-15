@@ -26,8 +26,8 @@ import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IEnvironment;
 import tinyos.yeti.ep.IPlatform;
-import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.make.MakeInclude;
+import tinyos.yeti.make.MakeMacro;
 import tinyos.yeti.nature.MissingNatureException;
 
 /**
@@ -71,7 +71,7 @@ public class PlatformProperties implements IMakeTargetProperties{
 		return platform.getDefaultIncludes();
 	}
 	
-	public IMacro[] getMacros(){
+	public MakeMacro[] getMacros(){
 		IPlatform platform = getPlatform();
 		if( platform == null )
 			return null;

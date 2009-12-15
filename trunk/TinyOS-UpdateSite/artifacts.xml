@@ -1,20 +1,58 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
-<repository name='file:/home/besigg/workspace/TinyOS-UpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
+<repository name='${p2.artifact.repo.name}' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1259588211531'/>
+    <property name='p2.timestamp' value='1260885974703'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='29'>
+  <artifacts size='96'>
     <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic' version='1.2.15'>
       <properties size='3'>
         <property name='artifact.size' value='216731'/>
         <property name='download.size' value='216731'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='1273'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.search.source' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='74964'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2.source' version='2.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='27355'/>
+        <property name='download.size' value='27355'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Core_Plugin' version='2.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13206'/>
+        <property name='download.size' value='13206'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core.source' version='2.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='2370773'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.formatter.source' version='1.0.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='12754'/>
+        <property name='download.size' value='12754'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -25,6 +63,276 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP.source' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='37111'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic.source' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='143189'/>
+        <property name='download.size' value='143189'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.search.source' version='1.1.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='65475'/>
+        <property name='download.size' value='65475'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.parser.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='12996'/>
+        <property name='download.size' value='12996'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.search' version='1.1.15'>
+      <properties size='3'>
+        <property name='artifact.size' value='123258'/>
+        <property name='download.size' value='123258'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='83056'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13155'/>
+        <property name='download.size' value='13155'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.nesc12' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='3534313'/>
+        <property name='download.size' value='3534313'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.parser.source' version='1.2.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1542'/>
+        <property name='download.size' value='1542'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Core_Plugin' version='2.2.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1776'/>
+        <property name='download.size' value='1776'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP' version='1.1.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='53328'/>
+        <property name='download.size' value='53328'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.source' version='1.2.15'>
+      <properties size='3'>
+        <property name='artifact.size' value='6469469'/>
+        <property name='download.size' value='6469469'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.windows.environment' version='1.1.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12818'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP' version='1.1.15'>
+      <properties size='3'>
+        <property name='artifact.size' value='52053'/>
+        <property name='download.size' value='52053'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2.source' version='2.2.15'>
+      <properties size='3'>
+        <property name='artifact.size' value='26793'/>
+        <property name='download.size' value='26793'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger' version='1.2.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1797'/>
+        <property name='download.size' value='1797'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.preprocessor.nesc12.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='580291'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.windows.environment' version='1.1.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1714'/>
+        <property name='download.size' value='1714'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.basic.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12757'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP.source' version='1.1.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='32558'/>
+        <property name='download.size' value='32558'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.parser.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12728'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search.source' version='1.1.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12717'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='222633'/>
+        <property name='download.size' value='222633'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.source' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='6474051'/>
+        <property name='download.size' value='6474051'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='54071'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.formatter.source' version='1.0.0'>
+      <properties size='2'>
+        <property name='artifact.size' value='12882'/>
+        <property name='download.size' value='12882'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.winXP.source' version='1.1.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1510'/>
+        <property name='download.size' value='1510'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.core.source' version='2.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13030'/>
+        <property name='download.size' value='13030'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_TosLinux_2' version='2.2.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1755'/>
+        <property name='download.size' value='1755'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic.source' version='1.2.15'>
+      <properties size='3'>
+        <property name='artifact.size' value='139819'/>
+        <property name='download.size' value='139819'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.unix2.source' version='2.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13011'/>
+        <property name='download.size' value='13011'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='148303'/>
+        <property name='download.size' value='148303'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.preprocessor.nesc12.source' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='580291'/>
+        <property name='download.size' value='580291'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Environment' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13231'/>
+        <property name='download.size' value='13231'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.search' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='125087'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.preprocessor.nesc12' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='379042'/>
+        <property name='download.size' value='379042'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core.source' version='2.2.15'>
+      <properties size='3'>
+        <property name='artifact.size' value='2291081'/>
+        <property name='download.size' value='2291081'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core.source' version='2.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='2323520'/>
+        <property name='download.size' value='2323520'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2' version='2.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='45973'/>
+        <property name='download.size' value='45973'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.winXP.source' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='12940'/>
+        <property name='download.size' value='12940'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search.source' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='12999'/>
+        <property name='download.size' value='12999'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='1554'/>
+        <property name='download.size' value='1554'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger.source' version='1.2.15'>
       <properties size='3'>
         <property name='artifact.size' value='75066'/>
@@ -32,10 +340,52 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='tinyos.yeti.search' version='1.1.15'>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.preprocessor.nesc12' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='381852'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.winXP.source' version='1.1.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12660'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.core.source' version='2.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12748'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.formatter' version='1.0.0'>
+      <properties size='2'>
+        <property name='artifact.size' value='13047'/>
+        <property name='download.size' value='13047'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_TosLinux_2' version='2.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13181'/>
+        <property name='download.size' value='13181'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger' version='1.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='1506'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.basic.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13039'/>
+        <property name='download.size' value='13039'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger.source' version='1.2.16'>
       <properties size='3'>
-        <property name='artifact.size' value='123258'/>
-        <property name='download.size' value='123258'/>
+        <property name='artifact.size' value='75061'/>
+        <property name='download.size' value='75061'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -60,16 +410,16 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.parser.source' version='1.2.15'>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2' version='2.2.16'>
       <properties size='2'>
-        <property name='artifact.size' value='1542'/>
-        <property name='download.size' value='1542'/>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='46637'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='Feature_Core_Plugin' version='2.2.15'>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_TosLinux_2' version='2.2.16'>
       <properties size='2'>
-        <property name='artifact.size' value='1776'/>
-        <property name='download.size' value='1776'/>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12890'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='Feature_Parser12' version='1.2.15'>
@@ -78,25 +428,24 @@
         <property name='download.size' value='1770'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.source' version='1.2.15'>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.search' version='1.1.16'>
       <properties size='3'>
-        <property name='artifact.size' value='6469469'/>
-        <property name='download.size' value='6469469'/>
+        <property name='artifact.size' value='123259'/>
+        <property name='download.size' value='123259'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP' version='1.1.15'>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core' version='2.2.16'>
       <properties size='3'>
-        <property name='artifact.size' value='52053'/>
-        <property name='download.size' value='52053'/>
+        <property name='artifact.size' value='1848206'/>
+        <property name='download.size' value='1848206'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2.source' version='2.2.15'>
-      <properties size='3'>
-        <property name='artifact.size' value='26793'/>
-        <property name='download.size' value='26793'/>
-        <property name='download.contentType' value='application/zip'/>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.unix2.source' version='2.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='31509'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.core.source' version='2.2.15'>
@@ -105,16 +454,16 @@
         <property name='download.size' value='1568'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger' version='1.2.15'>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.debugger' version='1.2.16'>
       <properties size='2'>
         <property name='artifact.size' value='1797'/>
         <property name='download.size' value='1797'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='tinyos.windows.environment' version='1.1.15'>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Core_Plugin' version='2.2.16'>
       <properties size='2'>
-        <property name='artifact.size' value='1714'/>
-        <property name='download.size' value='1714'/>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12915'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.winXP.source' version='1.1.15'>
@@ -124,10 +473,35 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Environment' version='1.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12940'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='164052'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core' version='2.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='1851118'/>
+        <property name='download.size' value='1851118'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='Feature_Environment' version='1.2.15'>
       <properties size='2'>
         <property name='artifact.size' value='1809'/>
         <property name='download.size' value='1809'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Parser12' version='1.2.16'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12901'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='tinyos.yeti.search.source' version='1.1.15'>
@@ -137,16 +511,48 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.winXP.source' version='1.1.15'>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core' version='2.2.16'>
       <properties size='2'>
-        <property name='artifact.size' value='1510'/>
-        <property name='download.size' value='1510'/>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='1868761'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='Feature_TosLinux_2' version='2.2.15'>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.unix2.source' version='2.2.16'>
       <properties size='2'>
-        <property name='artifact.size' value='1755'/>
-        <property name='download.size' value='1755'/>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12729'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.nesc12' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='3577199'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.nesc12.source' version='1.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='6448398'/>
+        <property name='download.size' value='6448398'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='225926'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.windows.environment' version='1.1.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13109'/>
+        <property name='download.size' value='13109'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.core.source' version='2.2.16'>
+      <properties size='3'>
+        <property name='artifact.size' value='2319084'/>
+        <property name='download.size' value='2319084'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search' version='1.1.15'>
@@ -155,17 +561,23 @@
         <property name='download.size' value='1737'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='tinyos.yeti.environment.basic.source' version='1.2.15'>
-      <properties size='3'>
-        <property name='artifact.size' value='139819'/>
-        <property name='download.size' value='139819'/>
+    <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search' version='1.1.16'>
+      <properties size='2'>
         <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='12864'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.unix2.source' version='2.2.15'>
       <properties size='2'>
         <property name='artifact.size' value='1553'/>
         <property name='download.size' value='1553'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.formatter' version='1.0.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='22654'/>
+        <property name='download.size' value='22654'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.environment.basic.source' version='1.2.15'>
@@ -181,11 +593,22 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='tinyos.yeti.core.source' version='2.2.15'>
-      <properties size='3'>
-        <property name='artifact.size' value='2291081'/>
-        <property name='download.size' value='2291081'/>
-        <property name='download.contentType' value='application/zip'/>
+    <artifact classifier='org.eclipse.update.feature' id='Feature_Parser12' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='13192'/>
+        <property name='download.size' value='13192'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.debugger' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='150292'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='tinyos.yeti.parser.nesc12.source' version='1.2.16'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='6448398'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='tinyos.yeti.search.source' version='1.1.15'>

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Yeti 2 - Search
 Bundle-SymbolicName: tinyos.yeti.search;singleton:=true
-Bundle-Version: 1.1.15
+Bundle-Version: 1.1.16
 Bundle-Activator: tinyos.yeti.search.SearchPlugin
 Bundle-Vendor: ETH Zurich, Benjamin Sigg
 Require-Bundle: org.eclipse.ui,
@@ -10,6 +10,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.search,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
- tinyos.yeti.core;bundle-version="2.2.15"
+ tinyos.yeti.core;bundle-version="2.2.16"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-LazyStart: true

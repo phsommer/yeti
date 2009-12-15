@@ -20,6 +20,9 @@
  */
 package tinyos.yeti.make.dialog.pages;
 
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+
 import tinyos.yeti.editors.NesCIcons;
 import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.targets.MakeTargetPropertyKey;
@@ -31,12 +34,26 @@ public class EnvironmentVariablesPage extends KeyValuePage<EnvironmentVariable>{
 	}
 	
 	@Override
-	public String checkValid( String[] keys, String[] values ){
+	public String checkValid( String[][] table ){
 		return null;
+	}
+	
+	@Override
+	protected KeyValueDialog<EnvironmentVariable> createDialog( Shell shell ){
+		return new KeyValueDialog<EnvironmentVariable>( shell, this ){
+			@Override
+			protected EnvironmentVariable create( String key, String value ){
+				return new EnvironmentVariable( key, value );
+			}
+			@Override
+			protected boolean checkOk( String key, String value ){
+				return key.length() > 0;
+			}
+		};
 	}
 
 	@Override
-	protected EnvironmentVariable create( String key, String value ){
+	protected EnvironmentVariable create( String key, String value, TableItem row ){
 		return new EnvironmentVariable( key, value );
 	}
 

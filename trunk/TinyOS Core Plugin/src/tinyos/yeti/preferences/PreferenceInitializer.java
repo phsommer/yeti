@@ -65,7 +65,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault( PreferenceConstants.AUTO_BRACKETS, true );
         store.setDefault( PreferenceConstants.AUTO_STRATEGY_IDENT, true );
         store.setDefault( PreferenceConstants.ERROR_TO_INFO, true );
-
         
         store.setDefault( PreferenceConstants.SAVE_FILES_AUTOMATICALLY, false );
     }

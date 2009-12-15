@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -67,25 +68,31 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
 
 	public abstract String getKeyName();
 	
-	public abstract String checkValid( String[] keys, String[] values );
+	/**
+	 * Checks the validity of the table.
+	 * @param table the table, the first index denotes the column, the second index is the row.
+	 * @return an error message or <code>null</code>
+	 */
+	protected abstract String checkValid( String[][] table );
     
 	/**
 	 * Checks whether the content of this page is valid.
 	 * @return an error message or <code>null</code>
 	 */
 	protected String checkValid(){
-		int size = table.getItemCount();
+		int rows = table.getItemCount();
+		int columns = table.getColumnCount();
 		
-        String[] keys = new String[ size ];
-        String[] values = new String[ size ];
+		String[][] content = new String[columns][rows];
 		
-        for( int i = 0; i < size; i++ ){
+        for( int i = 0; i < rows; i++ ){
             TableItem item = table.getItem( i );
-            keys[i] = item.getText( 0 );
-            values[i] = item.getText( 1 );
+            for( int j = 0; j < columns; j++ ){
+            	content[j][i] = item.getText( j );
+            }
         }
         
-        return checkValid( keys, values );
+        return checkValid( content );
 	}
 	
 	protected void recheckValid(){
@@ -116,6 +123,14 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         table.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
         table.setHeaderVisible( true );
         
+        createTableColumns( table );
+        
+        buttons = new Buttons();
+        buttons.createControl( base );
+        buttons.getControl().setLayoutData( new GridData( SWT.CENTER, SWT.CENTER, false, false ) );
+    }
+    
+    protected void createTableColumns( Table table ){
         TableColumn key = new TableColumn( table, SWT.LEFT );
         key.setText( getKeyName() );
         key.setResizable( true );
@@ -126,11 +141,7 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         value.setText( getValueName() );
         value.setResizable( true );
         value.setMoveable( false );
-        value.setWidth( 200 );
-        
-        buttons = new Buttons();
-        buttons.createControl( base );
-        buttons.getControl().setLayoutData( new GridData( SWT.CENTER, SWT.CENTER, false, false ) );
+        value.setWidth( 200 );    	
     }
     
     @Override
@@ -139,17 +150,30 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
     	super.contentChanged();
     }
     
+    protected abstract KeyValueDialog<T> createDialog( Shell shell );
+    
+    protected T openDialog( Shell shell, T oldValue ){
+    	KeyValueDialog<T> dialog = createDialog( shell );
+    	String key = null;
+    	String value = null;
+    	if( oldValue != null ){
+    		key = getKey( oldValue );
+    		value = getValue( oldValue );
+    	}
+    	if( dialog.open( key, value, oldValue )){
+    		return dialog.get();
+    	}
+    	else{
+    		return null;
+    	}
+    }
+    
     protected void doAdd(){
-        KeyValueDialog dialog = new KeyValueDialog( getControl().getShell(), this );
-        if( dialog.open( null, null )){
-            String key = dialog.getKey();
-            String value = dialog.getValue();
-            
-            if( key.length() > 0 && value.length() > 0 ){
-                TableItem item = new TableItem( table, SWT.NONE );
-                item.setText( new String[]{ key, value } );
-            }
-            contentChanged();
+    	T entry = openDialog( getControl().getShell(), null );
+    	if( entry != null ){
+    	    TableItem item = new TableItem( table, SWT.NONE );
+    	    show( entry, item );
+    	    contentChanged();
         }
     }
     
@@ -157,9 +181,10 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         int index = table.getSelectionIndex();
         if( index >= 0 ){
             TableItem item = table.getItem( index );
-            KeyValueDialog dialog = new KeyValueDialog( getControl().getShell(), this );
-            if( dialog.open( item.getText( 1 ), item.getText( 0 ))){
-                item.setText( new String[]{ dialog.getKey(), dialog.getValue() } );
+            T entry = create( item.getText( 0 ), item.getText( 1 ), item );
+            entry = openDialog( getControl().getShell(), entry );
+            if( entry != null ){
+            	show( entry, item );
             }
             contentChanged();
         }
@@ -193,8 +218,15 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         TableItem first = table.getItem( index );
         TableItem second = table.getItem( next );
         
-        String[] firstTemp = new String[]{ first.getText( 0 ), first.getText( 1 ) };
-        String[] secondTemp = new String[]{ second.getText( 0 ), second.getText( 1 ) };
+        int size = table.getColumnCount();
+        
+        String[] firstTemp = new String[ size ];
+        String[] secondTemp = new String[ size ];
+        
+        for( int i = 0; i < size; i++ ){
+        	firstTemp[i] = first.getText( i );
+        	secondTemp[i] = second.getText( i );
+        }
         
         first.setText( secondTemp );
         second.setText( firstTemp );
@@ -209,7 +241,7 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
     
     protected abstract MakeTargetPropertyKey<T[]> getKey();
     
-    protected abstract T create( String key, String value );
+    protected abstract T create( String key, String value, TableItem row );
     
     public void show( MakeTargetSkeleton maketarget, IMakeTargetInformation information ){
         MakeTargetPropertyKey<T[]> key = getKey();
@@ -230,11 +262,15 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
     	if( entries != null ){
     		for( T entry : entries ){
     			TableItem item = new TableItem( table, SWT.NONE );
-    			item.setText( new String[]{ getKey( entry ), getValue( entry ) } );
+    			show( entry, item );
     		}
     	}
 
     	recheckValid();	
+    }
+    
+    protected void show( T entry, TableItem item ){
+    	item.setText( new String[]{ getKey( entry ), getValue( entry ) } );
     }
 
     public void store( MakeTargetSkeleton maketarget ){
@@ -257,7 +293,7 @@ public abstract class KeyValuePage<T> extends AbstractMakeTargetDialogPage<MakeT
         T[] entries = key.array( size );
         for( int i = 0; i < size; i++ ){
             TableItem item = table.getItem( i );
-            entries[i] = create( item.getText( 0 ), item.getText( 1 ) );
+            entries[i] = create( item.getText( 0 ), item.getText( 1 ), item );
         }
         
         return entries;

@@ -364,4 +364,9 @@
 - Bugfix: character '\0' was not recognized as a character with length 1, because 0 was interpreted as string-terminating symbol.
 - Bugfix: platform dependend include paths were not stored properly.
 - Feature: IASTReferences are also used in the search for hyperlinks. Meaning any result that could be shown in the Search-view can also be used for hyperlinking.
-- Feature: Environment variables can be set, these variables will be used when calling 'ncc'. 
+- Feature: Environment variables can be set, these variables will be used when calling 'ncc'.
+- Feature: Macros can be forwarded to ncc 
+- Feature: code formatting and indenting algorithm can be selected in the preferences
+- Feature: Jianyuan Li's plugin included
+
+#17

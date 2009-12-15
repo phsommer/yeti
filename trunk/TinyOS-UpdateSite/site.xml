@@ -3,25 +3,28 @@
    <description url="http://tos-ide.ethz.ch/update/site.xml">
       Yeti 2 update site
    </description>
-   <feature url="features/Feature_Core_Plugin_2.2.15.jar" id="Feature_Core_Plugin" version="2.2.15">
+   <feature url="features/Feature_Core_Plugin_2.2.16.jar" id="Feature_Core_Plugin" version="2.2.16">
       <category name="core"/>
    </feature>
-   <feature url="features/Feature_Parser12_1.2.15.jar" id="Feature_Parser12" version="1.2.15">
+   <feature url="features/Feature_Parser12_1.2.16.jar" id="Feature_Parser12" version="1.2.16">
       <category name="core"/>
    </feature>
-   <feature url="features/Feature_Environment_1.2.15.jar" id="Feature_Environment" version="1.2.15">
+   <feature url="features/Feature_Environment_1.2.16.jar" id="Feature_Environment" version="1.2.16">
       <category name="env"/>
    </feature>
-   <feature url="features/Feature_TosLinux_2_2.2.15.jar" id="Feature_TosLinux_2" version="2.2.15">
+   <feature url="features/Feature_TosLinux_2_2.2.16.jar" id="Feature_TosLinux_2" version="2.2.16">
       <category name="env"/>
    </feature>
-   <feature url="features/tinyos.windows.environment_1.1.15.jar" id="tinyos.windows.environment" version="1.1.15">
+   <feature url="features/tinyos.windows.environment_1.1.16.jar" id="tinyos.windows.environment" version="1.1.16">
       <category name="env"/>
    </feature>
-   <feature url="features/tinyos.yeti.debugger_1.2.15.jar" id="tinyos.yeti.debugger" version="1.2.15">
+   <feature url="features/tinyos.yeti.debugger_1.2.16.jar" id="tinyos.yeti.debugger" version="1.2.16">
       <category name="opt"/>
    </feature>
-   <feature url="features/tinyos.yeti.search_1.1.15.jar" id="tinyos.yeti.search" version="1.1.15">
+   <feature url="features/tinyos.yeti.search_1.1.16.jar" id="tinyos.yeti.search" version="1.1.16">
+      <category name="opt"/>
+   </feature>
+   <feature url="features/tinyos.yeti.formatter_1.0.0.jar" id="tinyos.yeti.formatter" version="1.0.0">
       <category name="opt"/>
    </feature>
    <category-def name="core" label="Yeti 2 - Core">

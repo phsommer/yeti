@@ -58,6 +58,7 @@ import org.xml.sax.SAXException;
 import tinyos.yeti.Debug;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.MakeExtra;
+import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.ep.parser.macros.ConstantMacro;
 import tinyos.yeti.make.MakeInclude.Include;
 import tinyos.yeti.make.targets.DefaultSharedMakeTarget;
@@ -128,6 +129,8 @@ public class ProjectTargets implements IProjectMakeTargets{
 	private static final String MACRO_ELEMENT = "macro";
 	private static final String MACRO_ATTR_NAME = "name";
 	private static final String MACRO_ATTR_CONTENT = "content";
+	private static final String MACRO_ATTR_YETI = "yeti";
+	private static final String MACRO_ATTR_NCC = "ncc";
 
 	private static final String APPLICATION_NAME = "application";
 
@@ -866,21 +869,25 @@ public class ProjectTargets implements IProjectMakeTargets{
 
 		// Macros
 		if( xml.search( MACRO_ELEMENTS )){
-			List<ConstantMacro> macros = new ArrayList<ConstantMacro>();
+			List<MakeMacro> macros = new ArrayList<MakeMacro>();
 			if( version >= 2 ){
-				readUsage( target, MakeTargetPropertyKey.TYPEDEFS, xml );
+				readUsage( target, MakeTargetPropertyKey.MACROS, xml );
 			}
 			
 			while( xml.go( MACRO_ELEMENT )){
-				macros.add( 
-						new ConstantMacro(
+				IMacro macro = new ConstantMacro(
 								xml.getString( MACRO_ATTR_NAME, "name" ),
-								xml.getString( MACRO_ATTR_CONTENT, "content" )
-						));
+								xml.getString( MACRO_ATTR_CONTENT, "content" ));
+				
+				boolean yeti = xml.getBoolean( MACRO_ATTR_YETI, true );
+				boolean ncc = xml.getBoolean( MACRO_ATTR_NCC, false );
+				
+				macros.add( new MakeMacro( macro, yeti, ncc ) );
+				
 				xml.pop();
 			}
 
-			target.setCustomMacros( macros.toArray( new ConstantMacro[ macros.size() ] ));
+			target.setCustomMacros( macros.toArray( new MakeMacro[ macros.size() ] ));
 			xml.pop();
 		}
 

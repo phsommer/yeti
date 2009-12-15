@@ -38,6 +38,7 @@ import tinyos.yeti.make.IProjectMakeTargets;
 import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeExclude;
 import tinyos.yeti.make.MakeInclude;
+import tinyos.yeti.make.MakeMacro;
 import tinyos.yeti.make.MakeTarget;
 import tinyos.yeti.make.MakeTypedef;
 import tinyos.yeti.nature.MissingNatureException;
@@ -330,16 +331,16 @@ public class MakeTargetSkeleton implements ILocalMutableMakeTargetProperties, IM
     	return getProperty( MakeTargetPropertyKey.EXCLUDES );
     }
     
-    public void setCustomMacros( ConstantMacro[] macros ){
+    public void setCustomMacros( MakeMacro[] macros ){
     	putLocalProperty( MakeTargetPropertyKey.MACROS, macros );
     }
 
-    public IMacro[] getMacros(){
+    public MakeMacro[] getMacros(){
     	return getProperty( MakeTargetPropertyKey.MACROS );
     }
     
-    public ConstantMacro[] getCustomMacros(){
-        return (ConstantMacro[])getLocalProperty( MakeTargetPropertyKey.MACROS );
+    public MakeMacro[] getCustomMacros(){
+        return getLocalProperty( MakeTargetPropertyKey.MACROS );
     }
     
     public void setCustomTypedefs( MakeTypedef[] typedefs ){
