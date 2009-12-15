@@ -24,9 +24,9 @@ import java.io.File;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
+import tinyos.yeti.make.MakeMacro;
 
 public interface IPlatform {
 
@@ -70,7 +70,7 @@ public interface IPlatform {
 	 * platform.
 	 * @return the macros
 	 */
-	public IMacro[] getMacros();
+	public MakeMacro[] getMacros();
 	
 	/**
 	 * Adds a listener to this platform.

@@ -279,36 +279,10 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 			});
 		}
 
-		/* Label info1 = new Label( base, SWT.NONE );
-        info1.setText( "Checked directories are included recursively." );
-        info1.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) ); */
-
-		//createInfoControl( base );
-		
 		Control table = createTableControl( base );
 		table.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
 		setControl( base );
 	}
-	/*
-	private void createInfoControl( Composite parent ){
-		Label infoPath = new Label( parent, SWT.NONE );
-		Label infoNcc = new Label( parent, SWT.NONE );
-		Label infoGlobal = new Label( parent, SWT.NONE );
-		Label infoInclude = new Label( parent, SWT.NONE );
-		Label infoSearch = new Label( parent, SWT.NONE );
-		
-		infoPath.setText( "Path: path to a file or directory." );
-		infoNcc.setText( "Ncc: whether ncc should include the directory in the build path." );
-		infoGlobal.setText( "Global: if yes, the file/directory is included in all source files (not when building the application)." );
-		infoInclude.setText( "Include: if never, impossible. If source, allows #include \"file.h\". If system, allows #include \"file.h\" and #include <file.h>." );
-		infoSearch.setText( "Search: how to traverse the directory when searching an included file." );
-		
-		infoPath.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-		infoNcc.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-		infoGlobal.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-		infoInclude.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-		infoSearch.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-	}*/
 
 	private Control createTableControl( Composite parent ){
 		baseComposite = new Composite( parent, SWT.NONE );
@@ -318,9 +292,6 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		contentComposite.setLayout( new GridLayout( 2, false ) );
 		contentComposite.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
 
-		// left list
-		// includeList = new Table( contentComposite, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CHECK );
-		// includeList.setLayoutData( new GridData( GridData.FILL, GridData.FILL, true, true ) );
 		createTable( contentComposite );
 
 		// right buttons
@@ -521,7 +492,7 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		column.getColumn().setResizable( true );
 		column.getColumn().setWidth( 100 );
 		column.getColumn().setText( "Global" );
-		column.getColumn().setToolTipText( "Whether a source file automatically includes the file or directory.\n" +
+		column.getColumn().setToolTipText( "Whether a source file automatically includes the file.\n" +
 				"-yes: Eclipse adds an invisible '#include' directive to all source files.\n" +
 				"-no: The file receives no special treatment." );
 		column.setEditingSupport( new EditingSupport( includeList ){
@@ -529,7 +500,7 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 
 			@Override
 			protected boolean canEdit( Object element ){
-				return true;
+				return ((TableEntry)element).isFile();
 			}
 
 			@Override
@@ -553,7 +524,10 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 			@Override
 			public void update( ViewerCell cell ){
 				TableEntry entry = (TableEntry)cell.getElement();
-				cell.setText( entry.global ? "yes" : "no" );
+				if( entry.isFile() )
+					cell.setText( entry.global ? "yes" : "no" );
+				else
+					cell.setText( "n/a" );
 			}
 		});
 		return column;
@@ -901,10 +875,10 @@ public class IncludePage extends AbstractMakeTargetDialogPage<MakeTargetSkeleton
 		
 		public MakeInclude toMakeInclude(){
 			if( isFile() ){
-				return new MakeInclude( path, Include.NONE, false, false, true );
+				return new MakeInclude( path, Include.NONE, false, false, global );
 			}
 			else{
-				return new MakeInclude( path, include, recursive, ncc, global );
+				return new MakeInclude( path, include, recursive, ncc, false );
 			}
 		}
 	}

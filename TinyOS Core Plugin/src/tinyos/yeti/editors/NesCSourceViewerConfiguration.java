@@ -280,11 +280,9 @@ public class NesCSourceViewerConfiguration extends
     public IContentFormatter getContentFormatter( ISourceViewer viewer ){
     	TinyOSPlugin plugin = TinyOSPlugin.getDefault();
     	if( plugin != null ){
-    		INesCFormattingStrategyFactory[] factories = plugin.getFormattingFactories();
-    		for( INesCFormattingStrategyFactory factory : factories ){
-    			if( factory.isFormatter() ){
-    				return factory.createFormatter( viewer, editor );
-    			}
+    		INesCFormattingStrategyFactory factory = plugin.getFormattingFactory();
+    		if( factory != null ){
+    			return factory.createFormatter( viewer, editor );
     		}
     	}
     	return null;
@@ -293,11 +291,9 @@ public class NesCSourceViewerConfiguration extends
     public IContentFormatter getIndentFormatter( ISourceViewer viewer ){
     	TinyOSPlugin plugin = TinyOSPlugin.getDefault();
     	if( plugin != null ){
-    		INesCFormattingStrategyFactory[] factories = plugin.getFormattingFactories();
-    		for( INesCFormattingStrategyFactory factory : factories ){
-    			if( factory.isIndenter() ){
-    				return factory.createIndenter( viewer, editor );
-    			}
+    		INesCFormattingStrategyFactory factory = plugin.getIndenterFactory();
+    		if( factory != null ){
+    			return factory.createIndenter( viewer, editor );
     		}
     	}
     	return null;

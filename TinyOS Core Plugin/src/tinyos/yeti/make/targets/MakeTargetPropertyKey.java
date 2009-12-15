@@ -27,10 +27,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 
 import tinyos.yeti.ep.MakeExtra;
-import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeExclude;
 import tinyos.yeti.make.MakeInclude;
+import tinyos.yeti.make.MakeMacro;
 import tinyos.yeti.make.MakeTypedef;
 import tinyos.yeti.make.targets.factories.BoardFactory;
 import tinyos.yeti.make.targets.factories.BooleanFactory;
@@ -38,8 +38,8 @@ import tinyos.yeti.make.targets.factories.EnvironmentVariableFactory;
 import tinyos.yeti.make.targets.factories.ExcludeFactory;
 import tinyos.yeti.make.targets.factories.FileFactory;
 import tinyos.yeti.make.targets.factories.IncludeFactory;
-import tinyos.yeti.make.targets.factories.MacroFactory;
 import tinyos.yeti.make.targets.factories.MakeExtraFactory;
+import tinyos.yeti.make.targets.factories.MakeMacroFactory;
 import tinyos.yeti.make.targets.factories.ProjectFactory;
 import tinyos.yeti.make.targets.factories.StringFactory;
 import tinyos.yeti.make.targets.factories.TypedefFactory;
@@ -87,11 +87,11 @@ public class MakeTargetPropertyKey<T>{
 			}
 		};
 		
-	public static final MakeTargetPropertyKey<IMacro[]> MACROS =
-		new MakeTargetPropertyKey<IMacro[]>( "macros", true, false, new MacroFactory() ){
+	public static final MakeTargetPropertyKey<MakeMacro[]> MACROS =
+		new MakeTargetPropertyKey<MakeMacro[]>( "macros", true, false, new MakeMacroFactory() ){
 			@Override
-			public IMacro[] array( int size ){
-				return new IMacro[ size ];
+			public MakeMacro[] array( int size ){
+				return new MakeMacro[ size ];
 			}
 		};
 		

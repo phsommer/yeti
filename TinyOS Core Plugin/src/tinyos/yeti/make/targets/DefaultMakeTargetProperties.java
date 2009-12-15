@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import tinyos.yeti.ep.MakeExtra;
-import tinyos.yeti.ep.parser.IMacro;
+import tinyos.yeti.make.MakeMacro;
 import tinyos.yeti.make.MakeTypedef;
 import tinyos.yeti.make.targets.IMakeTargetPropertyComparator.Order;
 
@@ -68,9 +68,9 @@ public class DefaultMakeTargetProperties implements IMutableMakeTargetProperties
 				return Order.EQUAL;
 			}
 		});
-		putOrder( MakeTargetPropertyKey.MACROS, new IMakeTargetPropertyComparator<IMacro>(){
-			public Order compare( IMacro first, IMacro second ){
-				if( first.getName().equals( second.getName() ))
+		putOrder( MakeTargetPropertyKey.MACROS, new IMakeTargetPropertyComparator<MakeMacro>(){
+			public Order compare( MakeMacro first, MakeMacro second ){
+				if( first.getMacro().getName().equals( second.getMacro().getName() ))
 					return Order.HIDE_SECOND;
 				return Order.EQUAL;
 			}

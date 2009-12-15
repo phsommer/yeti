@@ -62,6 +62,10 @@ public abstract class PreferenceConstants {
 	public static final String AUTO_BRACKETS = "nesc_autobrackets";
 	public static final String ERROR_TO_INFO = "nesc_errorToInfo";
 	
+	// code formatting and indentation
+	public static final String CF_INDENTATION_STRATEGY = "nesc_cf_indentation_strategy";
+	public static final String CF_CODE_FORMATTING_STRATEGY = "nesc_cf_code_formatting_strategy";
+	
 	public static final String SAVE_FILES_AUTOMATICALLY = "nesc_safeFilesAutomatically";
 	
 	public static String spacesPerTab(){

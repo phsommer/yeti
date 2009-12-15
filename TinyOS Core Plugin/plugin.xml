@@ -47,6 +47,12 @@
             id="tinyOS.debug"
             name="Debug">
       </page>
+      <page
+            category="tinyOS.editor"
+            class="tinyos.yeti.preferences.CodeFormattingPreferences"
+            id="tinyos.yeti.editor.code_formatting"
+            name="Formatting">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -437,7 +443,7 @@
       <page
             category="tinyOS.properties.tosenv"
             class="tinyos.yeti.properties.make.EnvironmentVariablesPropertyPage"
-            id="tinyOS.properties.maketarget.typedefs"
+            id="tinyOS.properties.maketarget.variables"
             name="9. Environment Variables">
          <enabledWhen>
             <adapt

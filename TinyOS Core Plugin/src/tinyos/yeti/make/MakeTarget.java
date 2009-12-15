@@ -34,6 +34,8 @@ import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IEnvironment;
 import tinyos.yeti.ep.MakeExtra;
+import tinyos.yeti.ep.parser.IMacro;
+import tinyos.yeti.ep.parser.macros.ConstantMacro;
 import tinyos.yeti.make.targets.MakeTargetPropertyKey;
 import tinyos.yeti.make.targets.MakeTargetSkeleton;
 
@@ -195,6 +197,19 @@ public class MakeTarget extends MakeTargetSkeleton implements IMakeTarget {
         }
 
         listIncludes( flags, true );
+        
+        MakeMacro[] macros = getMacros();
+        if( macros != null ){
+        	for( MakeMacro make : macros ){
+        		if( make.isIncludeNcc() ){
+	        		IMacro macro = make.getMacro();
+	        		if( macro instanceof ConstantMacro ){
+	        			ConstantMacro constant = (ConstantMacro)macro;
+	        			flags.add( "-D" + constant.getName() + "=" + constant.getConstant() );
+	        		}
+        		}
+        	}
+        }
 
         String[] boards = getBoards();
         if( boards != null ){

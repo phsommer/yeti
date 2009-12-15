@@ -45,6 +45,7 @@ import tinyos.yeti.ep.parser.INesCParserFactory;
 import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.ep.parser.macros.ConstantMacro;
 import tinyos.yeti.make.MakeInclude;
+import tinyos.yeti.make.MakeMacro;
 import tinyos.yeti.make.MakeTarget;
 import tinyos.yeti.make.MakeTypedef;
 import tinyos.yeti.model.ProjectModel.DeclarationFilter;
@@ -508,10 +509,12 @@ public class BasicDeclarationSet{
     	
     	MakeTarget target = model.getProject().getMakeTarget();
     	if( target != null ){
-    		IMacro[] targetMacros = target.getMacros();
+    		MakeMacro[] targetMacros = target.getMacros();
     		if( targetMacros != null ){
-    			for( IMacro macro : targetMacros ){
-    				macros.add( macro );
+    			for( MakeMacro macro : targetMacros ){
+    				if( macro.isIncludeYeti() ){
+    					macros.add( macro.getMacro() );
+    				}
     			}
     		}
     	}

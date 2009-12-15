@@ -20,141 +20,89 @@
  */
 package tinyos.yeti.make.dialog.pages;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import tinyos.yeti.ep.parser.macros.ConstantMacro;
+import tinyos.yeti.make.MakeMacro;
 
 /**
  * A small dialog that allows the user to create or modify {@link ConstantMacro}s.
  * @author Benjamin Sigg
  */
-public class ConstantMacroDialog extends Dialog{
-    private Text name;
-    private Text constant;
-    
-    private String nameValue = "";
-    private String constantValue = "";
-    
-    private String title = "";
-    
-    public ConstantMacroDialog( Shell shell ){
-        super( shell );
-        setBlockOnOpen( true );
-    }
-
+public class ConstantMacroDialog extends KeyValueDialog<MakeMacro>{
+	private Button includeYetiButton;
+	private boolean includeYeti;
+	
+	private Button includeNccButton;
+	private boolean includeNcc;
+	
+	public ConstantMacroDialog( Shell shell, ConstantMacroPage page ){
+		super( shell, page );
+	}
+	
 	@Override
-	protected boolean isResizable() {
-    	return true;
-    }
-    
-    public ConstantMacro open( ConstantMacro macro ){
-        if( macro == null )
-            title = "Create new macro";
-        else
-            title = "Edit macro";
-        
-        Shell shell = getShell();
-        if( shell != null )
-            shell.setText( title );
-        
-        if( macro == null ){
-            nameValue = "";
-            constantValue = "";
-        }
-        else{
-            nameValue = macro.getName();
-            constantValue = macro.getConstant();
-        }
-        
-        if( name != null )
-            name.setText( nameValue );
-        if( constant != null )
-            constant.setText( constantValue );
-        
-        int state = super.open();
-        ConstantMacro result = null;
-        
-        if( state == OK ){
-            nameValue = nameValue.trim();
-            if( nameValue.length() == 0 )
-                nameValue = "unnamed";
-            
-            result = new ConstantMacro( nameValue, constantValue );
-        }
-        
-        return result;
-    }
-    
-    @Override
-    protected Control createDialogArea( Composite parent ){
-        getShell().setText( title );
-        
-        Composite content = (Composite)super.createDialogArea( parent );
-        Label info1 = new Label( content, SWT.NONE );
-        info1.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ));
-        info1.setText( "Example: '#define PI 3.14' would become Name=PI, Value=3.14." );
-        
-        Label info2 = new Label( content, SWT.NONE );
-        info2.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ));
-        info2.setText( "Functions are not supported." );
-        
-        Composite fields = new Composite( content, SWT.NONE );
-        fields.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-        fields.setLayout( new GridLayout( 2, false ) );
-        
-        Label nameLabel = new Label( fields, SWT.NONE );
-        nameLabel.setText( "Name: " );
-        nameLabel.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
-        
-        name = new Text( fields, SWT.BORDER | SWT.SINGLE );
-        name.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-        name.setText( nameValue );
-        name.addModifyListener( new ModifyListener(){
-            public void modifyText( ModifyEvent e ){
-                contentChanged();
-            }
-        });
-        
-        Label constantLabel = new Label( fields, SWT.NONE );
-        constantLabel.setText( "Value: " );
-        constantLabel.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
+	public boolean open( String key, String value, MakeMacro item ){
+		if( item == null ){
+			includeYeti = true;
+			includeNcc = false;
+		}
+		else{
+			includeYeti = item.isIncludeYeti();
+			includeNcc = item.isIncludeNcc();
+		}
+		
+		if( includeYetiButton != null )
+			includeYetiButton.setSelection( includeYeti );
+		if( includeNccButton != null )
+			includeNccButton.setSelection( includeNcc );
+		
+		return super.open( key, value, item );
+	}
+	
+	@Override
+	protected boolean checkOk( String key, String value ){
+		return key.length() > 0;
+	}
+	
+	@Override
+	protected void createFields( Composite parent ){
+		super.createFields( parent );
 
-        constant = new Text( fields, SWT.BORDER | SWT.SINGLE );
-        constant.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-        constant.setText( constantValue );
-        constant.addModifyListener( new ModifyListener(){
-            public void modifyText( ModifyEvent e ){
-                contentChanged();
-            }
-        });
+        includeYetiButton = new Button( parent, SWT.CHECK );
+        includeYetiButton.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 2, 1 ) );
+        includeYetiButton.setText( "Macro visible in all files in Eclipse" );
+        includeYetiButton.setSelection( includeYeti );
+        includeYetiButton.addSelectionListener( new SelectionListener(){
+			public void widgetSelected( SelectionEvent e ){
+				includeYeti = includeYetiButton.getSelection();
+			}
+			public void widgetDefaultSelected( SelectionEvent e ){
+				includeYeti = includeYetiButton.getSelection();
+			}
+		});
         
-        checkOkButton();
-        
-        return content;
-    }
-    
-    private void contentChanged(){
-        nameValue = name.getText().trim();
-        constantValue = constant.getText().trim();
-        
-        checkOkButton();
-    }
-    
-    private void checkOkButton(){
-        Button button = getButton( IDialogConstants.OK_ID );
-        if( button != null )
-            button.setEnabled( nameValue.length() > 0 );
-    }
+        includeNccButton = new Button( parent, SWT.CHECK );
+        includeNccButton.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 2, 1 ) );
+        includeNccButton.setText( "Macro forwarded to ncc" );
+        includeNccButton.setSelection( includeNcc );
+        includeNccButton.addSelectionListener( new SelectionListener(){
+			public void widgetSelected( SelectionEvent e ){
+				includeNcc = includeNccButton.getSelection();
+			}
+			public void widgetDefaultSelected( SelectionEvent e ){
+				includeNcc = includeNccButton.getSelection();
+			}
+		});
+	}
+	
+	@Override
+	protected MakeMacro create( String key, String value ){
+		return new MakeMacro( new ConstantMacro( key, value ), includeYeti, includeNcc );
+	}
 }

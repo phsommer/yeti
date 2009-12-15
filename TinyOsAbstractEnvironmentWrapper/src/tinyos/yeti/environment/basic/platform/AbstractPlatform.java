@@ -43,6 +43,7 @@ import tinyos.yeti.ep.ISensorBoard;
 import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.make.EnvironmentVariable;
 import tinyos.yeti.make.MakeInclude;
+import tinyos.yeti.make.MakeMacro;
 
 /**
  * An implementation of {@link IPlatform} that lazily loads its content
@@ -66,7 +67,7 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
     private EnvironmentVariable[] variables;
     
     private IPlatformFile platformFile;
-    private IMacro[] macros;
+    private MakeMacro[] macros;
     
     private File basePlatformFile;
     private File baseFamilyFile;
@@ -118,7 +119,14 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
         IPlatformFile platformFile = getPlatformFile();
         if( platformFile != null && converter != null ){
         	if( converter.interested( platformFile )){
-        		addMacros(converter.convert( platformFile ));
+        		IMacro[] macros = converter.convert( platformFile );
+        		if( macros != null ){
+        			MakeMacro[] make = new MakeMacro[ macros.length ];
+        			for( int i = 0; i < macros.length; i++ ){
+        				make[i] = new MakeMacro( macros[i], true, false );
+        			}
+        			addMacros( make );
+        		}
         	}
         }
         includes = PlatformUtility.load( this, store );
@@ -151,26 +159,21 @@ public abstract class AbstractPlatform implements IExtendedPlatform{
 		return variables;
 	}
     
-    @Deprecated
-    public void setMacros( IMacro[] macros ){
-        this.macros = macros;
-    }
-    
-    public void addMacros( IMacro[] macros ){
+    public void addMacros( MakeMacro[] macros ){
     	if( macros == null || macros.length == 0 )
     		return;
     	
     	if( this.macros == null || this.macros.length == 0 )
     		this.macros = macros;
     	else{
-    		IMacro[] temp = new IMacro[ this.macros.length + macros.length ];
+    		MakeMacro[] temp = new MakeMacro[ this.macros.length + macros.length ];
     		System.arraycopy( this.macros, 0, temp, 0, this.macros.length );
     		System.arraycopy( macros, 0, temp, this.macros.length, macros.length );
     		this.macros = temp;
     	}
     }
     
-    public IMacro[] getMacros(){
+    public MakeMacro[] getMacros(){
         return macros;
     }
     

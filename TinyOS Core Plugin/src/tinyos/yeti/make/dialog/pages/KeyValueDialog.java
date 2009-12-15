@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class KeyValueDialog extends Dialog{
+public abstract class KeyValueDialog<T> extends Dialog{
     private Text key;
     private Text value;
     
@@ -22,19 +22,26 @@ public class KeyValueDialog extends Dialog{
     private String keyValue;
     
     private String title = "";
-    private KeyValuePage<?> page;
+    private KeyValuePage<T> page;
     
-    public KeyValueDialog( Shell shell, KeyValuePage<?> page ){
+    public KeyValueDialog( Shell shell, KeyValuePage<T> page ){
         super( shell );
         setBlockOnOpen( true );
         this.page = page;
     }
 
+	@Override
 	protected boolean isResizable() {
     	return true;
     }
     
-    public boolean open( String key, String value ){
+	protected abstract T create( String key, String value );
+	
+	public T get(){
+		return create( keyValue, valueValue );
+	}
+	
+    public boolean open( String key, String value, T item ){
         if( key == null || value == null )
             title = page.getNewDialogTitle();
         else
@@ -56,14 +63,6 @@ public class KeyValueDialog extends Dialog{
         return false;
     }
     
-    public String getValue(){
-        return valueValue;
-    }
-    
-    public String getKey(){
-        return keyValue;
-    }
-    
     @Override
     protected Control createDialogArea( Composite parent ){
         getShell().setText( title );
@@ -77,12 +76,20 @@ public class KeyValueDialog extends Dialog{
         Composite fields = new Composite( content, SWT.NONE );
         fields.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
         fields.setLayout( new GridLayout( 2, false ) );
+
+        createFields( fields );
         
-        Label keyLabel = new Label( fields, SWT.NONE );
+        checkOkButton();
+        
+        return content;
+    }
+    
+    protected void createFields( Composite parent ){
+        Label keyLabel = new Label( parent, SWT.NONE );
         keyLabel.setText( page.getKeyName() + ": " );
         keyLabel.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
         
-        key = new Text( fields, SWT.BORDER | SWT.SINGLE );
+        key = new Text( parent, SWT.BORDER | SWT.SINGLE );
         key.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
         key.setText( keyValue );
         key.addModifyListener( new ModifyListener(){
@@ -91,22 +98,18 @@ public class KeyValueDialog extends Dialog{
             }
         });
         
-        Label valueLabel = new Label( fields, SWT.NONE );
+        Label valueLabel = new Label( parent, SWT.NONE );
         valueLabel.setText( page.getValueName() + ": " );
         valueLabel.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
 
-        value = new Text( fields, SWT.BORDER | SWT.SINGLE );
+        value = new Text( parent, SWT.BORDER | SWT.SINGLE );
         value.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
         value.setText( valueValue );
         value.addModifyListener( new ModifyListener(){
             public void modifyText( ModifyEvent e ){
                 contentChanged();
             }
-        });
-        
-        checkOkButton();
-        
-        return content;
+        });    	
     }
     
     private void contentChanged(){
@@ -116,9 +119,11 @@ public class KeyValueDialog extends Dialog{
         checkOkButton();
     }
     
+    protected abstract boolean checkOk( String key, String value );
+    
     private void checkOkButton(){
         Button button = getButton( IDialogConstants.OK_ID );
         if( button != null )
-            button.setEnabled( valueValue.length() > 0 && keyValue.length() > 0 );
+            button.setEnabled( checkOk( keyValue, valueValue ) );
     }
 }

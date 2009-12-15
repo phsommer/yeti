@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Yeti 2 - Preprocessor
 Bundle-SymbolicName: tinyos.yeti.preprocessor.nesc12;singleton:=true
-Bundle-Version: 1.2.15
+Bundle-Version: 1.2.16
 Bundle-Activator: tinyos_preprocessor.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,

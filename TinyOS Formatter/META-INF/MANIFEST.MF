@@ -7,7 +7,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- tinyos.yeti.core;bundle-version="2.2.11"
+ tinyos.yeti.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: tinyos.yeti.editors.formatter
