@@ -151,4 +151,72 @@ public class TemplateCompletionProposal implements INesCCompletionProposal, ICom
     public Point getSelection(IDocument document) {
     	return template.getSelection( document, getReplacementOffset() );
     }
+
+	@Override
+	public int hashCode(){
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((additionalProposalInfo == null) ? 0
+						: additionalProposalInfo.hashCode());
+		result = prime
+				* result
+				+ ((contextInformation == null) ? 0 : contextInformation
+						.hashCode());
+		result = prime * result
+				+ ((displayString == null) ? 0 : displayString.hashCode());
+		result = prime * result + (inFile ? 1231 : 1237);
+		result = prime * result + ((prefix == null) ? 0 : prefix.hashCode());
+		result = prime * result + replacementOffset;
+		result = prime * result
+				+ ((template == null) ? 0 : template.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals( Object obj ){
+		if( this == obj )
+			return true;
+		if( obj == null )
+			return false;
+		if( getClass() != obj.getClass() )
+			return false;
+		TemplateCompletionProposal other = (TemplateCompletionProposal)obj;
+		if( additionalProposalInfo == null ){
+			if( other.additionalProposalInfo != null )
+				return false;
+		}
+		else if( !additionalProposalInfo.equals( other.additionalProposalInfo ) )
+			return false;
+		if( contextInformation == null ){
+			if( other.contextInformation != null )
+				return false;
+		}
+		else if( !contextInformation.equals( other.contextInformation ) )
+			return false;
+		if( displayString == null ){
+			if( other.displayString != null )
+				return false;
+		}
+		else if( !displayString.equals( other.displayString ) )
+			return false;
+		if( inFile != other.inFile )
+			return false;
+		if( prefix == null ){
+			if( other.prefix != null )
+				return false;
+		}
+		else if( !prefix.equals( other.prefix ) )
+			return false;
+		if( replacementOffset != other.replacementOffset )
+			return false;
+		if( template == null ){
+			if( other.template != null )
+				return false;
+		}
+		else if( !template.equals( other.template ) )
+			return false;
+		return true;
+	}
 }
