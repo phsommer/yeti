@@ -326,8 +326,46 @@ public class GenericTemplate {
         list.add( text.substring( offset, offset+length ) );
         return list.toArray( new String[ list.size() ] );
     }
+    
+    
 
-    private static class Piece{
+    @Override
+	public int hashCode(){
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((pieces == null) ? 0 : pieces.hashCode());
+		result = prime * result
+				+ ((template == null) ? 0 : template.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals( Object obj ){
+		if( this == obj )
+			return true;
+		if( obj == null )
+			return false;
+		if( getClass() != obj.getClass() )
+			return false;
+		GenericTemplate other = (GenericTemplate)obj;
+		if( pieces == null ){
+			if( other.pieces != null )
+				return false;
+		}
+		else if( !pieces.equals( other.pieces ) )
+			return false;
+		if( template == null ){
+			if( other.template != null )
+				return false;
+		}
+		else if( !template.equals( other.template ) )
+			return false;
+		return true;
+	}
+
+
+
+	private static class Piece{
         public final boolean text;
         public final String[] arguments;
 
@@ -345,5 +383,30 @@ public class GenericTemplate {
                 return "${" + Arrays.toString( arguments ) + "}";
             }
         }
+
+		@Override
+		public int hashCode(){
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode( arguments );
+			result = prime * result + (text ? 1231 : 1237);
+			return result;
+		}
+
+		@Override
+		public boolean equals( Object obj ){
+			if( this == obj )
+				return true;
+			if( obj == null )
+				return false;
+			if( getClass() != obj.getClass() )
+				return false;
+			Piece other = (Piece)obj;
+			if( !Arrays.equals( arguments, other.arguments ) )
+				return false;
+			if( text != other.text )
+				return false;
+			return true;
+		}
     }
 }
