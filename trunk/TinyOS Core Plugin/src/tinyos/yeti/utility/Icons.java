@@ -199,7 +199,7 @@ public abstract class Icons{
     
     /**
      * Gets an image that is used to decorate another image. The subclass
-     * is free to define what exact meaning the various integers have.
+     * is free to define what exact meaning the various strings have.
      * @param decoration the decoration
      * @return an image or <code>null</code>
      */
@@ -237,13 +237,18 @@ public abstract class Icons{
      *                typically the packages directory)
      */
     protected final void declareRegistryImage( String key, String path ){
-        ImageDescriptor desc = ImageDescriptor.getMissingImageDescriptor();
-        try{
-            desc = ImageDescriptor.createFromURL( makeIconFileURL( path ) );
-        }
-        catch ( MalformedURLException me ){
-            TinyOSPlugin.log( me );
-        }
+    	try{
+    		declareRegistryImage( key, makeIconFileURL( path ) );
+    	}
+    	catch ( MalformedURLException me ){
+    		TinyOSPlugin.log( me );
+    	}
+    }
+    
+    protected final void declareRegistryImage( String key, URL path ){
+    	ImageDescriptor desc = ImageDescriptor.getMissingImageDescriptor();
+        
+            desc = ImageDescriptor.createFromURL( path );
         
         NesCImageDescriptor nesc = new NesCImageDescriptor( get( desc ));
         DecoratableImageDescriptor result = new DecoratableImageDescriptor( key, false, new String[][]{}, nesc );

@@ -11,6 +11,7 @@
    <extension-point id="ProjectChecker" name="ProjectChecker" schema="schema/ProjectChecker.exsd"/>
    <extension-point id="LaunchVeto" name="LaunchVeto" schema="schema/LaunchVeto.exsd"/>
    <extension-point id="Formatting" name="Formatting" schema="schema/Formatting.exsd"/>
+   <extension-point id="MetaAttribute" name="Attribute" schema="schema/MetaAttribute.exsd"/>
    
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -785,5 +786,56 @@
       <formatter
             class="tinyos.yeti.editors.format.NesCFormattingStrategy2Factory">
       </formatter>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.MetaAttribute">
+      <attribute
+            icon="icons/small_atleastonce.png"
+            id="atleastonce">
+      </attribute>
+      <attribute
+            icon="icons/small_atmostonce.png"
+            id="atmostonce">
+      </attribute>
+      <attribute
+            icon="icons/small_exactlyonce.png"
+            id="exactlyonce">
+      </attribute>
+      <attribute
+            icon="icons/small_safe.png"
+            id="safe">
+      </attribute>
+      <attribute
+            icon="icons/small_unsafe.png"
+            id="unsafe">
+      </attribute>
+      <attribute
+            icon="icons/small_c.png"
+            id="C">
+      </attribute>
+      <attribute
+            icon="icons/small_atomic_hwevent.png"
+            id="atomic_hwevent">
+      </attribute>
+      <attribute
+            icon="icons/small_combine.png"
+            id="combine">
+      </attribute>
+      <attribute
+            icon="icons/small_hwevent.png"
+            id="hwevent">
+      </attribute>
+      <attribute
+            icon="icons/small_integer.png"
+            id="integer">
+      </attribute>
+      <attribute
+            icon="icons/small_number.png"
+            id="number">
+      </attribute>
+      <attribute
+            icon="icons/small_spontaneous.png"
+            id="spontaneous">
+      </attribute>
    </extension>
 </plugin>
