@@ -164,7 +164,6 @@ public class NesCIcons extends Icons{
     public NesCIcons(){
     	super( getImageURL() );
     	declareImages();
-    	declareAttributes();
     }
     
     private static URL getImageURL(){
@@ -176,20 +175,18 @@ public class NesCIcons extends Icons{
     	return ICONS;
     }
 
-    private void declareAttributes(){
-    	declareAttribute( "atleastonce", ICON_ATLEASTONCE );
-    	declareAttribute( "atmostonce", ICON_ATMOSTONCE );
-    	declareAttribute( "exactlyonce", ICON_EXACTLYONCE );
-    	declareAttribute( "safe", ICON_SAFE );
-    	declareAttribute( "unsafe", ICON_UNSAFE );
+    public void loadAttributes( TinyOSPlugin plugin ){
+    	Map<String, URL> attributes = plugin.loadMetaAttributes();
     	
-    	declareAttribute( "C", ICON_C );
-    	declareAttribute( "atomic_hwevent", ICON_ATOMIC_HWEVENT );
-    	declareAttribute( "combine", ICON_COMBINE );
-    	declareAttribute( "hwevent", ICON_HWEVENT );
-    	declareAttribute( "integer", ICON_INTEGER );
-    	declareAttribute( "number", ICON_NUMBER );
-    	declareAttribute( "spontaneous", ICON_SPONTANEOUS );
+    	for( Map.Entry<String, URL> entry : attributes.entrySet() ){
+    		String name = entry.getKey();
+    		String key = "attribute_" + name;
+    		URL path = entry.getValue();
+    		
+    		declareRegistryImage( key, path );
+    		declareAttribute( name, key );
+    	}
+    	
     }
     
     protected final void declareAttribute( String name, String icon ){

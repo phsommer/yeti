@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -84,11 +86,13 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 import tinyos.yeti.editors.ExternalEditorInput;
 import tinyos.yeti.editors.ExternalStorageDocumentProvider;
 import tinyos.yeti.editors.FileStorage;
+import tinyos.yeti.editors.NesCIcons;
 import tinyos.yeti.editors.format.INesCFormattingStrategyFactory;
 import tinyos.yeti.editors.nesc.IEditorTokenScanner;
 import tinyos.yeti.editors.nesc.NesCCodeScanner;
@@ -234,6 +238,8 @@ public class TinyOSPlugin extends AbstractUIPlugin{
         super.start( context );
 
         Debug.connect( this );
+        
+        NesCIcons.icons().loadAttributes( this );
     }
 
     /**
@@ -823,6 +829,42 @@ public class TinyOSPlugin extends AbstractUIPlugin{
         return modelConfiguration;
     }
 
+    /**
+     * Loads the extension point that contains information about attributes.
+     * @return the name-resource pairs
+     */
+    public Map<String, URL> loadMetaAttributes(){
+    	IExtensionRegistry registry = Platform.getExtensionRegistry();
+    	IExtensionPoint point = registry.getExtensionPoint( PLUGIN_ID, "MetaAttribute" );
+    	
+    	Map<String, URL> result = new HashMap<String, URL>();
+    	
+    	if( point != null ){
+	    	for( IExtension extension : point.getExtensions() ){
+	    		for( IConfigurationElement element : extension.getConfigurationElements() ){
+	    			if( element.getName().equals( "attribute" )){
+	    				String id = element.getAttribute( "id" );
+	    				
+	    				String resource = element.getAttribute( "icon" );
+	    				
+	    				IContributor contributor = element.getContributor();
+	    				String pluginName = contributor.getName();
+	    				
+	    				Bundle bundle = Platform.getBundle( pluginName );
+	    				if( bundle != null ){
+		    				URL url = bundle.getEntry( resource );
+			    			if( url != null ){
+			    				result.put( id, url );
+			    			}
+	    				}
+	    			}
+	    		}
+	    	}
+    	}
+    	
+    	return result;
+    }
+    
     @SuppressWarnings( "unchecked" )
     private <E> E loadExtensionPoint( String point, String extension,
             String executableAttribute ){
