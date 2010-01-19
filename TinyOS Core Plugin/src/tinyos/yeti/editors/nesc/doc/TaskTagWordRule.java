@@ -1,6 +1,6 @@
 /*
  * Yeti 2, NesC development in Eclipse.
- * Copyright (C) 2009 ETH Zurich
+ * Copyright (C) 2010 ETH Zurich
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,20 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.utility.preferences;
+package tinyos.yeti.editors.nesc.doc;
 
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.rules.WordRule;
 
+import tinyos.yeti.marker.TaskMarkerSupport;
 
-public abstract class ColorConstants {
-
-    public static final String GREEN = "63,127,95";
-    public static final String BLUE = "63,95,191";
-    public static final String BLUE2 = "42,0,255";
-    public static final String BLUE3 = "63,63,191";
-    public static final String BLUE4 = "0,0,255";
-    public static final String BLUE5 = "127,159,191";
-    public static final String VIOLET = "127,0,85";
-    public static final String BLACK = "0,0,0"; 
-    public static final String GREY = "150,150,150";
-
-    private ColorConstants(){
-        // nothing
-    }
+public class TaskTagWordRule extends WordRule{
+	public TaskTagWordRule( IToken wordToken ){
+		super( new TaskTagWordDetector(), Token.UNDEFINED, false );
+		
+		for( String tag : TaskMarkerSupport.TAGS ){
+			addWord( tag, wordToken );
+		}
+	}
 }

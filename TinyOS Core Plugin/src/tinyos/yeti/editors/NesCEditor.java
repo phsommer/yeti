@@ -413,7 +413,7 @@ public class NesCEditor extends TextEditor {
             }
             pendingASTRequests.clear();
         }
-
+        
         final IFoldingRegion[] folding = parser.getFoldingRegions();
         Job job = new UIJob( "Update Editor UI"){
             @Override

@@ -838,4 +838,34 @@
             id="spontaneous">
       </attribute>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="tinyOS.debug.ui.editor.nesc.BreakpointRulerPopupMenu"
+            targetID="#NESCRulerContext">
+         <action
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               id="tinyos.yeti.core.editor.nesc.ruler.bookmark"
+               label="Add Bookmark"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ui.texteditor.TaskRulerAction"
+               id="tinyos.yeti.core.editor.nesc.ruler.task"
+               label="Add Task"
+               menubarPath="additions">
+         </action>
+      </viewerContribution>
+   </extension>
+   <extension
+         id="taskMarker"
+         name="TinyOS Task"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.taskmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
 </plugin>

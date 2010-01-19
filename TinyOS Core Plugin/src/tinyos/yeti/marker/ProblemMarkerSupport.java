@@ -18,7 +18,7 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.editors;
+package tinyos.yeti.marker;
 
 import java.io.File;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ import tinyos.yeti.ep.parser.IFileRegion;
 import tinyos.yeti.ep.parser.IMessage;
 import tinyos.yeti.nature.MissingNatureException;
 
-public class NesCProblemMarker {
+public class ProblemMarkerSupport {
     /** key for the number of marked {@link IMarker}s */
     private static final QualifiedName SIZE = new QualifiedName( TinyOSPlugin.PLUGIN_ID, "marker.size" );
     
@@ -59,6 +59,8 @@ public class NesCProblemMarker {
      * the value {@link Boolean#TRUE} is put into the markers map.
      */
     public static final String MARKER_MESSAGE_SOURCE = TinyOSPlugin.PLUGIN_ID + ".message_source";
+    
+    public static final String TEMPORARY_TASK_MARKER_TYPE = TinyOSPlugin.PLUGIN_ID + ".taskMarker";
     
     /**
      * Updates the messages concerning <code>resource</code>. This method

@@ -31,6 +31,10 @@ import org.eclipse.jface.text.formatter.IFormattingContext;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
+/**
+ * @deprecated no longer used, replaced by {@link NesCFormattingStrategy2}
+ */
+@Deprecated
 public class NesCFormattingStrategy extends  ContextBasedFormattingStrategy  {
 
     /** Documents to be formatted by this strategy */

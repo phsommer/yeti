@@ -370,3 +370,6 @@
 - Feature: Jianyuan Li's plugin included
 
 #17
+- Bugfix: sometimes code completion showed the same entry twice
+- Feature: Bookmarks enabled
+- Feature: Tasks enabled, if typing "TASK" or "FIXME" in a comment, the task is added automatically

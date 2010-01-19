@@ -44,10 +44,10 @@ import org.eclipse.ui.texteditor.TextEditorAction;
 import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.editors.NesCEditor;
-import tinyos.yeti.editors.NesCProblemMarker;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.fix.IMultiMarkerResolution;
 import tinyos.yeti.ep.fix.IMultiQuickFixer;
+import tinyos.yeti.marker.ProblemMarkerSupport;
 
 /**
  * An action that opens the quick assist popup-menu. This action should be 
@@ -189,7 +189,7 @@ public class NesCSelectMarkerRule extends TextEditorAction{
             List<IMarker> interesting = new ArrayList<IMarker>();
             for( SimpleMarkerAnnotation annotation : annotations ){
                 IMarker marker = annotation.getMarker();
-                if( marker.getAttribute( NesCProblemMarker.MARKER_MESSAGE_SOURCE, false )){
+                if( marker.getAttribute( ProblemMarkerSupport.MARKER_MESSAGE_SOURCE, false )){
                     if( position != null ){
                         Position check = model.getPosition( annotation );
                         if( check.offset == position.offset && check.length == position.length ){

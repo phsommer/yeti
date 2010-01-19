@@ -965,7 +965,7 @@ public class Parser implements INesCParser{
             translator.getHandler().error( message, false, insight, range );
         }
     }
-
+    
     /**
      * Sets the {@link ASTNode#setIncluded(boolean) included} flag of each
      * node.

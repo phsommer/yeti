@@ -29,13 +29,13 @@ import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.editors.IDocumentMap;
 import tinyos.yeti.editors.NesCIcons;
-import tinyos.yeti.editors.NesCProblemMarker;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.fix.IMultiMarkerResolution;
 import tinyos.yeti.ep.fix.IMultiQuickFixer;
 import tinyos.yeti.ep.fix.ISingleMarkerResolution;
 import tinyos.yeti.ep.fix.ISingleQuickFixer;
 import tinyos.yeti.ep.parser.INesCAST;
+import tinyos.yeti.marker.ProblemMarkerSupport;
 import tinyos.yeti.preferences.PreferenceConstants;
 
 /**
@@ -116,13 +116,13 @@ public class ErrorToInfoQuickFixer implements ISingleQuickFixer, IMultiQuickFixe
             for( IMarker marker : markers ){
                 int severity = marker.getAttribute( IMarker.SEVERITY, IMarker.SEVERITY_INFO );
                 if( severity == IMarker.SEVERITY_WARNING || severity == IMarker.SEVERITY_ERROR ){
-                    NesCProblemMarker.convertToInformation( marker );
+                    ProblemMarkerSupport.convertToInformation( marker );
                 }
             }
         }
         
         public void run( IMarker marker, INesCAST ast, IDocumentMap document, IParseFile file, ProjectTOS project ){
-            NesCProblemMarker.convertToInformation( marker );
+            ProblemMarkerSupport.convertToInformation( marker );
         }
     }
 }

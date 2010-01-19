@@ -41,6 +41,8 @@ import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.INesCParserFactory;
 import tinyos.yeti.jobs.CancelingJob;
 import tinyos.yeti.jobs.ProgressMonitorCheckingClose;
+import tinyos.yeti.marker.ProblemMarkerSupport;
+import tinyos.yeti.marker.TaskMarkerSupport;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.IMultiReader;
 import tinyos.yeti.nesc.StringMultiReader;
@@ -174,9 +176,10 @@ public class NesCConcilingStrategy implements IReconcilingStrategy{
             if( monitor.isCanceled() ){
                 return Status.CANCEL_STATUS;
             }
-
+            
             if( resource != null && resource.exists() ){
-                NesCProblemMarker.synchronizeMessages( resource, parseFile, parser.getMessages() );
+                ProblemMarkerSupport.synchronizeMessages( resource, parseFile, parser.getMessages() );
+                TaskMarkerSupport.synchronizeMessages( resource, reader );
             }
             else{
                 editor.showMessages( parser.getMessages() );

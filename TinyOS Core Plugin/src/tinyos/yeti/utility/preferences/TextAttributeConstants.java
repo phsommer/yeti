@@ -33,6 +33,7 @@ public abstract class TextAttributeConstants{
     public static final String NESC_DOC_KEYWORD = "nesc_doc_keyword";
     public static final String NESC_DOC_TAG = "nesc_doc_tag";
     public static final String NESC_DOC_LINK = "nesc_doc_link";
+    public static final String NESC_DOC_TASK = "nesc_doc_task";
 
     // keywords
     public static final String KEYWORDS1 = "nesc_keywords_1";
@@ -64,6 +65,7 @@ public abstract class TextAttributeConstants{
         NESC_DOC_KEYWORD,
         NESC_DOC_TAG,
         NESC_DOC_LINK,
+        NESC_DOC_TASK,
         
         KEYWORDS1,
         KEYWORDS2,
@@ -91,6 +93,7 @@ public abstract class TextAttributeConstants{
         "Nesdoc: Keyword",
         "Nesdoc: Tag",
         "Nesdoc: Link",
+        "Nesdoc: Task",
         
         "NesC Keyword (components)",
         "NesC Keyword (wiring)",
@@ -120,6 +123,7 @@ public abstract class TextAttributeConstants{
         write( NESC_DOC_KEYWORD, store, ColorConstants.BLUE, SWT.BOLD );
         write( NESC_DOC_TAG, store, ColorConstants.BLUE, SWT.ITALIC );
         write( NESC_DOC_LINK, store, ColorConstants.BLUE3, SWT.NONE );
+        write( NESC_DOC_TASK, store, ColorConstants.BLUE5, SWT.BOLD );
         
         // keywords
         write( KEYWORDS1, store, ColorConstants.BLUE4, SWT.BOLD );

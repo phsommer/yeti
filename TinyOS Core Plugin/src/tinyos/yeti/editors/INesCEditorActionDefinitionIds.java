@@ -23,7 +23,7 @@ package tinyos.yeti.editors;
 public class INesCEditorActionDefinitionIds {
 
 	public static final String TOGGLE_COMMENT = "TinyOS.command.toggleComment";
-	public static final String FORMAT_SOURCE = "TinyOS.command.formatCode";
+	public static final String FORMAT_SOURCE = "tinyos.yeti.command.formatCode";
 	public static final String INDENT_SOURCE = "tinyos.yeti.command.indentCode";
 
 }
