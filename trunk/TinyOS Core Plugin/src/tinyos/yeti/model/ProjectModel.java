@@ -49,7 +49,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import tinyos.yeti.Debug;
 import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
-import tinyos.yeti.editors.NesCProblemMarker;
 import tinyos.yeti.ep.IEnvironment;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.ASTNodeFilterFactory;
@@ -67,6 +66,8 @@ import tinyos.yeti.ep.parser.INesCParserFactory;
 import tinyos.yeti.ep.parser.TagSet;
 import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.jobs.IPublicJob;
+import tinyos.yeti.marker.ProblemMarkerSupport;
+import tinyos.yeti.marker.TaskMarkerSupport;
 import tinyos.yeti.model.jobs.InitializeJob;
 import tinyos.yeti.model.missing.IMissingResource;
 import tinyos.yeti.nesc.FileMultiReader;
@@ -1540,7 +1541,8 @@ public class ProjectModel {
                 if( messages == null )
                     messages = new IMessage[]{};
 
-                NesCProblemMarker.synchronizeMessages( resource, filename, messages );
+                ProblemMarkerSupport.synchronizeMessages( resource, filename, messages );
+                TaskMarkerSupport.synchronizeMessages( resource, reader );
 
                 if( Debug.DEBUG ){
                     Debug.info( "buildUpdate (2) '" + resource.getName() + "', " + resource.getModificationStamp() );

@@ -99,6 +99,7 @@ import tinyos.yeti.editors.nesc.NesCCodeScanner;
 import tinyos.yeti.editors.nesc.NescContextType;
 import tinyos.yeti.editors.nesc.PreprocessorDirectiveScanner;
 import tinyos.yeti.editors.nesc.SingleTokenScanner;
+import tinyos.yeti.editors.nesc.doc.NesCCommentScanner;
 import tinyos.yeti.editors.nesc.doc.NesCDocScanner;
 import tinyos.yeti.editors.nesc.doc.NescDocContextType;
 import tinyos.yeti.editors.quickfixer.QuickFixer;
@@ -803,10 +804,10 @@ public class TinyOSPlugin extends AbstractUIPlugin{
      			result = new NesCDocScanner( getPreferences() );
      		}
      		else if( INesCPresentationReconcilerDefaults.SCANNER_NAME_SINGLELINE_COMMENT.equals( name )){
-     			result = new SingleTokenScanner( new PreferenceToken<TextAttribute>( TextAttributeConstants.COMMENT_SINGLE_LINE, getPreferences().getTextAttributes() ));
+     			result = new NesCCommentScanner( getPreferences(), TextAttributeConstants.COMMENT_SINGLE_LINE );
      		}
      		else if( INesCPresentationReconcilerDefaults.SCANNER_NAME_MULTILINE_COMMENT.equals( name )){
-     			result = new SingleTokenScanner( new PreferenceToken<TextAttribute>( TextAttributeConstants.COMMENT_MULTI_LINE, getPreferences().getTextAttributes() ));
+     			result = new NesCCommentScanner( getPreferences(), TextAttributeConstants.COMMENT_MULTI_LINE );
      		}
      		else if( INesCPresentationReconcilerDefaults.SCANNER_NAME_STRING.equals( name )){
      			result = new SingleTokenScanner( new PreferenceToken<TextAttribute>( TextAttributeConstants.STRING, getPreferences().getTextAttributes() ));

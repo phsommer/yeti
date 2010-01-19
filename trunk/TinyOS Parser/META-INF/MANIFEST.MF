@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Yeti 2 - NesC 1.3.x Parser
 Bundle-SymbolicName: tinyos.yeti.parser.nesc12;singleton:=true
-Bundle-Version: 1.2.16
+Bundle-Version: 1.2.17
 Bundle-Activator: tinyos_parser.NesC12ParserPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
@@ -11,8 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.editors,
- tinyos.yeti.core;bundle-version="2.2.16",
- tinyos.yeti.preprocessor.nesc12;bundle-version="1.2.16"
+ tinyos.yeti.core;bundle-version="2.2.17",
+ tinyos.yeti.preprocessor.nesc12;bundle-version="1.2.17"
 Eclipse-LazyStart: true
 Bundle-ClassPath: lib/cup/java-cup-11a-runtime.jar,
  .

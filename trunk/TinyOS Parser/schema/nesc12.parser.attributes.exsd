@@ -59,7 +59,7 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The class which tests whether an Attribute is correct.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn=":tinyos.yeti.nesc12.parser.ast.nodes.nesc.IAttributeResolve"/>

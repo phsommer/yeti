@@ -61,7 +61,7 @@ public class Debug {
         
         DEBUG = store.getBoolean( DEBUG_PREFERENCE );
         DEBUG_TO_TINYOS_CONSOLE = store.getBoolean( DEBUG_PREFERENCE_CONSOLE );
-        
+
         store.addPropertyChangeListener( new IPropertyChangeListener(){
             public void propertyChange( PropertyChangeEvent event ){
                 if( DEBUG_PREFERENCE.equals( event.getProperty() )){

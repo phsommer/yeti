@@ -20,11 +20,12 @@ import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.fix.ISingleMarkerResolution;
 import tinyos.yeti.ep.fix.ISingleQuickFixer;
 import tinyos.yeti.ep.parser.IMessage;
+import tinyos.yeti.marker.ProblemMarkerSupport;
 import tinyos.yeti.nature.MissingNatureException;
 
 /**
  * This resolution generator looks out for {@link IMarker}s that were created
- * from {@link IMessage}s (and thus have set the attribute {@link NesCProblemMarker#MARKER_MESSAGE_SOURCE}).
+ * from {@link IMessage}s (and thus have set the attribute {@link ProblemMarkerSupport#MARKER_MESSAGE_SOURCE}).
  * It then uses the {@link ISingleQuickFixer}s from the {@link TinyOSPlugin#getSingleQuickFixers() TinyOSPlugin}
  * to generate a set of fixes for the given marker.
  * @author Benjamin Sigg
@@ -41,7 +42,7 @@ public class NesCMarkerResolutionGenerator implements IMarkerResolutionGenerator
      * @see org.eclipse.ui.IMarkerResolutionGenerator#getResolutions(org.eclipse.core.resources.IMarker)
      */
     public IMarkerResolution[] getResolutions(IMarker marker) {
-        if( marker.getAttribute( NesCProblemMarker.MARKER_MESSAGE_SOURCE, false )){
+        if( marker.getAttribute( ProblemMarkerSupport.MARKER_MESSAGE_SOURCE, false )){
             IResource resource = marker.getResource();
             if (resource instanceof IFile) {
                 ISingleQuickFixer[] fixers = TinyOSPlugin.getDefault().getSingleQuickFixers();

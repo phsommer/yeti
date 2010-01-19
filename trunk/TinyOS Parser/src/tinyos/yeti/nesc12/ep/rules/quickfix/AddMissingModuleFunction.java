@@ -223,11 +223,12 @@ public class AddMissingModuleFunction implements ISingleQuickfixRule, IMultiQuic
             insert.append( whitespaces );
             insert.append( tab );
             insert.append( tab );
+            insert.append( "// TODO Auto-generated method stub" );
             insert.append( "\n" );
             insert.append( whitespaces );
             insert.append( tab );
             insert.append( "}\n" );
-
+            
             return insert;
         }
     }

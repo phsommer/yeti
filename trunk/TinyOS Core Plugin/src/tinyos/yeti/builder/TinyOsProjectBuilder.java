@@ -45,16 +45,19 @@ import org.eclipse.core.runtime.jobs.Job;
 import tinyos.yeti.Debug;
 import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
-import tinyos.yeti.editors.NesCProblemMarker;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.IMessage;
 import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.jobs.PublicJob;
 import tinyos.yeti.jobs.ResourceJob;
+import tinyos.yeti.marker.ProblemMarkerSupport;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
 
+/**
+ * @deprecated replaced by {@link TinyOSProjectBuilder2}
+ */
 @Deprecated
 public class TinyOsProjectBuilder extends IncrementalProjectBuilder {
     private Job collectMessagesJob;
@@ -409,7 +412,7 @@ public class TinyOsProjectBuilder extends IncrementalProjectBuilder {
 
                             IMessage[] messages = parser.getMessages();
                             if( messages != null ){
-                                NesCProblemMarker.synchronizeMessages( getResouce(), parseFile, messages );
+                                ProblemMarkerSupport.synchronizeMessages( getResouce(), parseFile, messages );
                             }
                         }
                     }

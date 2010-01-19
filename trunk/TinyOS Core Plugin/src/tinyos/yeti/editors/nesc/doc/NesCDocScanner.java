@@ -118,6 +118,7 @@ public class NesCDocScanner extends RuleBasedScanner implements IEditorTokenScan
         IToken keyword = new PreferenceToken<TextAttribute>( TextAttributeConstants.NESC_DOC_KEYWORD, provider );
         IToken tag = new PreferenceToken<TextAttribute>( TextAttributeConstants.NESC_DOC_TAG, provider );
         IToken link = new PreferenceToken<TextAttribute>( TextAttributeConstants.NESC_DOC_LINK, provider );
+        IToken task = new PreferenceToken<TextAttribute>( TextAttributeConstants.NESC_DOC_TASK, provider );
         IToken otherToken = new PreferenceToken<TextAttribute>( TextAttributeConstants.NESC_DOC_COMMENT, provider );
         
         List<IRule> list= new ArrayList<IRule>();
@@ -136,7 +137,11 @@ public class NesCDocScanner extends RuleBasedScanner implements IEditorTokenScan
         WordRule wordRule= new WordRule(new NesCDocWordDetector(), keyword );
         for (int i= 0; i < fgKeywords.length; i++)
             wordRule.addWord(fgKeywords[i], keyword );
+        
         list.add(wordRule);
+        
+        // Add word rule for task tags
+        list.add( new TaskTagWordRule( task ) );
 
         //Comment-Rule
         list.add( new WordRule( new NesCDocCommentWordDetector(), otherToken ));
