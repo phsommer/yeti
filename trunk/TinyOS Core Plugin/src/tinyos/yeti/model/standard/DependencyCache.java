@@ -20,17 +20,16 @@
  */
 package tinyos.yeti.model.standard;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -39,17 +38,17 @@ import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.model.ProjectModel;
 
 public class DependencyCache extends StandardFileCache<Set<IParseFile>>{
-    public DependencyCache( ProjectModel model, String extension ){
-        super( model, extension );
+    public DependencyCache( ProjectModel model, String extension, IStreamProvider streams ){
+        super( model, extension, streams );
     }
     
 
     public Set<IParseFile> readCache( IParseFile file, IProgressMonitor monitor ) throws IOException, CoreException{
-        IFile input = getCacheFile( file );
-        if( input == null )
+    	InputStream input = read( file );
+    	if( input == null )
             throw new IOException( "file does not exist" );
         
-        DataInputStream in = new DataInputStream( new BufferedInputStream( input.getContents() ));
+        DataInputStream in = new DataInputStream( input );
         
         int size = in.readInt();
         monitor.beginTask( "Read wiring", size );
@@ -69,8 +68,8 @@ public class DependencyCache extends StandardFileCache<Set<IParseFile>>{
     }
     
     public void writeCache( IParseFile file, Set<IParseFile> dependencies, IProgressMonitor monitor ) throws IOException, CoreException{
-        IFile output = getCacheFile( file );
-        if( output == null ){
+    	OutputStream output = write( file );
+    	if( output == null ){
             monitor.beginTask( "Write wiring", 1 );
             monitor.done();
             return;
@@ -96,19 +95,10 @@ public class DependencyCache extends StandardFileCache<Set<IParseFile>>{
         
         out.close();
         
-        ByteArrayInputStream in = new ByteArrayInputStream( array.toByteArray() );
-        
-        ensureParentExists( output );
-        if( output.exists() ){
-            output.delete( true, new SubProgressMonitor( monitor, clicks/2 ) );
-            clicks -= clicks/2;
-        }
         if( monitor.isCanceled() ){
-            monitor.done();
-            return;
+        	clearCache( file, new SubProgressMonitor( monitor, clicks ));
         }
         
-        create( output, in, new SubProgressMonitor( monitor, clicks ));
         monitor.done();
     }
     

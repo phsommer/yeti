@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 
 import tinyos.yeti.builder.TinyOSBuilder;
@@ -57,6 +58,7 @@ import tinyos.yeti.make.MakeTargetEvent;
 import tinyos.yeti.make.MultiMakeExclude;
 import tinyos.yeti.make.targets.IMakeTargetMorpheable;
 import tinyos.yeti.model.INesCPathListener;
+import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.NesCPath;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nesc.IMultiReader;
@@ -64,6 +66,7 @@ import tinyos.yeti.utility.ProjectTOSUtility;
 
 public class ProjectTOS implements IAdaptable{
     public static final String MAKEFILE_NAME = "TinyOS_Plugin_Makefile";
+    private static final QualifiedName CACHE_STRATEGY = new QualifiedName( TinyOSPlugin.PLUGIN_ID, "project_cache_strategy" );
 
     private ProjectModel model;
     private IProject project;
@@ -181,6 +184,30 @@ public class ProjectTOS implements IAdaptable{
         });
     }
     
+    public String getCacheStrategy(){
+    	try{
+    		return project.getPersistentProperty( CACHE_STRATEGY );
+		}
+		catch( CoreException e ){
+			TinyOSPlugin.log( e );
+			return null;
+		}
+    }
+    
+    /**
+     * Stores the identifier <code>strategy</code> used for resolving the 
+     * current {@link IProjectCache}.
+     * @param strategy the strategy
+     */
+    public void setCacheStrategy( String strategy ){
+    	try{
+			project.setPersistentProperty( CACHE_STRATEGY, strategy );
+		}
+		catch( CoreException e ){
+			TinyOSPlugin.log( e );
+		}
+    }
+    
     private void release(){
     	TinyOSPlugin.getDefault().removeMakeTargetListener( targetListener );
     	project.getWorkspace().removeResourceChangeListener( resourceListener );
@@ -212,6 +239,14 @@ public class ProjectTOS implements IAdaptable{
         model.startInitialize( forceClear );
     }
 
+    /**
+     * Ensures that this project gets initialized sometimes in the future.
+     */
+    public void ensureInitialize(){
+    	TinyOSPlugin.getDefault().getTargetManager().refresh( project );
+        model.ensureInitialize();
+    }
+    
     public boolean isOnStop(){
         return onStop;
     }
@@ -367,8 +402,8 @@ public class ProjectTOS implements IAdaptable{
         return builder;
     }
     
-    public void deleteCache( boolean full, IProgressMonitor monitor ){
-        model.deleteProjectCache( full, monitor );
+    public void clearCache( boolean full, IProgressMonitor monitor ){
+        model.clearCache( full, monitor );
     }
 
     /**

@@ -120,6 +120,7 @@ import tinyos.yeti.make.IMakeTargetListener;
 import tinyos.yeti.make.MakeTargetManager;
 import tinyos.yeti.make.targets.IMakeTargetMorpheable;
 import tinyos.yeti.model.IModelConfiguration;
+import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.NesCPath;
 import tinyos.yeti.model.ProjectChecker;
 import tinyos.yeti.model.local.LocalModelConfiguration;
@@ -864,6 +865,55 @@ public class TinyOSPlugin extends AbstractUIPlugin{
     	}
     	
     	return result;
+    }
+    
+    /**
+     * Returns a map of identifier and names for potential {@link IProjectCache}s.
+     * @return the available ids
+     */
+    public Map<String, String> loadProjectCacheNames(){
+    	Map<String, String> result = new HashMap<String, String>();
+    	
+    	IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IExtensionPoint extPoint = reg.getExtensionPoint( PLUGIN_ID + ".ProjectCache"  );
+        
+        for( IExtension ext : extPoint.getExtensions() ){
+            for( IConfigurationElement element : ext.getConfigurationElements() ){
+                if( element.getName().equals( "cache" ) ){
+                	result.put( element.getAttribute( "id" ), element.getAttribute( "name" ) );
+                }
+            }
+        }
+
+        return result;
+    }
+    
+    /** 
+     * Returns a new {@link IProjectCache} using the current selection.
+     * @return the new cache or <code>null</code> if the current selection
+     * is invalid
+     */
+    public IProjectCache loadProjectCache(){
+        IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IExtensionPoint extPoint = reg.getExtensionPoint( PLUGIN_ID + ".ProjectCache"  );
+        String id = getPreferenceStore().getString( PreferenceConstants.PROJECT_CACHE );
+        
+        for( IExtension ext : extPoint.getExtensions() ){
+            for( IConfigurationElement element : ext.getConfigurationElements() ){
+                if( element.getName().equals( "cache" ) ){
+                	if( id.equals( element.getAttribute( "id" ) ) ){ 
+	                    try{
+                            return (IProjectCache)element.createExecutableExtension( "class" );
+                        } 
+                        catch ( CoreException e ){
+                            getLog().log( e.getStatus() );
+                        }
+                	}
+                }
+            }
+        }
+
+        return null;
     }
     
     @SuppressWarnings( "unchecked" )

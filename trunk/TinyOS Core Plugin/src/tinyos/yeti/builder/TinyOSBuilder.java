@@ -369,13 +369,13 @@ public class TinyOSBuilder{
             project.acceptSourceFiles( resources );
             final ProjectModel model = project.getModel();
             if( model.secureThread() ){
-                model.deleteProjectCache( false, new SubProgressMonitor( monitor, 1 ) );
+                model.clearCache( false, new SubProgressMonitor( monitor, 1 ) );
             }
             else{
                 CancelingJob job = new CancelingJob( "clear cache" ){
                     @Override
                     public IStatus run( IProgressMonitor monitor ) {
-                        model.deleteProjectCache( false, null );
+                        model.clearCache( false, null );
                         return Status.OK_STATUS;
                     }
                 };
@@ -405,7 +405,7 @@ public class TinyOSBuilder{
             monitor.beginTask( "Delete", removed.size() + changed.size() );
             
             for( IResource resource : removed ){
-                model.deleteCache( model.parseFile( resource ), true, new SubProgressMonitor( monitor, 1 ) );
+                model.clearCache( model.parseFile( resource ), true, new SubProgressMonitor( monitor, 1 ) );
                 if( monitor.isCanceled() ){
                     monitor.done();
                     return;
@@ -413,7 +413,7 @@ public class TinyOSBuilder{
             }
 
             for( IResource resource : changed ){
-                model.deleteCache( model.parseFile( resource ), true, new SubProgressMonitor( monitor, 1 ) );
+                model.clearCache( model.parseFile( resource ), true, new SubProgressMonitor( monitor, 1 ) );
                 if( monitor.isCanceled() ){
                     monitor.done();
                     return;
@@ -421,7 +421,7 @@ public class TinyOSBuilder{
             }
             
             for( IResource resource : build ){
-                model.deleteCache( model.parseFile( resource ), true, new SubProgressMonitor( monitor, 1 ) );
+                model.clearCache( model.parseFile( resource ), true, new SubProgressMonitor( monitor, 1 ) );
                 if( monitor.isCanceled() ){
                     monitor.done();
                     return;

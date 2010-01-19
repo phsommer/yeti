@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -127,6 +128,8 @@ public class ProjectModel {
     private List<IParseFile> changedFiles = new ArrayList<IParseFile>();
 
     private IFileModel fileModel;
+    
+    private IProjectCache projectCache;
 
     private BasicDeclarationSet basicDeclarations;
 
@@ -144,6 +147,7 @@ public class ProjectModel {
         IModelConfiguration configuration = TinyOSPlugin.getDefault().getModelConfiguration();
 
         fileModel = configuration.createFileModel( this );
+        projectCache = configuration.createProjectCache( this );
         definitionCollection = configuration.createDefinitionCollector( this );
 
         basicDeclarations = new BasicDeclarationSet( this );
@@ -205,6 +209,10 @@ public class ProjectModel {
     public IFileModel getFileModel(){
         return fileModel;
     }
+    
+    public IProjectCache getProjectCache(){
+		return projectCache;
+	}
 
     public synchronized void addProjectModelListener( IProjectModelListener listener ){
         listeners.add( listener );
@@ -646,8 +654,8 @@ public class ProjectModel {
     	
     	Monitor lock = enter();
     	try{
-	    	if( fileModel.getReferencesCache().canReadCache( parseFile ) ){
-	    		return fileModel.getReferencesCache().readCache( parseFile, monitor );
+	    	if( projectCache.getReferencesCache().canReadCache( parseFile ) ){
+	    		return projectCache.getReferencesCache().readCache( parseFile, monitor );
 	    	}
 	    	
 	    	monitor.beginTask( "References of '" + parseFile.getName() + "'", 7 );
@@ -671,7 +679,7 @@ public class ProjectModel {
 	    	}
 	    	
 	    	IASTReference[] result = parser.getReferences();
-	    	fileModel.getReferencesCache().writeCache( parseFile, result, new SubProgressMonitor( monitor, 1 ) );
+	    	projectCache.getReferencesCache().writeCache( parseFile, result, new SubProgressMonitor( monitor, 1 ) );
 	    	
 	    	monitor.done();
 	    	return result;
@@ -1022,7 +1030,7 @@ public class ProjectModel {
             fullFreeze();
 
             boolean loadedFromCache = false;
-            IASTModelFileCache cache = fileModel.getASTModelCache();
+            IASTModelFileCache cache = projectCache.getASTModelCache();
 
             if( allowCacheRead ){
                 if( cache != null && cache.canReadCache( parseFile )){
@@ -1335,7 +1343,7 @@ public class ProjectModel {
                 return false; // the resource does not exist... no hope to build it
             }
 
-            IFileCache<IMissingResource[]> cache = fileModel.getMissingFileCache();
+            IFileCache<IMissingResource[]> cache = projectCache.getMissingFileCache();
             if( !cache.canReadCache( file )){
                 if( Debug.DEBUG ){
                     Debug.info( "checkBuild: '" + resource.getName() + "': true, missing file cache cannot be read" );
@@ -1417,7 +1425,7 @@ public class ProjectModel {
 
             Debug.info( "init file: " + filename.getPath() );
 
-            deleteCache( filename, true, new SubProgressMonitor( monitor, 200 ) );
+            clearCache( filename, true, new SubProgressMonitor( monitor, 200 ) );
 
             INesCInitializer initializer = TinyOSPlugin.getDefault().getParserFactory().createInitializer( project.getProject() );
             IMultiReader reader = new FileMultiReader( file );
@@ -1445,7 +1453,7 @@ public class ProjectModel {
             TinyOSPlugin plugin = TinyOSPlugin.getDefault();
             if( plugin != null ){
                 try{
-                    IFileCache<IDeclaration[]> cache = fileModel.getInitCache();
+                    IFileCache<IDeclaration[]> cache = projectCache.getInitCache();
                     if( cache != null ){
                         cache.writeCache( filename, result, new SubProgressMonitor( monitor, 200 ) );
                     }
@@ -1522,7 +1530,7 @@ public class ProjectModel {
                 declarations.put( filename, new Cache( filename, result ));
             }
             try{
-				fileModel.getInclusionCache().writeCache( filename, result, new SubProgressMonitor( monitor, 50 ) );
+            	projectCache.getInclusionCache().writeCache( filename, result, new SubProgressMonitor( monitor, 50 ) );
 			}
 			catch( CoreException e ){
 				TinyOSPlugin.warning( e.getStatus() );
@@ -1530,7 +1538,7 @@ public class ProjectModel {
 
             IMissingResource[] missingResources = missing.getMissingResources();
             try{
-                fileModel.getMissingFileCache().writeCache( filename, missingResources, new SubProgressMonitor( monitor, 50 ) );
+            	projectCache.getMissingFileCache().writeCache( filename, missingResources, new SubProgressMonitor( monitor, 50 ) );
             }
             catch ( CoreException e ){
                 TinyOSPlugin.warning( e.getStatus() );
@@ -1556,7 +1564,7 @@ public class ProjectModel {
 
             IASTReference[] references = parser.getReferences();
             try{
-				fileModel.getReferencesCache().writeCache( filename, references, new SubProgressMonitor( monitor, 50 ) );
+            	projectCache.getReferencesCache().writeCache( filename, references, new SubProgressMonitor( monitor, 50 ) );
 			}
 			catch( CoreException e ){
 				TinyOSPlugin.warning( e );
@@ -1697,19 +1705,20 @@ public class ProjectModel {
      * @param monitor used for output, can be <code>null</code>
      * @see #secureThread()
      */
-    public void deleteProjectCache( final boolean full, IProgressMonitor monitor ){
+    public void clearCache( final boolean full, IProgressMonitor monitor ){
         Monitor lock = enter();
         try{
 	        if( monitor == null )
 	            monitor = new NullProgressMonitor();
 	
-	        monitor.beginTask( "clean", 40 );
+	        monitor.beginTask( "clean", 50 );
 	
 	        getAstModel().clear();
 	        astModelContent.clear();
 	
 	        monitor.worked( 10 );
 	
+	        projectCache.clear( full, new SubProgressMonitor( monitor, 10 ) );
 	        fileModel.clear( full, new SubProgressMonitor( monitor, 10 ) );
 	
 	        if( full ){
@@ -1728,14 +1737,49 @@ public class ProjectModel {
 	
 	        definitionCollection.deleteCache( new SubProgressMonitor( monitor, 10 ) );
 	
+	        if( full ){
+	        	try{
+	        		deleteCache();
+	        	}
+	        	catch( CoreException ex ){
+	        		TinyOSPlugin.log( ex );
+	        	}
+	        }
+	        
 	        monitor.done();
         }
         finally{
         	lock.leave();
         }
     }
+    
+    /**
+     * Deletes all files that are in the cache directory, does not delete
+     * data that is stored in memory.
+     * @throws CoreException in case a file cannot be deleted
+     */
+    public void deleteCache() throws CoreException{
+    	delete( getProject().getCacheContainer() );
+    }
+    
+    private void delete( IResource resource ) throws CoreException{
+    	if( resource != null && resource.isAccessible() ){
+	    	if( resource instanceof IFolder ){
+	    		IResource[] children = ((IFolder)resource).members();
+	    		if( children != null ){
+	    			for( IResource child : children ){
+	    				delete( child );
+	    			}
+	    		}
+	    		resource.delete( true, null );
+	    	}
+	    	else if( resource instanceof IFile ){
+	    		resource.delete( true, null );
+	    	}
+    	}
+    }
 
-    public void deleteCache( IParseFile parseFile, boolean continuous, IProgressMonitor monitor ){
+    public void clearCache( IParseFile parseFile, boolean continuous, IProgressMonitor monitor ){
         declarations.remove( parseFile );
         definitionCollection.deleteCache( parseFile, monitor );
         removeFromModel( parseFile );
@@ -1747,6 +1791,46 @@ public class ProjectModel {
             listener.changed( parseFile, continuous );
     }
 
+    /**
+     * First clears the current cache, then replaces the current cache with
+     * a new instance of {@link IModelConfiguration#createProjectCache(ProjectModel)}.<br>
+     * This method must be called in a secure environment
+     * @param monitor to report process
+     */
+    public void replaceCache( IProgressMonitor monitor ){
+    	Monitor lock = enter();
+    	try{
+            monitor.beginTask( "Replace cache of '" + project.getProject().getName() + "'", 10 );
+            IModelConfiguration configuration = TinyOSPlugin.getDefault().getModelConfiguration();
+            
+    		clearCache( true, new SubProgressMonitor( monitor, 10 ) );
+    		projectCache = configuration.createProjectCache( this );
+    		project.setCacheStrategy( projectCache.getTypeIdentifier() );
+    		project.initialize( false );
+    		
+    		monitor.done();
+    	}
+    	finally{
+    		lock.leave();
+    	}
+    }
+    
+    /**
+     * Checks whether the currently used cache matches the cache that was
+     * used earlier. Ensures that subsequent calls return <code>true</code>, 
+     * but does not clear the cache if necessary.
+     * @return <code>true</code> if the identifiers match, <code>false</code>
+     * otherwise
+     */
+    public boolean checkProjectCache(){
+    	if( project.getProject().isAccessible() ){
+    		String strategy = project.getCacheStrategy();
+    		project.setCacheStrategy( projectCache.getTypeIdentifier() );
+    		return strategy != null && strategy.equals( projectCache.getTypeIdentifier() );
+    	}
+    	return true;
+    }
+    
     /**
      * Gets the number of files whose model can be loaded 
      * @return the maximal number of loaded files
@@ -1946,6 +2030,11 @@ public class ProjectModel {
                 listener.initialized();
         }
 
+        @Override
+        protected IProjectCache getProjectCache(){
+	        return projectCache;
+        }
+        
         @Override
         protected IFileModel getFileModel(){
             return fileModel;

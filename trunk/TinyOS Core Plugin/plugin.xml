@@ -12,6 +12,7 @@
    <extension-point id="LaunchVeto" name="LaunchVeto" schema="schema/LaunchVeto.exsd"/>
    <extension-point id="Formatting" name="Formatting" schema="schema/Formatting.exsd"/>
    <extension-point id="MetaAttribute" name="Attribute" schema="schema/MetaAttribute.exsd"/>
+   <extension-point id="ProjectCache" name="ProjectCache" schema="schema/ProjectCache.exsd"/>
    
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -53,6 +54,12 @@
             class="tinyos.yeti.preferences.CodeFormattingPreferences"
             id="tinyos.yeti.editor.code_formatting"
             name="Formatting">
+      </page>
+      <page
+            category="tinyOS"
+            class="tinyos.yeti.preferences.CachePreferencePage"
+            id="tinyos.yeti.cache"
+            name="Cache Strategy">
       </page>
    </extension>
    <extension
@@ -867,5 +874,23 @@
       <persistent
             value="true">
       </persistent>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.ProjectCache">
+      <cache
+            class="tinyos.yeti.model.standard.StandardProjectCache"
+            id="tinyos.yeti.core.cache.first"
+            name="One cache file per property">
+      </cache>
+      <cache
+            class="tinyos.yeti.model.standard.LinkedProjectCache"
+            id="tinyos.yeti.core.cache.linked"
+            name="One cache file per source file">
+      </cache>
+      <cache
+            class="tinyos.yeti.model.standard.ZipProjectCache"
+            id="tinyos.yeti.core.cache.compressed"
+            name="One compressed cache file per source file">
+      </cache>
    </extension>
 </plugin>

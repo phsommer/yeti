@@ -68,6 +68,8 @@ public abstract class PreferenceConstants {
 	
 	public static final String SAVE_FILES_AUTOMATICALLY = "nesc_safeFilesAutomatically";
 	
+	public static final String PROJECT_CACHE = "nesc_projectCache";
+	
 	public static String spacesPerTab(){
 		TinyOSPlugin plugin = TinyOSPlugin.getDefault();
 		int count = plugin.getPreferenceStore().getInt( SPACES_AS_TABS );

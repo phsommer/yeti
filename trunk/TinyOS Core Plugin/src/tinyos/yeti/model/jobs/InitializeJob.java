@@ -46,6 +46,7 @@ import tinyos.yeti.jobs.PublicJob;
 import tinyos.yeti.make.MakeTarget;
 import tinyos.yeti.model.IFileCache;
 import tinyos.yeti.model.IFileModel;
+import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.IProjectDefinitionCollector;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nesc.FileMultiReader;
@@ -67,6 +68,8 @@ public abstract class InitializeJob extends CancelingJob{
     protected abstract void setInitialized( boolean initialized );
 
     protected abstract IFileModel getFileModel();
+    
+    protected abstract IProjectCache getProjectCache();
 
     protected abstract IProjectDefinitionCollector getDefinitionCollector();
 
@@ -91,12 +94,16 @@ public abstract class InitializeJob extends CancelingJob{
                 public IStatus run( IProgressMonitor monitor ){
                     IFolder folder = model.getProject().getCacheContainer();
                     if( folder.exists() ){
-                        try{
+                    	try{
                             folder.refreshLocal( IFolder.DEPTH_INFINITE, monitor );
                             
                             if( !folder.isDerived() ){
                             	folder.accept( new DeriveResourceVisitor() );
                             }
+                            
+                            if( !model.checkProjectCache() ){
+                            	model.deleteCache();
+                        	}
                         }
                         catch ( CoreException e ){
                             TinyOSPlugin.warning( e.getStatus() );
@@ -115,7 +122,7 @@ public abstract class InitializeJob extends CancelingJob{
             PublicJob clearJob = new PublicJob( "Clear caches" ){
                 @Override
                 public IStatus run( IProgressMonitor monitor ){
-                    model.deleteProjectCache( true, monitor );
+                    model.clearCache( true, monitor );
                     return Status.OK_STATUS;
                 }
             };
@@ -205,7 +212,7 @@ public abstract class InitializeJob extends CancelingJob{
     }
 
     private void readDeclarations( final IParseFile file, final INesCInitializer initializer, IProgressMonitor monitor ){
-        final IFileModel fileModel = getFileModel();
+        final IProjectCache projectCache = getProjectCache();
 
         final boolean[] done = new boolean[]{ false };
 
@@ -219,7 +226,7 @@ public abstract class InitializeJob extends CancelingJob{
 
             if( i == 0 ){
                 // try read from cache
-                final IFileCache<IDeclaration[]> cache = fileModel.getInitCache();
+                final IFileCache<IDeclaration[]> cache = projectCache.getInitCache();
                 if( cache != null && cache.canReadCache( file )){
                     job = new CancelingJob( file.getName() ){
                         @Override
@@ -279,7 +286,7 @@ public abstract class InitializeJob extends CancelingJob{
                             }
 
                             // store the files if possible
-                            IFileCache<IDeclaration[]> cache = fileModel.getInitCache();
+                            IFileCache<IDeclaration[]> cache = projectCache.getInitCache();
                             if( cache != null ){
                                 cache.writeCache( file, result, new SubProgressMonitor( monitor, 200 ) );
                             }
@@ -314,7 +321,7 @@ public abstract class InitializeJob extends CancelingJob{
     }
 
     private void dependencies( final IParseFile file, IProgressMonitor monitor ){
-        final IFileModel fileModel = getFileModel();
+        final IProjectCache projectCache = getProjectCache();
         final boolean[] done = new boolean[]{ false };
 
         for( int i = 0; i < 2 && !done[0]; i++ ){
@@ -322,7 +329,7 @@ public abstract class InitializeJob extends CancelingJob{
             if( i == 0 ){
                 // let's have a look in the cache, maybe we don't need to
                 // parse the whole file
-                final IFileCache<Set<IParseFile>> cache = fileModel.getDependencyCache();
+                final IFileCache<Set<IParseFile>> cache = projectCache.getDependencyCache();
                 if( cache != null && cache.canReadCache( file )){
                     job = new CancelingJob( file.getName() ){
                         @Override

@@ -20,14 +20,11 @@
  */
 package tinyos.yeti.model.standard;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -41,14 +38,16 @@ import tinyos.yeti.model.ProjectModel;
 public class DeclarationCache extends StandardFileCache<IDeclaration[]>{
     private IDeclarationFactory factory;
     
-    public DeclarationCache( ProjectModel model, IDeclarationFactory factory, String extension ){
-        super( model, extension );
+    public DeclarationCache( ProjectModel model, IDeclarationFactory factory, String extension, IStreamProvider streams ){
+        super( model, extension, streams );
         this.factory = factory;
     }
 
     public IDeclaration[] readCache( IParseFile file, IProgressMonitor monitor ) throws IOException, CoreException{
-        IFile cache = getCacheFile( file );
-        DataInputStream in = new DataInputStream( new BufferedInputStream( cache.getContents() ));
+    	InputStream cache = read( file );
+    	if( cache == null )
+    		throw new IOException( "cache not available" );
+        DataInputStream in = new DataInputStream( cache );
         
         int modelVersion = in.readInt();
         if( modelVersion != 0 ){
@@ -79,10 +78,7 @@ public class DeclarationCache extends StandardFileCache<IDeclaration[]>{
     }
     
     public void writeCache( IParseFile file, IDeclaration[] declarations, IProgressMonitor monitor ) throws IOException, CoreException{
-        IFile cache = getCacheFile( file );
-        
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( bytes );
+        DataOutputStream out = new DataOutputStream( write( file ) );
         
         int version = factory.getVersion();
         int size = declarations == null ? 0 : declarations.length;
@@ -103,25 +99,15 @@ public class DeclarationCache extends StandardFileCache<IDeclaration[]>{
             if( monitor.isCanceled() ){
                 monitor.done();
                 out.close();
-                cache.delete( true, new SubProgressMonitor( monitor, ticks ) );
+                clearCache( file, new SubProgressMonitor( monitor, ticks ) );
                 return;
             }
         }
         
         out.close();
-        ByteArrayInputStream input = new ByteArrayInputStream( bytes.toByteArray() );
-        
-        if( cache.exists() ){
-            cache.delete( true, new SubProgressMonitor( monitor, ticks/2 ) );
-            ticks -= ticks/2;
-        }
-        
         if( monitor.isCanceled() ){
-            monitor.done();
-            return;
+        	clearCache( file, new SubProgressMonitor( monitor, ticks ) );
         }
-     
-        create( cache, input, new SubProgressMonitor( monitor, ticks ));
         monitor.done();
     }
 }

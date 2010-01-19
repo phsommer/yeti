@@ -73,7 +73,7 @@ public class TinyOsProjectBuilder extends IncrementalProjectBuilder {
 	        ProjectTOS tos = TinyOSPlugin.getDefault().getProjectTOS( getProject() );
 	
 	        if( tos.getModel().secureThread() ){
-	            tos.deleteCache( false, monitor );
+	            tos.clearCache( false, monitor );
 	            try{
 	                getProject().accept(new CleanVisitor());
 	            }
@@ -215,7 +215,7 @@ public class TinyOsProjectBuilder extends IncrementalProjectBuilder {
         for( File file : collector.removed ){
             IParseFile parseFile = model.parseFile( file );
             // TODO should not be a NullProgressMonitor
-            project.getModel().deleteCache( parseFile, true, new NullProgressMonitor() );
+            project.getModel().clearCache( parseFile, true, new NullProgressMonitor() );
             allFiles[ allIndex++ ] = parseFile;
         }
         

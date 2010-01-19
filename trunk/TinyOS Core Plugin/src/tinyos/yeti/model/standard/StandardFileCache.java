@@ -20,21 +20,12 @@
  */
 package tinyos.yeti.model.standard;
 
-import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubProgressMonitor;
 
-import tinyos.yeti.Debug;
-import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.model.IFileCache;
 import tinyos.yeti.model.ProjectModel;
@@ -43,136 +34,37 @@ public abstract class StandardFileCache<V> implements IFileCache<V>{
     protected ProjectModel model;
     private String extension;
     
-    public StandardFileCache( ProjectModel model, String extension ){
+    private IStreamProvider streams;
+    
+    public StandardFileCache( ProjectModel model, String extension, IStreamProvider streams ){
         this.model = model;
         this.extension = extension;
+        this.streams = streams;
     }
     
     /**
-     * Gets the file which represents <code>file</code>.
-     * @param file the file which gets cached
-     * @return the cache file for <code>file</code>
+     * Sets the stream provider used for accessing the cache.
+     * @param streams the stream provider
      */
-    protected IFile getCacheFile( IParseFile file ){
-        return getDerivedFile( file, extension );
-    }
+    public void setStreams( IStreamProvider streams ){
+    	if( streams == null )
+    		throw new IllegalArgumentException();
+		this.streams = streams;
+	}
 
-    protected IFile getDerivedFile( IParseFile file, String extension ){
-        File origin = file.toFile();
-        if( origin == null )
-            return null;
-        
-        if( file.isProjectFile() ){
-            IPath path = derivedPath( null, origin, extension );
-            return model.getProject().getInternBinaryContainer().getFile( path );
-        }
-        else{
-            IPath path = derivedPath( null, origin, extension );
-            return model.getProject().getExternBinaryContainer().getFile( path );
-        }
+    protected InputStream read( IParseFile file ) throws CoreException{
+    	return streams.read( file, extension );
     }
     
-    protected IPath derivedPath( File parent, File file, String extension ){
-    	if( parent == null )
-    		return new Path( file.getAbsolutePath() + "." + extension );
-    	
-        IPath path = difference( parent, file.getParentFile() );
-        if( path == null )
-            return new Path( file.getName() + "." + extension );
-        else
-            return path.append( file.getName() + "." + extension );
+    protected OutputStream write( IParseFile file ) throws CoreException{
+    	return streams.write( file, extension );
     }
     
-    protected IPath difference( File parent, File file ){
-        if( file == null && parent != null ){
-            Debug.error( "file null" );
-            return null;
-        }
-        
-        if( file == parent || file.equals( parent ))
-            return null;
-        
-        IPath path = difference( parent, file.getParentFile() );
-        if( path == null ){
-            path = new Path( file.getName() );
-        }
-        else{
-            path = path.append( file.getName() );
-        }
-        
-        return path;
+    public void clearCache( IParseFile file, IProgressMonitor monitor ){
+    	streams.clear( file, extension, monitor );
     }
     
     public boolean canReadCache( IParseFile file ){
-        IFile cache = getCacheFile( file );
-        if( cache == null )
-            return false;
-        
-        return cache.exists();
+    	return streams.canRead( file, extension );
     }
-    
-
-    public void clearCache( IParseFile file, IProgressMonitor monitor ){
-        IFile cache = getCacheFile( file );
-        if( cache != null ){
-            clearFile( cache, monitor );
-        }
-    }
-
-    protected void clearFile( IFile file, IProgressMonitor monitor ){
-        IResource resource = file;
-        monitor.beginTask( "Delete", IProgressMonitor.UNKNOWN );
-        try{
-            while( resource.exists() ){
-                if( resource instanceof IFile ){
-                    resource.delete( true, new SubProgressMonitor( monitor, 0 ) );
-                    resource = resource.getParent();
-                }
-                else if( resource instanceof IFolder ){
-                    IFolder folder = (IFolder)resource;
-                    IResource[] members = folder.members( IFolder.INCLUDE_PHANTOMS | IFolder.INCLUDE_TEAM_PRIVATE_MEMBERS );
-                    if( members.length == 0 ){
-                        folder.delete( true, new SubProgressMonitor( monitor, 0 ) );
-                    }
-                    else{
-                        break;
-                    }
-                    resource = resource.getParent();
-                }
-                else{
-                    break;
-                }
-            }
-        }
-        catch( CoreException ex ){
-            TinyOSPlugin.warning( ex.getStatus() );
-        }
-        monitor.done();
-    }
-
-    protected void create( IFile file, InputStream in, IProgressMonitor monitor ) throws CoreException{
-        ensureParentExists( file );
-        
-        if( file.exists() ){
-            file.setContents( in, IResource.NONE, monitor );
-        }
-        else{
-            file.create( in, true, monitor );
-        }
-        
-        file.setDerived( true );
-    }
-    
-    protected void ensureParentExists( IResource resource ) throws CoreException{
-        IContainer parent = resource.getParent();
-        if( !parent.exists() ){
-            ensureParentExists( parent );
-            if( parent instanceof IFolder ){
-                IFolder folder = (IFolder)parent;
-                folder.create( true, true, null );
-                folder.setDerived( true );
-            }
-        }
-    }
-    
 }
