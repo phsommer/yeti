@@ -67,5 +67,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault( PreferenceConstants.ERROR_TO_INFO, true );
         
         store.setDefault( PreferenceConstants.SAVE_FILES_AUTOMATICALLY, false );
+        
+        store.setDefault( PreferenceConstants.PROJECT_CACHE, "tinyos.yeti.core.cache.first" );
     }
 }

@@ -70,7 +70,7 @@ public class LocalProjectDefinitionCollector implements IProjectDefinitionCollec
 
     public LocalProjectDefinitionCollector( ProjectModel model ) {
         this.model = model;
-        cache = new WireCache( model.getFileModel() );
+        cache = new WireCache( model.getProjectCache() );
     }
 
     public void deleteCache( IProgressMonitor monitor ){

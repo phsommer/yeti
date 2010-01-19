@@ -37,21 +37,11 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
-import tinyos.yeti.ep.parser.IASTModelNodeFactory;
-import tinyos.yeti.ep.parser.IDeclaration;
-import tinyos.yeti.ep.parser.IDeclarationFactory;
-import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.jobs.AllReachableFilesJob;
 import tinyos.yeti.make.MakeTarget;
-import tinyos.yeti.model.missing.IMissingResource;
-import tinyos.yeti.model.standard.DeclarationCache;
-import tinyos.yeti.model.standard.DependencyCache;
-import tinyos.yeti.model.standard.GenericFileCache;
-import tinyos.yeti.model.standard.ModelNodeFileCache;
 
 /**
  * Contains all the {@link IParseFile}s that can be accessed.
@@ -63,64 +53,17 @@ public abstract class FileModel<I extends IParseFile> implements Iterable<IParse
 
     private ProjectModel model;
 
-    private IFileCache<IDeclaration[]> initCache;
-    private IFileCache<IDeclaration[]> inclusionCache;
-    private IFileCache<Set<IParseFile>> dependencyCache;
-    private IFileCache<Set<IParseFile>> wiringCache;
-    private IASTModelFileCache astModelCache;
-    private IFileCache<IMissingResource[]> missingFileCache;
-    private IFileCache<IASTReference[]> referenceCache;
     
     public FileModel( ProjectModel model ){
         this.model = model;
-        
-        IDeclarationFactory factory = TinyOSPlugin.getDefault().getParserFactory().getDeclarationFactory();
-        if( factory != null ){
-            initCache = new DeclarationCache( model, factory, "global" );
-            inclusionCache = new DeclarationCache( model, factory, "local" );
-        }
-        dependencyCache = new DependencyCache( model, "dependency" );
-        wiringCache = new DependencyCache( model, "wiring" );
-        
-        IASTModelNodeFactory nodeFactory = TinyOSPlugin.getDefault().getParserFactory().getModelNodeFactory();
-        if( nodeFactory != null ){
-            astModelCache = new ModelNodeFileCache( model, nodeFactory, "ast" );
-        }
-        
-        missingFileCache = new GenericFileCache<IMissingResource[]>( model, "build" );
-        referenceCache = new GenericFileCache<IASTReference[]>( model, "reference" );
     }
     
     public ProjectModel getModel(){
         return model;
     }
     
-    public IFileCache<IDeclaration[]> getInitCache(){
-        return initCache;
-    }
-    
-    public IFileCache<Set<IParseFile>> getDependencyCache(){
-        return dependencyCache;
-    }
-    
-    public IFileCache<IDeclaration[]> getInclusionCache() {
-    	return inclusionCache;
-    }
-    
-    public IFileCache<Set<IParseFile>> getWiringCache(){
-        return wiringCache;
-    }
-    
-    public IASTModelFileCache getASTModelCache(){
-        return astModelCache;
-    }
-    
-    public IFileCache<IMissingResource[]> getMissingFileCache(){
-        return missingFileCache;
-    }
-    
-    public IFileCache<IASTReference[]> getReferencesCache(){
-	    return referenceCache;
+    public void clear(){
+    	files.clear();
     }
     
     protected abstract I create( File file );
@@ -163,61 +106,6 @@ public abstract class FileModel<I extends IParseFile> implements Iterable<IParse
         return parseFile;
     }
 
-    public synchronized void clear( boolean full, IProgressMonitor monitor ){
-        Iterator<? extends IParseFile> iterator = files.values().iterator();
-        IFileCache<?>[] caches = listCaches();
-        
-        List<IParseFile> toDelete = new ArrayList<IParseFile>();
-        
-        while( iterator.hasNext() ){
-            IParseFile next = iterator.next();
-            if( full || next.isProjectFile() ){
-                if( !full ){
-                    iterator.remove();
-                }
-                toDelete.add( next );
-            }
-        }
-        if( full ){
-            files.clear();
-        }
-        
-        monitor.beginTask( "Clear Caches", toDelete.size() * caches.length );
-        for( IParseFile file : toDelete ){
-            for( IFileCache<?> cache : caches ){
-                SubProgressMonitor sub = new SubProgressMonitor( monitor, 1 );
-                cache.clearCache( file, sub );
-                sub.done();
-            }
-            if( monitor.isCanceled() ){
-                monitor.done();
-                return;
-            }
-        }
-        
-        monitor.done();
-    }
-
-    private IFileCache<?>[] listCaches(){
-        List<IFileCache<?>> list = new ArrayList<IFileCache<?>>();
-        if( initCache != null )
-            list.add( initCache );
-        if( inclusionCache != null )
-            list.add( inclusionCache );
-        if( dependencyCache != null )
-            list.add( dependencyCache );
-        if( wiringCache != null )
-            list.add( wiringCache );
-        if( astModelCache != null )
-            list.add( astModelCache );
-        if( missingFileCache != null )
-            list.add( missingFileCache );
-        if( referenceCache != null )
-        	list.add( referenceCache );
-        
-        return list.toArray( new IFileCache[ list.size() ] );
-    }
-    
     /**
      * Gets the files of this model ordered by their index.
      * @return the files known to this model
@@ -350,4 +238,24 @@ public abstract class FileModel<I extends IParseFile> implements Iterable<IParse
         return null;
     }
     
+    public synchronized void clear( boolean full, IProgressMonitor monitor ){
+    	monitor.beginTask( "Clear file cache", files.size() );
+    	
+    	if( full ){
+    		files.clear();
+    	}
+    	else{
+    		Iterator<? extends IParseFile> iterator = files.values().iterator();
+    	
+    		while( iterator.hasNext() ){
+    			IParseFile next = iterator.next();
+    			if( next.isProjectFile() ){
+    				iterator.remove();
+    			}
+    			monitor.worked( 1 );
+    		}
+    	}
+        
+        monitor.done();
+    }
 }

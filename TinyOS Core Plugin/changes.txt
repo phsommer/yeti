@@ -373,3 +373,4 @@
 - Bugfix: sometimes code completion showed the same entry twice
 - Feature: Bookmarks enabled
 - Feature: Tasks enabled, if typing "TASK" or "FIXME" in a comment, the task is added automatically
+- Feature: Caching Strategy can be replaced (during runtime). Caching strategies include "one file per property", "one file per source file" and "one compressed file per source file".

@@ -27,11 +27,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
 import tinyos.yeti.ep.IEnvironment;
@@ -74,8 +76,28 @@ public class ProjectManager {
         }
     }
     
+    public void replaceCaches(){
+    	Job replaceJob = new Job( "Clean open TinyOS projects" ){
+			@Override
+			protected IStatus run( IProgressMonitor monitor ){
+				monitor.beginTask( "Clean open TinyOS projects", projects.size() );
+				
+				for( ProjectTOS project : projects.values() ){
+					monitor.subTask( project.getProject().getName() );
+					project.getModel().replaceCache( new SubProgressMonitor( monitor, 1 ) );
+				}
+				
+				monitor.done();
+				return Status.OK_STATUS;
+			}
+		};
+		replaceJob.setPriority( Job.LONG );
+		replaceJob.setRule( ResourcesPlugin.getWorkspace().getRoot() );
+		replaceJob.schedule();
+    }
+    
     public ProjectTOS getProjectTOS( IProject project, boolean initialize ) throws MissingNatureException{
-        ProjectTOS p  = projects.get(project.getName());
+        ProjectTOS p = projects.get(project.getName());
 
         if( p == null ){
         	try{

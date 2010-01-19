@@ -20,6 +20,7 @@
  */
 package tinyos.yeti.model;
 
+
 /**
  * A class containing factory methods for creating models that interact with
  * the underlying files of a project.
@@ -32,6 +33,13 @@ public interface IModelConfiguration{
      * @return the new model
      */
     public IFileModel createFileModel( ProjectModel model );
+
+    /**
+     * Creates the cache for storing nescfile-property pairs.
+     * @param model the owner of the new cache
+     * @return the new cache
+     */
+    public IProjectCache createProjectCache( ProjectModel model );
     
     /**
      * Creates a new collector for declarations.

@@ -20,14 +20,12 @@
  */
 package tinyos.yeti.model.standard;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -48,8 +46,8 @@ import tinyos.yeti.model.SubASTModel;
 public class ModelNodeFileCache extends StandardFileCache<SubASTModel> implements IASTModelFileCache{
     private IASTModelNodeFactory factory;
     
-    public ModelNodeFileCache( ProjectModel model, IASTModelNodeFactory factory, String extension ){
-        super( model, extension );
+    public ModelNodeFileCache( ProjectModel model, IASTModelNodeFactory factory, String extension, IStreamProvider streams ){
+        super( model, extension, streams );
         
         if( factory == null )
             throw new IllegalArgumentException( "factory must not be null" );
@@ -58,12 +56,11 @@ public class ModelNodeFileCache extends StandardFileCache<SubASTModel> implement
     }
     
     public void writeCache( IParseFile file, SubASTModel value, IProgressMonitor monitor ) throws IOException, CoreException{
-        IFile cache = getCacheFile( file );
+        OutputStream cache = write( file );
         if( cache == null )
         	return;
         
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( bout );
+        DataOutputStream out = new DataOutputStream( cache );
         
         out.writeBoolean( value.isFullyLoaded() );
         
@@ -83,18 +80,17 @@ public class ModelNodeFileCache extends StandardFileCache<SubASTModel> implement
         }
         
         out.close();
-        ByteArrayInputStream in = new ByteArrayInputStream( bout.toByteArray() );
-        create( cache, in, new SubProgressMonitor( monitor, 100 ) );
         monitor.done();
     }
     
     public boolean isFullyLoaded( IParseFile file ){
-        IFile cache = getCacheFile( file );
-        if( cache == null || !cache.exists() )
-            return false;
+    	try{
+    		InputStream cache = read( file );
+    		if( cache == null )
+    			return false;
         
-        try{
-            DataInputStream in = new DataInputStream( cache.getContents() );
+        
+            DataInputStream in = new DataInputStream( cache );
             boolean result = in.readBoolean();
             in.close();
             return result;
@@ -110,8 +106,10 @@ public class ModelNodeFileCache extends StandardFileCache<SubASTModel> implement
     }
     
     public SubASTModel readCache( IParseFile file, IProgressMonitor monitor ) throws IOException, CoreException{
-        IFile cache = getCacheFile( file );
-        DataInputStream in = new DataInputStream( new BufferedInputStream( cache.getContents() ));
+        InputStream cache = read( file );
+        if( cache == null )
+        	throw new IOException( "cache not available" );
+        DataInputStream in = new DataInputStream( cache );
         
         boolean fullyLoaded = in.readBoolean();
         

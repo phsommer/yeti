@@ -20,10 +20,13 @@
  */
 package tinyos.yeti.model.local;
 
+import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.model.IFileModel;
 import tinyos.yeti.model.IModelConfiguration;
+import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.IProjectDefinitionCollector;
 import tinyos.yeti.model.ProjectModel;
+import tinyos.yeti.model.standard.StandardProjectCache;
 import tinyos.yeti.model.standard.StandardFileModel;
 
 public class LocalModelConfiguration implements IModelConfiguration{
@@ -33,5 +36,21 @@ public class LocalModelConfiguration implements IModelConfiguration{
 
     public IFileModel createFileModel( ProjectModel model ){
         return new StandardFileModel( model );
+    }
+    
+    public IProjectCache createProjectCache( ProjectModel model ){
+        TinyOSPlugin plugin = TinyOSPlugin.getDefault();
+        IProjectCache cache = null;
+        
+        if( plugin != null ){
+        	cache = plugin.loadProjectCache();
+        }
+    	
+        if( cache == null ){
+        	cache = new StandardProjectCache();
+        }
+        
+	    cache.initialize( model );
+	    return cache;
     }
 }

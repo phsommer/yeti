@@ -38,7 +38,7 @@ import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.model.IFileCache;
-import tinyos.yeti.model.IFileModel;
+import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.ProjectModel;
 
 /**
@@ -59,14 +59,14 @@ public class WireCache {
     private LinkedList<Entry> loaded = new LinkedList<Entry>();
 
     /** the model for storage */
-    private IFileModel fileModel;
+    private IProjectCache cache;
     
     /**
      * Creates a new cache.
-     * @param fileModel the model for storage
+     * @param cache the model for storage
      */
-    public WireCache( IFileModel fileModel ){
-        this.fileModel = fileModel;
+    public WireCache( IProjectCache cache ){
+        this.cache = cache;
     }
     
     /**
@@ -203,38 +203,38 @@ public class WireCache {
             if( fileClear ){
                 dependings = null;
                 
-                IFileCache<?> cache = fileModel.getDependencyCache();
+                IFileCache<?> cache = WireCache.this.cache.getDependencyCache();
                 if( cache != null ){
                     cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
                 
-                cache = fileModel.getInclusionCache();
+                cache = WireCache.this.cache.getInclusionCache();
                 if( cache != null ){
                     cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
                 
-                cache = fileModel.getInitCache();
+                cache = WireCache.this.cache.getInitCache();
                 if( cache != null ){
                     cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
                 
-                cache = fileModel.getWiringCache();
+                cache = WireCache.this.cache.getWiringCache();
                 if( cache != null ){
                     cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
                 
-                cache = fileModel.getASTModelCache();
+                cache = WireCache.this.cache.getASTModelCache();
                 if( cache != null ){
                     cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
                 
-                cache = fileModel.getReferencesCache();
+                cache = WireCache.this.cache.getReferencesCache();
                 if( cache != null ){
                 	cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
                 
                 if( fullClear ){
-                    cache = fileModel.getMissingFileCache();
+                    cache = WireCache.this.cache.getMissingFileCache();
                     cache.clearCache( file, new SubProgressMonitor( monitor, 1 ) );
                 }
             }
@@ -256,7 +256,7 @@ public class WireCache {
                 this.declared = Collections.emptyList();
             
             if( store ){
-                IFileCache<IDeclaration[]> cache = fileModel.getInclusionCache();
+                IFileCache<IDeclaration[]> cache = WireCache.this.cache.getInclusionCache();
                 if( cache != null ){
                     try{
                         cache.writeCache( file, this.declared.toArray( new IDeclaration[ this.declared.size() ] ), new SubProgressMonitor( monitor, 500 ));
@@ -277,14 +277,14 @@ public class WireCache {
         }
 
         public boolean hasDeclaredCache(){
-            IFileCache<IDeclaration[]> cache = fileModel.getInclusionCache();
+            IFileCache<IDeclaration[]> cache = WireCache.this.cache.getInclusionCache();
             return cache != null && cache.canReadCache( file );
         }
         
         public List<IDeclaration> loadDeclared( IProgressMonitor monitor ) throws IOException, CoreException{
             boolean loaded = isDeclarationsLoaded();
             
-            IFileCache<IDeclaration[]> cache = fileModel.getInclusionCache();
+            IFileCache<IDeclaration[]> cache = WireCache.this.cache.getInclusionCache();
             
             IDeclaration[] result = cache.readCache( file, monitor );
             if( result == null ){
@@ -317,7 +317,7 @@ public class WireCache {
             dependings = files;
             if( store ){
                 try{
-                    IFileCache<Set<IParseFile>> cache = fileModel.getDependencyCache();
+                    IFileCache<Set<IParseFile>> cache = WireCache.this.cache.getDependencyCache();
                     if( cache != null ){
                         cache.writeCache( file, files, monitor );
                     }
@@ -332,12 +332,12 @@ public class WireCache {
         }
         
         public boolean hasDependsCache(){
-            IFileCache<Set<IParseFile>> cache = fileModel.getDependencyCache();
+            IFileCache<Set<IParseFile>> cache = WireCache.this.cache.getDependencyCache();
             return cache != null && cache.canReadCache( file );
         }
         
         public Set<IParseFile> loadDepends( IProgressMonitor monitor ) throws IOException, CoreException{
-            IFileCache<Set<IParseFile>> cache = fileModel.getDependencyCache();
+            IFileCache<Set<IParseFile>> cache = WireCache.this.cache.getDependencyCache();
             dependings = cache.readCache( file, monitor );
             return dependings;
         }
@@ -353,7 +353,7 @@ public class WireCache {
                 wiring = files;
          
             if( store ){
-                IFileCache<Set<IParseFile>> cache = fileModel.getWiringCache();
+                IFileCache<Set<IParseFile>> cache = WireCache.this.cache.getWiringCache();
                 if( cache != null ){
                     try{
                         cache.writeCache( file, wiring, monitor );
@@ -369,12 +369,12 @@ public class WireCache {
         }
         
         public boolean hasWiringCache(){
-            IFileCache<Set<IParseFile>> cache = fileModel.getWiringCache();
+            IFileCache<Set<IParseFile>> cache = WireCache.this.cache.getWiringCache();
             return cache != null && cache.canReadCache( file );
         }
         
         public Set<IParseFile> loadWiring( IProgressMonitor monitor ) throws IOException, CoreException{
-            IFileCache<Set<IParseFile>> cache = fileModel.getWiringCache();
+            IFileCache<Set<IParseFile>> cache = WireCache.this.cache.getWiringCache();
             wiring = cache.readCache( file, monitor );
             return wiring;
         }

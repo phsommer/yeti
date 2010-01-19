@@ -62,7 +62,7 @@ public class TinyOSProjectBuilder2 extends IncrementalProjectBuilder {
 	        if( tos.getModel().secureThread() ){
 	            boolean full = TinyOSPlugin.getDefault().getPreferenceStore().getBoolean( PreferenceConstants.CLEAN_FULL );
 	            
-	            tos.deleteCache( full, monitor );
+	            tos.clearCache( full, monitor );
 	            
 	            try{
 	                tos.acceptSourceFiles( new CleanVisitor() );

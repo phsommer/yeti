@@ -92,7 +92,7 @@ public class NesCConcilingStrategy implements IReconcilingStrategy{
         }
         else{
         	if( project.isInitializeable() ){
-        		project.initialize();
+        		project.ensureInitialize();
         	}
         	return false;
         }
