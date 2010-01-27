@@ -20,7 +20,6 @@
  */
 package tinyos.yeti.model.standard;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -75,8 +74,7 @@ public class DependencyCache extends StandardFileCache<Set<IParseFile>>{
             return;
         }
         
-        ByteArrayOutputStream array = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( array );
+        DataOutputStream out = new DataOutputStream( output );
         
         int size = dependencies == null ? 0 : dependencies.size();
         int clicks = 2*size;

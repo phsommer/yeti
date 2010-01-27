@@ -892,5 +892,10 @@
             id="tinyos.yeti.core.cache.compressed"
             name="One compressed cache file per source file">
       </cache>
+      <cache
+            class="tinyos.yeti.model.standard.ReducedZipProjectCache"
+            id="tinyos.yeti.core.cache.compressed.reduced"
+            name="One compressed cache file per source file (reduced paths)">
+      </cache>
    </extension>
 </plugin>

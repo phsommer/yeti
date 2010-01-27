@@ -130,6 +130,7 @@ public class ProjectModel {
     private IFileModel fileModel;
     
     private IProjectCache projectCache;
+    private String projectCacheType;
 
     private BasicDeclarationSet basicDeclarations;
 
@@ -148,6 +149,7 @@ public class ProjectModel {
 
         fileModel = configuration.createFileModel( this );
         projectCache = configuration.createProjectCache( this );
+        projectCacheType = configuration.getProjectCacheType();
         definitionCollection = configuration.createDefinitionCollector( this );
 
         basicDeclarations = new BasicDeclarationSet( this );
@@ -1805,7 +1807,8 @@ public class ProjectModel {
             
     		clearCache( true, new SubProgressMonitor( monitor, 10 ) );
     		projectCache = configuration.createProjectCache( this );
-    		project.setCacheStrategy( projectCache.getTypeIdentifier() );
+    		projectCacheType = configuration.getProjectCacheType();
+    		project.setCacheStrategy( projectCacheType );
     		project.initialize( false );
     		
     		monitor.done();
@@ -1825,8 +1828,8 @@ public class ProjectModel {
     public boolean checkProjectCache(){
     	if( project.getProject().isAccessible() ){
     		String strategy = project.getCacheStrategy();
-    		project.setCacheStrategy( projectCache.getTypeIdentifier() );
-    		return strategy != null && strategy.equals( projectCache.getTypeIdentifier() );
+    		project.setCacheStrategy( projectCacheType );
+    		return strategy != null && strategy.equals( projectCacheType );
     	}
     	return true;
     }

@@ -18,7 +18,7 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,26 +27,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import tinyos.yeti.model.ProjectModel;
-
-/**
- * Like the {@link LinkedStreamProvider}, but applies 'zip' to compact the files.
- * @author Benjamin Sigg
- */
-public class ZipStreamProvider extends LinkedStreamProvider{
-	public ZipStreamProvider( ProjectModel model ){
-		super( model );
-	}
-
-	@Override
-	protected InputStream modify( InputStream in ) throws IOException{
+public class ZipStreamConverter implements IStreamConverter{
+	public InputStream convert( InputStream in ) throws IOException{
 		ZipInputStream zip = new ZipInputStream( in );
 		zip.getNextEntry();
 		return zip;
 	}
 	
-	@Override
-	protected OutputStream modify( OutputStream out ) throws IOException{
+	public OutputStream convert( OutputStream out ) throws IOException{
 		ZipOutputStream zip = new ZipOutputStream( out );
 		zip.putNextEntry( new ZipEntry( "entry" ) );
 		return zip;

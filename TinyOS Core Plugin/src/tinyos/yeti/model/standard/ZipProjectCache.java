@@ -21,6 +21,8 @@
 package tinyos.yeti.model.standard;
 
 import tinyos.yeti.model.ProjectModel;
+import tinyos.yeti.model.standard.streams.NullPathConverter;
+import tinyos.yeti.model.standard.streams.ZipStreamProvider;
 
 /**
  * Writes compressed files instead of normal files.
@@ -29,11 +31,6 @@ import tinyos.yeti.model.ProjectModel;
 public class ZipProjectCache extends StandardProjectCache{
 	@Override
 	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new ZipStreamProvider( model );
-	}
-	
-	@Override
-	public String getTypeIdentifier(){
-		return "tinyos.yeti.model.ZipProjectCache";
+		return new ZipStreamProvider( model, new NullPathConverter() );
 	}
 }

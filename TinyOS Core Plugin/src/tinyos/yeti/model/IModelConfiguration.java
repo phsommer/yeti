@@ -42,6 +42,12 @@ public interface IModelConfiguration{
     public IProjectCache createProjectCache( ProjectModel model );
     
     /**
+     * Gets the type of the cache that is created by {@link #createProjectCache(ProjectModel)}
+     * @return the type
+     */
+    public String getProjectCacheType();
+    
+    /**
      * Creates a new collector for declarations.
      * @param model the owner of the new model
      * @return the new collector

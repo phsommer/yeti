@@ -18,16 +18,28 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
-import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.streams.LinkedStreamProvider;
-import tinyos.yeti.model.standard.streams.NullPathConverter;
-import tinyos.yeti.model.standard.streams.NullStreamConverter;
+import org.eclipse.core.runtime.IPath;
 
-public class LinkedProjectCache extends StandardProjectCache{
-	@Override
-	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new LinkedStreamProvider( model, new NullStreamConverter(), new NullPathConverter() );
+/**
+ * Converts some path to a file to another path.
+ * @author Benjamin Sigg
+ *
+ */
+public interface IPathConverter{
+	public enum Namespace{
+		INTERN, EXTERN
 	}
+	
+	/**
+	 * Converts the relative path <code>path</code>. If <code>path</code> is
+	 * {@link ICachePath#open() open}, then this method must always return 
+	 * the same result. Otherwise the result must not be a path that 
+	 * is open (but may differ in every call).
+	 * @param namespace the namespace in which the path is used
+	 * @param path some relative path
+	 * @return the converted path
+	 */
+	public ICachePath convert( Namespace namespace, IPath path );
 }

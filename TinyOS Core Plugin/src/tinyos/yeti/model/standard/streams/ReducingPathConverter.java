@@ -18,16 +18,27 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
-import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.streams.LinkedStreamProvider;
-import tinyos.yeti.model.standard.streams.NullPathConverter;
-import tinyos.yeti.model.standard.streams.NullStreamConverter;
+import org.eclipse.core.runtime.IPath;
 
-public class LinkedProjectCache extends StandardProjectCache{
+import tinyos.yeti.ProjectTOS;
+
+/**
+ * Uses only the last segment of a path.
+ * @author Benjamin Sigg
+ */
+public class ReducingPathConverter extends MappingConverter{
+	public ReducingPathConverter( ProjectTOS project ){
+		super( project );
+	}
+	
 	@Override
-	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new LinkedStreamProvider( model, new NullStreamConverter(), new NullPathConverter() );
+	protected IPath convertPath( Namespace namespace, IPath path ){
+		int count = path.segmentCount();
+		if( count <= 1 )
+			return path;
+		
+		return path.removeFirstSegments( count-1 );
 	}
 }

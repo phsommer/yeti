@@ -18,16 +18,26 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
+
+import java.io.File;
+
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.streams.LinkedStreamProvider;
-import tinyos.yeti.model.standard.streams.NullPathConverter;
-import tinyos.yeti.model.standard.streams.NullStreamConverter;
 
-public class LinkedProjectCache extends StandardProjectCache{
+/**
+ * Like the {@link LinkedStreamProvider}, but applies 'zip' to compact the files.
+ * @author Benjamin Sigg
+ */
+public class ZipStreamProvider extends LinkedStreamProvider{
+	public ZipStreamProvider( ProjectModel model, IPathConverter pathConverter ){
+		super( model, new ZipStreamConverter(), pathConverter );
+	}
+
 	@Override
-	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new LinkedStreamProvider( model, new NullStreamConverter(), new NullPathConverter() );
+	protected IPath derivedFilePath( File file, String extension ){
+		return new Path( file.getAbsolutePath() + ".zip" );
 	}
 }

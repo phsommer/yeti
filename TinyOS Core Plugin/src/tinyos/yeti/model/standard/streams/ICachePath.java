@@ -18,16 +18,31 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
-import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.streams.LinkedStreamProvider;
-import tinyos.yeti.model.standard.streams.NullPathConverter;
-import tinyos.yeti.model.standard.streams.NullStreamConverter;
+import org.eclipse.core.runtime.IPath;
 
-public class LinkedProjectCache extends StandardProjectCache{
-	@Override
-	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new LinkedStreamProvider( model, new NullStreamConverter(), new NullPathConverter() );
-	}
+/**
+ * Represents the path to a file in the cache. Multiple {@link ICachePath}s
+ * may represents the same {@link IPath}.
+ * @author Benjamin Sigg
+ */
+public interface ICachePath{
+	/**
+	 * Returns the path which is represented by this {@link ICachePath}.
+	 * @return the path
+	 */
+	public IPath getPath();
+	
+	/**
+	 * Locks this path, the {@link IPathConverter} may not return an
+	 * {@link ICachePath} pointing to the same path as this {@link ICachePath}
+	 * if the input is different. This method may be called more than once.
+	 */
+	public void open();
+	
+	/**
+	 * Unlocks this path.
+	 */
+	public void close();
 }

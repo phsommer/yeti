@@ -43,13 +43,6 @@ public interface IProjectCache{
 	 */
 	public void initialize( ProjectModel model );
 	
-	/**
-	 * Gets a unique identifier for this type of cache. Normally this
-	 * is something like the class name.
-	 * @return the unique identifier
-	 */
-	public String getTypeIdentifier();
-	
     /**
      * Clears any cache of this model. If <code>full</code>, then all
      * files have to be abandoned. If <code>false</code> only the files 

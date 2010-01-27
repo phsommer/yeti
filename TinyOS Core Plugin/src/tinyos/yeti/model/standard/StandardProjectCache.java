@@ -38,6 +38,7 @@ import tinyos.yeti.model.IFileCache;
 import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.model.missing.IMissingResource;
+import tinyos.yeti.model.standard.streams.StandardStreamProvider;
 
 /**
  * Standard implementation of {@link IProjectCache}, using one
@@ -80,11 +81,6 @@ public class StandardProjectCache implements IProjectCache{
     	return new StandardStreamProvider( model );
     }
     
-    public String getTypeIdentifier(){
-    	// in case of refactoring, don't change this identifier
-	    return "tinyos.yeti.model.ProjectCache";
-    }
-
     public synchronized void clear( boolean full, IProgressMonitor monitor ){
         IFileCache<?>[] caches = listCaches();
         

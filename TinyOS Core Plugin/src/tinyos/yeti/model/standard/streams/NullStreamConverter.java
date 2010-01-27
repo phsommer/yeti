@@ -18,16 +18,18 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
-import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.streams.LinkedStreamProvider;
-import tinyos.yeti.model.standard.streams.NullPathConverter;
-import tinyos.yeti.model.standard.streams.NullStreamConverter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-public class LinkedProjectCache extends StandardProjectCache{
-	@Override
-	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new LinkedStreamProvider( model, new NullStreamConverter(), new NullPathConverter() );
+public class NullStreamConverter implements IStreamConverter{
+	public InputStream convert( InputStream in ) throws IOException{
+		return in;
+	}
+	
+	public OutputStream convert( OutputStream out ) throws IOException{
+		return out;
 	}
 }
