@@ -1,7 +1,5 @@
 package tinyos.yeti.preferences;
 
-import java.util.Map;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -16,12 +14,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import tinyos.yeti.ProjectManager;
 import tinyos.yeti.TinyOSPlugin;
+import tinyos.yeti.model.ProjectCacheFactory;
 
 public class CachePreferencePage extends PreferencePage implements IWorkbenchPreferencePage{
 	private Combo cache;
 	
-	private String[] ids;
-	private String[] names;
+	private ProjectCacheFactory[] factories;
 	
 	public void init( IWorkbench workbench ){
 		// ignore
@@ -29,14 +27,10 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
 	
 	@Override
 	protected Control createContents( Composite parent ){
-		Map<String, String> strategies = TinyOSPlugin.getDefault().loadProjectCacheNames();
-		ids = new String[ strategies.size() ];
-		names = new String[ strategies.size() ];
-		int index = 0;
-		for( Map.Entry<String, String> entry : strategies.entrySet() ){
-			ids[index] = entry.getKey();
-			names[index] = entry.getValue();
-			index++;
+		factories = TinyOSPlugin.getDefault().getProjectCaches();
+		String[] names = new String[ factories.length ];
+		for( int i = 0; i < names.length; i++ ){
+			names[i] = factories[i].getName();
 		}
 		
 		GridData data;
@@ -69,7 +63,7 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
 		int index = cache.getSelectionIndex();
 		String id = "";
 		if( index >= 0 ){
-			id = ids[ index ];
+			id = factories[ index ].getId();
 		}
 		IPreferenceStore store = getPreferenceStore();
 		String old = store.getString( PreferenceConstants.PROJECT_CACHE );
@@ -89,16 +83,16 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
 	}
 	
 	private void reset(){
-		int index = indexOf( ids, getPreferenceStore().getString( PreferenceConstants.PROJECT_CACHE ) );
+		int index = indexOf( getPreferenceStore().getString( PreferenceConstants.PROJECT_CACHE ) );
 		if( index >= 0 )
 			cache.select( index );
 		else if( cache.getItemCount() > 0 )
 			cache.select( 0 );
 	}
 	
-	private int indexOf( String[] ids, String id ){
-		for( int i = 0; i < ids.length; i++ ){
-			if( ids[i].equals( id )){
+	private int indexOf( String id ){
+		for( int i = 0; i < factories.length; i++ ){
+			if( factories[i].getId().equals( id )){
 				return i;
 			}
 		}

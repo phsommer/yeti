@@ -21,13 +21,12 @@
 package tinyos.yeti.model.standard;
 
 import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.streams.LinkedStreamProvider;
-import tinyos.yeti.model.standard.streams.NullPathConverter;
-import tinyos.yeti.model.standard.streams.NullStreamConverter;
+import tinyos.yeti.model.standard.streams.ReducingPathConverter;
+import tinyos.yeti.model.standard.streams.ZipStreamProvider;
 
-public class LinkedProjectCache extends StandardProjectCache{
+public class ReducedZipProjectCache extends StandardProjectCache{
 	@Override
 	protected IStreamProvider createStreamProvider( ProjectModel model ){
-		return new LinkedStreamProvider( model, new NullStreamConverter(), new NullPathConverter() );
+		return new ZipStreamProvider( model, new ReducingPathConverter( model.getProject() ) );
 	}
 }

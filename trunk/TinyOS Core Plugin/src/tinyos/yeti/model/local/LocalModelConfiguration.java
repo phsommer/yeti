@@ -25,9 +25,10 @@ import tinyos.yeti.model.IFileModel;
 import tinyos.yeti.model.IModelConfiguration;
 import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.IProjectDefinitionCollector;
+import tinyos.yeti.model.ProjectCacheFactory;
 import tinyos.yeti.model.ProjectModel;
-import tinyos.yeti.model.standard.StandardProjectCache;
 import tinyos.yeti.model.standard.StandardFileModel;
+import tinyos.yeti.preferences.PreferenceConstants;
 
 public class LocalModelConfiguration implements IModelConfiguration{
     public IProjectDefinitionCollector createDefinitionCollector( ProjectModel model ){
@@ -38,19 +39,45 @@ public class LocalModelConfiguration implements IModelConfiguration{
         return new StandardFileModel( model );
     }
     
+    /** 
+     * Returns a new {@link IProjectCache} using the current selection.
+     * @return the new cache or <code>null</code> if the current selection
+     * is invalid
+     */
+    private IProjectCache loadProjectCache(){
+    	TinyOSPlugin plugin = TinyOSPlugin.getDefault();
+    	if( plugin == null ){
+    		return null;
+    	}
+        String id = getProjectCacheType();
+        
+        for( ProjectCacheFactory factory : plugin.getProjectCaches() ){
+        	if( id.equals( factory.getId() )){
+        		return factory.create();
+        	}
+        }
+        
+        return null;
+    }
+    
+    
     public IProjectCache createProjectCache( ProjectModel model ){
         TinyOSPlugin plugin = TinyOSPlugin.getDefault();
         IProjectCache cache = null;
         
         if( plugin != null ){
-        	cache = plugin.loadProjectCache();
+        	cache = loadProjectCache();
         }
     	
         if( cache == null ){
-        	cache = new StandardProjectCache();
+        	throw new IllegalStateException( "no project cache available" );
         }
         
 	    cache.initialize( model );
 	    return cache;
+    }
+    
+    public String getProjectCacheType(){
+    	return TinyOSPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.PROJECT_CACHE );
     }
 }

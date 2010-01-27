@@ -122,6 +122,7 @@ import tinyos.yeti.make.targets.IMakeTargetMorpheable;
 import tinyos.yeti.model.IModelConfiguration;
 import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.NesCPath;
+import tinyos.yeti.model.ProjectCacheFactory;
 import tinyos.yeti.model.ProjectChecker;
 import tinyos.yeti.model.local.LocalModelConfiguration;
 import tinyos.yeti.nature.MissingNatureException;
@@ -190,6 +191,8 @@ public class TinyOSPlugin extends AbstractUIPlugin{
     private IMultiPreferenceProvider preferences;
     
     private IEditorInputConverter[] editorInputConverters;
+    
+    private ProjectCacheFactory[] projectCaches;
     
     private IPreferenceStore preferenceStore;
 
@@ -868,11 +871,14 @@ public class TinyOSPlugin extends AbstractUIPlugin{
     }
     
     /**
-     * Returns a map of identifier and names for potential {@link IProjectCache}s.
-     * @return the available ids
+     * Returns all the available project caches.
+     * @return the caches
      */
-    public Map<String, String> loadProjectCacheNames(){
-    	Map<String, String> result = new HashMap<String, String>();
+    public ProjectCacheFactory[] getProjectCaches(){
+    	if( projectCaches != null )
+    		return projectCaches;
+    	
+    	List<ProjectCacheFactory> result = new ArrayList<ProjectCacheFactory>();
     	
     	IExtensionRegistry reg = Platform.getExtensionRegistry();
         IExtensionPoint extPoint = reg.getExtensionPoint( PLUGIN_ID + ".ProjectCache"  );
@@ -880,42 +886,15 @@ public class TinyOSPlugin extends AbstractUIPlugin{
         for( IExtension ext : extPoint.getExtensions() ){
             for( IConfigurationElement element : ext.getConfigurationElements() ){
                 if( element.getName().equals( "cache" ) ){
-                	result.put( element.getAttribute( "id" ), element.getAttribute( "name" ) );
+                	result.add( new ProjectCacheFactory( element ) );
                 }
             }
         }
 
-        return result;
+        projectCaches = result.toArray( new ProjectCacheFactory[ result.size() ] );
+        return projectCaches;
     }
-    
-    /** 
-     * Returns a new {@link IProjectCache} using the current selection.
-     * @return the new cache or <code>null</code> if the current selection
-     * is invalid
-     */
-    public IProjectCache loadProjectCache(){
-        IExtensionRegistry reg = Platform.getExtensionRegistry();
-        IExtensionPoint extPoint = reg.getExtensionPoint( PLUGIN_ID + ".ProjectCache"  );
-        String id = getPreferenceStore().getString( PreferenceConstants.PROJECT_CACHE );
-        
-        for( IExtension ext : extPoint.getExtensions() ){
-            for( IConfigurationElement element : ext.getConfigurationElements() ){
-                if( element.getName().equals( "cache" ) ){
-                	if( id.equals( element.getAttribute( "id" ) ) ){ 
-	                    try{
-                            return (IProjectCache)element.createExecutableExtension( "class" );
-                        } 
-                        catch ( CoreException e ){
-                            getLog().log( e.getStatus() );
-                        }
-                	}
-                }
-            }
-        }
 
-        return null;
-    }
-    
     @SuppressWarnings( "unchecked" )
     private <E> E loadExtensionPoint( String point, String extension,
             String executableAttribute ){

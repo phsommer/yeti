@@ -18,7 +18,7 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,13 +27,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.model.ProjectModel;
+import tinyos.yeti.model.standard.IStreamProvider;
 
 /**
  * Standard implementation of {@link IStreamProvider}, using one file
@@ -42,26 +44,28 @@ import tinyos.yeti.model.ProjectModel;
  */
 public class StandardStreamProvider extends StreamProvider{
 	public StandardStreamProvider( ProjectModel model ){
-		super( model );
+		super( model, new NullPathConverter() );
 	}
 	
 	public InputStream read( IParseFile file, String extension ) throws CoreException{
-		IFile cache = getCacheFile( file, extension );
+		ICacheFile cache = getCacheFile( file, extension );
 		if( cache == null || !cache.exists() )
 			return null;
 		
-		return cache.getContents();
+		InputStream result = cache.getContents();
+		cache.close();
+		return result;
 	}
 
 	public OutputStream write( IParseFile file, String extension ) throws CoreException{
-		IFile cache = getCacheFile( file, extension );
+		ICacheFile cache = getCacheFile( file, extension );
 		return new DeferredOutputStream( cache );
 	}
 	
 	private class DeferredOutputStream extends ByteArrayOutputStream{
-		private IFile file;
+		private ICacheFile file;
 		
-		public DeferredOutputStream( IFile file ){
+		public DeferredOutputStream( ICacheFile file ){
 			this.file = file;
 		}
 		
@@ -77,23 +81,27 @@ public class StandardStreamProvider extends StreamProvider{
 				throw new IOException( e.getMessage() );
 			}
 			in.close();
+			file.close();
 		}
 	}
 	
 
     public void clear( IParseFile file, String extension, IProgressMonitor monitor ){
-        IFile cache = getCacheFile( file, extension );
+        ICacheFile cache = getCacheFile( file, extension );
         if( cache != null ){
             clearFile( cache, monitor );
+            cache.close();
         }
     } 
 	
 	public boolean canRead( IParseFile file, String extension ){
-        IFile cache = getCacheFile( file, extension );
+        ICacheFile cache = getCacheFile( file, extension );
         if( cache == null )
             return false;
         
-        return cache.exists();
+        boolean result = cache.exists();
+        cache.close();
+        return result;
     }
 
     /**
@@ -102,14 +110,12 @@ public class StandardStreamProvider extends StreamProvider{
      * @param extension the kind of cache to be accessed
      * @return the cache file for <code>file</code>
      */
-    protected IFile getCacheFile( IParseFile file, String extension ){
+    protected ICacheFile getCacheFile( IParseFile file, String extension ){
         return getDerivedFile( file, extension );
     }
 
     @Override
-    protected String derivedFileName( File file, String extension, boolean absolute ){
-    	if( absolute )
-    		return file.getAbsolutePath() + "." + extension;
-	    return file.getName() + "." + extension;
+    protected IPath derivedFilePath( File file, String extension ){
+    	return new Path( file.getAbsolutePath() + "." + extension );
     }
 }

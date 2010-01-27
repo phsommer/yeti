@@ -18,7 +18,7 @@
  * Web:  http://tos-ide.ethz.ch
  * Mail: tos-ide@tik.ee.ethz.ch
  */
-package tinyos.yeti.model.standard;
+package tinyos.yeti.model.standard.streams;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,15 +33,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.model.ProjectModel;
+import tinyos.yeti.model.standard.IStreamProvider;
 import tinyos.yeti.utility.IntList;
 
 /**
@@ -49,24 +51,54 @@ import tinyos.yeti.utility.IntList;
  * @author Benjamin Sigg
  */
 public class LinkedStreamProvider extends StreamProvider{
-	private Map<IFile, MapFile> openFiles = new HashMap<IFile, MapFile>();
+	private Map<ICacheFile, MapFile> openFiles = new HashMap<ICacheFile, MapFile>();
 	
 	/** cache for the last file that has been accessed */
 	private MapFile lastReadFile = null;
 	
-	public LinkedStreamProvider( ProjectModel model ){
-		super( model );
+	private IStreamConverter converter;
+	
+	public LinkedStreamProvider( ProjectModel model, IStreamConverter streamConverter, IPathConverter pathConverter ){
+		super( model, pathConverter );
+		this.converter = streamConverter;
 	}
 	
 	private void setLastReadFile( MapFile map ){
 		if( lastReadFile != map ){
 			if( lastReadFile != null ){
 				if( !lastReadFile.isOpen() ){
-					openFiles.remove( lastReadFile );
+					MapFile temp = lastReadFile;
+					lastReadFile = null;
+					remove( temp );
 				}
 			}
 			lastReadFile = map;
 		}
+	}
+	
+	private void remove( MapFile map ){
+		ICacheFile file = map.getKey();
+		openFiles.remove( file );
+		if( map != lastReadFile ){
+			file.close();	
+		}
+	}
+	
+	private synchronized MapFile open( IParseFile file, String extension ) throws CoreException{
+		ICacheFile cache = getDerivedFile( file, extension );
+		if( cache == null )
+			return null;
+		
+		MapFile map = openFiles.get( cache );
+		if( map == null ){
+			map = new MapFile( cache );
+			if( cache.exists() ){
+				map.read();
+			}
+			openFiles.put( cache, map );
+		}
+		map.open();
+		return map;
 	}
 	
 	public boolean canRead( IParseFile file, String extension ){
@@ -120,27 +152,8 @@ public class LinkedStreamProvider extends StreamProvider{
 	}
 	
 	@Override
-	protected String derivedFileName( File file, String extension, boolean absolute ){
-		if( absolute )
-			return file.getAbsolutePath() + ".cache";
-		return file.getName() + ".cache";
-	}
-
-	private synchronized MapFile open( IParseFile file, String extension ) throws CoreException{
-		IFile cache = getDerivedFile( file, extension );
-		if( cache == null )
-			return null;
-		
-		MapFile map = openFiles.get( cache );
-		if( map == null ){
-			map = new MapFile( cache );
-			if( cache.exists() ){
-				map.read();
-			}
-			openFiles.put( cache, map );
-		}
-		map.open();
-		return map;
+	protected IPath derivedFilePath( File file, String extension ){
+		return new Path( file.getAbsolutePath() + ".cache" );
 	}
 	
 	private class MapOutputStream extends ByteArrayOutputStream{
@@ -164,22 +177,18 @@ public class LinkedStreamProvider extends StreamProvider{
 		}
 	}
 	
-	protected InputStream modify( InputStream in ) throws IOException{
-		return in;
-	}
-	
-	protected OutputStream modify( OutputStream out ) throws IOException{
-		return out;
-	}
-	
 	private class MapFile{
 		private Map<String, byte[]> mapping = new HashMap<String, byte[]>();
-		private IFile file;
+		private ICacheFile file;
 		private volatile int openCount = 0;
 		private volatile boolean modified = false;
 		
-		public MapFile( IFile file ){
+		public MapFile( ICacheFile file ){
 			this.file = file;
+		}
+		
+		public ICacheFile getKey(){
+			return file;
 		}
 		
 		public boolean isOpen(){
@@ -194,11 +203,12 @@ public class LinkedStreamProvider extends StreamProvider{
 			openCount--;
 			if( openCount == 0 ){
 				if( this != lastReadFile ){
-					openFiles.remove( file );
+					LinkedStreamProvider.this.remove( this );
 				}
 				if( modified ){
 					try{
 						write( null );
+						modified = false;
 					}
 					catch( CoreException e ){
 						TinyOSPlugin.log( e );
@@ -226,11 +236,14 @@ public class LinkedStreamProvider extends StreamProvider{
 		}
 		
 		public synchronized void read() throws CoreException{
+			if( !file.isAccessible() || !file.exists() )
+				return;
+			
 			List<String> extensions = new ArrayList<String>();
 			IntList sizes = new IntList();
 			
 			try{
-			    DataInputStream in = new DataInputStream( modify( file.getContents() ) );
+			    DataInputStream in = new DataInputStream( converter.convert( file.getContents() ) );
 			 
 			    // read header
 			    int version = in.readInt();
@@ -263,7 +276,7 @@ public class LinkedStreamProvider extends StreamProvider{
 			    in.close();
 			}
 			catch( IOException ex ){
-				TinyOSPlugin.log( ex );
+				TinyOSPlugin.warning( ex );
 			}
 		}
 		
@@ -274,7 +287,7 @@ public class LinkedStreamProvider extends StreamProvider{
 				}
 				else{
 					ByteArrayOutputStream bout = new ByteArrayOutputStream();
-					DataOutputStream out = new DataOutputStream( modify( bout ));
+					DataOutputStream out = new DataOutputStream( converter.convert( bout ));
 					
 					// header
 					out.writeInt( 1 );
