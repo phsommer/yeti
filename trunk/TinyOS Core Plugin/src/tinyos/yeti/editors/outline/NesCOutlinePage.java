@@ -24,6 +24,9 @@ import static tinyos.yeti.ep.parser.ASTNodeFilterFactory.and;
 import static tinyos.yeti.ep.parser.ASTNodeFilterFactory.not;
 import static tinyos.yeti.ep.parser.ASTNodeFilterFactory.subset;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -33,6 +36,9 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -41,6 +47,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
@@ -60,6 +67,7 @@ import tinyos.yeti.ep.parser.IASTModelElement;
 import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.Tag;
 import tinyos.yeti.nature.MissingNatureException;
+import tinyos.yeti.preferences.PreferenceConstants;
 import tinyos.yeti.views.NodeContentProvider;
 import tinyos.yeti.views.NodeLabelComparator;
 import tinyos.yeti.views.NodeLabelProvider;
@@ -75,13 +83,19 @@ public class NesCOutlinePage extends ContentOutlinePage implements INesCEditorPa
     private OpenFileAction openAction;
 
     private SorterAction sorterAction;
-    
+
+	private FilterSelectionAction filterAction;
+	
+	private MultiOutlineFilter filter;
+	
     private IASTModel model;
 
     private NodeContentProvider provider;
     
     private boolean selecting = false;
     private long awaitSelectionEvent = 0;
+    
+    private org.eclipse.jface.util.IPropertyChangeListener propertyChangeListener;
 
     /**
      * Creates a content outline page using the given provider and the given editor.
@@ -181,8 +195,8 @@ public class NesCOutlinePage extends ContentOutlinePage implements INesCEditorPa
         getSite().registerContextMenu(contextMenuID, manager, viewer);
 
 
-        manager.add(			
-                openAction
+        manager.add(
+        		openAction
         );
 
         manager.add(new Separator());
@@ -192,9 +206,11 @@ public class NesCOutlinePage extends ContentOutlinePage implements INesCEditorPa
         //		 		required, for extensions
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
-
-        makeActions();
+        sorterAction = new SorterAction();
+        filterAction = new FilterSelectionAction( this );
+        
         contributeToActionBars();
+        setFilters();
         
         // set a dummy input, the NodeContentProvider will take care of the rest
         viewer.setInput( new Object() );
@@ -210,12 +226,85 @@ public class NesCOutlinePage extends ContentOutlinePage implements INesCEditorPa
 
     private void fillLocalToolBar(IToolBarManager toolBar) {
         toolBar.add(sorterAction);
+        toolBar.add(filterAction);
     }
 
-    private void makeActions() {
-        sorterAction = new SorterAction();
+    private void setFilters(){
+    	setFiltersSilent( getFilters() );
     }
-
+    
+    @Override
+    public void dispose(){
+    	if( propertyChangeListener != null ){
+    		TinyOSPlugin plugin = TinyOSPlugin.getDefault();
+    		if( plugin != null ){
+    			plugin.getPreferenceStore().removePropertyChangeListener( propertyChangeListener );
+    		}
+    		propertyChangeListener = null;
+    	}
+    	super.dispose();
+    }
+    
+    public void setFilters( String[] ids ){
+    	IPreferenceStore store = TinyOSPlugin.getDefault().getPreferenceStore();
+        StringBuilder builder = new StringBuilder();
+        for( String id : ids ){
+        	builder.append( id );
+        	builder.append( ';');
+        }
+        store.setValue( PreferenceConstants.OUTLINE_FILTER, builder.toString() );
+        
+        setFiltersSilent( ids );
+    }
+    
+    public String[] getFilters(){
+    	IPreferenceStore store = TinyOSPlugin.getDefault().getPreferenceStore();
+    	if( propertyChangeListener == null ){
+    		propertyChangeListener = new IPropertyChangeListener(){
+				public void propertyChange( PropertyChangeEvent event ){
+					if( PreferenceConstants.OUTLINE_FILTER.equals( event.getProperty() )){
+						setFilters();
+					}
+				}
+			};
+			store.addPropertyChangeListener( propertyChangeListener );
+    	}
+    	
+        String ids = store.getString( PreferenceConstants.OUTLINE_FILTER );
+        if( ids != null ){
+        	return ids.split( ";" );
+        }
+        else{
+        	return new String[]{};
+        }
+    }
+    
+    private void setFiltersSilent( String[] ids ){
+        OutlineFilterFactory[] factories = TinyOSPlugin.getDefault().getOutlineFilters();
+        Set<String> check = new HashSet<String>();
+        for( String id : ids ){
+        	check.add( id );
+        }
+        filter = new MultiOutlineFilter();
+        for( OutlineFilterFactory factory : factories ){
+        	if( check.contains( factory.getId() )){
+        		filter.add( factory.create() );
+        	}
+        }
+        
+        setFilter( filter );
+    }
+    
+    private void setFilter( IOutlineFilter filter ){
+    	if( filter == null ){
+    		getTreeViewer().setFilters( new ViewerFilter[]{} );
+    	}
+    	else{
+    		filter.setEditor( editor );
+    		getTreeViewer().setFilters( new ViewerFilter[]{ new OutlineViewFilter( filter ) } );
+    	}
+    }
+    
     @Override
     public void selectionChanged(SelectionChangedEvent event) {
         super.selectionChanged(event);

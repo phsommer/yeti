@@ -124,6 +124,7 @@ public class NesCIcons extends Icons{
     static public final String ICON_PRINTER = "ICON_PRINTER";
 
     public static final String ICON_SORT = "ICON_SORT";
+    public static final String ICON_FILTER = "icon_filter";
 
     static public final String ICON_TEMPLATE = "ICON_TEMPLATE";
 
@@ -253,6 +254,7 @@ public class NesCIcons extends Icons{
         declareRegistryImage( ICON_MINUS, "minus.gif" ); //$NON-NLS-1$
         declareRegistryImage( ICON_PRINTER, "printer.gif" ); //$NON-NLS-1$
         declareRegistryImage( ICON_SORT, "sort.png" ); //$NON-NLS-1$
+        declareRegistryImage( ICON_FILTER, "filter.png" );
 
         declareRegistryImage( ICON_TEMPLATE, "template.gif" );
         declareRegistryImage( ICON_PLATFORM, "platform.png" );

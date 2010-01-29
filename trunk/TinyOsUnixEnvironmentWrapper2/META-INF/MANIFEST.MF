@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Yeti 2 - TinyOS 2.x Unix Environment
 Bundle-SymbolicName: tinyos.yeti.environment.unix2;singleton:=true
-Bundle-Version: 2.2.16
+Bundle-Version: 2.2.17
 Bundle-Activator: tinyos.yeti.environment.unix2.TinyOSUnixEnvironmentPlugin2
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui.console,
- tinyos.yeti.core;bundle-version="2.2.16",
- tinyos.yeti.environment.basic;bundle-version="1.2.16"
+ tinyos.yeti.core;bundle-version="2.2.17",
+ tinyos.yeti.environment.basic;bundle-version="1.2.17"
 Eclipse-LazyStart: true
 Bundle-Vendor: ETH Zurich, Benjamin Sigg

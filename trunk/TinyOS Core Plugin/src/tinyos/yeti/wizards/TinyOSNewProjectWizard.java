@@ -28,6 +28,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 import tinyos.yeti.ProjectTOS;
+import tinyos.yeti.make.targets.MakeTargetSkeleton;
 import tinyos.yeti.utility.ProjectTOSUtility;
 
 public class TinyOSNewProjectWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
@@ -78,7 +79,8 @@ public class TinyOSNewProjectWizard extends BasicNewResourceWizard implements IN
                     }
 
                     ProjectTOSUtility.createMakefile( project, new SubProgressMonitor( monitor, 100 ) );
-                    ProjectTOSUtility.createDefaultMakeTargetSkeleton( project, projectPage.getTarget(), null, new SubProgressMonitor( monitor, 100 ));
+                    MakeTargetSkeleton skeleton = ProjectTOSUtility.readMakefile( project, projectPage.getTarget(), null );
+                    ProjectTOSUtility.createDefaultMakeTargetSkeleton( project, skeleton, new SubProgressMonitor( monitor, 100 ));
                     ProjectTOSUtility.createEnvironmentEntry( project, projectPage.getEnvironment() );
                     project.getModel().startInitialize( false );
                 }

@@ -102,6 +102,7 @@ import tinyos.yeti.editors.nesc.SingleTokenScanner;
 import tinyos.yeti.editors.nesc.doc.NesCCommentScanner;
 import tinyos.yeti.editors.nesc.doc.NesCDocScanner;
 import tinyos.yeti.editors.nesc.doc.NescDocContextType;
+import tinyos.yeti.editors.outline.OutlineFilterFactory;
 import tinyos.yeti.editors.quickfixer.QuickFixer;
 import tinyos.yeti.ep.IEditorInputConverter;
 import tinyos.yeti.ep.IEnvironment;
@@ -120,7 +121,6 @@ import tinyos.yeti.make.IMakeTargetListener;
 import tinyos.yeti.make.MakeTargetManager;
 import tinyos.yeti.make.targets.IMakeTargetMorpheable;
 import tinyos.yeti.model.IModelConfiguration;
-import tinyos.yeti.model.IProjectCache;
 import tinyos.yeti.model.NesCPath;
 import tinyos.yeti.model.ProjectCacheFactory;
 import tinyos.yeti.model.ProjectChecker;
@@ -193,6 +193,8 @@ public class TinyOSPlugin extends AbstractUIPlugin{
     private IEditorInputConverter[] editorInputConverters;
     
     private ProjectCacheFactory[] projectCaches;
+    
+    private OutlineFilterFactory[] outlineFilters;
     
     private IPreferenceStore preferenceStore;
 
@@ -893,6 +895,27 @@ public class TinyOSPlugin extends AbstractUIPlugin{
 
         projectCaches = result.toArray( new ProjectCacheFactory[ result.size() ] );
         return projectCaches;
+    }
+    
+    public OutlineFilterFactory[] getOutlineFilters(){
+    	if( outlineFilters != null )
+    		return outlineFilters;
+    	
+    	List<OutlineFilterFactory> result = new ArrayList<OutlineFilterFactory>();
+    	
+    	IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IExtensionPoint extPoint = reg.getExtensionPoint( PLUGIN_ID + ".OutlineFilter"  );
+        
+        for( IExtension ext : extPoint.getExtensions() ){
+            for( IConfigurationElement element : ext.getConfigurationElements() ){
+                if( element.getName().equals( "filter" ) ){
+                	result.add( new OutlineFilterFactory( element ) );
+                }
+            }
+        }
+
+        outlineFilters = result.toArray( new OutlineFilterFactory[ result.size() ] );
+        return outlineFilters;    	
     }
 
     @SuppressWarnings( "unchecked" )

@@ -2,7 +2,7 @@
 <feature
       id="tinyos.yeti.formatter"
       label="TinyOS Formatter (Optional)"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="ETH Zurich, Jianyuan Li">
 
    <description url="http://www.example.com/description">
@@ -700,8 +700,8 @@ Public License instead of this License.  But first, please read
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
-      <import feature="Feature_Core_Plugin" version="2.2.16"/>
-      <import plugin="tinyos.yeti.core" version="2.2.16" match="greaterOrEqual"/>
+      <import feature="Feature_Core_Plugin" version="2.2.1"/>
+      <import plugin="tinyos.yeti.core" version="2.2.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin

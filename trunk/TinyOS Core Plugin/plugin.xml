@@ -13,6 +13,7 @@
    <extension-point id="Formatting" name="Formatting" schema="schema/Formatting.exsd"/>
    <extension-point id="MetaAttribute" name="Attribute" schema="schema/MetaAttribute.exsd"/>
    <extension-point id="ProjectCache" name="ProjectCache" schema="schema/ProjectCache.exsd"/>
+   <extension-point id="OutlineFilter" name="OutlineFilter" schema="schema/OutlineFilter.exsd"/>
    
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -897,5 +898,13 @@
             id="tinyos.yeti.core.cache.compressed.reduced"
             name="One compressed cache file per source file (reduced paths)">
       </cache>
+   </extension>
+   <extension
+         point="tinyos.yeti.core.OutlineFilter">
+      <filter
+            class="tinyos.yeti.editors.outline.filter.FromThisFileOnly"
+            id="tinyos.yeti.core.outline.filter.fromThisFileOnly"
+            name="Edited file only">
+      </filter>
    </extension>
 </plugin>

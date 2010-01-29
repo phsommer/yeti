@@ -3,6 +3,7 @@ package tinyos.yeti.editors.formatter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
@@ -15,6 +16,7 @@ import org.eclipse.jface.text.formatter.FormattingContextProperties;
 import org.eclipse.jface.text.formatter.IFormattingContext;
 
 import tinyos.yeti.TinyOSPlugin;
+import tinyos.yeti.preferences.PreferenceConstants;
 
 /**
  * 
@@ -27,7 +29,6 @@ public class NesCIndenterStrategy extends ContextBasedFormattingStrategy {
 	private IFormattingContext currentContext;
 	
 	private Document doc;
-	private static final String INDENT = "\t";
 	private int[] indentList = {};
 	private ArrayList<Position> positionList = new ArrayList<Position>();
 
@@ -41,6 +42,16 @@ public class NesCIndenterStrategy extends ContextBasedFormattingStrategy {
 	public void formatterStops() {
 		super.formatterStops();
 		formattingContexts.removeLast();
+	}
+	
+	private String indent(){
+		IPreferenceStore store = TinyOSPlugin.getDefault().getPreferenceStore();
+		if( store.getBoolean( PreferenceConstants.USE_TABS ) ){
+			return "\t";
+		}
+		else{
+			return PreferenceConstants.spacesPerTab();
+		}
 	}
 
 	@Override
@@ -364,6 +375,8 @@ public class NesCIndenterStrategy extends ContextBasedFormattingStrategy {
 			int firstLine = document.getLineOfOffset(position.offset);
 			int lastLine = document.getLineOfOffset(position.offset + position.length - 1);
 
+			String indent = indent();
+			
 			for (int i = firstLine; i <= lastLine; i++) {
 				int offset = document.getLineOffset(i);
 				char c = document.getChar(offset);
@@ -376,7 +389,7 @@ public class NesCIndenterStrategy extends ContextBasedFormattingStrategy {
 				
 				if (c != '\n') {
 					for (int j = 0; j < indentList[i]; j++)
-						document.replace(offset, 0, INDENT);
+						document.replace(offset, 0, indent);
 				}
 			}
 		} catch (BadLocationException e) {
