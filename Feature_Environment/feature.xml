@@ -2,7 +2,7 @@
 <feature
       id="Feature_Environment"
       label="Yeti 2 - TinyOS Base Environment (required)"
-      version="1.2.16"
+      version="1.2.17"
       provider-name="ETH Zurich, Benjamin Sigg">
 
    <description url="http://www.example.com/description">
@@ -709,8 +709,8 @@ Public License instead of this License.  But first, please read
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.editors"/>
-      <import feature="Feature_Core_Plugin" version="2.2.16"/>
-      <import plugin="tinyos.yeti.core" version="2.2.16" match="greaterOrEqual"/>
+      <import feature="Feature_Core_Plugin" version="2.2.17"/>
+      <import plugin="tinyos.yeti.core" version="2.2.17" match="greaterOrEqual"/>
    </requires>
 
    <plugin

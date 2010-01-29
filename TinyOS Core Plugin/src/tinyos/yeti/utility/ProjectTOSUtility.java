@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -43,7 +42,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -54,8 +52,8 @@ import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSCore;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IEnvironment;
-import tinyos.yeti.ep.IPlatform;
 import tinyos.yeti.make.MakeExclude;
+import tinyos.yeti.make.Makefile;
 import tinyos.yeti.make.ProjectTargets;
 import tinyos.yeti.make.targets.MakeTargetSkeleton;
 import tinyos.yeti.nature.MissingNatureException;
@@ -273,95 +271,39 @@ public final class ProjectTOSUtility{
 	}
 
 	/**
-	 * Tries to find the name of the application specified in <code>makefile</code>.
-	 * @param makefile some MAKEFILE
-	 * @return the name of the COMPONENT or <code>null</code>
-	 */
-	public static String getApplicationFromMakefile( String makefile ){
-		int index = makefile.indexOf( "COMPONENT" );
-		if( index == -1 )
-			return null;
-
-		index = makefile.indexOf( "=", index + "COMPONENT".length() );
-		if( index == -1 )
-			return null;
-
-		// the next word should be the value of COMPONENT
-		index++;
-		int length = makefile.length();
-		while( index < length && Character.isWhitespace( makefile.charAt( index ) )){
-			index++;
-		}
-
-		int begin = index;
-		while( index < length && !Character.isWhitespace( makefile.charAt( index ) )){
-			index++;
-		}
-
-		if( begin == index )
-			return null;
-
-		return makefile.substring( begin, index );
-	}
-
-	/**
-	 * Creates a new makefile from another makefile.
-	 * @param project the project for which to create the file
-	 * @param original the contents of the original file
-	 * @param monitor for interaction
-	 */
-	public static void createMakefile( ProjectTOS project, String original, IProgressMonitor monitor ) throws CoreException {
-		/*String replacement = Messages.getString("TinyOSNewWizard.newFileMakeContent");
-        String preface = Messages.getString("TinyOSNewWizard.newFileMakeIntro");
-        createFile( 
-                project.getSourceContainer().getFile( "Makefile" ),
-                preface+original.replace("include ../Makerules", replacement ),
-                monitor );*/
-
-		createMakefile( project, monitor );
-	}
-
-	/**
 	 * Creates the standard makefile for <code>project</code>.
 	 * @param project some project
 	 * @param monitor for user interaction
 	 * @throws CoreException if the makefile can't be created
 	 */
 	public static void createMakefile( ProjectTOS project, IProgressMonitor monitor ) throws CoreException {
-		//String m1 = Messages.getString( "TinyOSNewWizard.newFileMakeIntro" );
-		//String m2 = Messages.getString( "TinyOSNewWizard.newFileMakeContent" );
-
 		FileUtility.createFile( project.getMakefile(), getMakefileStub(), monitor );
 	}
-
+	
 	/**
 	 * Creates the make-options file.
 	 * @param project the project for which to create the file
-	 * @param target the target platform
-	 * @param application the name of the application, can be <code>null</code>
+	 * @param skeleton the defaults to set
 	 * @param monitor for user interaction
 	 * @throws CoreException if the file can't be created
 	 */
-	public static void createDefaultMakeTargetSkeleton( ProjectTOS project, String target, String application, IProgressMonitor monitor ) throws CoreException {
+	public static void createDefaultMakeTargetSkeleton( ProjectTOS project, MakeTargetSkeleton skeleton, IProgressMonitor monitor ) throws CoreException {
 		FileUtility.createFile(
 				project.getProject().getFile( TinyOSCore.MAKEOPTIONS_FILE_NAME ), 
-				getMakeOptionContent( project, target, application ),
+				ProjectTargets.convert( skeleton ),
 				monitor );
 	}
-
-	private static String getMakeOptionContent( ProjectTOS project, String target, String application ) {
-		MakeTargetSkeleton skeleton = new MakeTargetSkeleton( null );
-
-		if( application != null ){
-			IContainer source = project.getLegacySourceContainer();
-			IFile file = source.getFile( new Path( application + ".nc" ) );
-			skeleton.setCustomComponentFile( file );
-		}
+	
+	public static MakeTargetSkeleton readMakefile( ProjectTOS project, String target, String makefile ){
+		Makefile file = new Makefile( project, makefile );
 		
-		skeleton.setCustomTarget( target );
+		MakeTargetSkeleton skeleton = file.toSkeleton();
+		
+		if( target != null ){
+			skeleton.setCustomTarget( target );
+		}
 		skeleton.setCustomExcludes( MakeExclude.DEFAULT_EXCLUDES );
-
-		return ProjectTargets.convert( skeleton );
+		return skeleton;
 	}
 
 	/**
@@ -379,12 +321,11 @@ public final class ProjectTOSUtility{
 	 * environment and target.
 	 * @param project the project to set up
 	 * @param environment the environment of the project
-	 * @param platform the target
-	 * @param applicationName the name of the main component, can be <code>null</code>
+	 * @param makefile the makeoptions to set
 	 * @param monitor to report progress
 	 * @throws CoreException if some resource is not available
 	 */
-	public static void doDefaultSetup( ProjectTOS project, IEnvironment environment, IPlatform platform, String applicationName, IProgressMonitor monitor ) throws CoreException{
+	public static void doDefaultSetup( ProjectTOS project, IEnvironment environment, MakeTargetSkeleton makefile, IProgressMonitor monitor ) throws CoreException{
 		if( monitor == null )
 			monitor = new NullProgressMonitor();
 
@@ -403,7 +344,7 @@ public final class ProjectTOSUtility{
 			return;
 		}
 
-		createDefaultMakeTargetSkeleton( project, platform.getName(), applicationName, new SubProgressMonitor( monitor, 100 ) );
+		createDefaultMakeTargetSkeleton( project, makefile, new SubProgressMonitor( monitor, 100 ) );
 
 		monitor.done();
 	}

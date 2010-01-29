@@ -2,7 +2,7 @@
 <feature
       id="Feature_Core_Plugin"
       label="Yeti 2 - Core Plugin (required)"
-      version="2.2.16"
+      version="2.2.17"
       provider-name="ETH Zurich, Roland Schuler, Benjamin Sigg">
 
    <description url="http://tos-ide.ethz.ch/wiki/index.php">

@@ -31,6 +31,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.TinyOSPlugin;
+import tinyos.yeti.make.targets.MakeTargetSkeleton;
 import tinyos.yeti.utility.ProjectTOSUtility;
 
 public class TinyOSExampleWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
@@ -85,23 +86,19 @@ public class TinyOSExampleWizard extends BasicNewResourceWizard implements INewW
                     File source = projectPage.getEnvironment().getExampleAppDirectory( projectPage.getApplicationName() );
                     byte[] makefile = ProjectTOSUtility.copyToProject( project, source, new SubProgressMonitor( monitor, 100 ) );
                     
-                    String application;
+                    ProjectTOSUtility.createMakefile( project, new SubProgressMonitor( monitor, 100 ) );
+                                        // create make options
+                    String target = projectPage.getTarget();
                     
+                    MakeTargetSkeleton skeleton;
                     if( makefile == null ){
-                        ProjectTOSUtility.createMakefile( project, new SubProgressMonitor( monitor, 100 ) );
-                        application = null;
+                    	skeleton = ProjectTOSUtility.readMakefile( project, target, null );
                     }
                     else{
-                        String content = new String( makefile );
-                        ProjectTOSUtility.createMakefile( project, content, new SubProgressMonitor( monitor, 100 ) );
-                        application = ProjectTOSUtility.getApplicationFromMakefile( content );
+                    	skeleton = ProjectTOSUtility.readMakefile( project, target, new String( makefile ) );
                     }
-
-                    // create make options
-                    String target = projectPage.getTarget();
-                    if( target != null ){
-                    	ProjectTOSUtility.createDefaultMakeTargetSkeleton( project, target, application, new SubProgressMonitor( monitor, 100 ));
-                    }
+                    ProjectTOSUtility.createDefaultMakeTargetSkeleton( project, skeleton, new SubProgressMonitor( monitor, 100 ));
+                    
 
                     // save Environment
                     ProjectTOSUtility.createEnvironmentEntry( project, projectPage.getEnvironment() );

@@ -25,6 +25,8 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 	private LinkedList<IFormattingContext> formattingContexts = new LinkedList<IFormattingContext>();
 	private IFormattingContext currentContext;
 	private Document doc;
+	
+	private IFormattingSettings settings = new DefaultSetting();
 
 	@Override
 	public void formatterStarts(IFormattingContext context) {
@@ -36,6 +38,10 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 	public void formatterStops() {
 		super.formatterStops();
 		formattingContexts.removeLast();
+	}
+	
+	private IFormattingSettings getSettings(){
+		return settings;
 	}
 
 	@Override
@@ -63,25 +69,36 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 		
 		try {
 			doc.addPosition(position);
+			// replace comments
 			ArrayList<String> commentsAndStrings = getCommentsAndStrings(doc);
+			// replace strings
 			ArrayList<String> preprocessorList = preprocessor(doc, position);
+			// replace any set of whitespaces by a single whitespace and delete redundant whitespaces
 			replaceWhitespaces(doc, position);
+			// correct the newlines
 			LineFeed lineFeed = new LineFeed(doc, position);
 			lineFeed.lineFeed();
+			// add and remove spaces around symbols like +, -, * ...
 	 		Symbols symbols = new Symbols(doc, position);
 			symbols.format();
+			// update linefeeds around blocks
 			block(doc, position);
+			// remove line breaks if they are not necessary (e.g. in an if-statement before the '{')
 			noLineBreak (doc, position);
+			// add blank lines at locations where blank lines were before code formatting
 			blankLine(doc, position);
+			// reset preprocessor directives and comments
 			putPreprocessorBack(doc, preprocessorList, position);
 			putCommentsAndStringsBack(doc, commentsAndStrings);
 			
+			// update indentation
 			NesCIndenterStrategy indenter = new NesCIndenterStrategy();
 			Region r = new Region(position.offset, position.length);
 			indenter.indent(doc, r);
 			int[] indentList = indenter.getIndentList();
 			ArrayList<Position> positionList = indenter.getPositionList(doc);
 
+			// wrap lines
 			lineWrapping(doc, position, indentList, positionList);
 			document.replace(0, document.getLength(), doc.get());	
 			doc.removePosition(position);
@@ -91,14 +108,17 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 	}
 	
 	/**
-	 * Wraps a line if it has more than 80 characters.
+	 * Wraps a line if it has more than {@link IFormattingSettings#getLineWrappingLength()} characters.
 	 * 
 	 * @param document
 	 * @param position
 	 */
 	private void lineWrapping(Document document, Position position,
 			int[] indentArray, ArrayList<Position> positionList) {
-		final int lineLength = 80;
+		final int lineLength = getSettings().getLineWrappingLength();
+		if( lineLength < 0 )
+			return;
+		
 		final String indent = "\t\t";
 	
 		final String regSymbol = "&&|\\|\\||\\?|:|,|=|;|\\+|-|\\*|/|%|\\||&|\\.|==|<|>|<=|>=";
@@ -507,7 +527,6 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 							&& document.get(offset + 1, "//SINGLE_LINE_NOLF//".length()).equals("//SINGLE_LINE_NOLF//"))
 						|| (offset + 2 + "//SINGLE_LINE_NOLF//".length() <= document.getLength()
 							&& document.get(offset + 2, "//SINGLE_LINE_NOLF//".length()).equals("//SINGLE_LINE_NOLF//"))) {
-				//	offset++;	
 				}
 				else {
 					if(offset + 1 >= document.getLength())
@@ -533,11 +552,9 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 							offset++;
 						}
 						document.replace(offset + 1, 0, "\n");
-					//	offset += 2;
 						offset++;
 					}
-					else { // if (document.getChar(offset) == '}')
-			//			if (document.getChar(offset - 1) != '\n') {
+					else {
 						int braceLineNum = document.getLineOfOffset(offset);
 						IRegion before = findReplaceDocumentAdapter.find(offset - 1, "\\S", false, false, false, true);
 						if(before != null) {
@@ -546,11 +563,9 @@ public class NesCFormatterStrategy extends ContextBasedFormattingStrategy {
 								document.replace(before.getOffset() + 1, offset - before.getOffset() - 1, "\n");
 								offset = offset - (offset - before.getOffset() - 2);
 							}
-			//				}
 						}
 						
 						document.replace(offset + 1, 0, "\n");
-				//		offset += 2;
 						offset++;
 					}
 				}

@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import tinyos.yeti.ProjectTOS;
 import tinyos.yeti.ep.IEnvironment;
 import tinyos.yeti.ep.IPlatform;
+import tinyos.yeti.make.targets.MakeTargetSkeleton;
 import tinyos.yeti.utility.ProjectTOSUtility;
 
 /**
@@ -76,13 +77,16 @@ public class ImportProjectFromSourceJob extends CancelingJob{
                 return Status.CANCEL_STATUS;
             }
 
-            String application = null;
-            if( makefile != null ){
-                application = ProjectTOSUtility.getApplicationFromMakefile( new String( makefile ) );
+            MakeTargetSkeleton skeleton;
+            if( makefile == null ){
+            	skeleton = ProjectTOSUtility.readMakefile( handle, platform == null ? null : platform.getName(), null );
+            }
+            else{
+            	skeleton = ProjectTOSUtility.readMakefile( handle, platform == null ? null : platform.getName(), new String( makefile ) );
             }
             
             // complete setup
-            ProjectTOSUtility.doDefaultSetup( handle, environment, platform, application, new SubProgressMonitor( monitor, 50 ) );
+            ProjectTOSUtility.doDefaultSetup( handle, environment, skeleton, new SubProgressMonitor( monitor, 50 ) );
             if( monitor.isCanceled() ){
                 monitor.done();
                 return Status.CANCEL_STATUS;

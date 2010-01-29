@@ -182,5 +182,23 @@
             name="combine">
       </resolve>
    </extension>
+   <extension
+         point="tinyos.yeti.core.OutlineFilter">
+      <filter
+            class="tinyos.yeti.nesc12.ep.filter.HideFields"
+            id="tinyos.yeti.parser12.filter.hideFields"
+            name="Hide Fields">
+      </filter>
+      <filter
+            class="tinyos.yeti.nesc12.ep.filter.HideMacros"
+            id="tinyos.yeti.parser12.filter.HideMacros"
+            name="Hide Macros">
+      </filter>
+      <filter
+            class="tinyos.yeti.nesc12.ep.filter.HideTypedefs"
+            id="tinyos.yeti.parser12.filter.HideTypedefs"
+            name="Hide Typedefs">
+      </filter>
+   </extension>
 
 </plugin>

@@ -2,7 +2,7 @@
 <feature
       id="tinyos.windows.environment"
       label="Yeti 2 - TinyOS 2.x in Cygwin (optional)"
-      version="1.1.16"
+      version="1.1.17"
       provider-name="ETH Zurich, Benjamin Sigg">
 
    <description url="http://www.example.com/description">
@@ -699,10 +699,10 @@ Public License instead of this License.  But first, please read
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
-      <import feature="Feature_Core_Plugin" version="2.2.16"/>
-      <import feature="Feature_Environment" version="1.2.16"/>
-      <import plugin="tinyos.yeti.core" version="2.2.16" match="greaterOrEqual"/>
-      <import plugin="tinyos.yeti.environment.basic" version="1.2.16" match="greaterOrEqual"/>
+      <import feature="Feature_Core_Plugin" version="2.2.17"/>
+      <import feature="Feature_Environment" version="1.2.17"/>
+      <import plugin="tinyos.yeti.core" version="2.2.17" match="greaterOrEqual"/>
+      <import plugin="tinyos.yeti.environment.basic" version="1.2.17" match="greaterOrEqual"/>
    </requires>
 
    <plugin

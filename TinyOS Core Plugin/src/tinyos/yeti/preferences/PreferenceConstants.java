@@ -70,6 +70,8 @@ public abstract class PreferenceConstants {
 	
 	public static final String PROJECT_CACHE = "nesc_projectCache";
 	
+	public static final String OUTLINE_FILTER = "nesc_outlineFilter";
+	
 	public static String spacesPerTab(){
 		TinyOSPlugin plugin = TinyOSPlugin.getDefault();
 		int count = plugin.getPreferenceStore().getInt( SPACES_AS_TABS );
