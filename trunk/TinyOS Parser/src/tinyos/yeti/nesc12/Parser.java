@@ -243,19 +243,20 @@ public class Parser implements INesCParser{
      */
     public static Type parseType( String type, IDeclaration[] typedefs ){
         Parser parser = new Parser( null );
-        if( typedefs != null ){
-            parser.addDeclarations( typedefs );
+        if(typedefs == null){
+        	typedefs = new IDeclaration[0];
         }
+        
+        parser.addDeclarations( typedefs );
+        
         try {
             Set<String> keys = new HashSet<String>();
-            if( typedefs != null ){
-                for( IDeclaration typedef : typedefs )
-                    keys.add( typedef.getName() );
+            for( IDeclaration typedef : typedefs ){
+            	keys.add( typedef.getName() );
             }
-
+            
             int index = 0;
-            if( typedefs != null ){
-                while( keys.contains( "n" + index ))
+            while( keys.contains( "n" + index )){
                     index++;
             }
 
