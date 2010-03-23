@@ -211,7 +211,7 @@ public class RangeDescription{
      * @param line the line in which the first character is
      * @param sourceFlags how the range got included into the output file
      * @param file the file in which the new range lies
-     * @param fineRanges the ranges of which the new range consists, can be <code>null</code>
+     * @param roughRanges the ranges of which the new range consists, can be <code>null</code>
      * @return the new range
      */
     public Range addFine( int left, int right, int line, int sourceFlags, FileInfo file, Range[] roughRanges ){
