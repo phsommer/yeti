@@ -1,6 +1,7 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.IEditorPart;
@@ -12,6 +13,10 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.IASTModelElement;
+import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.nesc12.ep.nodes.FieldModelNode;
+import tinyos.yeti.nesc12.parser.ast.Range;
+import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
 public class RenameLocalVariableDelegate implements
@@ -31,20 +36,64 @@ public class RenameLocalVariableDelegate implements
 		this.window = window;
 
 	}
+	
+	private  ASTNode getASTNodeAtPos(ASTNode root,int pos){
+		if(root==null){
+			System.err.println("Should not be!!!");
+		}
+		while(root.getChildrenCount() >0){
+			boolean stop=false;
+			for(int i=0; i < root.getChildrenCount()&& !stop; i++){
+				if(root.getChild(i)==null){ continue;}
+				Range range = root.getChild(i).getRange();
+				if(range != null && range.getRight() >= pos){
+					stop=true;
+					root=root.getChild(i);
+				}
+			}
+		}
+		return root;
+		
+	}
 
 	@Override
 	public void run(IAction action) {
 		String oldName="";
-		NesCEditor editor = getEditor();
-		for(IASTModelElement element:editor.getSelectedElements()){
+		MultiPageNesCEditor multiPageEditor = getEditor();
+		NesCEditor editor = multiPageEditor.getNesCEditor();
+		
+		ISelection selectionTmp = editor.getSelectionProvider().getSelection();
+		
+		if(selectionTmp.isEmpty() || !(selectionTmp instanceof ITextSelection)){
+			throw new RuntimeException("----- Es war keine ITextSelection");
+		}
+		
+		
+		ITextSelection selection = (ITextSelection) selectionTmp;
+		int selectionStart = selection.getOffset();
+		NesC12AST ast=(NesC12AST)editor.getAST();
+		ASTNode root=ast.getRoot();
+		ASTNode ours = getASTNodeAtPos(root, selectionStart);
+		System.err.println("Found Area of marked ASTNode: "+ours.getRange().getLeft() + " <-> " + ours.getRange().getRight());
+		
+		
+		System.err.println(selection.getText());
+		
+		
+		
+		
+		/*for(IASTModelElement element:editor.getSelectedElements()){
 			if(element instanceof Identifier){
 				Identifier identifier = (Identifier) element;
 				oldName=identifier.getName();
+				System.err.println("Jubidubidei es isch ein Identifyer.");
 			} else {
 				// TODO: This happens if not an identifier is selected. 
-				return;
+				//throw new IllegalStateException("Only an Identifyer is allowed to be selected.");
+				System.out.println("Element hat den Type:"+element.getClass().getName());
+				System.out.println("The Identifier is:"+((IASTModelElement)element).getIdentifier());
 			}
-		}
+		}*/
 
 		RenameLocalVariableInfo info = new RenameLocalVariableInfo(oldName);
 		RenameLocalVariableProcessor processor = new RenameLocalVariableProcessor(editor);
@@ -61,7 +110,7 @@ public class RenameLocalVariableDelegate implements
 
 	}
 
-	private NesCEditor getEditor() {
+	private MultiPageNesCEditor getEditor() {
 		IWorkbenchPage activePage = window.getActivePage();
 		if (activePage == null) {
 			return null;
@@ -73,11 +122,11 @@ public class RenameLocalVariableDelegate implements
 		}
 		ITextEditor editor = (ITextEditor) editorTmp;
 
-		if (editor instanceof NesCEditor) {
-			return (NesCEditor) editor;
+		if (editor instanceof MultiPageNesCEditor) {
+			return (MultiPageNesCEditor) editor;
 		} else {
 			throw new IllegalStateException(
-					"Rename Local Varibel Refactoring is only allowed if a NesC Editor is in use.");
+					"Rename Local Varibel Refactoring is only allowed if a NesC Editor is in use. But "+editor.getClass().getName()+" was in use.");
 		}
 	}
 

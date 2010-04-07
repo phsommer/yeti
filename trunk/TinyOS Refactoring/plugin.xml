@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+	<extension point="org.eclipse.ui.actionSets">
+		<actionSet id="tinyos_yeti_refactoring_actionSet" label="MyRefactoring Actoin Set" visible="true">
+			<menu id="tinyos_yeti_refactoring" label="My Menu" path="">
+				<separator name="menuSeparator0" />
+			</menu>
+			<action id="TinyOS Refactoring.action1"
+                    label="Rename Local Variable"
+                    style="push"
+                    menubarPath="tinyos_yeti_refactoring/menuSeperator0"
+                    class="tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableDelegate"
+                    >
+                    <!-- <selection class="org.eclipse.core.resources.IFile"
+					name="*.nc">
+			        </selection> -->
+                   	
+			</action>
+		
+		</actionSet>
+	</extension>
 
 </plugin>
