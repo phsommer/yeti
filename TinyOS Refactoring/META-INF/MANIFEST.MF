@@ -13,6 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ltk.ui.refactoring;bundle-version="3.4.101",
  org.eclipse.core.resources;bundle-version="3.5.2",
  org.eclipse.jface.text;bundle-version="3.5.2",
- org.eclipse.ui.ide;bundle-version="3.5.2"
+ org.eclipse.ui.ide;bundle-version="3.5.2",
+ org.eclipse.ui.editors;bundle-version="3.5.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
