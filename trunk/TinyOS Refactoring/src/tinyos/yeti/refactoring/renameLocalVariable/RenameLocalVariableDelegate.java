@@ -12,8 +12,8 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
+import tinyos.yeti.nesc12.ep.INesC12Location;
 import tinyos.yeti.nesc12.ep.NesC12AST;
-import tinyos.yeti.nesc12.parser.ast.Range;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
@@ -40,29 +40,33 @@ public class RenameLocalVariableDelegate implements
 	 * @param pos
 	 * @return The AST Leaf that covers this Postion, or null if the Position is not covered by a leaf.
 	 */
-	private  ASTNode getASTNodeAtPos(ASTNode root,int pos){
-		if(root==null){
-			throw new IllegalArgumentException("The root Parameter must not be null.");
+	private  ASTNode getASTLeafAtPos(NesC12AST ast,int pos){
+		if(ast==null){
+			throw new IllegalArgumentException("The ast Parameter must not be null.");
 		}
+		ASTNode root = ast.getRoot();
+		
 		boolean foundChild=true;
 		while(root.getChildrenCount() > 0 && foundChild){
 			foundChild=false;
 			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
 				ASTNode child = root.getChild(i);
-				if(child==null){ continue;}
-				Range range = child.getRange();
-				if(range != null && range.getRight() >= pos){
+				
+				// It happend to us that we got null values
+				if(child==null){ continue; }
+				
+				INesC12Location location = ast.getOffsetAtEnd(child);
+				if(location.getInputfileOffset() >= pos){
 					foundChild=true;
 					root=root.getChild(i);
 				}
-			}
-			
-			
+			}	
 		}
 		
 		if(foundChild){
 			return root;
 		} else {
+			// Happens for example if the Cursor is at a blank position
 			return null;
 		}
 	}
@@ -72,6 +76,7 @@ public class RenameLocalVariableDelegate implements
 		String oldName="";
 		MultiPageNesCEditor multiPageEditor = getEditor();
 		NesCEditor editor = multiPageEditor.getNesCEditor();
+		
 		
 		ISelection selectionTmp = editor.getSelectionProvider().getSelection();
 		
@@ -83,8 +88,8 @@ public class RenameLocalVariableDelegate implements
 		ITextSelection selection = (ITextSelection) selectionTmp;
 		int selectionStart = selection.getOffset();
 		NesC12AST ast=(NesC12AST)editor.getAST();
-		ASTNode root=ast.getRoot();
-		ASTNode ours = getASTNodeAtPos(root, selectionStart);
+		
+		ASTNode ours = getASTLeafAtPos(ast, selectionStart);
 		System.err.println("Found Area of marked ASTNode: "+ours.getRange().getLeft() + " <-> " + ours.getRange().getRight());
 		
 		Identifier id = (Identifier)ours;
