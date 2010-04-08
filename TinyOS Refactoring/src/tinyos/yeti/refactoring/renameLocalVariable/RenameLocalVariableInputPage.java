@@ -22,6 +22,7 @@ public class RenameLocalVariableInputPage extends UserInputWizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
+
 		Composite root = new Composite(parent, SWT.NONE);
 
 		GridLayout layout = new GridLayout(1, false);
@@ -30,7 +31,6 @@ public class RenameLocalVariableInputPage extends UserInputWizardPage {
 		setControl(root);
 		initializeDialogUnits(root);
 		Dialog.applyDialogFont(root);
-
 		Label lblNewName = new Label(root, SWT.NONE);
 		lblNewName.setText("Das ist mein Refactoing Label");
 		
@@ -42,7 +42,6 @@ public class RenameLocalVariableInputPage extends UserInputWizardPage {
 	    newNameTextField.addKeyListener( new KeyAdapter() {
 	      public void keyReleased( final KeyEvent e ) {
 	        info.setNewName( newNameTextField.getText() );
-	        //validate();
 	      }
 	    } );
 

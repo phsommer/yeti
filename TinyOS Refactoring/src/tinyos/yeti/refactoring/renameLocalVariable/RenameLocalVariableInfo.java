@@ -1,9 +1,13 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
+import tinyos.yeti.editors.MultiPageNesCEditor;
+import tinyos.yeti.editors.NesCEditor;
+
 public class RenameLocalVariableInfo {
 	private String oldName;
-	private String newName=null;
+	private String newName="Hans-Peter";
 	private String inputPageName="Getting the new Variable name.";
+	private MultiPageNesCEditor multiPageEditor;
 	
 	public RenameLocalVariableInfo(String oldName) {
 		this.oldName = oldName;
@@ -28,7 +32,18 @@ public class RenameLocalVariableInfo {
 	public String getInputPageName() {
 		return inputPageName;
 	}
+
+	public void setMultiPageEditor(MultiPageNesCEditor multiPageEditor) {
+		this.multiPageEditor = multiPageEditor;
+	}
+
+	public MultiPageNesCEditor getMultiPageEditor() {
+		return multiPageEditor;
+	}
 	
+	public NesCEditor getEditor(){
+		return this.multiPageEditor.getNesCEditor();
+	}
 	
 
 }
