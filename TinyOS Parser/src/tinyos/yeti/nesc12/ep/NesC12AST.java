@@ -73,7 +73,13 @@ public class NesC12AST implements INesCAST {
         this.macroLinks = macroLinks;
     }
     
-    public RangedCollection<NamedType> getTypedefs(){
+    public PreprocessorReader getReader() {
+		return reader;
+	}
+
+
+
+	public RangedCollection<NamedType> getTypedefs(){
         return typedefs;
     }
     
