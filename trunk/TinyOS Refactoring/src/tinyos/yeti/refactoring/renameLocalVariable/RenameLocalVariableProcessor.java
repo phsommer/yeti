@@ -1,5 +1,6 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,7 +97,7 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		System.err.println("Selection: " + selection.getText());
 
 		ASTNode parent = ASTUtil.getParentForName(ours,
-				new FunctionDefinition().getASTNodeName());
+				FunctionDefinition.class);
 		FunctionDefinition functionDef = null;
 		if (parent == null) {
 			System.err.println("Selection not inside a Function!");
@@ -106,8 +107,8 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		}
 
 		System.err.println("/n/nNEW IDENTIFIERS: ");
-		List<Identifier> identifiers = new LinkedList<Identifier>();
-		ASTUtil.getIncludedIdentifiers(parent, id.getName(), identifiers);
+		
+		Collection<Identifier> identifiers = ASTUtil.getIncludedIdentifiers(parent,id.getName());
 		IEditorInput editorInput = editor.getEditorInput();
 		if (!(editorInput instanceof IFileEditorInput)) {
 			System.err.println("The Editor Input was not a File");
@@ -121,7 +122,6 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 						+ info.getNewName() + " in File " + inputFile,
 				inputFile);
 		renameOneOccurence.setEdit(multiTextEdit);
-		PreprocessorReader reader=ast.getReader();
 		for (Identifier identifier : identifiers) {
 			System.err.println("Name: " + identifier.getName());
 			System.err.println("Range: " + ast.getOffsetAtBegin(identifier).getInputfileOffset()
