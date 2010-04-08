@@ -21,7 +21,7 @@ public class ASTUtil {
 	 * @param pos
 	 * @return The AST Leaf that covers this Postion, or null if the Position is not covered by a leaf.
 	 */
-	public static  ASTNode getASTLeafAtPos(NesC12AST ast,int pos){
+	public  ASTNode getASTLeafAtPos(int pos){
 		if(ast==null){
 			throw new IllegalArgumentException("The ast Parameter must not be null.");
 		}
