@@ -75,10 +75,11 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		
 		int selectionStart = selection.getOffset();
 		NesC12AST ast = (NesC12AST) editor.getAST();
+		
 
 		ASTUtil utility=new ASTUtil(ast);
 		
-		ASTNode ours = ASTUtil.getASTLeafAtPos(ast, selectionStart);
+		ASTNode ours = utility.getASTLeafAtPos(selectionStart);
 		System.err.println("Found Area of marked ASTNode: "
 				+ ours.getRange().getLeft() + " <-> "
 				+ ours.getRange().getRight());
