@@ -1,8 +1,6 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -30,17 +28,20 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.preprocessor.PreprocessorReader;
 import tinyos.yeti.refactoring.ASTUtil;
 
 public class RenameLocalVariableProcessor extends RefactoringProcessor {
 
 	private RenameLocalVariableInfo info;
+	private NesC12AST ast;
 	private ITextSelection selection;
+	private ASTUtil utility;
 
 	public RenameLocalVariableProcessor(RenameLocalVariableInfo info) {
 		super();
 		this.info = info;
+		ast=(NesC12AST) info.getEditor().getAST();
+		utility=new ASTUtil(ast);
 		ISelection selectionTmp = info.getEditor().getSelectionProvider().getSelection();
 
 		if (selectionTmp.isEmpty() || !(selectionTmp instanceof ITextSelection)) {
@@ -64,39 +65,33 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		// TODO Auto-generated method stub
 		return new RefactoringStatus();
 	}
+	
+	private Identifier getSelectedIdentifier(){
+		int selectionStart = selection.getOffset();
+		ASTNode currentlySelected = utility.getASTLeafAtPos(selectionStart);
+		
+		if(currentlySelected instanceof Identifier){
+			return (Identifier) currentlySelected;
+		}
+		System.err.println("NOT IDENTIFIER Selected!!!");
+		return null;
+	}
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		pm.beginTask("ah", 3);
-
-		CompositeChange ret = new CompositeChange("Rename Local Variable "
-				+ info.getOldName() + " to " + info.getNewName());
+		
+	//setup
 		NesCEditor editor = info.getEditor();
+		utility = new ASTUtil(ast);
 		
-		int selectionStart = selection.getOffset();
-		NesC12AST ast = (NesC12AST) editor.getAST();
 		
-
-		ASTUtil utility=new ASTUtil(ast);
+	//Find currently selected Element
+		Identifier currentlySelected=getSelectedIdentifier();
 		
-		ASTNode ours = utility.getASTLeafAtPos(selectionStart);
-		System.err.println("Found Area of marked ASTNode: "
-				+ ours.getRange().getLeft() + " <-> "
-				+ ours.getRange().getRight());
-
-		if(!(ours instanceof Identifier)){
-			System.err.println("NOT IDENTIFIER!!!");
-			return new NullChange();
-		}
-		Identifier id = (Identifier) ours;
-		System.err.println("Name: " + id.getName());
-		System.err.println("ASTNodeName: " + id.getASTNodeName());
-		System.err.println("Class: " + id.getClass().getName());
-
-		System.err.println("Selection: " + selection.getText());
-
-		ASTNode parent = ASTUtil.getParentForName(ours,
+		
+	//Find Enclosing Function Definition
+		ASTNode parent = ASTUtil.getParentForName(currentlySelected,
 				FunctionDefinition.class);
 		FunctionDefinition functionDef = null;
 		if (parent == null) {
@@ -105,56 +100,35 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		} else {
 			functionDef = (FunctionDefinition) parent;
 		}
-
-		System.err.println("/n/nNEW IDENTIFIERS: ");
 		
-		Collection<Identifier> identifiers = ASTUtil.getIncludedIdentifiers(parent,id.getName());
+		
+	//Get Identifiers in Function with same Name
+		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
+		
+		
+	//Get the InputFile
 		IEditorInput editorInput = editor.getEditorInput();
 		if (!(editorInput instanceof IFileEditorInput)) {
 			System.err.println("The Editor Input was not a File");
 			return new NullChange();
 		}
 		IFile inputFile = ((IFileEditorInput) editorInput).getFile();
-
+		
+		
+	//Create The Changes
 		MultiTextEdit multiTextEdit=new MultiTextEdit();
 		TextChange renameOneOccurence = new TextFileChange(
 				"Replacing Variable " + info.getOldName() + " with "
-						+ info.getNewName() + " in File " + inputFile,
-				inputFile);
+						+ info.getNewName() + " in File " + inputFile,inputFile);
 		renameOneOccurence.setEdit(multiTextEdit);
+		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
+		ret.add(renameOneOccurence);
 		for (Identifier identifier : identifiers) {
-			System.err.println("Name: " + identifier.getName());
-			System.err.println("Range: " + ast.getOffsetAtBegin(identifier).getInputfileOffset()
-					+ "<-->" + ast.getOffsetAtEnd(identifier).getInputfileOffset());
-
 			int beginOffset = utility.start(identifier);
 			int endOffset=utility.end(identifier);
 			int length = endOffset-beginOffset;
-			
-			System.err.println("Start: "+beginOffset);
-			System.err.println("End: "+endOffset);
-			System.err.println("Length: "+length);
 			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info.getNewName()));
 		}
-		ret.add(renameOneOccurence);
-		System.err.println("Name: " + functionDef.resolveName());
-		System.err.println("END IDENTIFIERS: ");
-
-		/*
-		 * for(IASTModelElement element:editor.getSelectedElements()){
-		 * if(element instanceof Identifier){ Identifier identifier =
-		 * (Identifier) element; oldName=identifier.getName();
-		 * System.err.println("Jubidubidei es isch ein Identifyer."); } else {
-		 * // TODO: This happens if not an identifier is selected. //throw new
-		 * IllegalStateException
-		 * ("Only an Identifyer is allowed to be selected.");
-		 * System.out.println(
-		 * "Element hat den Type:"+element.getClass().getName());
-		 * System.out.println
-		 * ("The Identifier is:"+((IASTModelElement)element).getIdentifier()); }
-		 * }
-		 */
-		pm.done();
 		return ret;
 	}
 
