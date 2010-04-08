@@ -12,9 +12,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
-import tinyos.yeti.ep.parser.IASTModelElement;
 import tinyos.yeti.nesc12.ep.NesC12AST;
-import tinyos.yeti.nesc12.ep.nodes.FieldModelNode;
 import tinyos.yeti.nesc12.parser.ast.Range;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -37,23 +35,36 @@ public class RenameLocalVariableDelegate implements
 
 	}
 	
+	/**
+	 * @param root
+	 * @param pos
+	 * @return The AST Leaf that covers this Postion, or null if the Position is not covered by a leaf.
+	 */
 	private  ASTNode getASTNodeAtPos(ASTNode root,int pos){
 		if(root==null){
-			System.err.println("Should not be!!!");
+			throw new IllegalArgumentException("The root Parameter must not be null.");
 		}
-		while(root.getChildrenCount() >0){
-			boolean stop=false;
-			for(int i=0; i < root.getChildrenCount()&& !stop; i++){
-				if(root.getChild(i)==null){ continue;}
-				Range range = root.getChild(i).getRange();
+		boolean foundChild=true;
+		while(root.getChildrenCount() > 0 && foundChild){
+			foundChild=false;
+			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
+				ASTNode child = root.getChild(i);
+				if(child==null){ continue;}
+				Range range = child.getRange();
 				if(range != null && range.getRight() >= pos){
-					stop=true;
+					foundChild=true;
 					root=root.getChild(i);
 				}
 			}
+			
+			
 		}
-		return root;
 		
+		if(foundChild){
+			return root;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -76,8 +87,12 @@ public class RenameLocalVariableDelegate implements
 		ASTNode ours = getASTNodeAtPos(root, selectionStart);
 		System.err.println("Found Area of marked ASTNode: "+ours.getRange().getLeft() + " <-> " + ours.getRange().getRight());
 		
+		Identifier id = (Identifier)ours;
+		System.err.println("Name: "+id.getName());
+		System.err.println("ASTNodeName: "+id.getASTNodeName());
+		System.err.println("Class: "+id.getClass().getName());
 		
-		System.err.println(selection.getText());
+		System.err.println("Selection: "+selection.getText());
 		
 		
 		
