@@ -9,7 +9,7 @@ import tinyos.yeti.editors.NesCEditor;
 
 public class RenameLocalVariableInfo {
 	private String oldName;
-	private String newName = "Hans-Peter";
+	private String newName = null;
 	private String inputPageName = "Getting the new Variable name.";
 	private MultiPageNesCEditor multiPageEditor;
 
