@@ -56,7 +56,7 @@ public class ASTUtil {
 	 * Returns the next higher AST node of type
 	 * @param child The AST node to start from
 	 * @param type The type of the ASTNode we are looking for
-	 * @return
+	 * @return null if no parent matches, else matching Parent.
 	 */
 	public static ASTNode getParentForName(ASTNode child,Class<? extends ASTNode> type){
 		ASTNode parent=child.getParent();
