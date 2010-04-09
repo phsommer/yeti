@@ -50,6 +50,7 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 
 		selection = (ITextSelection) selectionTmp;
 	}
+	
 
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
@@ -76,23 +77,43 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		return new RefactoringStatus();
 	}
 	
+	
+	/**
+	 * 
+	 * @return	The Currently Selected Identifier, null if not an Identifier ist Selected.
+	 */
 	private Identifier getSelectedIdentifier(){
 		int selectionStart = selection.getOffset();
 		ASTNode currentlySelected = utility.getASTLeafAtPos(selectionStart);
 		
 		if(currentlySelected instanceof Identifier){
 			return (Identifier) currentlySelected;
+		}else{
+			System.err.println("SELECTION IS NOT AN IDENTIFIER!!!");
+			return null;
 		}
-		System.err.println("NOT IDENTIFIER Selected!!!");
-		return null;
 	}
+	
+	/**
+	 * @param node
+	 * @return the FunctionDefinition wich encloses the given Node, null if the Node is not in a Function.
+	 */
+	private FunctionDefinition getEnclosingFunction(ASTNode node) {
+		ASTNode parent = ASTUtil.getParentForName(node,FunctionDefinition.class);
+		if (parent == null) {
+			return null;
+		} else {
+			System.err.println("NOT IN A FUNCTION!!!");
+			return (FunctionDefinition) parent;
+		}
+	}
+	
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		
 	//setup
-		NesCEditor editor = info.getEditor();
 		utility = new ASTUtil(ast);
 		
 		
@@ -101,22 +122,12 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		
 		
 	//Find Enclosing Function Definition
-		ASTNode parent = ASTUtil.getParentForName(currentlySelected,
-				FunctionDefinition.class);
-		FunctionDefinition functionDef = null;
-		if (parent == null) {
-			System.err.println("Selection not inside a Function!");
-			return new NullChange();
-		} else {
-			functionDef = (FunctionDefinition) parent;
-		}
+		FunctionDefinition parent = getEnclosingFunction(currentlySelected);
 		
 		
 	//Get Identifiers in Function with same Name
 		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
-		
-		
-	IFile inputFile = info.getInputFile();
+		 IFile inputFile = info.getInputFile();
 		
 		
 	//Create The Changes
@@ -135,8 +146,6 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		}
 		return ret;
 	}
-
-
 
 	@Override
 	public Object[] getElements() {
