@@ -1,10 +1,10 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
-import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
+import org.eclipse.ltk.core.refactoring.participants.RenameRefactoring;
 
 import tinyos.yeti.editors.NesCEditor;
 
-public class RenameLocalVariableRefactoring extends ProcessorBasedRefactoring {
+public class RenameLocalVariableRefactoring extends RenameRefactoring {
 
 	
 
