@@ -43,7 +43,7 @@ public class ASTUtil {
 			}	
 		}
 		
-		if(foundChild){
+		if(foundChild && pos <= start(root) && pos >= end(root)){
 			//System.err.println("Pos: "+pos+" root.range:"+ast.getOffsetAtBegin(root).getInputfileOffset()+"-"+ast.getOffsetAtEnd(root).getInputfileOffset()+" root:"+root);
 			return root;
 		} else {
