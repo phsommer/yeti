@@ -1,6 +1,7 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -10,7 +11,6 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
-import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
@@ -20,12 +20,10 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IFileEditorInput;
 
-import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ASTUtil;
@@ -108,27 +106,58 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		}
 	}
 	
+	/**
+	 * This Method can be used to Check, if these identifiers are part of a local variable.
+	 * @param identifiers
+	 * @return Returns a DeclaratorName, if some of the given Identifiers has such a parent. Null if there is no such parent.
+	 */
+	private DeclaratorName getDeclaratorName(Collection<Identifier> identifiers){
+		ASTNode candidate=null;
+		for(Identifier identifier:identifiers){
+			candidate=ASTUtil.getParentForName(identifier, DeclaratorName.class);
+			if(candidate!=null){
+				return (DeclaratorName)candidate;
+			}
+		}
+		return null;
+	}
+	
+
+	/**
+	 * Returns a list wich contains all occurences of the selected identifier.
+	 * Checks if the selection is an identifier and if so if it is part of a local variable. 
+	 * @return All Occurences in the Method of the selected identifier, immutable EmptyList if the above checks fail.
+	 */
+	private Collection<Identifier> selectedIdentifiersIfLocal(){
+		//setup
+		utility = new ASTUtil(ast);
+		
+		
+		
+	//Find currently selected Element
+		Identifier currentlySelected=getSelectedIdentifier();
+		if(currentlySelected==null)return Collections.EMPTY_LIST;;
+		
+		
+	//Find Enclosing Function Definition
+		FunctionDefinition parent = getEnclosingFunction(currentlySelected);
+		if(parent==null)return Collections.EMPTY_LIST;;
+		
+	//Get Identifiers in Function with same Name
+		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
+
+	//Check if this is a Local Variable.
+		 if(getDeclaratorName(identifiers)==null)return Collections.EMPTY_LIST;
+		 return identifiers;
+	}
+	
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		
-	//setup
-		utility = new ASTUtil(ast);
-		
-		
-	//Find currently selected Element
-		Identifier currentlySelected=getSelectedIdentifier();
-		
-		
-	//Find Enclosing Function Definition
-		FunctionDefinition parent = getEnclosingFunction(currentlySelected);
-		
-		
-	//Get Identifiers in Function with same Name
-		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
-		 IFile inputFile = info.getInputFile();
-		
+
+		IFile inputFile = info.getInputFile();
 		
 	//Create The Changes
 		MultiTextEdit multiTextEdit=new MultiTextEdit();
@@ -138,6 +167,7 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		renameOneOccurence.setEdit(multiTextEdit);
 		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
 		ret.add(renameOneOccurence);
+		Collection<Identifier> identifiers=this.selectedIdentifiersIfLocal();
 		for (Identifier identifier : identifiers) {
 			int beginOffset = utility.start(identifier);
 			int endOffset=utility.end(identifier);
