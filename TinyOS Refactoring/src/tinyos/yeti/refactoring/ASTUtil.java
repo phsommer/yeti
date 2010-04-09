@@ -43,8 +43,8 @@ public class ASTUtil {
 			}	
 		}
 		
-		if(foundChild && pos <= start(root) && pos >= end(root)){
-			//System.err.println("Pos: "+pos+" root.range:"+ast.getOffsetAtBegin(root).getInputfileOffset()+"-"+ast.getOffsetAtEnd(root).getInputfileOffset()+" root:"+root);
+		// Cause it's only checked if end(child) >= pos the start has to be checked too.  
+		if(foundChild && pos >= start(root)){
 			return root;
 		} else {
 			// Happens for example if the Cursor is at a blank position
