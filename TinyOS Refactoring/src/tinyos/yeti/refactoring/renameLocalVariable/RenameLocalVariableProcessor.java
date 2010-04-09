@@ -11,6 +11,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
@@ -99,9 +100,9 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	private FunctionDefinition getEnclosingFunction(ASTNode node) {
 		ASTNode parent = ASTUtil.getParentForName(node,FunctionDefinition.class);
 		if (parent == null) {
+			System.err.println("NOT IN A FUNCTION!!!");
 			return null;
 		} else {
-			System.err.println("NOT IN A FUNCTION!!!");
 			return (FunctionDefinition) parent;
 		}
 	}
@@ -168,6 +169,9 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
 		ret.add(renameOneOccurence);
 		Collection<Identifier> identifiers=this.selectedIdentifiersIfLocal();
+		if(identifiers.size()==0){
+			return new NullChange();
+		}
 		for (Identifier identifier : identifiers) {
 			int beginOffset = utility.start(identifier);
 			int endOffset=utility.end(identifier);
