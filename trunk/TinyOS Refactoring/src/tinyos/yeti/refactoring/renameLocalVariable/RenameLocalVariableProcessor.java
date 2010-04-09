@@ -78,7 +78,7 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	
 	/**
 	 * 
-	 * @return	The Currently Selected Identifier, null if not an Identifier ist Selected.
+	 * @return	The Currently Selected Identifier, null if not an Identifier is Selected.
 	 */
 	private Identifier getSelectedIdentifier(){
 		int selectionStart = selection.getOffset();
@@ -94,7 +94,7 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	
 	/**
 	 * @param node
-	 * @return the FunctionDefinition wich encloses the given Node, null if the Node is not in a Function.
+	 * @return the FunctionDefinition which encloses the given Node, null if the Node is not in a Function.
 	 */
 	private FunctionDefinition getEnclosingFunction(ASTNode node) {
 		ASTNode parent = ASTUtil.getParentForName(node,FunctionDefinition.class);
@@ -124,9 +124,9 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	
 
 	/**
-	 * Returns a list wich contains all occurences of the selected identifier.
+	 * Returns a list which contains all occurrences of the selected identifier.
 	 * Checks if the selection is an identifier and if so if it is part of a local variable. 
-	 * @return All Occurences in the Method of the selected identifier, immutable EmptyList if the above checks fail.
+	 * @return All Occurrences in the Method of the selected identifier, immutable EmptyList if the above checks fail.
 	 */
 	private Collection<Identifier> selectedIdentifiersIfLocal(){
 		//setup
@@ -136,18 +136,18 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		
 	//Find currently selected Element
 		Identifier currentlySelected=getSelectedIdentifier();
-		if(currentlySelected==null)return Collections.EMPTY_LIST;;
+		if(currentlySelected==null)return Collections.emptyList();;
 		
 		
 	//Find Enclosing Function Definition
 		FunctionDefinition parent = getEnclosingFunction(currentlySelected);
-		if(parent==null)return Collections.EMPTY_LIST;;
+		if(parent==null)return Collections.emptyList();;
 		
 	//Get Identifiers in Function with same Name
 		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
 
 	//Check if this is a Local Variable.
-		 if(getDeclaratorName(identifiers)==null)return Collections.EMPTY_LIST;
+		 if(getDeclaratorName(identifiers)==null)return Collections.emptyList();
 		 return identifiers;
 	}
 	
