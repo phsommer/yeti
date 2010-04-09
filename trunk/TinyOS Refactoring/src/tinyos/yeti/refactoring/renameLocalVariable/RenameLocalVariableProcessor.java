@@ -55,25 +55,29 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws CoreException,
 			OperationCanceledException {
-	    RefactoringStatus result = new RefactoringStatus();
-	    IFile sourceFile = info.getInputFile();
-	    if( sourceFile == null || !sourceFile.exists() ) {
-	      result.addFatalError( "The File you want wo Refactor, does not exist." );
-	    } else if( sourceFile.isReadOnly() ) {
-	      result.addFatalError( "The File you want to Refactor is read only." );
-	    } 
-
-	    return result;
+	    RefactoringStatus ret = new RefactoringStatus();
+	    if(info.getNewName() == null){
+	    	ret.addFatalError("Please enter a new Name for the Variabel.");
+	    }
+	    
+	    
+	    return ret;
 	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus ret = new RefactoringStatus();
-		if(getSelectedIdentifier() != null){
-			ret.addFatalError("An Identifier must be selected.");
+		if(!isALocalVariableSelected()){
+			ret.addFatalError("A local Variable must be selected.");
 		}
-		return new RefactoringStatus();
+	    IFile sourceFile = info.getInputFile();
+	    if( sourceFile == null || !sourceFile.exists() ) {
+	      ret.addFatalError( "The File you want wo Refactor, does not exist." );
+	    } else if( sourceFile.isReadOnly() ) {
+	      ret.addFatalError( "The File you want to Refactor is read only." );
+	    } 
+		return ret;
 	}
 	
 	
@@ -124,6 +128,15 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	}
 	
 
+	private boolean isALocalVariableSelected(){
+		if(selectedIdentifiersIfLocal().size() != 0){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * Returns a list which contains all occurrences of the selected identifier.
 	 * Checks if the selection is an identifier and if so if it is part of a local variable. 
