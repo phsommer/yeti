@@ -1,14 +1,18 @@
 package tinyos.yeti.refactoring.renameLocalVariable;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
+
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
 
 public class RenameLocalVariableInfo {
 	private String oldName;
-	private String newName="Hans-Peter";
-	private String inputPageName="Getting the new Variable name.";
+	private String newName = "Hans-Peter";
+	private String inputPageName = "Getting the new Variable name.";
 	private MultiPageNesCEditor multiPageEditor;
-	
+
 	public RenameLocalVariableInfo(String oldName) {
 		this.oldName = oldName;
 	}
@@ -40,10 +44,21 @@ public class RenameLocalVariableInfo {
 	public MultiPageNesCEditor getMultiPageEditor() {
 		return multiPageEditor;
 	}
-	
-	public NesCEditor getEditor(){
+
+	public NesCEditor getEditor() {
 		return this.multiPageEditor.getNesCEditor();
 	}
-	
+
+	/**
+	 * Retruns the File the Editor is editing
+	 */
+	public IFile getInputFile() {
+		IEditorInput editorInput = this.getEditor().getEditorInput();
+		if (!(editorInput instanceof IFileEditorInput)) {
+			throw new IllegalStateException("The Editor Input must be a File");
+		}
+		IFile inputFile = ((IFileEditorInput) editorInput).getFile();
+		return inputFile;
+	}
 
 }

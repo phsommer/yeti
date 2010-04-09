@@ -55,14 +55,24 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws CoreException,
 			OperationCanceledException {
-		// TODO Auto-generated method stub
-		return null;
+	    RefactoringStatus result = new RefactoringStatus();
+	    IFile sourceFile = info.getInputFile();
+	    if( sourceFile == null || !sourceFile.exists() ) {
+	      result.addFatalError( "The File you want wo Refactor, does not exist." );
+	    } else if( sourceFile.isReadOnly() ) {
+	      result.addFatalError( "The File you want to Refactor is read only." );
+	    } 
+
+	    return result;
 	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		// TODO Auto-generated method stub
+		RefactoringStatus ret = new RefactoringStatus();
+		if(getSelectedIdentifier() != null){
+			ret.addFatalError("An Identifier must be selected.");
+		}
 		return new RefactoringStatus();
 	}
 	
@@ -106,13 +116,7 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
 		
 		
-	//Get the InputFile
-		IEditorInput editorInput = editor.getEditorInput();
-		if (!(editorInput instanceof IFileEditorInput)) {
-			System.err.println("The Editor Input was not a File");
-			return new NullChange();
-		}
-		IFile inputFile = ((IFileEditorInput) editorInput).getFile();
+	IFile inputFile = info.getInputFile();
 		
 		
 	//Create The Changes
@@ -131,6 +135,8 @@ public class RenameLocalVariableProcessor extends RefactoringProcessor {
 		}
 		return ret;
 	}
+
+
 
 	@Override
 	public Object[] getElements() {
