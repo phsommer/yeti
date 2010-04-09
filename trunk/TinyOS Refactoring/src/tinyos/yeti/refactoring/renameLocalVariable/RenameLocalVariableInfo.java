@@ -11,7 +11,15 @@ public class RenameLocalVariableInfo {
 	private String oldName;
 	private String newName = null;
 	private String inputPageName = "Getting the new Variable name.";
-	private MultiPageNesCEditor multiPageEditor;
+	private NesCEditor editor;
+
+	public void setEditor(NesCEditor editor) {
+		this.editor = editor;
+	}
+	
+	public NesCEditor getEditor() {
+		return editor;
+	}
 
 	public RenameLocalVariableInfo(String oldName) {
 		this.oldName = oldName;
@@ -35,18 +43,6 @@ public class RenameLocalVariableInfo {
 
 	public String getInputPageName() {
 		return inputPageName;
-	}
-
-	public void setMultiPageEditor(MultiPageNesCEditor multiPageEditor) {
-		this.multiPageEditor = multiPageEditor;
-	}
-
-	public MultiPageNesCEditor getMultiPageEditor() {
-		return multiPageEditor;
-	}
-
-	public NesCEditor getEditor() {
-		return this.multiPageEditor.getNesCEditor();
 	}
 
 	/**

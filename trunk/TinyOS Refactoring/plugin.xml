@@ -20,5 +20,29 @@
 		
 		</actionSet>
 	</extension>
+ <extension
+       point="org.eclipse.ui.popupMenus">
+    <viewerContribution
+          id="TinyOS Refactoring.RefactoringPopUp"
+          targetID="#TextEditorContext">
+       <menu
+             id="TinyOS Refactoring.RefactoringPopUp"
+             label="Refactoring"
+             path="additions">
+          <groupMarker
+                name="TinyOS Refactoring.content">
+          </groupMarker>
+          <separator
+                name="TinyOS Refactoring.additions">
+          </separator>
+       </menu>
+       <action
+             class="tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableDelegateContextMenu"
+             id="TinyOS Refactoring.renameLocalVariable"
+             label="rename"
+             menubarPath="TinyOS Refactoring.RefactoringPopUp/content">
+       </action>
+    </viewerContribution>
+ </extension>
 
 </plugin>

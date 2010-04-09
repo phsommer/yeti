@@ -2,14 +2,13 @@ package tinyos.yeti.refactoring.renameLocalVariable;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.eclipse.ui.texteditor.ITextEditor;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
+import tinyos.yeti.editors.NesCEditor;
 
 public class RenameLocalVariableDelegate implements
 		IWorkbenchWindowActionDelegate {
@@ -29,31 +28,10 @@ public class RenameLocalVariableDelegate implements
 
 	}
 	
-
-
 	@Override
 	public void run(IAction action) {
-		String oldName="";
-		MultiPageNesCEditor multiPageEditor = getEditor();
-		//NesCEditor editor = multiPageEditor.getNesCEditor();
-		
-		
-		
-
-		RenameLocalVariableInfo info = new RenameLocalVariableInfo(oldName);
-		info.setMultiPageEditor(getEditor());
-		RenameLocalVariableProcessor processor = new RenameLocalVariableProcessor(info);
-		RenameLocalVariableRefactoring refactoring = new RenameLocalVariableRefactoring(processor);
-		RenameLocalVariableWizard wizard = new RenameLocalVariableWizard(refactoring,info);
-		RefactoringWizardOpenOperation wizardStarter = new RefactoringWizardOpenOperation(
-				wizard);
-
-		try {
-			wizardStarter.run(multiPageEditor.getSite().getShell(), "Rename Local Variable");
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		RenameLocalVariableDelegateCommonWork commonWork=new RenameLocalVariableDelegateCommonWork();
+		commonWork.doWork(getEditor());
 	}
 
 	@Override
@@ -62,24 +40,19 @@ public class RenameLocalVariableDelegate implements
 
 	}
 
-	private MultiPageNesCEditor getEditor() {
+	private NesCEditor getEditor() {
 		IWorkbenchPage activePage = window.getActivePage();
 		if (activePage == null) {
-			return null;
+			throw new RuntimeException("----- No active Page!");
 		}
 
 		IEditorPart editorTmp = activePage.getActiveEditor();
 		if (editorTmp == null || !(editorTmp instanceof MultiPageNesCEditor)) {
-			throw new RuntimeException("----- Es war kein MultiPageNesCEditor");
-		}
-		ITextEditor editor = (ITextEditor) editorTmp;
-
-		if (editor instanceof MultiPageNesCEditor) {
-			return (MultiPageNesCEditor) editor;
-		} else {
-			throw new IllegalStateException(
-					"Rename Local Varibel Refactoring is only allowed if a NesC Editor is in use. But "+editor.getClass().getName()+" was in use.");
-		}
+			throw new RuntimeException("----- Was not MultiPageNesCEditor");
+		}else{
+			MultiPageNesCEditor multi=(MultiPageNesCEditor) editorTmp;
+			return multi.getNesCEditor();
+		} 
 	}
 
 }
