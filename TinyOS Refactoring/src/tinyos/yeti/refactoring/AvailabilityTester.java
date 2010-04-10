@@ -30,7 +30,12 @@ public class AvailabilityTester extends PropertyTester {
 			return false;
 		}
 		
-		return tester.test(selection);
+		try{
+			return tester.test(selection);
+		} catch (NullPointerException e) {
+			// Happens when the System is not jet initialized, but the Property is already checked.
+			return false;
+		}
 	}
 	
 	public interface IRefactoringAvailabilityTester{
