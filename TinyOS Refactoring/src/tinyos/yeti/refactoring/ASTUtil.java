@@ -73,15 +73,16 @@ public class ASTUtil {
 	 * 
 	 * @param root ASTNode which child's are checked for being Identifier with name indentifierName 
 	 * @param identifierName Name of the Identifier you are looking for
+	 * @param stopClass 
 	 * @return A list with all occurrences of Identifiers below the root parameter in the AST
 	 */
-	public static Collection<Identifier> getIncludedIdentifiers(ASTNode root, String identifierName){
+	public static <T> Collection<Identifier> getIncludedIdentifiers(ASTNode root, String identifierName,Class<T> stopClass){
 		LinkedList<Identifier> ret = new LinkedList<Identifier>();
-		getIncludedIdentifiers_sub(root, identifierName, ret);
+		getIncludedIdentifiers_sub(root, identifierName, ret,stopClass);
 		return ret;
 	}
 	
-	private static void getIncludedIdentifiers_sub(ASTNode root,String identifierName,Collection<Identifier> result){
+	private static <T> void getIncludedIdentifiers_sub(ASTNode root,String identifierName,Collection<Identifier> result,Class<T> stopClass){
 		ASTNode child=null;
 		Identifier identifier=null;
 		for(int i=0;i<root.getChildrenCount();++i){
@@ -90,10 +91,10 @@ public class ASTUtil {
 				if(child instanceof Identifier){
 					identifier=(Identifier)child;
 					if(identifier.getName().equals(identifierName)){
-						result.add((Identifier)child);
+						result.add(identifier);
 					}
-				} else {
-					getIncludedIdentifiers_sub(child, identifierName, result);
+				} else if(!child.getClass().equals(stopClass)){
+					getIncludedIdentifiers_sub(child, identifierName, result,stopClass);
 				}
 			}
 		}
