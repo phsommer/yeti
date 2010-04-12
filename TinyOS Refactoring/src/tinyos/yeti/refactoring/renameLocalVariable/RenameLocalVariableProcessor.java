@@ -70,7 +70,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus ret = new RefactoringStatus();
-		if(!isALocalVariableSelected()){
+		if(!isApplicable()){
 			ret.addFatalError("A local Variable must be selected.");
 		}
 	    IFile sourceFile = info.getInputFile();
@@ -99,7 +99,11 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 
 	@Override
 	public boolean isApplicable() throws CoreException {
-		return true;
+		//Tests if a LOCAL Variable is selected
+		Identifier identifier=getSelectedIdentifier();
+		if(identifier==null)return false;
+		CompoundStatement compound=findDeclaringCompoundStatement(identifier);
+		return compound!=null;
 	}
 
 	@Override
@@ -260,16 +264,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	}
 	
 
-	/**
-	 * True if a local Variable is selected.
-	 * @return
-	 */
-	private boolean isALocalVariableSelected(){
-		Identifier identifier=getSelectedIdentifier();
-		if(identifier==null)return false;
-		CompoundStatement compound=findDeclaringCompoundStatement(identifier);
-		return compound!=null;
-	}
+
 	
 	/**
 	 * Looks for the CompoundStatement which declares the given Identifier.
