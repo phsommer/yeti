@@ -2,6 +2,8 @@ package tinyos.yeti.refactoring.renameLocalVariable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -11,10 +13,10 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.DocumentChange;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
-import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RenameProcessor;
@@ -27,6 +29,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.refactoring.ASTUtil;
 
 public class RenameLocalVariableProcessor extends RenameProcessor {
@@ -101,15 +104,93 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	 * @param node
 	 * @return the FunctionDefinition which encloses the given Node, null if the Node is not in a Function.
 	 */
-	private FunctionDefinition getEnclosingFunction(ASTNode node) {
-		ASTNode parent = ASTUtil.getParentForName(node,FunctionDefinition.class);
+	private CompoundStatement getEnclosingCompound(ASTNode node) {
+		ASTNode parent = ASTUtil.getParentForName(node,CompoundStatement.class);
 		if (parent == null) {
-			System.err.println("NOT IN A FUNCTION!!!");
+			System.err.println("NOT IN A CompoundStatement!!!");
 			return null;
 		} else {
-			return (FunctionDefinition) parent;
+			return (CompoundStatement) parent;
 		}
 	}
+	
+	/**
+	 * returns all CompoundStatement one level deeper in the tree then the given.
+	 * This means that a CompoundStatement that is enclosed in a CompountStatement enclosed by the given CompoundStatement will not be added to the result.
+	 * @param parent
+	 * @return 
+	 */
+	private Collection<CompoundStatement> getEnclosedCompounds(ASTNode parent){
+		List<CompoundStatement> result=new LinkedList<CompoundStatement>();
+		getEnclosedCompounds_sub(parent, result);
+		return result;
+	}
+	
+	private void getEnclosedCompounds_sub(ASTNode parent,Collection<CompoundStatement> result){
+		ASTNode child=null;
+		for(int i=0;i<parent.getChildrenCount();++i){
+			child=parent.getChild(i);
+			if(child!=null){
+				if(child instanceof CompoundStatement){
+					result.add((CompoundStatement)child);
+				} else {
+					getEnclosedCompounds_sub(child,result);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Returns the Identifiers in the given CompoundStatement which are not in a sub CompountStatement of the given CompountStatement and contain no own Declarator.
+	 * @param compound
+	 * @param identifierName
+	 * @return The identifiers in the given Compound, which are not in a sub-Compound. EmptyList, if there are no identifiers, null if there are identifiers with an own declarator.
+	 */
+	private Collection<Identifier> getIdentifiersWithoutOwnDeclaration(CompoundStatement compound,String identifierName){
+		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName,CompoundStatement.class);
+		if(identifiers.size()==0){
+			return Collections.EMPTY_LIST;
+		}
+		if(getDeclaratorName(identifiers)==null){
+			return identifiers;
+		}else{
+			return null;
+		}
+	}
+	
+	/**
+	 * It is supposed, that the declaration is in the given CompoundStatement.
+	 * To find the declaring CompoundStatement, use findDeclaringCompoundStatement.
+	 * Then the Method collects all Occurrences of this identifier, which have no own declaration, in all subCompoundStatements.
+	 * @param compount
+	 * @param identifierName
+	 * @param result
+	 * @return
+	 */
+	private Collection<Identifier> getAllIdentifiers(CompoundStatement compound,String identifierName){
+		//Add identifiers of the current Compound. This Compound must declare The identifier.
+		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName, CompoundStatement.class);
+		Collection<CompoundStatement> candidates=getEnclosedCompounds(compound);
+		Collection<CompoundStatement> newCandidates=null;
+		Collection<Identifier> currentIdentifiers=null;
+		while(candidates.size()>0){
+			newCandidates=new LinkedList<CompoundStatement>();
+			currentIdentifiers=null;
+			for(CompoundStatement candidate:candidates){
+				currentIdentifiers=getIdentifiersWithoutOwnDeclaration(candidate, identifierName);
+				if(currentIdentifiers!=null){	//If identifiers==null then there was an own declaration in the compound
+					if(currentIdentifiers.size()>0){
+						identifiers.addAll(currentIdentifiers);
+					}
+					newCandidates.addAll(getEnclosedCompounds(candidate));
+				}
+			}
+			candidates=newCandidates;
+		}
+		return identifiers;
+	}
+	
+	
 	
 	/**
 	 * This Method can be used to Check, if these identifiers are part of a local variable.
@@ -129,11 +210,47 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	
 
 	private boolean isALocalVariableSelected(){
-		if(selectedIdentifiersIfLocal().size() != 0){
-			return true;
-		} else {
-			return false;
+		boolean result=selectedIdentifiersIfLocal().size() != 0;
+		return result;
+	}
+	
+	/**
+	 * Looks for the CompoundStatement which declares the given Identifier.
+	 * @param identifier
+	 * @return
+	 */
+	private CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
+		String name=identifier.getName();
+		ASTNode child=identifier;
+		CompoundStatement parent=null;
+		Collection<Identifier> identifiers=null;
+		boolean extendedToFunctionBorder=false;
+		boolean foundDeclaration=false;
+		//Search for the declaration in the current and upper CompountStatements, add all found Identifiers.
+		while(!foundDeclaration){
+
+			//Find Enclosing CompoundStatement
+			parent = getEnclosingCompound(child);
+			if(parent==null)return null;
+			if(parent.getParent() instanceof FunctionDefinition){
+				extendedToFunctionBorder=true;
+			}
+			//Get Identifiers in Compound with same Name
+			identifiers=ASTUtil.getIncludedIdentifiers(parent, name,CompoundStatement.class);
+
+			//Check if the declaration is in the actual compound statement. If so, this is a local variable
+			if(getDeclaratorName(identifiers)!=null){
+				foundDeclaration=true;
+			}
+			else{
+				if(extendedToFunctionBorder&&!foundDeclaration){	//This is not a local variable
+					return null;
+				} 
+			}
+			//Maybe the declaration of the variable is in an CompountStatement outside the actual one but inside the FunctionDefinition-->Do another round
+			child=parent;
 		}
+		return parent;
 	}
 	
 	
@@ -145,24 +262,18 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	private Collection<Identifier> selectedIdentifiersIfLocal(){
 		//setup
 		utility = new ASTUtil(ast);
-		
-		
-		
-	//Find currently selected Element
+		//Find currently selected Element
 		Identifier currentlySelected=getSelectedIdentifier();
-		if(currentlySelected==null)return Collections.emptyList();;
+		if(currentlySelected==null)	//The Selection is not an Identifier
+			return Collections.EMPTY_LIST;
 		
-		
-	//Find Enclosing Function Definition
-		FunctionDefinition parent = getEnclosingFunction(currentlySelected);
-		if(parent==null)return Collections.emptyList();;
-		
-	//Get Identifiers in Function with same Name
-		 Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(parent, currentlySelected.getName());
-
-	//Check if this is a Local Variable.
-		 if(getDeclaratorName(identifiers)==null)return Collections.emptyList();
-		 return identifiers;
+		//Find the CompoundStatement which declares the identifier
+		CompoundStatement declaringCompound=findDeclaringCompoundStatement(currentlySelected);
+		if(declaringCompound==null){	//Declaration is not within Function.
+			return Collections.EMPTY_LIST;
+		}
+		Collection<Identifier> identifiers=getAllIdentifiers(declaringCompound, currentlySelected.getName());
+		return identifiers;
 	}
 	
 
@@ -175,9 +286,13 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		
 	//Create The Changes
 		MultiTextEdit multiTextEdit=new MultiTextEdit();
-		TextChange renameOneOccurence = new TextFileChange(
-				"Replacing Variable " + info.getOldName() + " with "
-						+ info.getNewName() + " in File " + inputFile,inputFile);
+//		TextChange renameOneOccurence = new TextFileChange(
+//				"Replacing Variable " + info.getOldName() + " with "
+//						+ info.getNewName() + " in File " + inputFile,inputFile);
+        TextChange renameOneOccurence = new DocumentChange(
+                "Replacing Variable " + info.getOldName() + " with "
+                        + info.getNewName() + " in Document " + 
+                        inputFile,info.getEditor().getDocument());
 		renameOneOccurence.setEdit(multiTextEdit);
 		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
 		ret.add(renameOneOccurence);
