@@ -13,10 +13,10 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
-import org.eclipse.ltk.core.refactoring.DocumentChange;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
+import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RenameProcessor;
@@ -52,7 +52,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 
 		selection = (ITextSelection) selectionTmp;
 	}
-	
 
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
@@ -82,7 +81,59 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	    } 
 		return ret;
 	}
-	
+
+	@Override
+	public Object[] getElements() {
+		return new Object[]{info.getEditor().getEditorInput()};
+	}
+
+	@Override
+	public String getIdentifier() {
+		return "tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableProcessor";	
+	}
+
+	@Override
+	public String getProcessorName() {
+		return "Rename Local Variable Prozessor";
+	}
+
+	@Override
+	public boolean isApplicable() throws CoreException {
+		return true;
+	}
+
+	@Override
+	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,
+			SharableParticipants sharedParticipants) throws CoreException {
+		return new RefactoringParticipant[0];
+	}
+
+	@Override
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		
+		IFile inputFile = info.getInputFile();
+	//Create The Changes
+		MultiTextEdit multiTextEdit=new MultiTextEdit();
+		String changeName="Replacing Variable " + info.getOldName() + " with "+ info.getNewName() + " in Document " + inputFile;
+		TextChange renameOneOccurence = new TextFileChange(changeName,inputFile);
+//		IDocument document=info.getEditor().getDocument();
+//      TextChange renameOneOccurence = new DocumentChange(changeName,document);
+		renameOneOccurence.setEdit(multiTextEdit);
+		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
+		ret.add(renameOneOccurence);
+		Collection<Identifier> identifiers=this.selectedIdentifiersIfLocal();
+		if(identifiers.size()==0){
+			return new NullChange();
+		}
+		for (Identifier identifier : identifiers) {
+			int beginOffset = utility.start(identifier);
+			int endOffset=utility.end(identifier);
+			int length = endOffset-beginOffset;
+			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info.getNewName()));
+		}
+		return ret;
+	}
 	
 	/**
 	 * 
@@ -209,9 +260,15 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	}
 	
 
+	/**
+	 * True if a local Variable is selected.
+	 * @return
+	 */
 	private boolean isALocalVariableSelected(){
-		boolean result=selectedIdentifiersIfLocal().size() != 0;
-		return result;
+		Identifier identifier=getSelectedIdentifier();
+		if(identifier==null)return false;
+		CompoundStatement compound=findDeclaringCompoundStatement(identifier);
+		return compound!=null;
 	}
 	
 	/**
@@ -260,8 +317,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	 * @return All Occurrences in the Method of the selected identifier, immutable EmptyList if the above checks fail.
 	 */
 	private Collection<Identifier> selectedIdentifiersIfLocal(){
-		//setup
-		utility = new ASTUtil(ast);
 		//Find currently selected Element
 		Identifier currentlySelected=getSelectedIdentifier();
 		if(currentlySelected==null)	//The Selection is not an Identifier
@@ -274,65 +329,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		}
 		Collection<Identifier> identifiers=getAllIdentifiers(declaringCompound, currentlySelected.getName());
 		return identifiers;
-	}
-	
-
-	@Override
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		
-
-		IFile inputFile = info.getInputFile();
-		
-	//Create The Changes
-		MultiTextEdit multiTextEdit=new MultiTextEdit();
-//		TextChange renameOneOccurence = new TextFileChange(
-//				"Replacing Variable " + info.getOldName() + " with "
-//						+ info.getNewName() + " in File " + inputFile,inputFile);
-        TextChange renameOneOccurence = new DocumentChange(
-                "Replacing Variable " + info.getOldName() + " with "
-                        + info.getNewName() + " in Document " + 
-                        inputFile,info.getEditor().getDocument());
-		renameOneOccurence.setEdit(multiTextEdit);
-		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
-		ret.add(renameOneOccurence);
-		Collection<Identifier> identifiers=this.selectedIdentifiersIfLocal();
-		if(identifiers.size()==0){
-			return new NullChange();
-		}
-		for (Identifier identifier : identifiers) {
-			int beginOffset = utility.start(identifier);
-			int endOffset=utility.end(identifier);
-			int length = endOffset-beginOffset;
-			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info.getNewName()));
-		}
-		return ret;
-	}
-
-	@Override
-	public Object[] getElements() {
-		return new Object[]{info.getEditor().getEditorInput()};
-	}
-
-	@Override
-	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableProcessor";	
-	}
-
-	@Override
-	public String getProcessorName() {
-		return "Rename Local Variable Prozessor";
-	}
-
-	@Override
-	public boolean isApplicable() throws CoreException {
-		return true;
-	}
-
-	@Override
-	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,
-			SharableParticipants sharedParticipants) throws CoreException {
-		return new RefactoringParticipant[0];
 	}
 
 }
