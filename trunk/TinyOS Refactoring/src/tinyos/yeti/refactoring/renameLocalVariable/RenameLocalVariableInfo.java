@@ -4,13 +4,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
-import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
+import tinyos.yeti.refactoring.rename.RenameInfo;
 
-public class RenameLocalVariableInfo {
-	private String oldName;
-	private String newName = null;
-	private String inputPageName = "Getting the new Variable name.";
+public class RenameLocalVariableInfo extends RenameInfo{
 	private NesCEditor editor;
 
 	public void setEditor(NesCEditor editor) {
@@ -22,27 +19,8 @@ public class RenameLocalVariableInfo {
 	}
 
 	public RenameLocalVariableInfo(String oldName) {
-		this.oldName = oldName;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
-	}
-
-	public String getOldName() {
-		return oldName;
-	}
-
-	public void setInputPageName(String inputPageName) {
-		this.inputPageName = inputPageName;
-	}
-
-	public String getInputPageName() {
-		return inputPageName;
+		super(oldName);
+		this.setInputWizardName("Rename local Varible");
 	}
 
 	/**
