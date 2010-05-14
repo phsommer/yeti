@@ -196,7 +196,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	private Collection<Identifier> getIdentifiersWithoutOwnDeclaration(CompoundStatement compound,String identifierName){
 		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName,CompoundStatement.class);
 		if(identifiers.size()==0){
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		if(getDeclaratorName(identifiers)==null){
 			return identifiers;
@@ -307,12 +307,12 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		//Find currently selected Element
 		Identifier currentlySelected=getSelectedIdentifier();
 		if(currentlySelected==null)	//The Selection is not an Identifier
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		
 		//Find the CompoundStatement which declares the identifier
 		CompoundStatement declaringCompound=findDeclaringCompoundStatement(currentlySelected);
 		if(declaringCompound==null){	//Declaration is not within Function.
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		Collection<Identifier> identifiers=getAllIdentifiers(declaringCompound, currentlySelected.getName());
 		return identifiers;
