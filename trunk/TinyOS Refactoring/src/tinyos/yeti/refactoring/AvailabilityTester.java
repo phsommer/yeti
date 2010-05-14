@@ -8,11 +8,12 @@ import org.eclipse.jface.text.ITextSelection;
 
 public class AvailabilityTester extends PropertyTester {
 
-	private enum Properies {renameLocalVariable};
+	private enum Properies {renameLocalVariable, renameGlobalVariable};
 	private Map<Properies, IRefactoringAvailabilityTester> testerMap = new HashMap<Properies,IRefactoringAvailabilityTester>(); 
 	
 	public AvailabilityTester() {
 		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.renameLocalVariable.AvailabilityTester());
+		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.renameGlobalVariable.AvailabilityTester());
 	}
 
 	@Override
