@@ -1,7 +1,10 @@
 package tinyos.yeti.refactoring;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
@@ -49,6 +52,27 @@ public class ASTUtil {
 		} else {
 			// Happens for example if the Cursor is at a blank position
 			return null;
+		}
+	}
+	
+/**
+ * 
+ * @param <T> The type which the Leaf is you are looking for. 
+ * @param pos The Position where the leaf you are looking for is.
+ * @param type	The type which the Leaf is you are looking for. 
+ * @throws ClassCastException If the Leaf at Position pos is not of Type T
+ * @return
+ */
+	@SuppressWarnings("unchecked") // Eclipse thinks that we have a unchecked Class cast. But it's not unchecked.
+	public <T extends ASTNode> T getASTLeafAtPos(int pos,Class<T> type) throws ClassCastException{
+		ASTNode currentlySelected = this.getASTLeafAtPos(pos);
+		
+		if(type.isInstance(currentlySelected)){
+			return (T) currentlySelected;
+		} else {
+			throw new ClassCastException("The Element at Poition "+pos+
+					" is not a "+type.getName() + " but of Type " + 
+					currentlySelected.getClass().getName());
 		}
 	}
 	
