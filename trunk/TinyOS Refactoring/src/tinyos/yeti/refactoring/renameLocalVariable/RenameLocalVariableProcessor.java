@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.NullChange;
@@ -31,6 +30,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.refactoring.ASTUtil;
+import tinyos.yeti.refactoring.ActionHandlerUtil;
 
 public class RenameLocalVariableProcessor extends RenameProcessor {
 
@@ -44,13 +44,8 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		this.info = info;
 		ast=(NesC12AST) info.getEditor().getAST();
 		utility=new ASTUtil(ast);
-		ISelection selectionTmp = info.getEditor().getSelectionProvider().getSelection();
 
-		if (selectionTmp.isEmpty() || !(selectionTmp instanceof ITextSelection)) {
-			throw new RuntimeException("----- Es war keine ITextSelection");
-		}
-
-		selection = (ITextSelection) selectionTmp;
+		selection = ActionHandlerUtil.getSelection(info.getEditor());
 	}
 
 	@Override
@@ -73,7 +68,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		if(!isApplicable()){
 			ret.addFatalError("A local Variable must be selected.");
 		}
-	    IFile sourceFile = info.getInputFile();
+	    IFile sourceFile = ActionHandlerUtil.getInputFile(info.getEditor());
 	    if( sourceFile == null || !sourceFile.exists() ) {
 	      ret.addFatalError( "The File you want wo Refactor, does not exist." );
 	    } else if( sourceFile.isReadOnly() ) {
@@ -116,7 +111,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		
-		IFile inputFile = info.getInputFile();
+		IFile inputFile = ActionHandlerUtil.getInputFile(info.getEditor());
 	//Create The Changes
 		MultiTextEdit multiTextEdit=new MultiTextEdit();
 		String changeName="Replacing Variable " + info.getOldName() + " with "+ info.getNewName() + " in Document " + inputFile;
@@ -145,12 +140,9 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	 */
 	private Identifier getSelectedIdentifier(){
 		int selectionStart = selection.getOffset();
-		ASTNode currentlySelected = utility.getASTLeafAtPos(selectionStart);
-		
-		if(currentlySelected instanceof Identifier){
-			return (Identifier) currentlySelected;
-		}else{
-			System.err.println("SELECTION IS NOT AN IDENTIFIER!!!");
+		try{
+			return utility.getASTLeafAtPos(selectionStart,Identifier.class);
+		} catch (ClassCastException e) {
 			return null;
 		}
 	}

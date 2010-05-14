@@ -3,24 +3,15 @@ package tinyos.yeti.refactoring.renameLocalVariable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.ui.IEditorPart;
 
-import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
-import tinyos.yeti.refactoring.RefactoringPlugin;
+import tinyos.yeti.refactoring.ActionHandlerUtil;
 
 public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester {
 
 	@Override
 	public boolean test(ITextSelection receiver) {
-		IEditorPart editor_object = RefactoringPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		NesCEditor editor;
-		if(editor_object instanceof MultiPageNesCEditor){
-			editor = ((MultiPageNesCEditor) editor_object).getNesCEditor();
-		} else {
-			System.err.println("editor ist keine MultiPageNesCEditor, sondern: "+editor_object.getClass().getCanonicalName());
-			return false;
-		}
+		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
 		
 		RenameLocalVariableInfo info = new RenameLocalVariableInfo("");
 		info.setEditor(editor);
