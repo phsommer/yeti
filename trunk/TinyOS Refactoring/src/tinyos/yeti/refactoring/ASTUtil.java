@@ -1,10 +1,7 @@
 package tinyos.yeti.refactoring;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-
-import org.eclipse.ui.dialogs.ListSelectionDialog;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
