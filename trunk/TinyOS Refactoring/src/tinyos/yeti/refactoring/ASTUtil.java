@@ -3,6 +3,11 @@ package tinyos.yeti.refactoring;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.eclipse.ui.IEditorPart;
+
+import tinyos.yeti.editors.MultiPageNesCEditor;
+import tinyos.yeti.editors.NesCEditor;
+import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -15,7 +20,55 @@ public class ASTUtil {
 	
 	private NesC12AST ast;
 	private PreprocessorReader reader;
+	
+	/**
+	 * Finds the editor by itself. Attention, this Constructor works only if the Editor has the Focus. 
+	 * As soon as an other Window opens, this is no longer the case.
+	 * @throws NullPointerException If the AST is not yet initialized.
+	 * @throws IllegalStateException If the found AST or Editor is not of the expected type.
+	 */
+	public ASTUtil(){
+		IEditorPart editorPart = 
+			RefactoringPlugin.
+				getDefault().
+				getWorkbench().
+				getActiveWorkbenchWindow().
+				getActivePage().
+				getActiveEditor();
+		
+		NesCEditor editor = null;
+		if(editorPart instanceof NesCEditor){
+			editor = (NesCEditor)editorPart;
+		} else if (editorPart instanceof MultiPageNesCEditor) {
+			editor = ((MultiPageNesCEditor) editorPart).getNesCEditor();
+		} else {
+			throw new IllegalStateException("Found editor was not a NesCEditor but a " + editorPart.getClass().getCanonicalName());
+		}
+		INesCAST ast = editor.getAST();
+		if(ast instanceof NesC12AST){
+			init((NesC12AST) ast);
+		} else if(ast == null){
+			throw new NullPointerException("The AST must not be NULL");
+		} else {
+			(new Exception()).printStackTrace();
+			throw new IllegalStateException("The AST of the Editor has to be a NesC12AST but was "+ ast.getClass().getCanonicalName());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param ast The AST to be used. Must not be NULL
+	 * @throws NullPointerException if the ast is NULL
+	 */
 	public ASTUtil(NesC12AST ast){
+		if(ast == null){
+			throw new NullPointerException("The given AST must not be NULL");
+		}
+		init(ast);
+	}
+	
+	
+	private void init(NesC12AST ast){
 		this.ast=ast;
 		reader=ast.getReader();
 	}
