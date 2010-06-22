@@ -189,5 +189,18 @@ public class ASTUtil {
 	public int end(ASTNode node){
 		return reader.inputLocation(ast.getOffsetAtEnd(node).getPreprocessedOffset(), true);
 	}
+	
+	/**
+	 * Returns the Children of a node as Collection of ASTNode
+	 * @param node
+	 * @return
+	 */
+	public static Collection<ASTNode> getChilds(ASTNode node){
+		Collection<ASTNode> ret = new LinkedList<ASTNode>();
+		for(int i = 0; i < node.getChildrenCount(); i++){
+			ret.add(node.getChild(i));
+		}
+		return ret;
+	}
 
 }
