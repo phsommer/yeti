@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.NullChange;
@@ -35,14 +34,10 @@ import tinyos.yeti.refactoring.rename.RenameProcessor;
 public class RenameLocalVariableProcessor extends RenameProcessor {
 
 	private RenameInfo info;
-	private ITextSelection selection;
-	private ASTUtil utility;
 
 	public RenameLocalVariableProcessor(RenameInfo info) {
 		super(info);
 		this.info = info;
-
-		selection = ActionHandlerUtil.getSelection(info.getEditor());
 	}
 
 	@Override
@@ -132,19 +127,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		return ret;
 	}
 	
-	/**
-	 * 
-	 * @return	The Currently Selected Identifier, null if not an Identifier is Selected.
-	 */
-	private Identifier getSelectedIdentifier(){
-		int selectionStart = selection.getOffset();
-		try{
-			return utility.getASTLeafAtPos(selectionStart,Identifier.class);
-		} catch (ClassCastException e) {
-			return null;
-		}
-	}
-	
+
 	/**
 	 * @param node
 	 * @return the FunctionDefinition which encloses the given Node, null if the Node is not in a Function.
