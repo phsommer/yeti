@@ -1,19 +1,24 @@
 package tinyos.yeti.refactoring.rename;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.ITextSelection;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ASTUtil;
+import tinyos.yeti.refactoring.ActionHandlerUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 
 	private RenameInfo info;
 	private ASTUtil utility;
+	private ITextSelection selection;
 
 	public RenameProcessor(RenameInfo info) {
 		super();
 		this.info = info;
 
+		selection = ActionHandlerUtil.getSelection(info.getEditor());
 	}
 
 	@Override
@@ -35,5 +40,24 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			}
 		}
 		return utility;
+	}
+
+	/**
+	 * 
+	 * @return	The Currently Selected Identifier, null if not an Identifier is Selected.
+	 */
+	protected Identifier getSelectedIdentifier() {
+		int selectionStart = getSelection().getOffset();
+		try{
+			return utility.getASTLeafAtPos(selectionStart,Identifier.class);
+		} catch (ClassCastException e) {
+			return null;
+		}
+	}
+
+
+
+	protected ITextSelection getSelection() {
+		return selection;
 	}
 }
