@@ -7,14 +7,16 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
-import org.eclipse.ltk.core.refactoring.participants.RenameProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
+
+import tinyos.yeti.refactoring.rename.RenameProcessor;
 
 public class Processor extends RenameProcessor{
 
 	private Info info;
 	
 	public Processor(Info info) {
+		super(info);
 		this.info = info;
 	}
 	
@@ -39,7 +41,8 @@ public class Processor extends RenameProcessor{
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		// TODO Auto-generated method stub
+
+		
 		return null;
 	}
 
@@ -63,8 +66,7 @@ public class Processor extends RenameProcessor{
 
 	@Override
 	public boolean isApplicable() throws CoreException {
-		// TODO Auto-generated method stub
-		return false;
+		return super.isApplicable();
 	}
 
 	@Override
