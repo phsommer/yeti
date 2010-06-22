@@ -27,7 +27,7 @@ public class ActionHandler extends AbstractHandler implements IHandler{
 		String oldName =id.getName();
 
 		
-		Info info = new Info(oldName);
+		Info info = new Info(oldName,editor);
 		Processor processor = new Processor(info);
 		RenameRefactoring refactoring = new RenameRefactoring(processor);
 		DefaultRefactoringWizard wizard = new DefaultRefactoringWizard(
