@@ -22,7 +22,7 @@ public class ASTUtil4Variables {
 	 * @param result
 	 * @return
 	 */
-	public Collection<Identifier> getAllIdentifiers(CompoundStatement compound,String identifierName){
+	public Collection<Identifier> getAllIdentifiers(ASTNode compound,String identifierName){
 		//Add identifiers of the current Compound. This Compound must declare The identifier.
 		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName, CompoundStatement.class);
 		Collection<CompoundStatement> candidates=getEnclosedCompounds(compound);
