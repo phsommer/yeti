@@ -31,19 +31,17 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.refactoring.ASTUtil;
 import tinyos.yeti.refactoring.ActionHandlerUtil;
+import tinyos.yeti.refactoring.rename.RenameInfo;
 
 public class RenameLocalVariableProcessor extends RenameProcessor {
 
-	private RenameLocalVariableInfo info;
-	private NesC12AST ast;
+	private RenameInfo info;
 	private ITextSelection selection;
 	private ASTUtil utility;
 
-	public RenameLocalVariableProcessor(RenameLocalVariableInfo info) {
+	public RenameLocalVariableProcessor(RenameInfo info) {
 		super();
 		this.info = info;
-		ast=(NesC12AST) info.getEditor().getAST();
-		utility=new ASTUtil(ast);
 
 		selection = ActionHandlerUtil.getSelection(info.getEditor());
 	}
@@ -56,7 +54,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	    if(info.getNewName() == null){
 	    	ret.addFatalError("Please enter a new Name for the Variabel.");
 	    }
-	    
 	    
 	    return ret;
 	}
@@ -94,6 +91,8 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 
 	@Override
 	public boolean isApplicable() throws CoreException {
+		// If the AST Util is not available, the refactoring is not available
+		if(getAstUtil() == null) return false;
 		//Tests if a LOCAL Variable is selected
 		Identifier identifier=getSelectedIdentifier();
 		if(identifier==null)return false;
@@ -126,8 +125,8 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 			return new NullChange();
 		}
 		for (Identifier identifier : identifiers) {
-			int beginOffset = utility.start(identifier);
-			int endOffset=utility.end(identifier);
+			int beginOffset = getAstUtil().start(identifier);
+			int endOffset=getAstUtil().end(identifier);
 			int length = endOffset-beginOffset;
 			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info.getNewName()));
 		}
@@ -316,6 +315,22 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		}
 		Collection<Identifier> identifiers=getAllIdentifiers(declaringCompound, currentlySelected.getName());
 		return identifiers;
+	}
+	
+	
+	/**
+	 * Often the first initialization of the Class is before the AST is ready.
+	 * This getter makes sure the AST is used, as soon as it is available.
+	 * @return
+	 */
+	private ASTUtil getAstUtil(){
+		if(utility == null){
+			NesC12AST ast=(NesC12AST) info.getEditor().getAST();
+			if(ast != null){
+				utility=new ASTUtil(ast);
+			}
+		}
+		return utility;
 	}
 
 }
