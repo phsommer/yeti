@@ -108,12 +108,12 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	//Create The Changes
 		MultiTextEdit multiTextEdit=new MultiTextEdit();
 		String changeName="Replacing Variable " + info.getOldName() + " with "+ info.getNewName() + " in Document " + inputFile;
-		TextChange renameOneOccurence = new TextFileChange(changeName,inputFile);
+		TextChange renameAllOccurences = new TextFileChange(changeName,inputFile);
 //		IDocument document=info.getEditor().getDocument();
 //      TextChange renameOneOccurence = new DocumentChange(changeName,document);
-		renameOneOccurence.setEdit(multiTextEdit);
+		renameAllOccurences.setEdit(multiTextEdit);
 		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
-		ret.add(renameOneOccurence);
+		ret.add(renameAllOccurences);
 		Collection<Identifier> identifiers=this.selectedIdentifiersIfLocal();
 		if(identifiers.size()==0){
 			return new NullChange();
