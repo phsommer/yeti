@@ -6,6 +6,7 @@ import org.eclipse.jface.text.ITextSelection;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.refactoring.ActionHandlerUtil;
+import tinyos.yeti.refactoring.rename.RenameInfo;
 
 public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester {
 
@@ -13,7 +14,7 @@ public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityT
 	public boolean test(ITextSelection receiver) {
 		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
 		
-		RenameLocalVariableInfo info = new RenameLocalVariableInfo("");
+		RenameInfo info = new RenameLocalVariableInfo("",editor);
 		info.setEditor(editor);
 		RenameLocalVariableProcessor processor = new RenameLocalVariableProcessor(info);
 		try {
