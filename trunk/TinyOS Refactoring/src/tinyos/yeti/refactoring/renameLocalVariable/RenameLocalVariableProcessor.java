@@ -18,12 +18,10 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
-import org.eclipse.ltk.core.refactoring.participants.RenameProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
-import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
@@ -32,6 +30,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.refactoring.ASTUtil;
 import tinyos.yeti.refactoring.ActionHandlerUtil;
 import tinyos.yeti.refactoring.rename.RenameInfo;
+import tinyos.yeti.refactoring.rename.RenameProcessor;
 
 public class RenameLocalVariableProcessor extends RenameProcessor {
 
@@ -40,7 +39,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	private ASTUtil utility;
 
 	public RenameLocalVariableProcessor(RenameInfo info) {
-		super();
+		super(info);
 		this.info = info;
 
 		selection = ActionHandlerUtil.getSelection(info.getEditor());
@@ -316,21 +315,4 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		Collection<Identifier> identifiers=getAllIdentifiers(declaringCompound, currentlySelected.getName());
 		return identifiers;
 	}
-	
-	
-	/**
-	 * Often the first initialization of the Class is before the AST is ready.
-	 * This getter makes sure the AST is used, as soon as it is available.
-	 * @return
-	 */
-	private ASTUtil getAstUtil(){
-		if(utility == null){
-			NesC12AST ast=(NesC12AST) info.getEditor().getAST();
-			if(ast != null){
-				utility=new ASTUtil(ast);
-			}
-		}
-		return utility;
-	}
-
 }
