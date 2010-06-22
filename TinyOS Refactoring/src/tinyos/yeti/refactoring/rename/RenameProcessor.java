@@ -6,6 +6,7 @@ import org.eclipse.jface.text.ITextSelection;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ASTUtil;
+import tinyos.yeti.refactoring.ASTUtil4Variables;
 import tinyos.yeti.refactoring.ActionHandlerUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
@@ -13,6 +14,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	private RenameInfo info;
 	private ASTUtil utility;
 	private ITextSelection selection;
+	private ASTUtil4Variables varUtil = new ASTUtil4Variables();
 
 	public RenameProcessor(RenameInfo info) {
 		super();
@@ -59,5 +61,10 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 
 	protected ITextSelection getSelection() {
 		return selection;
+	}
+
+
+	protected ASTUtil4Variables getVarUtil() {
+		return varUtil;
 	}
 }
