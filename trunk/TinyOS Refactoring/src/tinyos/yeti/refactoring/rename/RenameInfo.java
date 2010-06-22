@@ -1,5 +1,7 @@
 package tinyos.yeti.refactoring.rename;
 
+import tinyos.yeti.editors.NesCEditor;
+
 public class RenameInfo {
 
 	private String oldName;
@@ -7,9 +9,11 @@ public class RenameInfo {
 	private String inputPageName = "Getting the new Variable name.";
 	private String newNameFieldLabel = "New Name:";
 	private String inputWizardName = "Rename";
+	private NesCEditor editor;
 	
-	public RenameInfo(String oldName) {
+	public RenameInfo(String oldName, NesCEditor editor) {
 		this.oldName=oldName;
+		this.editor = editor;
 	}
 	
 	public String getNewName() {
@@ -46,6 +50,14 @@ public class RenameInfo {
 
 	public String getInputWizardName() {
 		return inputWizardName;
+	}
+
+	public void setEditor(NesCEditor editor) {
+		this.editor = editor;
+	}
+
+	public NesCEditor getEditor() {
+		return editor;
 	}
 	
 	

@@ -5,12 +5,12 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.refactoring.DefaultRefactoringWizard;
+import tinyos.yeti.refactoring.rename.RenameInfo;
 
 public class RenameLocalVariableDelegateCommonWork {
 	public void doWork(NesCEditor editor) {
 		String oldName = "";
-		RenameLocalVariableInfo info = new RenameLocalVariableInfo(oldName);
-		info.setEditor(editor);
+		RenameInfo info = new RenameLocalVariableInfo(oldName,editor);
 		RenameLocalVariableProcessor processor = new RenameLocalVariableProcessor(info);
 		RenameRefactoring refactoring = new RenameRefactoring(processor);
 		DefaultRefactoringWizard wizard = new DefaultRefactoringWizard(
