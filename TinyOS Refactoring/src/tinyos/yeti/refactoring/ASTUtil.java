@@ -203,4 +203,7 @@ public class ASTUtil {
 		return ret;
 	}
 
+	public NesC12AST getAST(){
+		return ast;
+	}
 }
