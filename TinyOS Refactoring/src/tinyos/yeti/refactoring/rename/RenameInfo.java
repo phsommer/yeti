@@ -13,6 +13,7 @@ public class RenameInfo {
 	
 	public RenameInfo(String oldName, NesCEditor editor) {
 		this.oldName=oldName;
+		this.newName = oldName; // Is a good default, if it is not done and the User does not change the Name, a Nullpoiter Exception occures
 		this.editor = editor;
 	}
 	
