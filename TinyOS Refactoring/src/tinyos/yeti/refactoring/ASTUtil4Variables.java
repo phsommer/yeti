@@ -59,9 +59,7 @@ public class ASTUtil4Variables {
 	}
 	
 	private void getEnclosedCompounds_sub(ASTNode parent,Collection<CompoundStatement> result){
-		ASTNode child=null;
-		for(int i=0;i<parent.getChildrenCount();++i){
-			child=parent.getChild(i);
+		for(ASTNode child: ASTUtil.getChilds(parent)){
 			if(child!=null){
 				if(child instanceof CompoundStatement){
 					result.add((CompoundStatement)child);
