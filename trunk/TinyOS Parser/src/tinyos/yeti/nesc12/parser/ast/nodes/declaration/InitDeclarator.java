@@ -128,6 +128,10 @@ public class InitDeclarator extends AbstractFixedASTNode {
 
 		return resolved( "name", decl.resolveName() );
 	}
+	
+	public Field resolveField(){
+		return resolved( "field" );
+	}
 
 	@Override
 	public void resolve( AnalyzeStack stack ) {
@@ -154,6 +158,7 @@ public class InitDeclarator extends AbstractFixedASTNode {
 			stack.remove( TYPEDEF );
 
 		Field field = resolveDeclaration( stack, redeclaration, typedef );
+		resolved( "field", field );
 		resolve( 1, stack );
 		resolveInitializer( stack, field, typedef );
 
