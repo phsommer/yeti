@@ -7,6 +7,7 @@ import java.util.List;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
+import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
@@ -104,5 +105,51 @@ public class ASTUtil4Variables {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Looks for the CompoundStatement which declares the given Identifier.
+	 * @param identifier
+	 * @return
+	 */
+	public CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
+		String name=identifier.getName();
+		ASTNode child=identifier;
+		CompoundStatement parent=null;
+		Collection<Identifier> identifiers=null;
+		boolean extendedToFunctionBorder=false;
+		boolean foundDeclaration=false;
+		//Search for the declaration in the current and upper CompountStatements, add all found Identifiers.
+		while(!foundDeclaration){
+
+			//Find Enclosing CompoundStatement
+			parent = ASTUtil.getEnclosingCompound(child);
+			if(parent==null)return null;
+			if(parent.getParent() instanceof FunctionDefinition){
+				extendedToFunctionBorder=true;
+			}
+			//Get Identifiers in Compound with same Name
+			identifiers=ASTUtil.getIncludedIdentifiers(parent, name,CompoundStatement.class);
+
+			//Check if the declaration is in the actual compound statement. If so, this is a local variable
+			if(getDeclaratorName(identifiers)!=null){
+				foundDeclaration=true;
+			}
+			else{
+				if(extendedToFunctionBorder&&!foundDeclaration){	//This is not a local variable
+					return null;
+				} 
+			}
+			//Maybe the declaration of the variable is in an CompountStatement outside the actual one but inside the FunctionDefinition-->Do another round
+			child=parent;
+		}
+		return parent;
+	}
+	
+
+	
+	public boolean isLocalVariable(Identifier variable){
+		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
+		return (declaringCompound!=null);
 	}
 }
