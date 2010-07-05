@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -15,7 +16,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
-import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
@@ -28,7 +28,9 @@ import org.eclipse.text.edits.ReplaceEdit;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.builder.ProjectResourceCollector;
 import tinyos.yeti.ep.IParseFile;
+import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.ep.parser.INesCParser;
+import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.ep.parser.standard.ASTModelPath;
 import tinyos.yeti.model.ProjectModel;
@@ -120,16 +122,37 @@ public class Processor extends RenameProcessor {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param file
+	 *            The File which you would like to know whether the variable
+	 *            occurs in
+	 * @param variable
+	 *            The Identifier which represents the occurents in the momentary
+	 *            edited File
+	 * @param monitor
+	 * @return
+	 * @throws MissingNatureException
+	 */
 	private boolean containsOccurenceOfVariable(IFile file,
 			Identifier variable, IProgressMonitor monitor)
 			throws MissingNatureException {
 		ASTModelPath fPath = getPathOfVariable(variable);
 		ProjectModel model = TinyOSPlugin.getDefault().getProjectTOS(
 				info.getEditor().getProject()).getModel();
+
 		IASTReference[] referenceArray = model.getReferences(model
 				.parseFile(file), monitor);
 		for (IASTReference ref : referenceArray) {
 			if (ref.getTarget().equals(fPath)) {
+				return true;
+			}
+		}
+		
+		
+		List<IDeclaration> declarations = model.getDeclarations(Kind.FIELD);
+		for(IDeclaration dec: declarations){
+			if(dec.getPath().equals(fPath)){
 				return true;
 			}
 		}
@@ -144,25 +167,31 @@ public class Processor extends RenameProcessor {
 	 * @return
 	 */
 	private ASTModelPath getPathOfVariable(Identifier variable) {
-		IdentifierExpression ie = (IdentifierExpression) ASTUtil
-				.getParentForName(variable, IdentifierExpression.class);
-		if (ie != null) {
-			// this might return null if the node is unknown
-			return ie.resolveField().getPath();
+		ASTModelPath ret = null;
+
+		if (ret == null) {
+			IdentifierExpression ie = (IdentifierExpression) ASTUtil
+					.getParentForName(variable, IdentifierExpression.class);
+
+			if (ie != null) {
+				// this might return null if the node is unknown
+				ret = ie.resolveField().getPath();
+			}
 		}
 
-		InitDeclarator id = (InitDeclarator) ASTUtil.getParentForName(variable,
-				InitDeclarator.class);
-		if (id != null) {
-			// this might return null if the node is unknown
-			return id.resolveField().getPath();
+		if (ret == null) {
+			InitDeclarator id = (InitDeclarator) ASTUtil.getParentForName(
+					variable, InitDeclarator.class);
+			if (id != null) {
+				// this might return null if the node is unknown
+				ret = id.resolveField().getPath();
+			}
 		}
 
-		return null;
+		return ret;
 	}
 
-	private Collection<IFile> getFilesContainingVariable(Identifier variable,
-			IProgressMonitor pm) throws CoreException {
+	private Collection<IResource> getAllFiles() throws CoreException{
 		IProject project = info.getEditor().getProject();
 		ProjectResourceCollector collector = new ProjectResourceCollector();
 		try {
@@ -178,9 +207,16 @@ public class Processor extends RenameProcessor {
 					"Plugin wasn't ready while calling Rename global Variable Refactoring: "
 							+ e.getMessage()));
 		}
+		
+		return collector.resources;
+	}
+	
+	private Collection<IFile> getFilesContainingVariable(Identifier variable,
+			IProgressMonitor pm) throws CoreException {
+		Collection<IResource> rescources = getAllFiles();
 
 		LinkedList<IFile> files = new LinkedList<IFile>();
-		for (IResource resource : collector.resources) {
+		for (IResource resource : rescources) {
 			if (resource.getType() == IResource.FILE) {
 				IFile file = (IFile) resource;
 				try {
@@ -198,17 +234,9 @@ public class Processor extends RenameProcessor {
 		return files;
 	}
 
-	private Change renameAllOccurencesInFile(IFile file,IProgressMonitor pm) {
-		String changeName = "Replacing Variable " + info.getOldName()
-				+ " with " + info.getNewName() + " in Document " + file;
-
-		System.err.println(changeName);
+	private MultiTextEdit renameAllOccurencesInFile(IFile file, IProgressMonitor pm) {
 
 		MultiTextEdit multiTextEdit = new MultiTextEdit();
-		TextChange renameAllOccurencesInFile = new TextFileChange(changeName,
-				file);
-		renameAllOccurencesInFile.setEdit(multiTextEdit);
-		
 
 		// BEGIN: getting AST and handling Errors
 		NesC12AST ast = null;
@@ -226,25 +254,32 @@ public class Processor extends RenameProcessor {
 							+ file.getFullPath().toOSString());
 		} finally {
 			if (ast == null) {
-				return new NullChange();
+				return multiTextEdit;
 			}
 		}
+		// This ASTUtil operates on the AST of the File that is now processed
+		ASTUtil astUtil4File = new ASTUtil(ast);
+
 		ASTNode astRoot = ast.getRoot();
 		// END: getting AST and handling Errors
-		
+
 		Collection<Identifier> occurences = getVarUtil().getAllIdentifiers(
 				astRoot, info.getOldName());
 
 		// changing the name of all occurrences in the file
 		for (Identifier occurece : occurences) {
 
-			int beginOffset = getAstUtil().start(occurece);
-			int endOffset = getAstUtil().end(occurece);
+			int beginOffset = astUtil4File.start(occurece);
+			int endOffset = astUtil4File.end(occurece);
 			int length = endOffset - beginOffset;
+
 			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info
 					.getNewName()));
 		}
-		return null;
+		
+		
+		
+		return multiTextEdit;
 	}
 
 	@Override
@@ -260,7 +295,17 @@ public class Processor extends RenameProcessor {
 				pm);
 
 		for (IFile file : files) {
-			ret.add(renameAllOccurencesInFile(file,pm));
+			MultiTextEdit mte = renameAllOccurencesInFile(file, pm);
+			if(mte.getChildren().length != 0){
+				String changeName = "Replacing Variable " + info.getOldName()
+				+ " with " + info.getNewName() + " in Document " + file;
+
+				TextChange textChange = new TextFileChange(changeName,
+						file);
+				textChange.setEdit(mte);
+				ret.add(textChange);
+			}
+			
 		}
 
 		return ret;
