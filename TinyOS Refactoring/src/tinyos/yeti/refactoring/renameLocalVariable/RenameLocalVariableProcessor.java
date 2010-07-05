@@ -2,8 +2,6 @@ package tinyos.yeti.refactoring.renameLocalVariable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -21,12 +19,8 @@ import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
-import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
-import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
-import tinyos.yeti.refactoring.ASTUtil;
 import tinyos.yeti.refactoring.ActionHandlerUtil;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
@@ -44,38 +38,38 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws CoreException,
 			OperationCanceledException {
-	    RefactoringStatus ret = new RefactoringStatus();
-	    if(info.getNewName() == null){
-	    	ret.addFatalError("Please enter a new Name for the Variabel.");
-	    }
-	    
-	    return ret;
+		RefactoringStatus ret = new RefactoringStatus();
+		if (info.getNewName() == null) {
+			ret.addFatalError("Please enter a new Name for the Variabel.");
+		}
+
+		return ret;
 	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus ret = new RefactoringStatus();
-		if(!isApplicable()){
+		if (!isApplicable()) {
 			ret.addFatalError("A local Variable must be selected.");
 		}
-	    IFile sourceFile = ActionHandlerUtil.getInputFile(info.getEditor());
-	    if( sourceFile == null || !sourceFile.exists() ) {
-	      ret.addFatalError( "The File you want wo Refactor, does not exist." );
-	    } else if( sourceFile.isReadOnly() ) {
-	      ret.addFatalError( "The File you want to Refactor is read only." );
-	    } 
+		IFile sourceFile = ActionHandlerUtil.getInputFile(info.getEditor());
+		if (sourceFile == null || !sourceFile.exists()) {
+			ret.addFatalError("The File you want wo Refactor, does not exist.");
+		} else if (sourceFile.isReadOnly()) {
+			ret.addFatalError("The File you want to Refactor is read only.");
+		}
 		return ret;
 	}
 
 	@Override
 	public Object[] getElements() {
-		return new Object[]{info.getEditor().getEditorInput()};
+		return new Object[] { info.getEditor().getEditorInput() };
 	}
 
 	@Override
 	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableProcessor";	
+		return "tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableProcessor";
 	}
 
 	@Override
@@ -86,12 +80,15 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	@Override
 	public boolean isApplicable() throws CoreException {
 		// If the AST Util is not available, the refactoring is not available
-		if(getAstUtil() == null) return false;
-		//Tests if a LOCAL Variable is selected
-		Identifier identifier=getSelectedIdentifier();
-		if(identifier==null)return false;
-		CompoundStatement compound=findDeclaringCompoundStatement(identifier);
-		return compound!=null;
+		if (getAstUtil() == null)
+			return false;
+		// Tests if a LOCAL Variable is selected
+		Identifier identifier = getSelectedIdentifier();
+		if (identifier == null)
+			return false;
+		CompoundStatement compound = getVarUtil()
+				.findDeclaringCompoundStatement(identifier);
+		return compound != null;
 	}
 
 	@Override
@@ -103,103 +100,58 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		
+
 		IFile inputFile = ActionHandlerUtil.getInputFile(info.getEditor());
-	//Create The Changes
-		MultiTextEdit multiTextEdit=new MultiTextEdit();
-		String changeName="Replacing Variable " + info.getOldName() + " with "+ info.getNewName() + " in Document " + inputFile;
-		TextChange renameAllOccurences = new TextFileChange(changeName,inputFile);
-//		IDocument document=info.getEditor().getDocument();
-//      TextChange renameOneOccurence = new DocumentChange(changeName,document);
+		// Create The Changes
+		MultiTextEdit multiTextEdit = new MultiTextEdit();
+		String changeName = "Replacing Variable " + info.getOldName()
+				+ " with " + info.getNewName() + " in Document " + inputFile;
+		TextChange renameAllOccurences = new TextFileChange(changeName,
+				inputFile);
+		// IDocument document=info.getEditor().getDocument();
+		// TextChange renameOneOccurence = new
+		// DocumentChange(changeName,document);
 		renameAllOccurences.setEdit(multiTextEdit);
-		CompositeChange ret = new CompositeChange("Rename Local Variable "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = new CompositeChange("Rename Local Variable "
+				+ info.getOldName() + " to " + info.getNewName());
 		ret.add(renameAllOccurences);
-		Collection<Identifier> identifiers=this.selectedIdentifiersIfLocal();
-		if(identifiers.size()==0){
+		Collection<Identifier> identifiers = this.selectedIdentifiersIfLocal();
+		if (identifiers.size() == 0) {
 			return new NullChange();
 		}
 		for (Identifier identifier : identifiers) {
 			int beginOffset = getAstUtil().start(identifier);
-			int endOffset=getAstUtil().end(identifier);
-			int length = endOffset-beginOffset;
-			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info.getNewName()));
+			int endOffset = getAstUtil().end(identifier);
+			int length = endOffset - beginOffset;
+			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info
+					.getNewName()));
 		}
 		return ret;
 	}
-	
 
-	/**
-	 * @param node
-	 * @return the FunctionDefinition which encloses the given Node, null if the Node is not in a Function.
-	 */
-	private CompoundStatement getEnclosingCompound(ASTNode node) {
-		ASTNode parent = ASTUtil.getParentForName(node,CompoundStatement.class);
-		if (parent == null) {
-			System.err.println("NOT IN A CompoundStatement!!!");
-			return null;
-		} else {
-			return (CompoundStatement) parent;
-		}
-	}
-	
-	
-	/**
-	 * Looks for the CompoundStatement which declares the given Identifier.
-	 * @param identifier
-	 * @return
-	 */
-	private CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
-		String name=identifier.getName();
-		ASTNode child=identifier;
-		CompoundStatement parent=null;
-		Collection<Identifier> identifiers=null;
-		boolean extendedToFunctionBorder=false;
-		boolean foundDeclaration=false;
-		//Search for the declaration in the current and upper CompountStatements, add all found Identifiers.
-		while(!foundDeclaration){
-
-			//Find Enclosing CompoundStatement
-			parent = getEnclosingCompound(child);
-			if(parent==null)return null;
-			if(parent.getParent() instanceof FunctionDefinition){
-				extendedToFunctionBorder=true;
-			}
-			//Get Identifiers in Compound with same Name
-			identifiers=ASTUtil.getIncludedIdentifiers(parent, name,CompoundStatement.class);
-
-			//Check if the declaration is in the actual compound statement. If so, this is a local variable
-			if(getVarUtil().getDeclaratorName(identifiers)!=null){
-				foundDeclaration=true;
-			}
-			else{
-				if(extendedToFunctionBorder&&!foundDeclaration){	//This is not a local variable
-					return null;
-				} 
-			}
-			//Maybe the declaration of the variable is in an CompountStatement outside the actual one but inside the FunctionDefinition-->Do another round
-			child=parent;
-		}
-		return parent;
-	}
-	
-	
 	/**
 	 * Returns a list which contains all occurrences of the selected identifier.
-	 * Checks if the selection is an identifier and if so if it is part of a local variable. 
-	 * @return All Occurrences in the Method of the selected identifier, immutable EmptyList if the above checks fail.
+	 * Checks if the selection is an identifier and if so if it is part of a
+	 * local variable.
+	 * 
+	 * @return All Occurrences in the Method of the selected identifier,
+	 *         immutable EmptyList if the above checks fail.
 	 */
-	private Collection<Identifier> selectedIdentifiersIfLocal(){
-		//Find currently selected Element
-		Identifier currentlySelected=getSelectedIdentifier();
-		if(currentlySelected==null)	//The Selection is not an Identifier
+	private Collection<Identifier> selectedIdentifiersIfLocal() {
+		// Find currently selected Element
+		Identifier currentlySelected = getSelectedIdentifier();
+		if (currentlySelected == null) { // The Selection is not an Identifier
 			return Collections.emptyList();
-		
-		//Find the CompoundStatement which declares the identifier
-		CompoundStatement declaringCompound=findDeclaringCompoundStatement(currentlySelected);
-		if(declaringCompound==null){	//Declaration is not within Function.
+		} else if (!getVarUtil().isLocalVariable(currentlySelected)) {
 			return Collections.emptyList();
 		}
-		Collection<Identifier> identifiers=getVarUtil().getAllIdentifiers(declaringCompound, currentlySelected.getName());
+
+		// Find the CompoundStatement which declares the identifier
+		CompoundStatement declaringCompound = getVarUtil()
+				.findDeclaringCompoundStatement(currentlySelected);
+		Collection<Identifier> identifiers = getVarUtil().getAllIdentifiers(
+				declaringCompound, currentlySelected.getName());
 		return identifiers;
 	}
+
 }
