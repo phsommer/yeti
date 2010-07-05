@@ -11,6 +11,7 @@ import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.preprocessor.PreprocessorReader;
 
 /**
@@ -201,6 +202,20 @@ public class ASTUtil {
 			ret.add(node.getChild(i));
 		}
 		return ret;
+	}
+	
+	/**
+	 * @param node
+	 * @return the FunctionDefinition which encloses the given Node, null if the Node is not in a Function.
+	 */
+	public static CompoundStatement getEnclosingCompound(ASTNode node) {
+		ASTNode parent = ASTUtil.getParentForName(node,CompoundStatement.class);
+		if (parent == null) {
+			System.err.println("NOT IN A CompoundStatement!!!");
+			return null;
+		} else {
+			return (CompoundStatement) parent;
+		}
 	}
 
 	public NesC12AST getAST(){
