@@ -211,7 +211,7 @@ public class ASTUtil {
 	public static CompoundStatement getEnclosingCompound(ASTNode node) {
 		ASTNode parent = ASTUtil.getParentForName(node,CompoundStatement.class);
 		if (parent == null) {
-			System.err.println("NOT IN A CompoundStatement!!!");
+			// System.err.println("NOT IN A CompoundStatement!!!");
 			return null;
 		} else {
 			return (CompoundStatement) parent;
