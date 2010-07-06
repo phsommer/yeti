@@ -50,11 +50,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected Identifier getSelectedIdentifier() {
 		int selectionStart = getSelection().getOffset();
-		try{
-			return utility.getASTLeafAtPos(selectionStart,Identifier.class);
-		} catch (ClassCastException e) {
-			return null;
-		}
+		return utility.getASTLeafAtPos(selectionStart,Identifier.class);
 	}
 
 

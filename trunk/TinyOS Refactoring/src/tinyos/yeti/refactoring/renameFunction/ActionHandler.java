@@ -23,11 +23,12 @@ public class ActionHandler extends AbstractHandler implements IHandler{
 		NesCEditor editor = ActionHandlerUtil.getNesCEditor(event);
 		ITextSelection selection = ActionHandlerUtil.getSelection(editor);
 		ASTUtil util = new ASTUtil((NesC12AST) editor.getAST());
-		util.getASTLeafAtPos(selection.getOffset(), Identifier.class);
+		Identifier id=util.getASTLeafAtPos(selection.getOffset(), Identifier.class);
+		if(id==null){
+			return null;
+		}
 		System.err.println("Found Identifier!");
 		return null;
-//		
-//		Identifier id = util.getASTLeafAtPos(selection.getOffset(), Identifier.class);
 //		String oldName =id.getName();
 //
 //		
