@@ -24,6 +24,9 @@ public class ActionHandler extends AbstractHandler implements IHandler{
 		ITextSelection selection = ActionHandlerUtil.getSelection(editor);
 		ASTUtil util = new ASTUtil((NesC12AST) editor.getAST());
 		Identifier id = util.getASTLeafAtPos(selection.getOffset(), Identifier.class);
+		if(id==null){
+			return null;
+		}
 		String oldName =id.getName();
 
 		

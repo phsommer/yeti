@@ -16,13 +16,12 @@ public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityT
 		NesC12AST ast = (NesC12AST) editor.getAST();
 		ASTUtil util = new ASTUtil(ast);
 		int pos = ActionHandlerUtil.getSelection(editor).getOffset();
-		try{
-			Identifier identifier = util.getASTLeafAtPos(pos, Identifier.class);
-			return 	ASTUtil4Functions.isFunctionCall(identifier)
-					||ASTUtil4Functions.isFunctionDefinition(identifier);
-		} catch (ClassCastException e){
+		Identifier identifier = util.getASTLeafAtPos(pos, Identifier.class);
+		if(identifier==null){
 			return false;
 		}
+		return 	ASTUtil4Functions.isFunctionCall(identifier)
+				||ASTUtil4Functions.isFunctionDefinition(identifier);
 	}
 	
 

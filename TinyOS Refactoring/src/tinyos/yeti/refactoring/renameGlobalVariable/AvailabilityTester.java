@@ -16,17 +16,16 @@ public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityT
 		NesC12AST ast = (NesC12AST) editor.getAST();
 		ASTUtil util = new ASTUtil(ast);
 		int pos = ActionHandlerUtil.getSelection(editor).getOffset();
-		try{
-			Identifier id = util.getASTLeafAtPos(pos, Identifier.class);
-			id.getASTNodeName();
-			// TODO: Check if it is an Global Variable
-			/*ProjectModel projectModel = editor.getProjectTOS().getModel();
-			DeclarationFilter filter;
-			IASTReference x = projectModel.getReferences(null, null)[0];*/
-			return true;
-		} catch (ClassCastException e){
+		Identifier id = util.getASTLeafAtPos(pos, Identifier.class);
+		if(id==null){
 			return false;
 		}
+		id.getASTNodeName();
+		// TODO: Check if it is an Global Variable
+		/*ProjectModel projectModel = editor.getProjectTOS().getModel();
+			DeclarationFilter filter;
+			IASTReference x = projectModel.getReferences(null, null)[0];*/
+		return true;
 	}
 
 }
