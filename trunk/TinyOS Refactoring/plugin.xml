@@ -19,6 +19,11 @@
 			id="tinyos.yeti.refactoring.RenameGlobalVariable"
 			categoryId="tinyos.yeti.refactoring"
 			name="Rename Global Variable"/>
+			
+		<command
+			id="tinyos.yeti.refactoring.RenameFunction"
+			categoryId="tinyos.yeti.refactoring"
+			name="Rename Function"/>
 	</extension>
  
 	<!-- The Real Implementations of the Refactorings -->
@@ -31,6 +36,11 @@
      	<handler
         	class="tinyos.yeti.refactoring.renameGlobalVariable.ActionHandler"
         	commandId="tinyos.yeti.refactoring.RenameGlobalVariable">
+		</handler>
+		
+		<handler
+        	class="tinyos.yeti.refactoring.renameFunction.ActionHandler"
+        	commandId="tinyos.yeti.refactoring.RenameFunction">
 		</handler>
 	</extension>
 
@@ -94,6 +104,21 @@
        				</iterate>          		
       			</visibleWhen> 
     		</command>
+    		
+			<command
+       			commandId="tinyos.yeti.refactoring.RenameFunction"
+       			id= "RenameFunction"
+       			label= "Rename Function">
+       			
+      			<visibleWhen checkEnabled="false">
+        			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+        			<iterate ifEmpty="false">
+          				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+          				<test property="tinyos.yeti.refactoring.isAvailable.renameFunction" 
+            				forcePluginActivation="true" />
+       				</iterate>          		
+      			</visibleWhen> 
+    		</command>
 		</menuContribution>
 
  		<!-- Entrys in the Popup Menu -->
@@ -106,6 +131,7 @@
  
  		<menuContribution
 			locationURI="popup:tinyos.yeti.RefactoringPopup?after=additions">
+			
 				<command 
 					commandId="tinyos.yeti.refactoring.RenameLocalVariable">
 					<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
@@ -131,6 +157,20 @@
           				</iterate>          		
           			</visibleWhen>
         		</command>
+        		
+				<command 
+        			commandId="tinyos.yeti.refactoring.RenameFunction">
+          			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
+          			<visibleWhen checkEnabled="false">
+            			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+          				<iterate ifEmpty="false">
+          	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+              				<test property="tinyos.yeti.refactoring.isAvailable.renameFunction" 
+                    			forcePluginActivation="true" />
+          				</iterate>          		
+          			</visibleWhen>
+        		</command>
+        		
  		</menuContribution>
 	</extension>
 
@@ -140,7 +180,7 @@
      		id="tinyos.yeti.refactoring.AvailabilityTester"
      		type="org.eclipse.jface.text.ITextSelection"
      		namespace="tinyos.yeti.refactoring.isAvailable"
-     		properties="renameLocalVariable,renameGlobalVariable"
+     		properties="renameLocalVariable,renameGlobalVariable,renameFunction"
      		class="tinyos.yeti.refactoring.AvailabilityTester" />
  	</extension>
 

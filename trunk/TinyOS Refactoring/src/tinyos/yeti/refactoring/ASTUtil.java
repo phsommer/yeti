@@ -128,6 +128,16 @@ public class ASTUtil {
 	}
 	
 	/**
+	 * Tests if given ASTNode is of expected type.
+	 * @param node Which is father of interest.
+	 * @param type Class Type which we are expecting.
+	 * @return true if node instanceof type. False if node is null or not instanceof type
+	 */
+	public static boolean isOfType(ASTNode node,Class<? extends ASTNode> type){
+		return type.isInstance(node);
+	}
+	
+	/**
 	 * Returns the next higher AST node of type
 	 * @param child The AST node to start from
 	 * @param type The type of the ASTNode we are looking for
@@ -143,6 +153,25 @@ public class ASTUtil {
 		}
 		return getParentForName(parent, type);
 	}
+	
+	/**
+	 * Checks if the ancestor nodes of the given child equal the given sequence.
+	 * The first node in the ancestorSequence is the expected type of the parent of the child, the second the type of the grand parent and so on.
+	 * @param child The child whichs ancestor sequence is to be checked.
+	 * @param ancestorSequence The sequence of expected class types.
+	 * @return True if the childsAncestor sequence(or a long enough part of it) matches the given ancestorSequence. 
+	 */
+	public static boolean checkAncestorSequence(ASTNode child,Class<? extends ASTNode>[] ancestorSequence){
+		ASTNode parent=child;
+		for(Class<? extends ASTNode> c:ancestorSequence){
+			parent=parent.getParent();
+			if(!c.isInstance(parent)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	
 	/**
 	 * 
@@ -206,7 +235,7 @@ public class ASTUtil {
 	
 	/**
 	 * @param node
-	 * @return the FunctionDefinition which encloses the given Node, null if the Node is not in a Function.
+	 * @return the CompoundStatement which encloses the given Node, null if the Node is not in a Function.
 	 */
 	public static CompoundStatement getEnclosingCompound(ASTNode node) {
 		ASTNode parent = ASTUtil.getParentForName(node,CompoundStatement.class);
