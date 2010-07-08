@@ -17,11 +17,7 @@ public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityT
 		ASTUtil util = new ASTUtil(ast);
 		int pos = ActionHandlerUtil.getSelection(editor).getOffset();
 		Identifier identifier = util.getASTLeafAtPos(pos, Identifier.class);
-		if(identifier==null){
-			return false;
-		}
-		return 	ASTUtil4Functions.isFunctionCall(identifier)
-				||ASTUtil4Functions.isFunctionDefinition(identifier);
+		return 	ASTUtil4Functions.isFunction(identifier);
 	}
 	
 

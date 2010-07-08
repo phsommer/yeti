@@ -27,29 +27,25 @@ public class ActionHandler extends AbstractHandler implements IHandler{
 		if(id==null){
 			return null;
 		}
-		System.err.println("Found Identifier!");
+		String oldName =id.getName();
+		Info info = new Info(oldName,editor);
+		Processor processor = new Processor(info);
+		RenameRefactoring refactoring = new RenameRefactoring(processor);
+		DefaultRefactoringWizard wizard = new DefaultRefactoringWizard(
+				refactoring, 
+				new InputPage(info), 
+				info);
+		RefactoringWizardOpenOperation wizardStarter = new RefactoringWizardOpenOperation(wizard);
+
+		try {
+			wizardStarter.run(editor.getSite().getShell(),
+					info.getInputWizardName());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/* Return is reserved for Future use. Must be null. Really!! */
 		return null;
-//		String oldName =id.getName();
-//
-//		
-//		Info info = new Info(oldName,editor);
-//		Processor processor = new Processor(info);
-//		RenameRefactoring refactoring = new RenameRefactoring(processor);
-//		DefaultRefactoringWizard wizard = new DefaultRefactoringWizard(
-//				refactoring, 
-//				new InputPage(info), 
-//				info);
-//		RefactoringWizardOpenOperation wizardStarter = new RefactoringWizardOpenOperation(wizard);
-//
-//		try {
-//			wizardStarter.run(editor.getSite().getShell(),
-//					info.getInputWizardName());
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		/* Return is reserved for Future use. Must be null. Really!! */
-//		return null;
 	}
 
 }

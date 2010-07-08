@@ -42,6 +42,17 @@ public class ASTUtil4Functions {
 		return ASTUtil.checkAncestorSequence(identifier,functionDefinitionAncestorSequence);
 	}
 	
-	
+	/**
+	 * Tests if the given identifier is the name of a function.
+	 * @param identifier The identifier which is in question.
+	 * @return True if the given identifier is the name of a function. False otherwise and especially if the given identifier is NULL. 
+	 */
+	public static boolean isFunction(Identifier identifier){
+		if(identifier==null){
+			return false;
+		}
+		return 	isFunctionCall(identifier)
+			||isFunctionDefinition(identifier);
+	}
 	
 }
