@@ -3,5 +3,6 @@ package tinyos.yeti.refactoring.renameFunction;
 public enum FunctionPart {
 		DECLARATION,
 		DEFINITION,
-		CALL
+		CALL,
+		NO_FUNCTION_PART
 }
