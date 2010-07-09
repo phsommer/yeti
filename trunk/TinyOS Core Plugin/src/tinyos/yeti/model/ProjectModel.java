@@ -673,8 +673,10 @@ public class ProjectModel {
 	    		return null;
 	    	}
 	    	
+	    	// Workaround: references not always created without model
 	    	parser.setASTModel( newASTModel() );
-	    	parser.setResolveFullModel(true);
+	    	parser.setResolveFullModel( true );
+	    	
 	    	parser.setCreateReferences( true );
 	    	parser.parse( reader, new SubProgressMonitor( monitor, 5 ) );
 	    	if( monitor.isCanceled() ){
