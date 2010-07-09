@@ -674,6 +674,7 @@ public class ProjectModel {
 	    	}
 	    	
 	    	parser.setASTModel( newASTModel() );
+	    	parser.setResolveFullModel(true);
 	    	parser.setCreateReferences( true );
 	    	parser.parse( reader, new SubProgressMonitor( monitor, 5 ) );
 	    	if( monitor.isCanceled() ){
