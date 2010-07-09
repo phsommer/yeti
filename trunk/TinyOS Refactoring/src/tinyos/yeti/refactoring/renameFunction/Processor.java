@@ -27,6 +27,8 @@ import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.IASTModelNode;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
+import tinyos.yeti.ep.parser.IFileRegion;
+import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.ep.parser.reference.IASTReference;
@@ -102,6 +104,15 @@ public class Processor extends RenameProcessor {
 		return TinyOSPlugin.getDefault().getProjectTOS(info.getEditor().getProject()).getModel();
 	}
 	
+	private IASTReference[] getReferences(IFile file, IProgressMonitor monitor) throws MissingNatureException{
+		ProjectModel model=getModel();
+		return model.getReferences(model.parseFile(file), monitor);
+	}
+	private IASTReference[] getReferences(IParseFile file, IProgressMonitor monitor) throws MissingNatureException{
+		ProjectModel model=getModel();
+		return model.getReferences(file, monitor);
+	}
+	
 	private IASTModelPath getLogicalPath(IASTModelPath fPath,IProgressMonitor monitor) throws MissingNatureException{
 		ProjectModel model=getModel();
 		IASTModelNode node=model.getNode(fPath, monitor);
@@ -128,10 +139,9 @@ public class Processor extends RenameProcessor {
 	private boolean containsOccurenceOfIdentifier(IDeclaration.Kind kind,IFile file,IASTModelPath logicalPath, IProgressMonitor monitor)
 			throws MissingNatureException {
 			System.err.println("Scanning File:"+file.getName());
-			ProjectModel model = getModel();
 			IASTModelPath candidatePath;
 			System.out.println("getting References");
-			IASTReference[] referenceArray = model.getReferences(model.parseFile(file), monitor);
+			IASTReference[] referenceArray = getReferences(file,monitor);
 			System.out.println(referenceArray.length+" References");
 			for (IASTReference ref : referenceArray) {
 				candidatePath=getLogicalPath(ref.getTarget(), monitor);
@@ -188,12 +198,40 @@ public class Processor extends RenameProcessor {
 		}
 		else if (ASTUtil4Functions.isFunctionCall(identifier)) {
 			IdentifierExpression call= (IdentifierExpression) ASTUtil.getParentForName(identifier, IdentifierExpression.class);
-			res= call.resolveField().getPath();
+			IASTModelPath path= call.resolveField().getPath();
+			res=getDeclaringPath(call, path, pm);
+			
 			//TODO erase
 			System.err.println("isCALL");
 			//				System.err.println(res);
 		}
 		return getLogicalPath(res, pm);
+	}
+	
+	private IASTModelPath getDeclaringPath(ASTNode node,IASTModelPath path, IProgressMonitor monitor) throws MissingNatureException{
+		NesC12AST ast=(NesC12AST)info.getEditor().getAST();
+		IParseFile pFile=path.getParseFile();
+		System.err.println("call is in file: "+pFile);
+		IASTReference[] referenceArray = getReferences(pFile,monitor);
+		for(IASTReference ref:referenceArray){
+			if(equalsIFileRegion(ref.getSource(),ast.getRegion(node))){
+				return ref.getTarget();
+			}
+		}
+		System.err.println("No Match Found!");
+		return null;
+	}
+	
+	private boolean equalsIFileRegion(IFileRegion a,IFileRegion b){
+		if(!a.getParseFile().equals(b.getParseFile()))
+			return false;
+		if(a.getLength()!=b.getLength())
+			return false;
+		if(a.getLine()!=b.getLine())
+			return false;
+		if(a.getOffset()!=b.getOffset())
+			return false;
+		return true;
 	}
 
 	
