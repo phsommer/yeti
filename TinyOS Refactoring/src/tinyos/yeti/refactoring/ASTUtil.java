@@ -30,14 +30,8 @@ public class ASTUtil {
 	 * @throws IllegalStateException If the found AST or Editor is not of the expected type.
 	 */
 	public ASTUtil(){
-		IWorkbenchWindow w=			RefactoringPlugin.
-		getDefault().
-		getWorkbench().
-		getActiveWorkbenchWindow();
-		IEditorPart editorPart = 
-			w.
-			getActivePage().
-				getActiveEditor();
+		IWorkbenchWindow w=	RefactoringPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+		IEditorPart editorPart = w.getActivePage().getActiveEditor();
 		
 		NesCEditor editor = null;
 		if(editorPart instanceof NesCEditor){

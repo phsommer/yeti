@@ -17,7 +17,6 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.ReplaceEdit;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
@@ -104,8 +103,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		IFile inputFile = ActionHandlerUtil.getInputFile(info.getEditor());
 		// Create The Changes
 		MultiTextEdit multiTextEdit = new MultiTextEdit();
-		String changeName = "Replacing Variable " + info.getOldName()
-				+ " with " + info.getNewName() + " in Document " + inputFile;
+		String changeName = "Replacing Variable " + info.getOldName()+ " with " + info.getNewName() + " in Document " + inputFile;
 		TextChange renameAllOccurences = new TextFileChange(changeName,
 				inputFile);
 		// IDocument document=info.getEditor().getDocument();
@@ -119,13 +117,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		if (identifiers.size() == 0) {
 			return new NullChange();
 		}
-		for (Identifier identifier : identifiers) {
-			int beginOffset = getAstUtil().start(identifier);
-			int endOffset = getAstUtil().end(identifier);
-			int length = endOffset - beginOffset;
-			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info
-					.getNewName()));
-		}
+		addChanges4Identifiers(identifiers,info.getNewName(),multiTextEdit,null);
 		return ret;
 	}
 

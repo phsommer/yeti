@@ -61,6 +61,22 @@ public class ASTUtil4Functions {
 	}
 	
 	/**
+	 * Evaluates the FunctionPartType of which this Identifier relates. 
+	 * @param identifier
+	 * @return
+	 */
+	public static FunctionPart identifyFunctionPart(Identifier identifier){
+		if(isFunctionDeclaration(identifier)){
+			return FunctionPart.DECLARATION;
+		}else if(isFunctionDefinition(identifier)){
+			return FunctionPart.DEFINITION;
+		}else if(isFunctionCall(identifier)){
+			return FunctionPart.CALL;
+		}
+		return FunctionPart.NO_FUNCTION_PART;
+	}
+	
+	/**
 	 * Tests if the given identifier is the name of a function.
 	 * @param identifier The identifier which is in question.
 	 * @return True if the given identifier is the name of a function. False otherwise and especially if the given identifier is NULL. 
@@ -69,9 +85,7 @@ public class ASTUtil4Functions {
 		if(identifier==null){
 			return false;
 		}
-		return 	isFunctionDeclaration(identifier)
-			||isFunctionDefinition(identifier)
-			||isFunctionCall(identifier);
+		return 	identifyFunctionPart(identifier)!=FunctionPart.NO_FUNCTION_PART;
 	}
 	
 }

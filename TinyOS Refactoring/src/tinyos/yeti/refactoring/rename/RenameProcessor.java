@@ -1,7 +1,11 @@
 package tinyos.yeti.refactoring.rename;
 
+import java.util.Collection;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.ReplaceEdit;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -62,5 +66,25 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 
 	protected ASTUtil4Variables getVarUtil() {
 		return varUtil;
+	}
+	protected void addChanges4Identifiers(Collection<Identifier> identifiers,String newName,MultiTextEdit multiTextEdit,NesC12AST ast){
+		ASTUtil util;
+		if(ast==null){
+			util=getAstUtil();
+		}else{
+			util=new ASTUtil(ast);
+		}
+		for (Identifier identifier : identifiers) {
+			int beginOffset = util.start(identifier);
+			int endOffset = util.end(identifier);
+			System.err.println("beginOffset "+beginOffset);
+			System.err.println("endOffset "+endOffset);
+			int length = endOffset - beginOffset;
+//			int beginOffset = ast.getOffsetAtBegin(identifier).getInputfileOffset();
+//			int endOffset = ast.getOffsetAtEnd(identifier).getInputfileOffset();
+//			int length = endOffset - beginOffset;
+			System.err.println("Länge der zu ersetzenden Indentifyer: "+length);
+			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, newName));
+		}
 	}
 }
