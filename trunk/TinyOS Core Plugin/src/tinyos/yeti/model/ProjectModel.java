@@ -673,6 +673,7 @@ public class ProjectModel {
 	    		return null;
 	    	}
 	    	
+	    	parser.setASTModel( newASTModel() );
 	    	parser.setCreateReferences( true );
 	    	parser.parse( reader, new SubProgressMonitor( monitor, 5 ) );
 	    	if( monitor.isCanceled() ){
