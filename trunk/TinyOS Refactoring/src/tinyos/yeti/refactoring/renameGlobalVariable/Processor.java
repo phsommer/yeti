@@ -176,6 +176,8 @@ public class Processor extends RenameProcessor {
 			if (ie != null) {
 				// this might return null if the node is unknown
 				ret = ie.resolveField().getPath();
+				System.err.println("isEXPRESSION");
+				System.err.println(ret);
 			}
 		}
 
@@ -185,9 +187,11 @@ public class Processor extends RenameProcessor {
 			if (id != null) {
 				// this might return null if the node is unknown
 				ret = id.resolveField().getPath();
+				System.err.println("isDECLARATOR");
+				System.err.println(ret);
 			}
 		}
-
+		System.err.println("DECIDED");
 		return ret;
 	}
 

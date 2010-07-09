@@ -1,8 +1,11 @@
 package tinyos.yeti.refactoring.renameFunction;
 
+import tinyos.yeti.nesc.parser.Declaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
@@ -12,9 +15,11 @@ import tinyos.yeti.refactoring.ASTUtil;
 public class ASTUtil4Functions {
 	
 	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] functionCallAncestorSequence=new Class[]{
-		IdentifierExpression.class,
-		FunctionCall.class
+	private static final Class<? extends ASTNode>[] functionDeclarationAncestorSequence=new Class[]{
+		DeclaratorName.class,
+		FunctionDeclarator.class,
+		InitDeclarator.class
+		
 	};
 	
 	@SuppressWarnings("unchecked")
@@ -24,13 +29,19 @@ public class ASTUtil4Functions {
 		FunctionDefinition.class
 	};
 	
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] functionCallAncestorSequence=new Class[]{
+		IdentifierExpression.class,
+		FunctionCall.class
+	};
+	
 	/**
-	 * Tests if the given identifier is the name of the function, in a function call.
+	 * Tests if the given identifier is the name of the function, in a function declaration.
 	 * @param identifier The identifier which is in question.
-	 * @return true if the given identifier is the name of the function, in a function call. False otherwise.
+	 * @return true if the given identifier is the name of the function, in a function declaration. False otherwise.
 	 */
-	public static boolean isFunctionCall(Identifier identifier){
-		return ASTUtil.checkAncestorSequence(identifier,functionCallAncestorSequence);	
+	public static boolean isFunctionDeclaration(Identifier identifier){
+		return ASTUtil.checkAncestorSequence(identifier,functionDeclarationAncestorSequence);
 	}
 	
 	/**
@@ -43,6 +54,15 @@ public class ASTUtil4Functions {
 	}
 	
 	/**
+	 * Tests if the given identifier is the name of the function, in a function call.
+	 * @param identifier The identifier which is in question.
+	 * @return true if the given identifier is the name of the function, in a function call. False otherwise.
+	 */
+	public static boolean isFunctionCall(Identifier identifier){
+		return ASTUtil.checkAncestorSequence(identifier,functionCallAncestorSequence);	
+	}
+	
+	/**
 	 * Tests if the given identifier is the name of a function.
 	 * @param identifier The identifier which is in question.
 	 * @return True if the given identifier is the name of a function. False otherwise and especially if the given identifier is NULL. 
@@ -51,8 +71,9 @@ public class ASTUtil4Functions {
 		if(identifier==null){
 			return false;
 		}
-		return 	isFunctionCall(identifier)
-			||isFunctionDefinition(identifier);
+		return 	isFunctionDeclaration(identifier)
+			||isFunctionDefinition(identifier)
+			||isFunctionCall(identifier);
 	}
 	
 }
