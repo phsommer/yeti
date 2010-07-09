@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchWindow;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
@@ -29,12 +30,13 @@ public class ASTUtil {
 	 * @throws IllegalStateException If the found AST or Editor is not of the expected type.
 	 */
 	public ASTUtil(){
+		IWorkbenchWindow w=			RefactoringPlugin.
+		getDefault().
+		getWorkbench().
+		getActiveWorkbenchWindow();
 		IEditorPart editorPart = 
-			RefactoringPlugin.
-				getDefault().
-				getWorkbench().
-				getActiveWorkbenchWindow().
-				getActivePage().
+			w.
+			getActivePage().
 				getActiveEditor();
 		
 		NesCEditor editor = null;
