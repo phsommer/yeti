@@ -75,14 +75,18 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			util=new ASTUtil(ast);
 		}
 		for (Identifier identifier : identifiers) {
+			//TODO erase
+			System.err.println("ID FOUND: "+identifier);
 			int beginOffset = util.start(identifier);
 			int endOffset = util.end(identifier);
+			//TODO erase
 			System.err.println("beginOffset "+beginOffset);
 			System.err.println("endOffset "+endOffset);
 			int length = endOffset - beginOffset;
 //			int beginOffset = ast.getOffsetAtBegin(identifier).getInputfileOffset();
 //			int endOffset = ast.getOffsetAtEnd(identifier).getInputfileOffset();
 //			int length = endOffset - beginOffset;
+			//TODO erase
 			System.err.println("Länge der zu ersetzenden Indentifyer: "+length);
 			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, newName));
 		}
