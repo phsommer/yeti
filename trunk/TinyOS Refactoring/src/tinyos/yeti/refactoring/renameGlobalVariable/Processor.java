@@ -151,28 +151,25 @@ public class Processor extends RenameProcessor {
 		System.err.println("DECIDED");
 		return ret;
 	}
-	
-	private Collection<IFile> getFilesContainingVariable(Identifier variable,
-			IProgressMonitor pm) throws CoreException {
-		Collection<IResource> rescources = getAllFiles();
 
-		LinkedList<IFile> files = new LinkedList<IFile>();
-		for (IResource resource : rescources) {
-			if (resource.getType() == IResource.FILE) {
-				IFile file = (IFile) resource;
-				try {
-					if (containsOccurenceOfVariable(file, variable, pm)) {
-						files.add((IFile) resource);
-					}
-				} catch (MissingNatureException e) {
-					throw new CoreException(new Status(IStatus.ERROR,
-							RefactoringPlugin.PLUGIN_ID,
-							"Refactoring was called while Plagin was not ready: "
-									+ e.getMessage()));
+	private Collection<IFile> getFilesContainingVariable(Identifier variable,IProgressMonitor pm) 
+	throws CoreException {
+		Collection<IFile> files = getAllFiles();
+
+		LinkedList<IFile> containingFiles = new LinkedList<IFile>();
+		for (IFile file : files) {
+			try {
+				if (containsOccurenceOfVariable(file, variable, pm)) {
+					containingFiles.add(file);
 				}
+			} catch (MissingNatureException e) {
+				throw new CoreException(new Status(IStatus.ERROR,
+						RefactoringPlugin.PLUGIN_ID,
+						"Refactoring was called while Plagin was not ready: "
+						+ e.getMessage()));
 			}
 		}
-		return files;
+		return containingFiles;
 	}
 
 	private MultiTextEdit renameAllOccurencesInFile(IFile file, IProgressMonitor pm) {

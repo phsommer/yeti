@@ -3,6 +3,7 @@ package tinyos.yeti.refactoring.rename;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -137,8 +138,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			throws IOException, MissingNatureException {
 		// Create Parser for File to construct an AST
 		IProject project = info.getEditor().getProject();
-		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(
-				project).getModel();
+		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
 
 		File file = iFile.getLocation().toFile();
 		IParseFile parseFile = projectModel.parseFile(file);
@@ -205,12 +205,11 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @return
 	 * @throws CoreException
 	 */
-	protected Collection<IResource> getAllFiles() throws CoreException{
+	protected Collection<IFile> getAllFiles() throws CoreException{
 		IProject project = info.getEditor().getProject();
 		ProjectResourceCollector collector = new ProjectResourceCollector();
 		try {
-			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(
-					collector);
+			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(collector);
 		} catch (MissingNatureException e) {
 			RefactoringPlugin.getDefault().log(
 					LogLevel.WARNING,
@@ -221,8 +220,14 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 					"Plugin wasn't ready while calling Rename global Variable Refactoring: "
 							+ e.getMessage()));
 		}
-		
-		return collector.resources;
+		Collection<IFile> files=new LinkedList<IFile>();
+		for(IResource resource:collector.resources){
+			if(resource.getType() == IResource.FILE) {
+				IFile file = (IFile) resource;
+				files.add(file);
+			}
+		}
+		return files;
 	}
 	
 	/**
@@ -241,5 +246,17 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		if(a.getOffset()!=b.getOffset())
 			return false;
 		return true;
+	}
+	
+	protected IFile parseFileToIFile(IParseFile parseFile) throws CoreException, MissingNatureException{
+		Collection<IFile> files = getAllFiles();
+		for(IFile file:files){
+			File f = file.getLocation().toFile();
+			IParseFile otherPF = getModel().parseFile(f);
+			if(parseFile.equals(otherPF)){
+				return file;
+			}
+		}
+		return null;
 	}
 }
