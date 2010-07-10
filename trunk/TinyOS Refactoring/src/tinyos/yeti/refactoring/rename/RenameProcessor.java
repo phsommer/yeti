@@ -36,6 +36,12 @@ import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 
+	//TODO erase, just for debugging
+	protected String endOutput;
+	protected void addOutput(String output){
+		endOutput+="\n"+output;
+	}
+	
 	private RenameInfo info;
 	private ASTUtil utility;
 	private ITextSelection selection;
@@ -188,7 +194,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		ProjectModel model=getModel();
 		IASTModelNode node=model.getNode(fPath, monitor);
 		if(node==null){
-			System.err.println("Node of "+fPath+" is Null");
+			addOutput("Node of "+fPath+" is Null");
 			return null;
 		}
 		return node.getLogicalPath();
