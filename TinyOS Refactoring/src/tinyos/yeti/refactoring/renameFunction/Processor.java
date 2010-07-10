@@ -1,5 +1,6 @@
 package tinyos.yeti.refactoring.renameFunction;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -178,33 +179,54 @@ public class Processor extends RenameProcessor {
 		return getLogicalPath(res, pm);
 	}
 
-	private Change createChanges(Identifier identifier,IProgressMonitor pm) 
+	/**
+	 * Adds the changes for the identifiers to ret.
+	 * @param identifiers
+	 * @param mte
+	 * @param ast
+	 * @param file
+	 * @param ret
+	 */
+	private void addChange(List<Identifier> identifiers,MultiTextEdit mte,NesC12AST ast,IFile file,CompositeChange ret){
+		addChanges4Identifiers(identifiers, info.getNewName(), mte,ast);
+		String changeName = "Replacing Function Name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+		TextChange textChange = new TextFileChange(changeName,file);
+		textChange.setEdit(mte);
+		ret.add(textChange);
+	}
+	
+	private Change createChanges(Identifier identifier,IProgressMonitor monitor) 
 	throws CoreException, MissingNatureException, IOException {
-		IASTModelPath fPath= getPathOfReferencedDeclaration(identifier,pm);
 		CompositeChange ret = new CompositeChange("Rename Function "+ info.getOldName() + " to " + info.getNewName());
-		Collection<IResource> rescources = getAllFiles();
-		List<Identifier> identifiers=new LinkedList<Identifier>();
-		NesC12AST ast;
-		for (IResource resource : rescources) {
-			if (resource.getType() == IResource.FILE) {
-				IFile file = (IFile) resource;
-				ast=getAst(file, pm);
-				MultiTextEdit mte=new MultiTextEdit();
-				identifiers=getReferencingIdentifiersInFileForTargetPath(file, fPath, pm);
-				if(identifiers.size()>0){
-					addChanges4Identifiers(identifiers, info.getNewName(), mte,ast);
-					String changeName = "Replacing Function Name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
-					TextChange textChange = new TextFileChange(changeName,file);
-					textChange.setEdit(mte);
-					ret.add(textChange);
-				}
-
+		MultiTextEdit mte;
+		List<Identifier> identifiers;
+		
+		//Get the basic declaration, which declares the selected function
+		IASTModelPath basicDeclarationPath= getPathOfReferencedDeclaration(identifier,monitor);
+		
+		//Get the Identifier of the basic declaration
+		IFileRegion targetRegion=getModel().getNode(basicDeclarationPath, monitor).getRegion();
+		IFile targetFile=parseFileToIFile(targetRegion.getParseFile());
+		NesC12AST ast=getAst(targetFile,monitor);
+		ASTUtil astUtil=new ASTUtil(ast);
+		Identifier targetIdentifier=(Identifier)astUtil.getASTLeafAtPos(targetRegion.getOffset());
+		mte=new MultiTextEdit();
+		identifiers=new LinkedList<Identifier>();
+		identifiers.add(targetIdentifier);
+		addChange(identifiers,mte,ast,targetFile,ret);
+		
+		//Get the identifiers of function parts, which reference the basic declaration.
+		for (IFile file : getAllFiles()) {
+			ast=getAst(file, monitor);
+			mte=new MultiTextEdit();
+			identifiers=getReferencingIdentifiersInFileForTargetPath(file, basicDeclarationPath, monitor);
+			if(identifiers.size()>0){
+				addChange(identifiers,mte,ast,file,ret);
 			}
 		}
 		System.err.println(endOutput);
 		return ret;
 	}
-
 
 	@Override
 	public Change createChange(IProgressMonitor pm) 
