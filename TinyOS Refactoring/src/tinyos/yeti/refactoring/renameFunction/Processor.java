@@ -21,6 +21,7 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 
+import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IFileRegion;
@@ -38,6 +39,7 @@ import tinyos.yeti.refactoring.rename.RenameProcessor;
 public class Processor extends RenameProcessor {
 
 	private Info info;
+	private FunctionPart selectedFunctionPart;	//The function part type of the selection
 
 	public Processor(Info info) {
 		super(info);
@@ -46,15 +48,16 @@ public class Processor extends RenameProcessor {
 
 	/**
 	 * Returns the identifiers which are part of a reference to the given path.
-	 * @param file
-	 * @param path
+	 * @param file	The file in which we are looking for referencing sources.
+	 * @param path	The logical Path for which we search referencing sources.
 	 * @param monitor
-	 * @return
+	 * @return	The identifiers contained in the sources which reference the given path.
 	 * @throws MissingNatureException
 	 * @throws IOException
 	 */
-	private List<Identifier> getReferencingIdentifiersInFile(IFile file,IASTModelPath path, IProgressMonitor monitor)
+	private List<Identifier> getReferencingIdentifiersInFileForTargetPath(IFile file,IASTModelPath path, IProgressMonitor monitor)
 	throws MissingNatureException, IOException {
+		//Gather all sources which reference this path
 		System.err.println("Scanning File:"+file.getName());
 		IASTModelPath candidatePath;
 		IASTReference[] referenceArray = getReferences(file,monitor);
@@ -74,15 +77,19 @@ public class Processor extends RenameProcessor {
 
 		//TODO erase
 		System.err.println("Found Sources: "+matchingSources.size());
+		
+		//Find Identifiers which are part of the given Source.
 		IFileRegion region;
 		ASTUtil astUtil=new ASTUtil(getAst(file,monitor));
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference ref:matchingSources){
+			//TODO erase
 			System.err.println(ref.getSource());
 			region=ref.getSource();
 			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset());
 			if(node instanceof Identifier){
 				Identifier id=(Identifier)node;
+				//TODO erase
 				System.err.println("Node Id Name: "+id.getName());
 			}else{
 				System.err.println("Source Node is no Identifier ");
@@ -141,33 +148,41 @@ public class Processor extends RenameProcessor {
 	throws MissingNatureException {
 		IASTModelPath res=null;
 		System.err.println(identifier.getName());
-		if (ASTUtil4Functions.isFunctionDeclaration(identifier)) {
+
+		switch(selectedFunctionPart){
+
+		case DECLARATION:
 			InitDeclarator id = (InitDeclarator) ASTUtil.getParentForName(identifier, InitDeclarator.class);
 			res = id.resolveField().getPath();
 			System.err.println("isDECLARATION");
-		}
-		//TODO Find the reference to the declaration of a function definition
-		else if (ASTUtil4Functions.isFunctionDefinition(identifier)) {
+			break;
+
+		case DEFINITION:
+			//TODO Find the reference to the declaration of a function definition
 			FunctionDefinition definition= (FunctionDefinition) ASTUtil.getParentForName(identifier, FunctionDefinition.class);
 			res= definition.resolveNode().getPath();
 			//TODO erase
 			System.err.println("isDEFINITON");
-		}
-		else if (ASTUtil4Functions.isFunctionCall(identifier)) {
+			break;
+
+		case CALL:
 			IdentifierExpression call= (IdentifierExpression) ASTUtil.getParentForName(identifier, IdentifierExpression.class);
 			IASTModelPath path= call.resolveField().getPath();
 			res=getDeclaringPath(call, path, pm);
 			//TODO erase
 			System.err.println("isCALL");
+			break;
+
 		}
+		addOutput("Target: "+getLogicalPath(res, pm));
 		return getLogicalPath(res, pm);
 	}
 
 	private Change createChanges(Identifier identifier,IProgressMonitor pm) 
 	throws CoreException, MissingNatureException, IOException {
-		Collection<IResource> rescources = getAllFiles();
 		IASTModelPath fPath= getPathOfReferencedDeclaration(identifier,pm);
 		CompositeChange ret = new CompositeChange("Rename Function "+ info.getOldName() + " to " + info.getNewName());
+		Collection<IResource> rescources = getAllFiles();
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		NesC12AST ast;
 		for (IResource resource : rescources) {
@@ -175,7 +190,7 @@ public class Processor extends RenameProcessor {
 				IFile file = (IFile) resource;
 				ast=getAst(file, pm);
 				MultiTextEdit mte=new MultiTextEdit();
-				identifiers=getReferencingIdentifiersInFile(file, fPath, pm);
+				identifiers=getReferencingIdentifiersInFileForTargetPath(file, fPath, pm);
 				if(identifiers.size()>0){
 					addChanges4Identifiers(identifiers, info.getNewName(), mte,ast);
 					String changeName = "Replacing Function Name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
@@ -186,6 +201,7 @@ public class Processor extends RenameProcessor {
 
 			}
 		}
+		System.err.println(endOutput);
 		return ret;
 	}
 
@@ -195,6 +211,7 @@ public class Processor extends RenameProcessor {
 	throws CoreException,OperationCanceledException {
 		Change ret;
 		Identifier selectedIdentifier = getSelectedIdentifier();
+		selectedFunctionPart=ASTUtil4Functions.identifyFunctionPart(selectedIdentifier);
 		try {
 			ret=createChanges(selectedIdentifier,pm);
 		} catch (Exception e) {
