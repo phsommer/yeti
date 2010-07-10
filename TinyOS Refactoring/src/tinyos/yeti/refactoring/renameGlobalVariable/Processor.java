@@ -56,49 +56,6 @@ public class Processor extends RenameProcessor {
 		this.info = info;
 	}
 
-	@Override
-	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
-			CheckConditionsContext context) throws CoreException,
-			OperationCanceledException {
-		RefactoringStatus ret = new RefactoringStatus();
-		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is no Accessable");
-		}
-		return ret;
-		// TODO checkFinalConditions not yet implemented
-
-	}
-
-	@Override
-	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
-			throws CoreException, OperationCanceledException {
-		RefactoringStatus ret = new RefactoringStatus();
-		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is no Accessable");
-		}
-		if (!isGlobalVariable(getSelectedIdentifier())) {
-			ret.addFatalError("No global variable selected.");
-		}
-		return ret;
-	}
-
-	private NesC12AST getAst(IFile iFile, IProgressMonitor monitor)
-			throws IOException, MissingNatureException {
-		// Create Parser for File to construct an AST
-		IProject project = info.getEditor().getProject();
-		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(
-				project).getModel();
-
-		File file = iFile.getLocation().toFile();
-		IParseFile parseFile = projectModel.parseFile(file);
-
-		INesCParser parser = projectModel.newParser(parseFile, null, monitor);
-		parser.setCreateAST(true);
-		parser.parse(new FileMultiReader(file), monitor);
-
-		return (NesC12AST) parser.getAST();
-	}
-
 	private boolean isGlobalVariable(Identifier variable) {
 		// Local Variable are of corse no globle variables
 		if (getVarUtil().isLocalVariable(variable)) {
@@ -193,26 +150,6 @@ public class Processor extends RenameProcessor {
 		}
 		System.err.println("DECIDED");
 		return ret;
-	}
-
-	private Collection<IResource> getAllFiles() throws CoreException{
-		IProject project = info.getEditor().getProject();
-		ProjectResourceCollector collector = new ProjectResourceCollector();
-		try {
-			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(
-					collector);
-		} catch (MissingNatureException e) {
-			RefactoringPlugin.getDefault().log(
-					LogLevel.WARNING,
-					"Refactroing was called while Plugin was not ready: "
-							+ e.getMessage());
-			throw new CoreException(new Status(IStatus.ERROR,
-					RefactoringPlugin.PLUGIN_ID,
-					"Plugin wasn't ready while calling Rename global Variable Refactoring: "
-							+ e.getMessage()));
-		}
-		
-		return collector.resources;
 	}
 	
 	private Collection<IFile> getFilesContainingVariable(Identifier variable,
@@ -312,6 +249,32 @@ public class Processor extends RenameProcessor {
 			
 		}
 
+		return ret;
+	}
+	
+	@Override
+	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
+			CheckConditionsContext context) throws CoreException,
+			OperationCanceledException {
+		RefactoringStatus ret = new RefactoringStatus();
+		if (!isApplicable()) {
+			ret.addFatalError("The Refactoring is no Accessable");
+		}
+		return ret;
+		// TODO checkFinalConditions not yet implemented
+
+	}
+
+	@Override
+	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+			throws CoreException, OperationCanceledException {
+		RefactoringStatus ret = new RefactoringStatus();
+		if (!isApplicable()) {
+			ret.addFatalError("The Refactoring is no Accessable");
+		}
+		if (!isGlobalVariable(getSelectedIdentifier())) {
+			ret.addFatalError("No global variable selected.");
+		}
 		return ret;
 	}
 
