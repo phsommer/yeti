@@ -177,6 +177,14 @@ public class Processor extends RenameProcessor {
 		return getLogicalPath(res, pm);
 	}
 	
+	/**
+	 * Tries to find the Declaration of the given function call.
+	 * @param node
+	 * @param path
+	 * @param monitor
+	 * @return
+	 * @throws MissingNatureException
+	 */
 	private IASTModelPath getDeclaringPath(ASTNode node,IASTModelPath path, IProgressMonitor monitor) throws MissingNatureException{
 		NesC12AST ast=getAst();
 		IParseFile pFile=path.getParseFile();
@@ -238,7 +246,7 @@ public class Processor extends RenameProcessor {
 					MultiTextEdit mte=new MultiTextEdit();
 					identifiers=getReferencingIdentifiersInFile(kind, file, fPath, pm);
 					if(identifiers.size()>0){
-						super.addChanges4Identifiers(identifiers, info.getNewName(), mte,ast);
+						addChanges4Identifiers(identifiers, info.getNewName(), mte,ast);
 						String changeName = "Replacing Function Name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
 						TextChange textChange = new TextFileChange(changeName,file);
 						textChange.setEdit(mte);
@@ -267,9 +275,10 @@ public class Processor extends RenameProcessor {
 	 * @param monitor
 	 * @return
 	 * @throws MissingNatureException
+	 * @throws IOException 
 	 */
 	private List<Identifier> getReferencingIdentifiersInFile(IDeclaration.Kind kind,IFile file,IASTModelPath logicalPath, IProgressMonitor monitor)
-			throws MissingNatureException {
+			throws MissingNatureException, IOException {
 			System.err.println("Scanning File:"+file.getName());
 			IASTModelPath candidatePath;
 			IASTReference[] referenceArray = getReferences(file,monitor);
@@ -287,7 +296,28 @@ public class Processor extends RenameProcessor {
 				}
 			}
 			
-			
+		//TODO erase
+			System.err.println("Found Sources: "+matchingSources.size());
+			IFileRegion region;
+			ASTUtil astUtil=new ASTUtil(getAst(file,monitor));
+			List<Identifier> identifiers=new LinkedList<Identifier>();
+			for(IASTReference ref:matchingSources){
+				System.err.println(ref.getSource());
+				region=ref.getSource();
+				ASTNode node=astUtil.getASTLeafAtPos(region.getOffset());
+				if(node instanceof Identifier){
+					Identifier id=(Identifier)node;
+					System.err.println("Node Id Name: "+id.getName());
+				}else{
+					System.err.println("Source Node is no Identifier ");
+					System.err.println("Source Node: "+node.getASTNodeName());
+				}
+				System.err.println("Node Offset: "+region.getOffset());
+				Identifier identifier=(Identifier)node;
+				identifiers.add(identifier);
+			}
+		return identifiers;
+		
 //		List<IDeclaration> declarations = model.getDeclarations(kind);
 //		System.err.println("#Declarations: "+declarations.size());
 //		System.err.println("Looking for:"+fPath);
@@ -298,20 +328,6 @@ public class Processor extends RenameProcessor {
 //				return true;
 //			}
 //		}
-		//TODO erase
-			System.err.println("Found Sources: "+matchingSources.size());
-			IFileRegion region;
-			ASTUtil astUtil=new ASTUtil(getAst());
-			List<Identifier> identifiers=new LinkedList<Identifier>();
-			for(IASTReference ref:matchingSources){
-				System.err.println(ref.getSource());
-				region=ref.getSource();
-				ASTNode node=astUtil.getASTLeafAtPos(region.getOffset());
-				System.err.println("Source Node: "+node.getASTNodeName());
-				Identifier identifier=(Identifier)node;
-				identifiers.add(identifier);
-			}
-		return identifiers;
 	}
 
 	
