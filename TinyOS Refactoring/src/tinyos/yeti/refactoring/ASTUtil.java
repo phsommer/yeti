@@ -242,4 +242,29 @@ public class ASTUtil {
 	public NesC12AST getAST(){
 		return ast;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> getAllNodesOfType(ASTNode root,Class<T> type){
+		//Add identifiers of the current Compound. This Compound must declare The identifier.
+		Collection<T> matchingNodes=new LinkedList<T>();
+		if(type.isInstance(root)){
+			matchingNodes.add((T)root);
+		}
+		Collection<ASTNode> candidates=new LinkedList<ASTNode>();
+		candidates.addAll(ASTUtil.getChilds(root));
+		Collection<ASTNode> newCandidates=null;
+		while(candidates.size()>0){
+			newCandidates=new LinkedList<ASTNode>();
+			for(ASTNode candidate:candidates){
+				if(candidate!=null){
+					if(type.isInstance(candidate)){	
+						matchingNodes.add((T)candidate);
+					}
+					newCandidates.addAll(ASTUtil.getChilds(candidate));
+				}
+				candidates=newCandidates;
+			}
+		}
+		return matchingNodes;
+	}
 }

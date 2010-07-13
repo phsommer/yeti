@@ -40,6 +40,11 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	//TODO erase, just for debugging
 	protected String endOutput;
 	protected void addOutput(String output){
+		if(output==null){
+			output="output is NULL";
+		}else if(output.equals("")){
+			output="output is EMPTY";
+		}
 		endOutput+="\n"+output;
 	}
 	
@@ -103,16 +108,9 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			util=new ASTUtil(ast);
 		}
 		for (Identifier identifier : identifiers) {
-			//TODO erase
-			System.err.println("ID FOUND: "+identifier);
 			int beginOffset = util.start(identifier);
 			int endOffset = util.end(identifier);
-			//TODO erase
-			System.err.println("beginOffset "+beginOffset);
-			System.err.println("endOffset "+endOffset);
 			int length = endOffset - beginOffset;
-			//TODO erase
-			System.err.println("Länge der zu ersetzenden Indentifyer: "+length);
 			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, newName));
 		}
 	}
@@ -194,7 +192,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		ProjectModel model=getModel();
 		IASTModelNode node=model.getNode(fPath, monitor);
 		if(node==null){
-			addOutput("Node of "+fPath+" is Null");
 			return null;
 		}
 		return node.getLogicalPath();
@@ -248,7 +245,14 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return true;
 	}
 	
-	protected IFile parseFileToIFile(IParseFile parseFile) throws CoreException, MissingNatureException{
+	/**
+	 * Searchs all project files to find the matching IFile to the given IParseFile
+	 * @param parseFile
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
+	protected IFile getIFile4ParseFile(IParseFile parseFile) throws CoreException, MissingNatureException{
 		Collection<IFile> files = getAllFiles();
 		for(IFile file:files){
 			File f = file.getLocation().toFile();
@@ -259,4 +263,24 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		}
 		return null;
 	}
+	
+	/**
+	 * Looks for the Identifier of a given IASTModelPath.
+	 * @param path
+	 * @param monitor
+	 * @return
+	 * @throws MissingNatureException
+	 * @throws CoreException
+	 * @throws IOException
+	 */
+	protected Identifier getIdentifierForPath(IASTModelPath path,IProgressMonitor monitor) 
+	throws MissingNatureException, CoreException, IOException{
+		IFileRegion targetRegion=getModel().getNode(path, monitor).getRegion();
+		IFile targetFile=getIFile4ParseFile(targetRegion.getParseFile());
+		NesC12AST ast=getAst(targetFile,monitor);
+		ASTUtil astUtil=new ASTUtil(ast);
+		return (Identifier)astUtil.getASTLeafAtPos(targetRegion.getOffset());
+	}
+	
+	
 }
