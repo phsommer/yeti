@@ -1,5 +1,7 @@
 package tinyos.yeti.refactoring.renameFunction;
 
+import java.util.Collection;
+
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
@@ -87,5 +89,8 @@ public class ASTUtil4Functions {
 		}
 		return 	identifyFunctionPart(identifier)!=FunctionPart.NO_FUNCTION_PART;
 	}
+	
+	
+	
 	
 }
