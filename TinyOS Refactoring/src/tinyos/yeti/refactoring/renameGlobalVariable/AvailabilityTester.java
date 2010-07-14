@@ -6,6 +6,7 @@ import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ASTUtil;
+import tinyos.yeti.refactoring.ASTUtil4Variables;
 import tinyos.yeti.refactoring.ActionHandlerUtil;
 
 public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester {
@@ -15,17 +16,13 @@ public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityT
 		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
 		NesC12AST ast = (NesC12AST) editor.getAST();
 		ASTUtil util = new ASTUtil(ast);
-		int pos = ActionHandlerUtil.getSelection(editor).getOffset();
+		int addition=receiver.getLength()/2;
+		int pos=receiver.getOffset()+addition;
 		Identifier id = util.getASTLeafAtPos(pos, Identifier.class);
 		if(id==null){
 			return false;
 		}
-		id.getASTNodeName();
-		// TODO: Check if it is an Global Variable
-		/*ProjectModel projectModel = editor.getProjectTOS().getModel();
-			DeclarationFilter filter;
-			IASTReference x = projectModel.getReferences(null, null)[0];*/
-		return true;
+		return ASTUtil4Variables.isGlobalVariable(id);
 	}
 
 }

@@ -19,6 +19,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.builder.ProjectResourceCollector;
 import tinyos.yeti.ep.IParseFile;
+import tinyos.yeti.ep.parser.IASTModel;
 import tinyos.yeti.ep.parser.IASTModelNode;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IFileRegion;
@@ -86,8 +87,13 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @return	The Currently Selected Identifier, null if not an Identifier is Selected.
 	 */
 	protected Identifier getSelectedIdentifier() {
-		int selectionStart = getSelection().getOffset();
-		return utility.getASTLeafAtPos(selectionStart,Identifier.class);
+		ITextSelection selection=getSelection();
+		int pos = selection.getOffset();
+		int length=selection.getLength();
+		if(length>1){
+			pos+=length;
+		}
+		return utility.getASTLeafAtPos(pos,Identifier.class);
 	}
 
 
@@ -143,6 +149,32 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 
 		INesCParser parser = projectModel.newParser(parseFile, null, monitor);
 		parser.setCreateAST(true);
+		parser.parse(new FileMultiReader(file), monitor);
+
+		return (NesC12AST) parser.getAST();
+	}
+	
+	
+	/**
+	 * Returns the Ast for the given IFile and loads the given IASTModel for it.
+	 * @param iFile
+	 * @param monitor
+	 * @return
+	 * @throws IOException
+	 * @throws MissingNatureException
+	 */
+	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor, IASTModel model)
+			throws IOException, MissingNatureException {
+		// Create Parser for File to construct an AST
+		IProject project = info.getEditor().getProject();
+		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
+
+		File file = iFile.getLocation().toFile();
+		IParseFile parseFile = projectModel.parseFile(file);
+
+		INesCParser parser = projectModel.newParser(parseFile, null, monitor);
+		parser.setCreateAST(true);
+		parser.setASTModel(model);
 		parser.parse(new FileMultiReader(file), monitor);
 
 		return (NesC12AST) parser.getAST();

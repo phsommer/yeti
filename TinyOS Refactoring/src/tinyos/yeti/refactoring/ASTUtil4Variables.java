@@ -7,12 +7,52 @@ import java.util.List;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArithmeticExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.AssignmentExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.PostfixExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.PrefixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
 public class ASTUtil4Variables {
 
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] variableDeclarationAncestorSequence=new Class[]{
+		DeclaratorName.class,
+		InitDeclarator.class
+	};
+	
+	
+	public static boolean isVariableDeclaration(Identifier identifier){
+		return ASTUtil.checkAncestorSequence(identifier, variableDeclarationAncestorSequence);
+	}
+	
+	public static boolean isVariableUsage(Identifier identifier){
+		ASTNode parent=identifier.getParent();
+		if(!(parent instanceof IdentifierExpression)){
+			return false;
+		}
+		parent=parent.getParent();
+		return
+			parent instanceof AssignmentExpression
+			||parent instanceof ArgumentExpressionList
+			||parent instanceof ArithmeticExpression
+			||parent instanceof PrefixExpression
+			||parent instanceof PostfixExpression;
+	}
+	
+	public static boolean isGlobalVariable(Identifier identifier){
+		ASTUtil4Variables util=new ASTUtil4Variables();
+		if(util.isLocalVariable(identifier)){
+			return false;
+		}
+		return isVariableDeclaration(identifier)||isVariableUsage(identifier);
+	}
+	
 	
 	/**
 	 * It is supposed, that the declaration is in the given CompoundStatement.

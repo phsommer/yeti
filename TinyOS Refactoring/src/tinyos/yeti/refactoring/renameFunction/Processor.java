@@ -1,5 +1,6 @@
 package tinyos.yeti.refactoring.renameFunction;
 
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 
 import tinyos.yeti.ep.IParseFile;
+import tinyos.yeti.ep.parser.IASTModelAttribute;
 import tinyos.yeti.ep.parser.IASTModelNode;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
@@ -30,7 +32,6 @@ import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
-import tinyos.yeti.nesc12.ep.declarations.FieldDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
@@ -65,7 +66,11 @@ public class Processor extends RenameProcessor {
 		IASTModelPath candidatePath;
 		IASTReference[] referenceArray = getReferences(file,monitor);
 		List<IASTReference> matchingSources=new LinkedList<IASTReference>();
+		addOutput("Ref:");
 		for (IASTReference ref : referenceArray) {
+			if(ref.getTarget().toString().contains("KERMIT")){
+				addOutput(ref.getTarget().toString());
+			}
 			candidatePath=getLogicalPath(ref.getTarget(), monitor);
 			if(candidatePath!=null){
 				if (candidatePath.equals(path)) {
@@ -86,40 +91,56 @@ public class Processor extends RenameProcessor {
 		}
 		return identifiers;
 	}
-	
-	private boolean getFilesContainingDeclarationForPath(IASTModelPath path,IProgressMonitor monitor, CompositeChange ret) 
+
+	/**
+	 * Adds the Change for the Identifier of the function definition with some kind of magic.
+	 * @param path	The path of the basic declaration
+	 * @param monitor
+	 * @param ret	The Change in which the new Change has to be placed.
+	 * @return
+	 * @throws MissingNatureException
+	 * @throws CoreException
+	 * @throws IOException
+	 */
+	private boolean addChange4FunctionDefinition(IASTModelPath path,IProgressMonitor monitor, CompositeChange ret) 
 	throws MissingNatureException, CoreException, IOException{
-		//Get Declarations for this path
+		//Get Declarations for this path, which are all function definitions
+		addOutput("The search Path: "+path.toString());
 		ProjectModel model=getModel();
 		List<IDeclaration> declarations = model.getDeclarations(Kind.FUNCTION);
-		addOutput("#Declarations: "+declarations.size());
-		addOutput("Looking for:"+path);
 		NesC12AST ast;
-		ASTUtil astUtil;
-		Identifier functionDefinition=null;
 		for(IDeclaration dec: declarations){
 			IASTModelNode node=model.getNode(dec.getPath(),monitor);
-				addOutput("Candidate Node: "+node.getIdentifier());
-				addOutput("\t"+node.getLogicalPath());
-				if(node.getLogicalPath().equals(path)){
-					IFile file=super.getIFile4ParseFile(dec.getParseFile());
-					FieldDeclaration functionDeclaration=(FieldDeclaration)dec;
-					if(functionDeclaration.getFileRegion()==null){
-						addOutput("FILE REGION IS NULL");
-					}else{
-						addOutput("FILE REION NOT NULL");
+			//If the declaration references the target declaration, Search the declaring file for the matching function definition
+			if(node.getLogicalPath().equals(path)){
+				IFile file=getIFile4ParseFile(dec.getParseFile());
+				ast=getAst(file,monitor,model.getModel(dec.getParseFile(), true, monitor));
+				Collection<FunctionDefinition> definitions=ASTUtil.getAllNodesOfType(ast.getRoot(), FunctionDefinition.class);
+				addOutput("searching definitions in file:"+file.getName());
+				addOutput("definitions: "+definitions.size());
+				for(FunctionDefinition def:definitions){
+					IASTModelNode functionNodeCandidate=def.resolveNode();
+					if(functionNodeCandidate==null){
+						addOutput("NULL is it");
 					}
-					addOutput("Found Definitiion in File: "+file.getName().toString());
-					ast=getAst(file,monitor);
-					Collection<FunctionDefinition> definitions=ASTUtil.getAllNodesOfType(ast.getRoot(), FunctionDefinition.class);
-					addOutput("Definitions in this file:");
-					for(FunctionDefinition def:definitions){
-						addOutput("\t"+def.getASTNodeName());
+					if(functionNodeCandidate!=null){
+						addOutput("One is not null");
+						//This statement gets the basic declaration out of a function definition. 
+						//The logical path of the definition references the included declaration, whichs logical path in turn references the basic declaration.
+						IASTModelNode declaringNode=getModel().getNode(functionNodeCandidate.getLogicalPath(),monitor);
+						IASTModelPath basicPath=declaringNode.getLogicalPath();
+						addOutput("The Candidate: "+functionNodeCandidate);
+						addOutput("The BasicNode: "+declaringNode);
+						addOutput("Candidate path: "+functionNodeCandidate.getLogicalPath());
+						addOutput("The basic Path: "+basicPath);
+						if(functionNodeCandidate!=null&&path.equals(basicPath)){
+							Identifier functionIdentifier=(Identifier)def.getDeclarator().getChild(0).getChild(0);
+							addChange(functionIdentifier, ast, file, ret);
+							return true;
+						}
 					}
-//					astUtil=new ASTUtil(ast);
-//					functionDefinition=(Identifier)astUtil.getASTLeafAtPos(	node.getRegion().getOffset());
-//					addChange(functionDefinition, ast, file, ret);
-					return true;
+				}
+				addOutput("didnt find matching definition in file");
 			}
 		}
 		return false;
@@ -154,7 +175,7 @@ public class Processor extends RenameProcessor {
 	 * @return
 	 * @throws MissingNatureException 
 	 */
-	private IASTModelPath getPathOfReferencedDeclaration(Identifier identifier,IProgressMonitor pm) 
+	private IASTModelPath getPathOfReferencedDeclaration(Identifier identifier,IProgressMonitor monitor) 
 	throws MissingNatureException {
 		IASTModelPath res=null;
 
@@ -178,14 +199,30 @@ public class Processor extends RenameProcessor {
 		case CALL:
 			IdentifierExpression call= (IdentifierExpression) ASTUtil.getParentForName(identifier, IdentifierExpression.class);
 			IASTModelPath path= call.resolveField().getPath();
-			res=getDeclaringPath(call, path, pm);
+			res=getDeclaringPath(call, path, monitor);
 			//TODO erase
 			addOutput("isCALL");
 			break;
 
 		}
-		res=getLogicalPath(res,pm);
+		res=getLogicalPath(res,monitor);
+		addOutput("Selected Node: "+getModel().getNode(res, monitor));
+		addOutput("logical Path: "+res);
+		addOutput("eager resolved: "+eagerResolveLogicalPath(res,monitor).toString());
 		return res;
+	}
+	
+	private IASTModelPath eagerResolveLogicalPath(IASTModelPath path,IProgressMonitor monitor) 
+	throws MissingNatureException{
+		ProjectModel model=getModel();
+		IASTModelPath oldPath=null;
+//		while(!path.equals(oldPath)){
+		for(int i=0;i<10;++i){
+			addOutput("path: "+path);
+			oldPath=path;
+			path=model.getNode(oldPath, monitor).getLogicalPath();
+		}
+		return path;
 	}
 
 	/**
@@ -228,7 +265,6 @@ public class Processor extends RenameProcessor {
 		IASTModelPath basicDeclarationPath= getPathOfReferencedDeclaration(identifier,monitor);
 		
 		//Get the Identifier of the basic declaration and add it to the change
-		getFilesContainingDeclarationForPath(basicDeclarationPath, monitor,ret);
 		Identifier targetIdentifier=super.getIdentifierForPath(basicDeclarationPath, monitor);
 		IFileRegion targetRegion=getModel().getNode(basicDeclarationPath, monitor).getRegion();
 		IFile targetFile=getIFile4ParseFile(targetRegion.getParseFile());
@@ -243,6 +279,8 @@ public class Processor extends RenameProcessor {
 				addChange(identifiers,ast,file,ret);
 			}
 		}
+		//Add the change for the function definition
+		addChange4FunctionDefinition(basicDeclarationPath, monitor,ret);
 		return ret;
 	}
 
