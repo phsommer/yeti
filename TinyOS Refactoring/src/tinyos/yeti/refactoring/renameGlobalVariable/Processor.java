@@ -1,21 +1,18 @@
 package tinyos.yeti.refactoring.renameGlobalVariable;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
@@ -23,28 +20,17 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.ReplaceEdit;
 
-import tinyos.yeti.TinyOSPlugin;
-import tinyos.yeti.builder.ProjectResourceCollector;
-import tinyos.yeti.ep.IParseFile;
-import tinyos.yeti.ep.parser.IDeclaration;
-import tinyos.yeti.ep.parser.INesCParser;
-import tinyos.yeti.ep.parser.IDeclaration.Kind;
+import tinyos.yeti.ep.parser.IASTModelPath;
+import tinyos.yeti.ep.parser.IFileRegion;
 import tinyos.yeti.ep.parser.reference.IASTReference;
-import tinyos.yeti.ep.parser.standard.ASTModelPath;
-import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
-import tinyos.yeti.nesc.FileMultiReader;
 import tinyos.yeti.nesc12.ep.NesC12AST;
-import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ASTUtil;
-import tinyos.yeti.refactoring.RefactoringPlugin;
-import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
+import tinyos.yeti.refactoring.ASTUtil4Variables;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 
 public class Processor extends RenameProcessor {
@@ -55,197 +41,105 @@ public class Processor extends RenameProcessor {
 		super(info);
 		this.info = info;
 	}
-
-	private boolean isGlobalVariable(Identifier variable) {
-		// Local Variable are of corse no globle variables
-		if (getVarUtil().isLocalVariable(variable)) {
-			return false;
-		}
-
-		// Is true in case a variable is used.
-		IdentifierExpression ie = (IdentifierExpression) ASTUtil
-				.getParentForName(variable, IdentifierExpression.class);
-		if (ie != null) {
-			return true;
-		}
-
-		// Is true in case a variable is defined.
-		DeclaratorName dn = (DeclaratorName) ASTUtil.getParentForName(variable,
-				DeclaratorName.class);
-		if (dn != null) {
-			return true;
-		}
-
-		return false;
-	}
-
+	
 	/**
-	 * 
-	 * @param file
-	 *            The File which you would like to know whether the variable
-	 *            occurs in
-	 * @param variable
-	 *            The Identifier which represents the occurents in the momentary
-	 *            edited File
+	 * Returns all sources which reference the given path mapped by the file in which they rest.
+	 * For the sources the contained Identifier is returned.
+	 * @param baseDeclaration Must equal the target of the references which we are looking for, to get a match. This means that you should consider passing a logical path here.
 	 * @param monitor
 	 * @return
+	 * @throws CoreException
 	 * @throws MissingNatureException
+	 * @throws IOException
 	 */
-	private boolean containsOccurenceOfVariable(IFile file,
-			Identifier variable, IProgressMonitor monitor)
-			throws MissingNatureException {
-		ASTModelPath fPath = getPathOfVariable(variable);
-		ProjectModel model = TinyOSPlugin.getDefault().getProjectTOS(
-				info.getEditor().getProject()).getModel();
-
-		IASTReference[] referenceArray = model.getReferences(model
-				.parseFile(file), monitor);
-		for (IASTReference ref : referenceArray) {
-			if (ref.getTarget().equals(fPath)) {
-				return true;
-			}
-		}
-		
-		
-		List<IDeclaration> declarations = model.getDeclarations(Kind.FIELD);
-		for(IDeclaration dec: declarations){
-			if(dec.getPath().equals(fPath)){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Returns the ASTModelPath of the variable or null if the Identifier does
-	 * not represent a Variable or the Variable is unknown
-	 * 
-	 * @param variable
-	 * @return
-	 */
-	private ASTModelPath getPathOfVariable(Identifier variable) {
-		ASTModelPath ret = null;
-
-		if (ret == null) {
-			IdentifierExpression ie = (IdentifierExpression) ASTUtil
-					.getParentForName(variable, IdentifierExpression.class);
-
-			if (ie != null) {
-				// this might return null if the node is unknown
-				ret = ie.resolveField().getPath();
-				System.err.println("isEXPRESSION");
-				System.err.println(ret);
-			}
-		}
-
-		if (ret == null) {
-			InitDeclarator id = (InitDeclarator) ASTUtil.getParentForName(
-					variable, InitDeclarator.class);
-			if (id != null) {
-				// this might return null if the node is unknown
-				ret = id.resolveField().getPath();
-				System.err.println("isDECLARATOR");
-				System.err.println(ret);
-			}
-		}
-		System.err.println("DECIDED");
-		return ret;
-	}
-
-	private Collection<IFile> getFilesContainingVariable(Identifier variable,IProgressMonitor pm) 
-	throws CoreException {
-		Collection<IFile> files = getAllFiles();
-
-		LinkedList<IFile> containingFiles = new LinkedList<IFile>();
-		for (IFile file : files) {
-			try {
-				if (containsOccurenceOfVariable(file, variable, pm)) {
-					containingFiles.add(file);
+	private Map<IFile, Collection<Identifier>> getReferences(IASTModelPath baseDeclaration,IProgressMonitor monitor) 
+	throws CoreException, MissingNatureException, IOException {
+		Map<IFile, Collection<Identifier>> result=new HashMap<IFile,Collection<Identifier>>();
+		Collection<IFile> files=getAllFiles();
+		for(IFile file:files){
+			Collection<Identifier> identifiers=new LinkedList<Identifier>();
+			result.put(file, identifiers);
+			NesC12AST ast=getAst(file,monitor);
+			ASTUtil util=new ASTUtil(ast);
+			IASTReference[] references=getReferences(file, monitor);
+			for(IASTReference ref:references){
+				if(baseDeclaration.equals(getLogicalPath(ref.getTarget(),monitor))){
+					IFileRegion region=ref.getSource();
+					int pos=region.getOffset();
+					pos+=region.getLength()/2;
+					Identifier id=(Identifier)util.getASTLeafAtPos(pos);
+					identifiers.add(id);
 				}
-			} catch (MissingNatureException e) {
-				throw new CoreException(new Status(IStatus.ERROR,
-						RefactoringPlugin.PLUGIN_ID,
-						"Refactoring was called while Plagin was not ready: "
-						+ e.getMessage()));
 			}
 		}
-		return containingFiles;
-	}
-
-	private MultiTextEdit renameAllOccurencesInFile(IFile file, IProgressMonitor pm) {
-
-		MultiTextEdit multiTextEdit = new MultiTextEdit();
-
-		// BEGIN: getting AST and handling Errors
-		NesC12AST ast = null;
-		try {
-			ast = getAst(file, pm);
-		} catch (IOException e) {
-			RefactoringPlugin.getDefault().log(
-					LogLevel.WARNING,
-					e.getClass().getCanonicalName() + " while parsing File: "
-							+ file.getFullPath().toOSString());
-		} catch (MissingNatureException e) {
-			RefactoringPlugin.getDefault().log(
-					LogLevel.WARNING,
-					e.getClass().getCanonicalName() + " while parsing File: "
-							+ file.getFullPath().toOSString());
-		} finally {
-			if (ast == null) {
-				return multiTextEdit;
-			}
-		}
-		// This ASTUtil operates on the AST of the File that is now processed
-		ASTUtil astUtil4File = new ASTUtil(ast);
-
-		ASTNode astRoot = ast.getRoot();
-		// END: getting AST and handling Errors
-
-		Collection<Identifier> occurences = getVarUtil().getAllIdentifiers(
-				astRoot, info.getOldName());
-
-		// changing the name of all occurrences in the file
-		for (Identifier occurece : occurences) {
-
-			int beginOffset = astUtil4File.start(occurece);
-			int endOffset = astUtil4File.end(occurece);
-			int length = endOffset - beginOffset;
-
-			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, info
-					.getNewName()));
-		}
-		
-		
-		
-		return multiTextEdit;
+		return result;
 	}
 
 	@Override
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
+	public Change createChange(IProgressMonitor monitor) 
+	throws CoreException,OperationCanceledException {
 
-		Identifier selectedVariable = getSelectedIdentifier();
+		CompositeChange ret;
+		try {
+			
+			//Find the basedeclaration which we can use to compare with the target of references.
+			Identifier selectedVariable = getSelectedIdentifier();
+			IASTModelPath baseDeclaration;
+			if(ASTUtil4Variables.isVariableDeclaration(selectedVariable)){
+				InitDeclarator initDeclaration=(InitDeclarator)selectedVariable.getParent().getParent();
+				baseDeclaration=initDeclaration.resolveField().getPath();
+			}else{
+				IdentifierExpression identifierExpr=(IdentifierExpression)selectedVariable.getParent();
+				baseDeclaration=identifierExpr.resolveField().getPath();
+			}
+			baseDeclaration=super.getLogicalPath(baseDeclaration, monitor);
+			
+			//Get all Identifiers of sources which reference the baseDeclaration
+			Map<IFile,Collection<Identifier>> result=getReferences(baseDeclaration,monitor);
+			
+			//Get the Identifier for the baseDeclaration and add it to the results
+			Identifier baseIdentifier=getIdentifierForPath(baseDeclaration, monitor);
+			IFile baseFile=getIFile4ParseFile(baseDeclaration.getParseFile());
+			result.get(baseFile).add(baseIdentifier);
+		
+			//Generate the changes
+			ret = new CompositeChange("Rename Global Variable "+ info.getOldName() + " to " + info.getNewName());
+			for(IFile file:result.keySet()){
+				NesC12AST ast=getAst(file, monitor);
+				Collection<Identifier> identifiers=result.get(file);
+				if(identifiers.size()>0){
+					MultiTextEdit multiTextEdit=new MultiTextEdit();
+					addChanges4Identifiers(identifiers, info.getNewName(), multiTextEdit, ast);
+					String changeName = "Replacing Variable " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+					TextChange textChange = new TextFileChange(changeName,file);
+					textChange.setEdit(multiTextEdit);
+					ret.add(textChange);
+				}
 
-		CompositeChange ret = new CompositeChange("Rename Global Variable "
-				+ info.getOldName() + " to " + info.getNewName());
-
-		Collection<IFile> files = getFilesContainingVariable(selectedVariable,
-				pm);
-
-		for (IFile file : files) {
-			MultiTextEdit mte = renameAllOccurencesInFile(file, pm);
-			if(mte.getChildren().length != 0){
-				String changeName = "Replacing Variable " + info.getOldName()
-				+ " with " + info.getNewName() + " in Document " + file;
-
-				TextChange textChange = new TextFileChange(changeName,
-						file);
-				textChange.setEdit(mte);
-				ret.add(textChange);
 			}
 			
+			
+		} catch (Exception e) {
+			addOutput(e.getMessage());
+			return new NullChange();
 		}
 
+//		Collection<IFile> files = getFilesContainingVariable(selectedVariable,pm);
+//
+//		for (IFile file : files) {
+//			MultiTextEdit mte = renameAllOccurencesInFile(file, pm);
+//			if(mte.getChildren().length != 0){
+//				String changeName = "Replacing Variable " + info.getOldName()
+//				+ " with " + info.getNewName() + " in Document " + file;
+//
+//				TextChange textChange = new TextFileChange(changeName,
+//						file);
+//				textChange.setEdit(mte);
+//				ret.add(textChange);
+//			}
+//			
+//		}
+		System.err.println(super.endOutput);
 		return ret;
 	}
 	
@@ -269,7 +163,7 @@ public class Processor extends RenameProcessor {
 		if (!isApplicable()) {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
-		if (!isGlobalVariable(getSelectedIdentifier())) {
+		if (!ASTUtil4Variables.isGlobalVariable(getSelectedIdentifier())) {
 			ret.addFatalError("No global variable selected.");
 		}
 		return ret;
