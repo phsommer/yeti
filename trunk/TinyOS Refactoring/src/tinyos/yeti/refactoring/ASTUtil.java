@@ -69,6 +69,7 @@ public class ASTUtil {
 		this.ast=ast;
 		reader=ast.getReader();
 	}
+	
 	/**
 	 * Method returns the AST-Leaf that relates to the Position specified in pos in the not preprocessed input file. 
 	 * @param pos Position in the original Input File
@@ -76,7 +77,6 @@ public class ASTUtil {
 	 */
 	public  ASTNode getASTLeafAtPos(int pos){
 		ASTNode root = ast.getRoot();
-		
 		boolean foundChild=true;
 		while(root.getChildrenCount() > 0 && foundChild){
 			foundChild=false;
