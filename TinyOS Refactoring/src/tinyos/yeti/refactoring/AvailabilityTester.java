@@ -6,6 +6,9 @@ import java.util.Map;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.jface.text.ITextSelection;
 
+import tinyos.yeti.editors.NesCEditor;
+import tinyos.yeti.nesc12.ep.NesC12AST;
+
 public class AvailabilityTester extends PropertyTester {
 
 	private enum Properies {renameLocalVariable, renameGlobalVariable,renameFunction,NoRefactoringAvailable};
@@ -19,6 +22,9 @@ public class AvailabilityTester extends PropertyTester {
 
 	@Override
 	public boolean test(Object receiver, String property, Object[] args,Object expectedValue) {
+		if(pluginNotReady()){
+			return false;
+		}
 		if(!(receiver instanceof ITextSelection)){
 			System.err.println("Falscher receiver Typ");
 			return false;
@@ -43,6 +49,17 @@ public class AvailabilityTester extends PropertyTester {
 		}
 	}
 	
+	/**
+	 * Because the AST may not already be initialized, not doing this check could lead to nullpointer exceptions.
+	 * This call makes sure that the IDE is fully loaded before the refactoring.
+	 * @return 
+	 */
+	private boolean pluginNotReady() {
+		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
+		NesC12AST ast = (NesC12AST) editor.getAST();
+		return ast==null;
+	}
+
 	/**
 	 * Tests if there is any Refactoring available
 	 * @param selection
