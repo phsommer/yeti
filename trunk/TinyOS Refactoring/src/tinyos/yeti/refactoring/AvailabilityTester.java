@@ -8,7 +8,7 @@ import org.eclipse.jface.text.ITextSelection;
 
 public class AvailabilityTester extends PropertyTester {
 
-	private enum Properies {renameLocalVariable, renameGlobalVariable,renameFunction};
+	private enum Properies {renameLocalVariable, renameGlobalVariable,renameFunction,NoRefactoringAvailable};
 	private Map<Properies, IRefactoringAvailabilityTester> testerMap = new HashMap<Properies,IRefactoringAvailabilityTester>(); 
 	
 	public AvailabilityTester() {
@@ -18,13 +18,16 @@ public class AvailabilityTester extends PropertyTester {
 	}
 
 	@Override
-	public boolean test(Object receiver, String property, Object[] args,
-			Object expectedValue) {
+	public boolean test(Object receiver, String property, Object[] args,Object expectedValue) {
 		if(!(receiver instanceof ITextSelection)){
 			System.err.println("Falscher receiver Typ");
 			return false;
 		}
 		ITextSelection selection = (ITextSelection) receiver;
+		//If there is no refactoring available show the dummy refactoring in the menu.
+		if(property.equals(Properies.NoRefactoringAvailable.toString())){
+			return !isRefactoringAvailable(selection);
+		}
 		
 		IRefactoringAvailabilityTester tester = testerMap.get(Properies.valueOf(property));
 		if(tester == null){
@@ -40,6 +43,20 @@ public class AvailabilityTester extends PropertyTester {
 		}
 	}
 	
+	/**
+	 * Tests if there is any Refactoring available
+	 * @param selection
+	 * @return
+	 */
+	private boolean isRefactoringAvailable(ITextSelection selection) {
+		for(IRefactoringAvailabilityTester tester:testerMap.values()){
+			if(tester.test(selection)){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public interface IRefactoringAvailabilityTester{
 		public boolean test(ITextSelection receiver);
 	}
