@@ -102,6 +102,37 @@ public class ASTUtil {
 			return null;
 		}
 	}
+
+	/**
+	 * Finds an AST leave at a Preprocessed Pos
+	 * TODO: Is that really necessary to have twice, almost the same Method?
+	 */
+	public  ASTNode getASTLeafAtAstPos(int pos){
+		ASTNode root = ast.getRoot();
+		boolean foundChild=true;
+		while(root.getChildrenCount() > 0 && foundChild){
+			foundChild=false;
+			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
+				ASTNode child = root.getChild(i);
+				
+				// It happend to us that we got null values
+				if(child!=null){
+					if(child.getRange().getRight() >= pos){
+						foundChild=true;
+						root=root.getChild(i);
+					}
+				}
+			}	
+		}
+		
+		// Cause it's only checked if end(child) >= pos the start has to be checked too.  
+		if(foundChild && pos >= root.getRange().getLeft()){
+			return root;
+		} else {
+			// Happens for example if the Cursor is at a blank position
+			return null;
+		}
+	}
 	
 	/**
 	 * Method returns the AST-Leaf that relates to the Position specified in the not preprocessed input file.
