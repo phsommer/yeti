@@ -28,6 +28,7 @@ import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
+import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.RefactoringPlugin;
@@ -136,17 +137,27 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor)
 			throws IOException, MissingNatureException {
 		// Create Parser for File to construct an AST
+		return (NesC12AST) getParser(iFile, monitor).getAST();
+	}
+	
+	/**
+	 * Parses a given File and returns the Parser.
+	 */
+	protected Parser getParser(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
 		IProject project = info.getEditor().getProject();
 		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
 
 		File file = iFile.getLocation().toFile();
 		IParseFile parseFile = projectModel.parseFile(file);
 
-		INesCParser parser = projectModel.newParser(parseFile, null, monitor);
+		Parser parser = (Parser) projectModel.newParser(parseFile, null, monitor);
 		parser.setCreateAST(true);
+		parser.setFollowIncludes(true);
+		parser.setKeepShadowedFields(true);
+		parser.setResolveFullModel(true);
+		parser.setASTModel(info.getEditor().getASTModel());
 		parser.parse(new FileMultiReader(file), monitor);
-
-		return (NesC12AST) parser.getAST();
+		return parser;
 	}
 	
 	
