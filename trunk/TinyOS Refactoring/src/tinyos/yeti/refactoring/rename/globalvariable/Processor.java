@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.renameGlobalVariable;
+package tinyos.yeti.refactoring.rename.globalvariable;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -29,15 +29,16 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.ASTUtil;
-import tinyos.yeti.refactoring.ASTUtil4Variables;
+import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 
 public class Processor extends RenameProcessor {
 
-	private Info info;
+	private RenameInfo info;
 
-	public Processor(Info info) {
+	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
 	}
@@ -81,6 +82,7 @@ public class Processor extends RenameProcessor {
 
 		CompositeChange ret;
 		try {
+			addOutput("start ");
 			
 			//Find the basedeclaration which we can use to compare with the target of references.
 			Identifier selectedVariable = getSelectedIdentifier();
@@ -92,7 +94,8 @@ public class Processor extends RenameProcessor {
 				IdentifierExpression identifierExpr=(IdentifierExpression)selectedVariable.getParent();
 				baseDeclaration=identifierExpr.resolveField().getPath();
 			}
-			baseDeclaration=super.getLogicalPath(baseDeclaration, monitor);
+			baseDeclaration=super.eagerResolveLogicalPath(baseDeclaration, monitor);
+			addOutput("Base Declaration: "+baseDeclaration);
 			
 			//Get all Identifiers of sources which reference the baseDeclaration
 			Map<IFile,Collection<Identifier>> result=getReferences(baseDeclaration,monitor);
@@ -120,25 +123,11 @@ public class Processor extends RenameProcessor {
 			
 			
 		} catch (Exception e) {
-			addOutput(e.getMessage());
+			e.printStackTrace();
+			System.err.println(super.endOutput);
 			return new NullChange();
 		}
-
-//		Collection<IFile> files = getFilesContainingVariable(selectedVariable,pm);
-//
-//		for (IFile file : files) {
-//			MultiTextEdit mte = renameAllOccurencesInFile(file, pm);
-//			if(mte.getChildren().length != 0){
-//				String changeName = "Replacing Variable " + info.getOldName()
-//				+ " with " + info.getNewName() + " in Document " + file;
-//
-//				TextChange textChange = new TextFileChange(changeName,
-//						file);
-//				textChange.setEdit(mte);
-//				ret.add(textChange);
-//			}
-//			
-//		}
+		
 		System.err.println(super.endOutput);
 		return ret;
 	}

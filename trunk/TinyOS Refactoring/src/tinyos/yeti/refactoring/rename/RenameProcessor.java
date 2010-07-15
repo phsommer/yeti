@@ -30,11 +30,11 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.ASTUtil;
-import tinyos.yeti.refactoring.ASTUtil4Variables;
-import tinyos.yeti.refactoring.ActionHandlerUtil;
 import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
+import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 
@@ -312,6 +312,28 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		NesC12AST ast=getAst(targetFile,monitor);
 		ASTUtil astUtil=new ASTUtil(ast);
 		return (Identifier)astUtil.getASTLeafAtPos(targetRegion.getOffset());
+	}
+	
+	/**
+	 * Tries to find the real Logical path of an reference, not just an intermediate node.
+	 * @param path
+	 * @param monitor
+	 * @return
+	 * @throws MissingNatureException
+	 */
+	protected IASTModelPath eagerResolveLogicalPath(IASTModelPath path,IProgressMonitor monitor) 
+	throws MissingNatureException{
+		ProjectModel model=getModel();
+		IASTModelPath oldPath=null;
+		while(!path.equals(oldPath)){
+			oldPath=path;
+			IASTModelNode node=model.getNode(oldPath, monitor);
+			if(node==null){
+				return path;
+			}
+			path=node.getLogicalPath();
+		}
+		return path;
 	}
 	
 	

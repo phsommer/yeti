@@ -8,6 +8,7 @@ import org.eclipse.jface.text.ITextSelection;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class AvailabilityTester extends PropertyTester {
 
@@ -15,9 +16,9 @@ public class AvailabilityTester extends PropertyTester {
 	private Map<Properies, IRefactoringAvailabilityTester> testerMap = new HashMap<Properies,IRefactoringAvailabilityTester>(); 
 	
 	public AvailabilityTester() {
-		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.renameLocalVariable.AvailabilityTester());
-		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.renameGlobalVariable.AvailabilityTester());
-		testerMap.put(Properies.renameFunction, new tinyos.yeti.refactoring.renameFunction.AvailabilityTester());
+		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.rename.localvariable.AvailabilityTester());
+		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.rename.globalvariable.AvailabilityTester());
+		testerMap.put(Properies.renameFunction, new tinyos.yeti.refactoring.rename.function.AvailabilityTester());
 	}
 
 	@Override

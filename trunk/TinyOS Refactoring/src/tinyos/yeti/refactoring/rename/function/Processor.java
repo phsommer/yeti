@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.renameFunction;
+package tinyos.yeti.refactoring.rename.function;
 
 
 import java.io.IOException;
@@ -22,7 +22,6 @@ import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 
 import tinyos.yeti.ep.IParseFile;
-import tinyos.yeti.ep.parser.IASTModelAttribute;
 import tinyos.yeti.ep.parser.IASTModelNode;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
@@ -37,15 +36,17 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.ASTUtil;
+import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 
 public class Processor extends RenameProcessor {
 
-	private Info info;
+	private RenameInfo info;
 	private FunctionPart selectedFunctionPart;	//The function part type of the selection
 
-	public Processor(Info info) {
+	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
 	}
@@ -210,19 +211,6 @@ public class Processor extends RenameProcessor {
 		addOutput("logical Path: "+res);
 		addOutput("eager resolved: "+eagerResolveLogicalPath(res,monitor).toString());
 		return res;
-	}
-	
-	private IASTModelPath eagerResolveLogicalPath(IASTModelPath path,IProgressMonitor monitor) 
-	throws MissingNatureException{
-		ProjectModel model=getModel();
-		IASTModelPath oldPath=null;
-//		while(!path.equals(oldPath)){
-		for(int i=0;i<10;++i){
-			addOutput("path: "+path);
-			oldPath=path;
-			path=model.getNode(oldPath, monitor).getLogicalPath();
-		}
-		return path;
 	}
 
 	/**

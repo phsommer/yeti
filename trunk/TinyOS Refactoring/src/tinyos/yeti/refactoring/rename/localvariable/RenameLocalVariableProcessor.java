@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.renameLocalVariable;
+package tinyos.yeti.refactoring.rename.localvariable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,9 +20,9 @@ import org.eclipse.text.edits.MultiTextEdit;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
-import tinyos.yeti.refactoring.ActionHandlerUtil;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class RenameLocalVariableProcessor extends RenameProcessor {
 

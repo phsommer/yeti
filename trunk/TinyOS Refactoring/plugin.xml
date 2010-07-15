@@ -35,22 +35,22 @@
 	<!-- The Real Implementations of the Refactorings -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-        	class="tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableActionHandler"
+        	class="tinyos.yeti.refactoring.rename.localvariable.RenameLocalVariableActionHandler"
         	commandId="tinyos.yeti.refactoring.RenameLocalVariable">
      	</handler>
      
      	<handler
-        	class="tinyos.yeti.refactoring.renameGlobalVariable.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.globalvariable.ActionHandler"
         	commandId="tinyos.yeti.refactoring.RenameGlobalVariable">
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.renameFunction.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.function.ActionHandler"
         	commandId="tinyos.yeti.refactoring.RenameFunction">
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.renameFunction.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.function.ActionHandler"
         	commandId="tinyos.yeti.refactoring.NoRefactoringAvailable">
 		</handler>
 	</extension>
