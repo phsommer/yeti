@@ -88,12 +88,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected Identifier getSelectedIdentifier() {
 		ITextSelection selection=getSelection();
-		int pos = selection.getOffset();
-		int length=selection.getLength();
-		if(length>1){
-			pos+=length;
-		}
-		return utility.getASTLeafAtPos(pos,Identifier.class);
+		return utility.getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
 	}
 
 
@@ -311,7 +306,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		IFile targetFile=getIFile4ParseFile(targetRegion.getParseFile());
 		NesC12AST ast=getAst(targetFile,monitor);
 		ASTUtil astUtil=new ASTUtil(ast);
-		return (Identifier)astUtil.getASTLeafAtPos(targetRegion.getOffset());
+		return astUtil.getASTLeafAtPos(targetRegion.getOffset(),targetRegion.getLength(),Identifier.class);
 	}
 	
 	/**

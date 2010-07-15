@@ -76,7 +76,7 @@ public class ASTUtil {
 	 * @param pos Position in the original Input File
 	 * @return The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
 	 */
-	public  ASTNode getASTLeafAtPos(int pos){
+	private  ASTNode getASTLeafAtPos(int pos){
 		ASTNode root = ast.getRoot();
 		boolean foundChild=true;
 		while(root.getChildrenCount() > 0 && foundChild){
@@ -104,15 +104,28 @@ public class ASTUtil {
 	}
 	
 	/**
+	 * Method returns the AST-Leaf that relates to the Position specified in the not preprocessed input file.
+	 * Uses the middle point of the selection, which may lead to a more accurate result. 
+	 * @param start The assumed Position where the leaf you are looking for starts.
+	 * @param length The assumed length of the area which the leaf includes.
+	 * @return	 The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
+	 */
+	public  ASTNode getASTLeafAtPos(int start,int length){
+		start+=length/2;
+		return getASTLeafAtPos(start);
+	}
+	
+	/**
  	*
  	* @param <T> The type which the Leaf is you are looking for. 
- 	* @param pos The Position where the leaf you are looking for is.
+ 	* @param start The assumed Position where the leaf you are looking for starts.
+ 	* @param lenth The assumed length of the area which the leaf includes.
  	* @param type	The type which the Leaf is you are looking for. 
  	* @return The currently selected ASTNode Element. Null if the given type does not match the selected Element.
  	*/
 	@SuppressWarnings("unchecked") // Eclipse thinks that we have a unchecked Class cast. But it's not unchecked.
-	public <T extends ASTNode> T getASTLeafAtPos(int pos,Class<T> type) {
-		ASTNode currentlySelected = this.getASTLeafAtPos(pos);
+	public <T extends ASTNode> T getASTLeafAtPos(int start,int length,Class<T> type) {
+		ASTNode currentlySelected = this.getASTLeafAtPos(start,length);
 		if(type.isInstance(currentlySelected)){
 			return (T) currentlySelected;
 		} else {

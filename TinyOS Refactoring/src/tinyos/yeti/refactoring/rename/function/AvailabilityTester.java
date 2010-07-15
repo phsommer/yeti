@@ -16,8 +16,8 @@ public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityT
 		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
 		NesC12AST ast = (NesC12AST) editor.getAST();
 		ASTUtil util = new ASTUtil(ast);
-		int pos = ActionHandlerUtil.getSelection(editor).getOffset();
-		Identifier identifier = util.getASTLeafAtPos(pos, Identifier.class);
+		ITextSelection selection= ActionHandlerUtil.getSelection(editor);
+		Identifier identifier = util.getASTLeafAtPos(selection.getOffset(),selection.getLength(), Identifier.class);
 		return 	ASTUtil4Functions.isFunction(identifier);
 	}
 	

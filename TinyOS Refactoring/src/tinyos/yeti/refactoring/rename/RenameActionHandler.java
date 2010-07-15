@@ -23,9 +23,7 @@ public abstract class RenameActionHandler extends AbstractHandler implements IHa
 		NesCEditor editor = ActionHandlerUtil.getNesCEditor(event);
 		ITextSelection selection = ActionHandlerUtil.getSelection(editor);
 		ASTUtil util = new ASTUtil((NesC12AST) editor.getAST());
-		int pos=selection.getOffset();
-		pos+=selection.getLength()/2;
-		Identifier id=util.getASTLeafAtPos(pos, Identifier.class);
+		Identifier id=util.getASTLeafAtPos(selection.getOffset(),selection.getLength(), Identifier.class);
 		if(id==null){
 			return null;
 		}
