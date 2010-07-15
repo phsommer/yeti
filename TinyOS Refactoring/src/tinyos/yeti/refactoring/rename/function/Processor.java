@@ -30,7 +30,9 @@ import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
+import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.nesc12.parser.ast.elements.Field;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
@@ -260,13 +262,41 @@ public class Processor extends RenameProcessor {
 		addChange(targetIdentifier,ast,targetFile,ret);
 		
 		//Get the identifiers of function parts, which reference the basic declaration and add them to the change.
+		Collection<Field> shadowedFields = new LinkedList<Field>();
 		for (IFile file : getAllFiles()) {
-			ast=getAst(file, monitor);
+			Parser parser = getParser(file, monitor);
+			ast=parser.getAST();
+			Collection<Field> shadowedFieldsTmp =parser.getShadowedFields().get(basicDeclarationPath);
+			if(shadowedFieldsTmp == null ){ shadowedFieldsTmp= new LinkedList<Field>(); }
+			shadowedFields.addAll(shadowedFieldsTmp);
 			identifiers=getReferencingIdentifiersInFileForTargetPath(file, basicDeclarationPath, monitor);
 			if(identifiers.size()>0){
 				addChange(identifiers,ast,file,ret);
 			}
 		}
+		
+		/*
+		 * TODO:Very ugly and slow Hack.
+		 * But good enough do demonstrate the functionality
+		 * Walks throw all files and check if a shadowed field is in such a file
+		 */
+		for(IFile file: getAllFiles()){
+			for(Field field: shadowedFields){
+				/*
+				 * TODO: Could not find out, how to get a full qualified path out of the file Variable. Thats why "endsWith"
+				 */
+				if(field.getRange().getSource().file().getPath().endsWith(file.getFullPath().toFile().getAbsolutePath())){
+					ASTUtil util = new ASTUtil(getAst(file, monitor));
+					int begin = ast.getReader().inputLocation(field.getRange().getLeft(), true);
+					Identifier id =(Identifier) util.getASTLeafAtAstPos(begin+1);
+					if(id!=null){
+						addChange(id, util.getAST(), file, ret);
+					}
+				}
+			}
+		}
+		
+		
 		//Add the change for the function definition
 		addChange4FunctionDefinition(basicDeclarationPath, monitor,ret);
 		return ret;
