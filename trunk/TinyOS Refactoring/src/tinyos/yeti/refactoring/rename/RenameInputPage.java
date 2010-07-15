@@ -35,6 +35,7 @@ public class RenameInputPage extends UserInputWizardPage {
 		Dialog.applyDialogFont(root);
 		Label lblNewName = new Label(root, SWT.NONE);
 		lblNewName.setText(info.getNewNameFieldLabel());
+		lblNewName.forceFocus();
 		
 		final Text newNameTextField = new Text(root, SWT.NONE);
 		
