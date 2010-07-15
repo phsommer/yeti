@@ -23,10 +23,13 @@ package tinyos.yeti.nesc12;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,12 +44,12 @@ import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.NullParseFile;
 import tinyos.yeti.ep.parser.IASTModel;
 import tinyos.yeti.ep.parser.IASTModelNode;
+import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.ep.parser.IFoldingRegion;
 import tinyos.yeti.ep.parser.IMacro;
 import tinyos.yeti.ep.parser.IMessage;
 import tinyos.yeti.ep.parser.IMissingResourceRecorder;
-import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.ep.parser.inspection.INesCInspector;
@@ -83,6 +86,7 @@ import tinyos.yeti.nesc12.parser.SynchronizedDeclarationResolver;
 import tinyos.yeti.nesc12.parser.ast.ASTMessageHandler;
 import tinyos.yeti.nesc12.parser.ast.AnalyzeStack;
 import tinyos.yeti.nesc12.parser.ast.Range;
+import tinyos.yeti.nesc12.parser.ast.elements.Field;
 import tinyos.yeti.nesc12.parser.ast.elements.Type;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.TypeName;
@@ -364,6 +368,10 @@ public class Parser implements INesCParser{
     private boolean createReferences;
     
     private IASTReference[] references;
+
+	private boolean keepShadowedFields = false;
+
+	private Map<IASTModelPath, Stack<Field>> shadowedFields = new HashMap<IASTModelPath, Stack<Field>>();
     
     public Parser( IProject project ){
         this.project = project;
@@ -430,7 +438,7 @@ public class Parser implements INesCParser{
         return createAST;
     }
 
-    public INesCAST getAST() {
+    public NesC12AST getAST() {
         return ast;
     }
     
@@ -837,6 +845,11 @@ public class Parser implements INesCParser{
         if( createReferences ){
         	references = stack.getReferences();
         }
+        
+        if(isKeepShadowedFields()){
+        	System.err.println("peter pan");
+        	this.shadowedFields = stack.getShadowedFields();
+        }
                 
         if( createAST || createInspector ){
             ast = new NesC12AST(
@@ -1104,4 +1117,16 @@ public class Parser implements INesCParser{
             // ignore
         }
     }
+
+	public boolean isKeepShadowedFields() {
+		return this.keepShadowedFields;
+	}
+	
+	public Map<IASTModelPath,Stack<Field>> getShadowedFields(){
+		return this.shadowedFields;
+	}
+	
+	public void setKeepShadowedFields(boolean keepShadowedFields){
+		this.keepShadowedFields = keepShadowedFields;
+	}
 }

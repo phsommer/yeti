@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -138,6 +139,15 @@ public class AnalyzeStack {
 
     private boolean reportErrors = true;
 
+    /**
+    * Allows to keep access to fields that are no longer
+    * Accessable cause they became overwritten by an other
+    * Definition.
+    * E.g. Function Declaration after Function Definition.
+    */
+    private boolean keepShadowedFields = false;
+    private HashMap<IASTModelPath, Stack<Field>> shadowedFields = new HashMap<IASTModelPath, Stack<Field>>();
+
     private boolean createDeclarations = true;
     private boolean collectorDeclarations = false;
     private DeclarationResolver declarationResolver;
@@ -197,6 +207,7 @@ public class AnalyzeStack {
 
         this.reportErrors = parser.isCreateMessages();
         this.createDeclarations = parser.isCreateDeclarations();
+        this.keepShadowedFields = parser.isKeepShadowedFields();
 
         this.monitor = monitor;
         monitor.beginTask( "Analyze", remainingTicks );
@@ -327,6 +338,14 @@ public class AnalyzeStack {
         return createDeclarations;
     }
 
+    public void setKeepShadowedFileds(boolean keepShadowedFields){
+    	this.keepShadowedFields = keepShadowedFields;
+    }
+    
+    public Map<IASTModelPath,Stack<Field>> getShadowedFields(){
+    	return this.shadowedFields;
+    }
+    
     public void setCreateCollectorDeclarations( boolean collectorDeclarations ) {
         this.collectorDeclarations = collectorDeclarations;
     }
@@ -940,6 +959,21 @@ public class AnalyzeStack {
                 	warning( "shadowing of '" + name + "'", insight, name.getRange(), old.getRange() );
                 }
             }
+        }
+        
+
+        if(keepShadowedFields && scope.getScope(FIELDS, name)!=null){
+        	
+        	
+        	System.err.println("Shadowing occured for field "+field.getName());
+            Field old = (Field)scope.getScope( FIELDS, name );
+                
+            Stack<Field> stack = shadowedFields.get(field.getPath());
+            if(stack==null){
+              	stack=new Stack<Field>();
+               	shadowedFields.put(field.getPath(), stack);
+            }
+            stack.push(old);
         }
 
         scope.put( FIELDS, name, field );
