@@ -53,7 +53,7 @@ public class Processor extends RenameProcessor {
 	 * @throws MissingNatureException
 	 * @throws IOException
 	 */
-	private Map<IFile, Collection<Identifier>> getReferences(IASTModelPath baseDeclaration,IProgressMonitor monitor) 
+	private Map<IFile, Collection<Identifier>> getReferencesTargettingPath(IASTModelPath baseDeclaration,IProgressMonitor monitor) 
 	throws CoreException, MissingNatureException, IOException {
 		Map<IFile, Collection<Identifier>> result=new HashMap<IFile,Collection<Identifier>>();
 		Collection<IFile> files=getAllFiles();
@@ -66,9 +66,7 @@ public class Processor extends RenameProcessor {
 			for(IASTReference ref:references){
 				if(baseDeclaration.equals(getLogicalPath(ref.getTarget(),monitor))){
 					IFileRegion region=ref.getSource();
-					int pos=region.getOffset();
-					pos+=region.getLength()/2;
-					Identifier id=(Identifier)util.getASTLeafAtPos(pos);
+					Identifier id=util.getASTLeafAtPos(region.getOffset(),region.getLength(),Identifier.class);
 					identifiers.add(id);
 				}
 			}
@@ -98,7 +96,7 @@ public class Processor extends RenameProcessor {
 			addOutput("Base Declaration: "+baseDeclaration);
 			
 			//Get all Identifiers of sources which reference the baseDeclaration
-			Map<IFile,Collection<Identifier>> result=getReferences(baseDeclaration,monitor);
+			Map<IFile,Collection<Identifier>> result=getReferencesTargettingPath(baseDeclaration,monitor);
 			
 			//Get the Identifier for the baseDeclaration and add it to the results
 			Identifier baseIdentifier=getIdentifierForPath(baseDeclaration, monitor);

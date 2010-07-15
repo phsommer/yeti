@@ -86,7 +86,7 @@ public class Processor extends RenameProcessor {
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
-			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset());
+			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset(),region.getLength());
 			Identifier identifier=(Identifier)node;
 			identifiers.add(identifier);
 		}

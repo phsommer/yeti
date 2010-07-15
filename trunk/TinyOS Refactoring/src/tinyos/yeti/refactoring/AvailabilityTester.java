@@ -31,6 +31,7 @@ public class AvailabilityTester extends PropertyTester {
 			return false;
 		}
 		ITextSelection selection = (ITextSelection) receiver;
+		
 		//If there is no refactoring available show the dummy refactoring in the menu.
 		if(property.equals(Properies.NoRefactoringAvailable.toString())){
 			return !isRefactoringAvailable(selection);
