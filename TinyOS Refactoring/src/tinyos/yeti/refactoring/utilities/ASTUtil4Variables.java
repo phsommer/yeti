@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring;
+package tinyos.yeti.refactoring.utilities;
 
 import java.util.Collection;
 import java.util.Collections;

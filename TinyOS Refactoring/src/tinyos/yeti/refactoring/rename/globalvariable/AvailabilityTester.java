@@ -1,13 +1,13 @@
-package tinyos.yeti.refactoring.renameGlobalVariable;
+package tinyos.yeti.refactoring.rename.globalvariable;
 
 import org.eclipse.jface.text.ITextSelection;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.ASTUtil;
-import tinyos.yeti.refactoring.ASTUtil4Variables;
-import tinyos.yeti.refactoring.ActionHandlerUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
+import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class AvailabilityTester implements tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester {
 

@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring;
+package tinyos.yeti.refactoring.utilities;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -14,6 +14,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.preprocessor.PreprocessorReader;
+import tinyos.yeti.refactoring.RefactoringPlugin;
 
 /**
  * Conglomeration of Methods that are useful while working whit the AST in a Refactoring Plugin

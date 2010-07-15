@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.renameFunction;
+package tinyos.yeti.refactoring.rename.function;
 
 public enum FunctionPart {
 		DECLARATION,

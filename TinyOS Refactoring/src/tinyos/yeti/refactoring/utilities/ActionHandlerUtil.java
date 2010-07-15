@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring;
+package tinyos.yeti.refactoring.utilities;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -12,6 +12,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
+import tinyos.yeti.refactoring.RefactoringPlugin;
 
 public class ActionHandlerUtil {
 	public static NesCEditor getNesCEditor(ExecutionEvent event) throws ExecutionException{

@@ -1,6 +1,4 @@
-package tinyos.yeti.refactoring.renameFunction;
-
-import java.util.Collection;
+package tinyos.yeti.refactoring.utilities;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
@@ -10,7 +8,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.ASTUtil;
+import tinyos.yeti.refactoring.rename.function.FunctionPart;
 
 public class ASTUtil4Functions {
 	
