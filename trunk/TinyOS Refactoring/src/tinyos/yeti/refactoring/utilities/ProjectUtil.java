@@ -104,4 +104,13 @@ public class ProjectUtil {
 		}
 		return files;
 	}
+	
+	/**
+	 * Returns the projectModel of this project.
+	 * @return
+	 * @throws MissingNatureException
+	 */
+	public ProjectModel getModel() throws MissingNatureException{
+		return TinyOSPlugin.getDefault().getProjectTOS(editor.getProject()).getModel();
+	}
 }

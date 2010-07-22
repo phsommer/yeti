@@ -159,7 +159,7 @@ public class ASTUtil4Functions {
 		//Try to find the functionDefinition with the name of the identifier.
 		for(FunctionDefinition definition:ASTUtil.getChildsOfType(root, FunctionDefinition.class)){
 			Identifier id=getIdentifierOfFunctionDefinition(definition);
-			if(targetName.equals(id.getName())){
+			if(id!=null&&targetName.equals(id.getName())){
 				return id;
 			}
 		}

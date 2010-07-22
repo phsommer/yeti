@@ -1,6 +1,11 @@
 package tinyos.yeti.refactoring.rename.global.interfaces;
 
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -11,21 +16,47 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
+import tinyos.yeti.ep.parser.IASTModelPath;
+import tinyos.yeti.ep.parser.IDeclaration;
+import tinyos.yeti.ep.parser.IDeclaration.Kind;
+import tinyos.yeti.model.ProjectModel;
+import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
 import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 
+	private IDeclaration interfaceDeclaration;
+	
 	private RenameInfo info;
 
 	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
+	}
+	
+	/**
+	 * Looks for a interface definition with the given name.
+	 * @param identifier
+	 * @param editor
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
+	public IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
+		ProjectModel model=getModel();
+		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
+		for(IDeclaration declaration:declarations){
+			if(interfaceName.equals(declaration.getName())){
+				return declaration;
+			}
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -33,67 +64,27 @@ public class Processor extends RenameProcessor {
 	throws CoreException,OperationCanceledException {
 		DebugUtil.clearOutput();
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
-		
-		
 		try {
-			DebugUtil.addOutput("Change Interface called!");
-			GlobalFieldFinder finder=new GlobalFieldFinder(info.getEditor(), pm);
-			finder.printFieldInformation(super.getSelectedIdentifier().getName());
+			//Add Change for interface definition
+			IFile declaringFile=getIFile4ParseFile(interfaceDeclaration.getParseFile());
+			Identifier declaringIdentifier=getIdentifierForPath(interfaceDeclaration.getPath(), pm);
+			List<Identifier> identifiers=new LinkedList<Identifier>();
+			identifiers.add(declaringIdentifier);
+			addMultiTextEdit(identifiers, getAst(declaringFile, pm), declaringFile, createTextChangeName("interface", declaringFile), ret);
 			
-			
-			
+			//Add Changes for referencing elements
+			Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
+			paths.add(interfaceDeclaration.getPath());
+			for(IFile file:getAllFiles()){
+				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+			}
 			
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 		DebugUtil.printOutput();
 		return ret;
-		
-		
-		
-		
-		
-		
-//		try {
-//			
-//			//Get the User selection
-//			Identifier selectedIdentifier = getSelectedIdentifier();
-//			//Gather general information about the field.
-//			GlobalFieldFinder finder=new GlobalFieldFinder(info.getEditor(), pm);
-//			FieldInfoSet fieldInfoSet=finder.getFieldInfoSetAbout(selectedIdentifier.getName());
-//			Map<IFile, Collection<FieldInfo> > files2FieldInfos=fieldInfoSet.getFiles2FieldInfos();
-//			
-//			//Gather all identifiers of the field on a per file base.
-//			for(IFile file:files2FieldInfos.keySet()){
-//				NesC12AST ast=getAst(file, pm);
-//				ASTUtil astUtil=new ASTUtil(ast);
-//				Collection<Identifier> identifiers=new LinkedList<Identifier>();
-//				Collection<FieldInfo> fieldInfos=files2FieldInfos.get(file);
-//				
-//				//Get the Identifiers of declarations and, if this field is a function, the identifiers of definitions in the file. 
-//				for(FieldInfo fieldInfo:fieldInfos){
-//					if(fieldInfo.getKind()!=FieldKind.INCLUDED_DECLARATION){	//Included Declarations don't have to be changed.
-//						RangeDescription description=fieldInfo.getField().getRange();
-//						Identifier id=(Identifier)astUtil.getASTLeafAtAstPos(description.getLeft());
-//						identifiers.add(id);
-//					}
-//				}
-//				
-//				//Get the Identifiers of References in the file. 
-//				Collection<IASTModelPath> paths=fieldInfoSet.getKnownPathsForFile(file);
-//				Collection<Identifier> referencesOfFile=getReferencingIdentifiersInFileForTargetPaths(file,paths,pm);
-//				identifiers.addAll(referencesOfFile);
-//				
-//				//add the changes for the found identifiers.
-//				String textChangeName = "Replacing global field name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
-//				addMultiTextEdit(identifiers,ast,file,textChangeName,ret);
-//			}
-//			
-//		}
-//		catch (Exception e){
-//			e.printStackTrace();
-//		}
-//		return ret;
 	}
 
 	@Override
@@ -117,7 +108,19 @@ public class Processor extends RenameProcessor {
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		if (!(ASTUTil4Interfaces.isInterface(selectedIdentifier)||ASTUtil4Variables.isGlobalVariable(selectedIdentifier))) {
-			ret.addFatalError("No Global Field selected.");
+			ret.addFatalError("No Interface selected.");
+		}
+
+		try {
+			interfaceDeclaration = getInterfaceDefinition(selectedIdentifier.getName());
+			if(interfaceDeclaration==null){
+				ret.addFatalError("Did not find an Interface Definition, for selection!");
+			}
+			if(!interfaceDeclaration.getParseFile().isProjectFile()){
+				ret.addFatalError("Interface definition is out of project range!");
+			}
+		} catch (MissingNatureException e) {
+			ret.addFatalError("Project is not ready for refactoring!");
 		}
 		return ret;
 	}

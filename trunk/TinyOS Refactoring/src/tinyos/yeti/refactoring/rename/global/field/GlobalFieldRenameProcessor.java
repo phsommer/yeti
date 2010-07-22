@@ -74,7 +74,7 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 				identifiers.addAll(referencesOfFile);
 				
 				//add the changes for the found identifiers.
-				String textChangeName = "Replacing global field name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+				String textChangeName = createTextChangeName("global field", file);
 				addMultiTextEdit(identifiers,ast,file,textChangeName,ret);
 			}
 			

@@ -169,7 +169,8 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @throws MissingNatureException
 	 */
 	protected ProjectModel getModel() throws MissingNatureException{
-		return TinyOSPlugin.getDefault().getProjectTOS(info.getEditor().getProject()).getModel();
+		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
+		return projectUtil.getModel();
 	}
 	
 	/**
@@ -399,6 +400,16 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			ret.add(textChange);
 		}
 		
+	}
+	
+	/**
+	 * Creates a title for a text change.
+	 * @param entityName The name of the entity we are renaming. I.e. global field or interface.
+	 * @param file
+	 * @return
+	 */
+	protected String createTextChangeName(String entityName,IFile file){
+		return "Replacing "+entityName+" name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
 	}
 	
 }
