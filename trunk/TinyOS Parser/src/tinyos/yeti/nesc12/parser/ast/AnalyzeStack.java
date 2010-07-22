@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -98,6 +98,7 @@ import tinyos.yeti.preprocessor.output.Insight;
 import tinyos_parser.NesC12ParserPlugin;
 
 public class AnalyzeStack {
+	
     /** index for map containing {@link Key} - value pairs */
     private static final int VALUES     = 0;
     /** index for map containing {@link Field}s */
@@ -139,14 +140,12 @@ public class AnalyzeStack {
 
     private boolean reportErrors = true;
 
-    /**
-    * Allows to keep access to fields that are no longer
-    * Accessable cause they became overwritten by an other
-    * Definition.
-    * E.g. Function Declaration after Function Definition.
-    */
-    private boolean keepShadowedFields = false;
-    private HashMap<IASTModelPath, Stack<Field>> shadowedFields = new HashMap<IASTModelPath, Stack<Field>>();
+    /*
+     *	Allows to gather information about global fields.
+     *	Introduced for the refactoring plugin. 
+     */
+    private boolean gatherGlobalFieldInformation = false;
+    private HashMap<String,Collection<Field>> fieldNames2Fields=new HashMap<String, Collection<Field>>();
 
     private boolean createDeclarations = true;
     private boolean collectorDeclarations = false;
@@ -207,7 +206,7 @@ public class AnalyzeStack {
 
         this.reportErrors = parser.isCreateMessages();
         this.createDeclarations = parser.isCreateDeclarations();
-        this.keepShadowedFields = parser.isKeepShadowedFields();
+        this.gatherGlobalFieldInformation = parser.isGatherGlobalFieldInformation();
 
         this.monitor = monitor;
         monitor.beginTask( "Analyze", remainingTicks );
@@ -338,12 +337,15 @@ public class AnalyzeStack {
         return createDeclarations;
     }
 
-    public void setKeepShadowedFileds(boolean keepShadowedFields){
-    	this.keepShadowedFields = keepShadowedFields;
+    public void setGahterGlobalFieldInformation(boolean gatherGlobalFieldInformation){
+    	this.gatherGlobalFieldInformation = gatherGlobalFieldInformation;
     }
     
-    public Map<IASTModelPath,Stack<Field>> getShadowedFields(){
-    	return this.shadowedFields;
+    public  Map<String,Collection<Field>> getFieldNames2Fields(){
+    	if(!gatherGlobalFieldInformation){
+    		throw new IllegalStateException("Parser is not configured to gather this Information!");
+    	}
+    	return this.fieldNames2Fields;
     }
     
     public void setCreateCollectorDeclarations( boolean collectorDeclarations ) {
@@ -961,19 +963,15 @@ public class AnalyzeStack {
             }
         }
         
-
-        if(keepShadowedFields && scope.getScope(FIELDS, name)!=null){
-        	
-        	
-        	System.err.println("Shadowing occured for field "+field.getName());
-            Field old = (Field)scope.getScope( FIELDS, name );
-                
-            Stack<Field> stack = shadowedFields.get(field.getPath());
-            if(stack==null){
-              	stack=new Stack<Field>();
-               	shadowedFields.put(field.getPath(), stack);
-            }
-            stack.push(old);
+        if(gatherGlobalFieldInformation&&scope.equals(global)){
+        	Collection<Field> knownFields;
+        	String identifier=name.toIdentifier();
+    		knownFields=fieldNames2Fields.get(identifier);
+        	if(knownFields==null){
+        		knownFields=new LinkedList<Field>();
+        		fieldNames2Fields.put(identifier, knownFields);
+        	}
+        	knownFields.add(field);
         }
 
         scope.put( FIELDS, name, field );
