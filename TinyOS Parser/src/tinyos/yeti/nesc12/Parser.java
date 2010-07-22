@@ -23,13 +23,13 @@ package tinyos.yeti.nesc12;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,7 +44,6 @@ import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.NullParseFile;
 import tinyos.yeti.ep.parser.IASTModel;
 import tinyos.yeti.ep.parser.IASTModelNode;
-import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.ep.parser.IFoldingRegion;
 import tinyos.yeti.ep.parser.IMacro;
@@ -369,9 +368,9 @@ public class Parser implements INesCParser{
     
     private IASTReference[] references;
 
-	private boolean keepShadowedFields = false;
+	private boolean gatherGlobalFieldInformation = false;
 
-	private Map<IASTModelPath, Stack<Field>> shadowedFields = new HashMap<IASTModelPath, Stack<Field>>();
+	private Map<String,Collection<Field>> fieldNames2Fields =new HashMap<String, Collection<Field>>();
     
     public Parser( IProject project ){
         this.project = project;
@@ -846,9 +845,8 @@ public class Parser implements INesCParser{
         	references = stack.getReferences();
         }
         
-        if(isKeepShadowedFields()){
-        	System.err.println("peter pan");
-        	this.shadowedFields = stack.getShadowedFields();
+        if(isGatherGlobalFieldInformation()){
+        	this.fieldNames2Fields=stack.getFieldNames2Fields();
         }
                 
         if( createAST || createInspector ){
@@ -1118,15 +1116,15 @@ public class Parser implements INesCParser{
         }
     }
 
-	public boolean isKeepShadowedFields() {
-		return this.keepShadowedFields;
+	public boolean isGatherGlobalFieldInformation() {
+		return this.gatherGlobalFieldInformation;
 	}
 	
-	public Map<IASTModelPath,Stack<Field>> getShadowedFields(){
-		return this.shadowedFields;
+	public Map<String, Collection<Field>> getFieldsToAssociatedPaths(){
+		return this.fieldNames2Fields;
 	}
 	
-	public void setKeepShadowedFields(boolean keepShadowedFields){
-		this.keepShadowedFields = keepShadowedFields;
+	public void setGatherGlobalFieldInformation(boolean gatherGlobalFieldInformation){
+		this.gatherGlobalFieldInformation = gatherGlobalFieldInformation;
 	}
 }
