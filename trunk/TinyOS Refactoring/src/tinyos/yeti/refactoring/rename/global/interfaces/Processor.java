@@ -1,12 +1,6 @@
 package tinyos.yeti.refactoring.rename.global.interfaces;
 
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -17,20 +11,11 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
-import tinyos.yeti.ep.parser.IASTModelPath;
-import tinyos.yeti.nature.MissingNatureException;
-import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.rename.global.FieldInfo;
-import tinyos.yeti.refactoring.rename.global.FieldInfoSet;
-import tinyos.yeti.refactoring.rename.global.FieldKind;
 import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
 import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
