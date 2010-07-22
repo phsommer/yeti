@@ -136,7 +136,7 @@ public class ASTUtil4Variables {
 	 * @param identifiers
 	 * @return Returns a DeclaratorName, if some of the given Identifiers has such a parent. Null if there is no such parent.
 	 */
-	public DeclaratorName getDeclaratorName(Collection<Identifier> identifiers){
+	public static DeclaratorName getDeclaratorName(Collection<Identifier> identifiers){
 		ASTNode candidate=null;
 		for(Identifier identifier:identifiers){
 			candidate=ASTUtil.getParentForName(identifier, DeclaratorName.class);
@@ -152,7 +152,7 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
+	public static CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
 		String name=identifier.getName();
 		ASTNode child=identifier;
 		CompoundStatement parent=null;
@@ -188,7 +188,7 @@ public class ASTUtil4Variables {
 	
 
 	
-	public boolean isLocalVariable(Identifier variable){
+	public static boolean isLocalVariable(Identifier variable){
 		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
 		return (declaringCompound!=null);
 	}
