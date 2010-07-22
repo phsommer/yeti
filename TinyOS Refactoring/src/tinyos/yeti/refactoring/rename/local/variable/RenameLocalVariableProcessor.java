@@ -22,6 +22,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class RenameLocalVariableProcessor extends RenameProcessor {
@@ -85,7 +86,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		Identifier identifier = getSelectedIdentifier();
 		if (identifier == null)
 			return false;
-		CompoundStatement compound = getVarUtil().findDeclaringCompoundStatement(identifier);
+		CompoundStatement compound = ASTUtil4Variables.findDeclaringCompoundStatement(identifier);
 		return compound != null;
 	}
 
@@ -133,13 +134,12 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		Identifier currentlySelected = getSelectedIdentifier();
 		if (currentlySelected == null) { // The Selection is not an Identifier
 			return Collections.emptyList();
-		} else if (!getVarUtil().isLocalVariable(currentlySelected)) {
+		} else if (!ASTUtil4Variables.isLocalVariable(currentlySelected)) {
 			return Collections.emptyList();
 		}
 
 		// Find the CompoundStatement which declares the identifier
-		CompoundStatement declaringCompound = getVarUtil()
-				.findDeclaringCompoundStatement(currentlySelected);
+		CompoundStatement declaringCompound = ASTUtil4Variables.findDeclaringCompoundStatement(currentlySelected);
 		Collection<Identifier> identifiers = getVarUtil().getAllIdentifiers(
 				declaringCompound, currentlySelected.getName());
 		return identifiers;

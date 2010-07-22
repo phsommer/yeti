@@ -46,8 +46,7 @@ public class ASTUtil4Variables {
 	}
 	
 	public static boolean isGlobalVariable(Identifier identifier){
-		ASTUtil4Variables util=new ASTUtil4Variables();
-		if(util.isLocalVariable(identifier)){
+		if(ASTUtil4Variables.isLocalVariable(identifier)){
 			return false;
 		}
 		return isVariableDeclaration(identifier)||isVariableUsage(identifier);
