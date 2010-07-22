@@ -12,6 +12,7 @@ import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.preprocessor.PreprocessorReader;
 import tinyos.yeti.refactoring.RefactoringPlugin;
@@ -229,14 +230,16 @@ public class ASTUtil {
 			//try to find a matching child for the current type
 			for(int childIndex=0;!foundNextSuccessor&&childIndex<childrens;++childIndex){
 				ASTNode child=parent.getChild(childIndex);
-				DebugUtil.addOutput("\tchild type: "+child.getClass());
-				if(ASTUtil.isOfType(child,type)){
-					//The last type matches a child
-					if(successorIndex==successorSequence.length-1){
-						return parent.getChild(childIndex);
+				if(child!=null){
+					DebugUtil.addOutput("\tchild type: "+child.getClass());
+					if(ASTUtil.isOfType(child,type)){
+						//The last type matches a child
+						if(successorIndex==successorSequence.length-1){
+							return parent.getChild(childIndex);
+						}
+						foundNextSuccessor=true;
+						parent=child;
 					}
-					foundNextSuccessor=true;
-					parent=child;
 				}
 			}
 			//No matching child was found.
@@ -376,5 +379,20 @@ public class ASTUtil {
 			}
 		}
 		return results;
+	}
+	
+	/**
+	 * Returns the root node in the ast for a module implementation.
+	 * Null if the given node is not in an implementation.
+	 * @param node
+	 * @return
+	 */
+	public static NesCExternalDefinitionList getLocalImplementationNodeIfInside(ASTNode node){
+		//Get the root node for the local implementation of this module.
+		ASTNode root=ASTUtil.getParentForName(node, NesCExternalDefinitionList.class);
+		if(root==null){
+			return null;
+		}
+		return (NesCExternalDefinitionList)root;
 	}
 }

@@ -14,8 +14,9 @@ public class AvailabilityTester extends PropertyTester {
 
 	private enum Properies {
 		renameLocalVariable, 
-		renameLocalFunction, 
 		renameGlobalVariable, 
+		renameImplementationLocalVariable,
+		renameLocalFunction, 
 		renameGlobalFunction,
 		renameInterface,
 		NoRefactoringAvailable
@@ -24,8 +25,9 @@ public class AvailabilityTester extends PropertyTester {
 	
 	public AvailabilityTester() {
 		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester());
-		testerMap.put(Properies.renameLocalFunction, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
 		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester());
+		testerMap.put(Properies.renameImplementationLocalVariable, new tinyos.yeti.refactoring.rename.implementation.variable.AvailabilityTester());
+		testerMap.put(Properies.renameLocalFunction, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
 		testerMap.put(Properies.renameGlobalFunction, new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester());
 		testerMap.put(Properies.renameInterface, new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester());
 	}

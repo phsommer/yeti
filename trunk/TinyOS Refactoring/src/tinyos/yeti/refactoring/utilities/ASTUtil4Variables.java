@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArithmeticExpression;
@@ -16,6 +18,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.PostfixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.PrefixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
 public class ASTUtil4Variables {
@@ -26,11 +29,30 @@ public class ASTUtil4Variables {
 		InitDeclarator.class
 	};
 	
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] declarationIdentifierSuccessorSequence=new Class[]{
+		Declaration.class,
+		InitDeclaratorList.class,
+		InitDeclarator.class,
+		DeclaratorName.class,
+		Identifier.class
+	};
 	
+	
+	/**
+	 * Checks if this identifier is part of a variable declaration.
+	 * @param identifier
+	 * @return
+	 */
 	public static boolean isVariableDeclaration(Identifier identifier){
 		return ASTUtil.checkAncestorSequence(identifier, variableDeclarationAncestorSequence);
 	}
 	
+	/**
+	 * Checks if this identifier is part of a variable reference.
+	 * @param identifier
+	 * @return
+	 */
 	public static boolean isVariableUsage(Identifier identifier){
 		ASTNode parent=identifier.getParent();
 		if(!(parent instanceof IdentifierExpression)){
@@ -45,11 +67,56 @@ public class ASTUtil4Variables {
 			||parent instanceof PostfixExpression;
 	}
 	
+	/**
+	 * Checks if this identifier is part of a global variable.
+	 * @param identifier
+	 * @return
+	 */
 	public static boolean isGlobalVariable(Identifier identifier){
-		if(ASTUtil4Variables.isLocalVariable(identifier)){
+		if(isLocalVariable(identifier)||isImplementationLocalVariable(identifier)){
 			return false;
 		}
 		return isVariableDeclaration(identifier)||isVariableUsage(identifier);
+	}
+	
+	/**
+	 * Checks if this identifier is part of a local variable, which means a variable inside a function.
+	 * @param identifier
+	 * @return
+	 */
+	public static boolean isLocalVariable(Identifier variable){
+		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
+		return (declaringCompound!=null);
+	}
+	
+	/**
+	 * Checks if this identifier is part of a implementation variable, which means a variable with nesc implementation scope.
+	 * @param identifier
+	 * @return
+	 */
+	public static boolean isImplementationLocalVariable(Identifier identifier){
+		return null!=getImplementationLocalVariableDeclarationIdentifier(identifier);
+	}
+	
+	/**
+	 * returns the identifier of the implementation local variable declaration, if the given identifier is part of such a variable.
+	 * @param identifier
+	 * @return the identifier, null if the given identifier is not part of a implementation local variable.
+	 */
+	public static Identifier getImplementationLocalVariableDeclarationIdentifier(Identifier identifier){
+		NesCExternalDefinitionList implementationNode=ASTUtil.getLocalImplementationNodeIfInside(identifier);
+		if(implementationNode==null){	//the identifier is outside of a implementation scope
+			return null;
+		}
+		String identifierName=identifier.getName();
+		Collection<Declaration> declarations=ASTUtil.getChildsOfType(implementationNode, Declaration.class);
+		for(Declaration declaration:declarations){
+			Identifier id=(Identifier)ASTUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);
+			if(id!=null&&identifierName.equals(id.getName())){
+				return id;
+			}
+		}
+		return null;
 	}
 	
 	
@@ -185,10 +252,17 @@ public class ASTUtil4Variables {
 		return parent;
 	}
 	
-
-	
-	public static boolean isLocalVariable(Identifier variable){
-		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
-		return (declaringCompound!=null);
+	/**
+	 * Returns the InitDeclarator of which the given identifier is part.
+	 * @param id
+	 * @return The ancestor InitDeclarator. Null if this id is not part of a InitDeclarator.
+	 */
+	public static InitDeclarator identifierToInitDeclarator(Identifier id){
+		if(!ASTUtil.checkAncestorSequence(id,variableDeclarationAncestorSequence)){
+			return null;
+		}
+		return (InitDeclarator)id.getParent().getParent();
+		
 	}
+	
 }

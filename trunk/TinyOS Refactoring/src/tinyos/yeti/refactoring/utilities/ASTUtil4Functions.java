@@ -10,7 +10,6 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 
 public class ASTUtil4Functions {
 	
@@ -131,21 +130,6 @@ public class ASTUtil4Functions {
 	}
 	
 	/**
-	 * Returns the root node in the ast for a module implementation.
-	 * Null if the given node is not in an implementation.
-	 * @param node
-	 * @return
-	 */
-	public static NesCExternalDefinitionList getLocalImplementationNode(ASTNode node){
-		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil.getParentForName(node, NesCExternalDefinitionList.class);
-		if(root==null){
-			return null;
-		}
-		return (NesCExternalDefinitionList)root;
-	}
-	
-	/**
 	 * Checks if the given Identifier is part of a local function definiton.
 	 * This is done by checking if the identifier is in an implementation scope, 
 	 * and if so, if there is a function definition in this scope for the name of
@@ -167,7 +151,7 @@ public class ASTUtil4Functions {
 	public static Identifier getLocalFunctionDefinitionIdentifier(Identifier identifier){
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=getLocalImplementationNode(identifier);
+		ASTNode root=ASTUtil.getLocalImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;
@@ -192,7 +176,7 @@ public class ASTUtil4Functions {
 	public static Identifier getLocalFunctionDeclarationIdentifier(Identifier identifier){
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=getLocalImplementationNode(identifier);
+		ASTNode root=ASTUtil.getLocalImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;
