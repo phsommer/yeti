@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.globalvariable;
+package tinyos.yeti.refactoring.rename.global.interfaces;
 
 import org.eclipse.core.commands.IHandler;
 

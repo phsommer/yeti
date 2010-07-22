@@ -12,13 +12,22 @@ import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class AvailabilityTester extends PropertyTester {
 
-	private enum Properies {renameLocalVariable, renameGlobalVariable,renameFunction,NoRefactoringAvailable};
+	private enum Properies {
+		renameLocalVariable, 
+		renameLocalFunction, 
+		renameGlobalVariable, 
+		renameGlobalFunction,
+		renameInterface,
+		NoRefactoringAvailable
+	};
 	private Map<Properies, IRefactoringAvailabilityTester> testerMap = new HashMap<Properies,IRefactoringAvailabilityTester>(); 
 	
 	public AvailabilityTester() {
-		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.rename.localvariable.AvailabilityTester());
-		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.rename.globalvariable.AvailabilityTester());
-		testerMap.put(Properies.renameFunction, new tinyos.yeti.refactoring.rename.function.AvailabilityTester());
+		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester());
+		testerMap.put(Properies.renameLocalFunction, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
+		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester());
+		testerMap.put(Properies.renameGlobalFunction, new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester());
+		testerMap.put(Properies.renameInterface, new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester());
 	}
 
 	@Override

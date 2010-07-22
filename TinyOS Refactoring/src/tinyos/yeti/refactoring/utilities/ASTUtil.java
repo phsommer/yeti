@@ -209,6 +209,45 @@ public class ASTUtil {
 		return true;
 	}
 	
+	/**
+	 * Tries to find the first possible sequence of successors of the root node.
+	 * The first Node in the successor sequence has to equal the type of the root node, the second the type of at least one child of the root, and so on.
+	 * @param root
+	 * @param successorSequence the types of the expected sequence.
+	 * @return the node which is at the end of the sequence with the type of the last element in the successorSequence. Null if there is no such sequence.
+	 */
+	public static ASTNode checkSuccessorSequence(ASTNode root,Class<? extends ASTNode>[] successorSequence){
+		if(!ASTUtil.isOfType(root, successorSequence[0])){
+			return null;
+		}
+		ASTNode parent=root;
+		for(int successorIndex=1;successorIndex<successorSequence.length;++successorIndex){
+			Class<? extends ASTNode> type=successorSequence[successorIndex];
+			DebugUtil.addOutput("Checking Type "+type);
+			int childrens=parent.getChildrenCount();
+			boolean foundNextSuccessor=false;
+			//try to find a matching child for the current type
+			for(int childIndex=0;!foundNextSuccessor&&childIndex<childrens;++childIndex){
+				ASTNode child=parent.getChild(childIndex);
+				DebugUtil.addOutput("\tchild type: "+child.getClass());
+				if(ASTUtil.isOfType(child,type)){
+					//The last type matches a child
+					if(successorIndex==successorSequence.length-1){
+						return parent.getChild(childIndex);
+					}
+					foundNextSuccessor=true;
+					parent=child;
+				}
+			}
+			//No matching child was found.
+			if(!foundNextSuccessor){
+				return null;
+			}
+		}
+		DebugUtil.addOutput("is Null");
+		return null;
+	}
+	
 	
 	/**
 	 * 
@@ -288,6 +327,13 @@ public class ASTUtil {
 		return ast;
 	}
 	
+	/**
+	 * Returns all nodes which are successors of the root or the root itself, if they have the given type 
+	 * @param <T>
+	 * @param root	The node where we start searching.
+	 * @param type	The type we are looking for.
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Collection<T> getAllNodesOfType(ASTNode root,Class<T> type){
 		//Add identifiers of the current Compound. This Compound must declare The identifier.
@@ -311,5 +357,24 @@ public class ASTUtil {
 			}
 		}
 		return matchingNodes;
+	}
+	
+	/**
+	 * Collects all direct childs of parent with the given Type.
+	 * @param <T>
+	 * @param parent
+	 * @param type
+	 * @return The matching childs, empty list if no matches.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends ASTNode> Collection<T> getChildsOfType(ASTNode parent,Class<T> type){
+		Collection<T> results=new LinkedList<T>();
+		Collection<ASTNode> childs=ASTUtil.getChilds(parent);
+		for(ASTNode child:childs){
+			if(ASTUtil.isOfType(child,type)){
+				results.add((T)child);
+			}
+		}
+		return results;
 	}
 }

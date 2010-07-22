@@ -4,20 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.TextChange;
+import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
 import tinyos.yeti.TinyOSPlugin;
-import tinyos.yeti.builder.ProjectResourceCollector;
 import tinyos.yeti.ep.IParseFile;
 import tinyos.yeti.ep.parser.IASTModel;
 import tinyos.yeti.ep.parser.IASTModelNode;
@@ -30,25 +30,14 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
 import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.RefactoringPlugin;
-import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
-
-	//TODO erase, just for debugging
-	protected String endOutput;
-	protected void addOutput(String output){
-		if(output==null){
-			output="output is NULL";
-		}else if(output.equals("")){
-			output="output is EMPTY";
-		}
-		endOutput+="\n"+output;
-	}
 	
 	private RenameInfo info;
 	private ASTUtil utility;
@@ -144,20 +133,8 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * Parses a given File and returns the Parser.
 	 */
 	protected Parser getParser(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
-		IProject project = info.getEditor().getProject();
-		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
-
-		File file = iFile.getLocation().toFile();
-		IParseFile parseFile = projectModel.parseFile(file);
-
-		Parser parser = (Parser) projectModel.newParser(parseFile, null, monitor);
-		parser.setCreateAST(true);
-		parser.setFollowIncludes(true);
-		parser.setKeepShadowedFields(true);
-		parser.setResolveFullModel(true);
-		parser.setASTModel(info.getEditor().getASTModel());
-		parser.parse(new FileMultiReader(file), monitor);
-		return parser;
+		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
+		return projectUtil.getParser(iFile, monitor);
 	}
 	
 	
@@ -197,6 +174,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	
 	/**
 	 * Returns all references which are found in the file.
+	 * Empty Array if there are no references.
 	 * @param file
 	 * @param monitor
 	 * @return
@@ -204,7 +182,11 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected IASTReference[] getReferences(IFile file, IProgressMonitor monitor) throws MissingNatureException{
 		ProjectModel model=getModel();
-		return model.getReferences(model.parseFile(file), monitor);
+		IASTReference[] references=model.getReferences(model.parseFile(file), monitor);
+		if(references==null){
+			references=new IASTReference[0];
+		}
+		return references;
 	}
 	
 	/**
@@ -235,34 +217,39 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return node.getLogicalPath();
 	}
 	
-	/**
-	 * Returns all files of this project.
-	 * @return
-	 * @throws CoreException
-	 */
+//	/**
+//	 * Returns all files of this project.
+//	 * @return
+//	 * @throws CoreException
+//	 */
+//	protected Collection<IFile> getAllFiles() throws CoreException{
+//		IProject project = info.getEditor().getProject();
+//		ProjectResourceCollector collector = new ProjectResourceCollector();
+//		try {
+//			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(collector);
+//		} catch (MissingNatureException e) {
+//			RefactoringPlugin.getDefault().log(
+//					LogLevel.WARNING,
+//					"Refactroing was called while Plugin was not ready: "
+//							+ e.getMessage());
+//			throw new CoreException(new Status(IStatus.ERROR,
+//					RefactoringPlugin.PLUGIN_ID,
+//					"Plugin wasn't ready while calling Rename global Variable Refactoring: "
+//							+ e.getMessage()));
+//		}
+//		Collection<IFile> files=new LinkedList<IFile>();
+//		for(IResource resource:collector.resources){
+//			if(resource.getType() == IResource.FILE) {
+//				IFile file = (IFile) resource;
+//				files.add(file);
+//			}
+//		}
+//		return files;
+//	}
+	
 	protected Collection<IFile> getAllFiles() throws CoreException{
-		IProject project = info.getEditor().getProject();
-		ProjectResourceCollector collector = new ProjectResourceCollector();
-		try {
-			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(collector);
-		} catch (MissingNatureException e) {
-			RefactoringPlugin.getDefault().log(
-					LogLevel.WARNING,
-					"Refactroing was called while Plugin was not ready: "
-							+ e.getMessage());
-			throw new CoreException(new Status(IStatus.ERROR,
-					RefactoringPlugin.PLUGIN_ID,
-					"Plugin wasn't ready while calling Rename global Variable Refactoring: "
-							+ e.getMessage()));
-		}
-		Collection<IFile> files=new LinkedList<IFile>();
-		for(IResource resource:collector.resources){
-			if(resource.getType() == IResource.FILE) {
-				IFile file = (IFile) resource;
-				files.add(file);
-			}
-		}
-		return files;
+		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
+		return projectUtil.getAllFiles();
 	}
 	
 	/**
@@ -321,6 +308,20 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 	
 	/**
+	 * Looks for the Identifier of a given area.
+	 * @param path
+	 * @param monitor
+	 * @return
+	 * @throws MissingNatureException
+	 * @throws CoreException
+	 * @throws IOException
+	 */
+	protected Identifier getIdentifierForArea(int left,int right,NesC12AST ast,IProgressMonitor monitor) {
+		ASTUtil astUtil=new ASTUtil(ast);
+		return astUtil.getASTLeafAtPos(left,right-left,Identifier.class);
+	}
+	
+	/**
 	 * Tries to find the real Logical path of an reference, not just an intermediate node.
 	 * @param path
 	 * @param monitor
@@ -342,5 +343,62 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return path;
 	}
 	
+	/**
+	 * Returns the identifiers which are part of a reference which points to one of the given paths.
+	 * @param file	The file in which we are looking for referencing sources.
+	 * @param paths	 The paths for which we search referencing sources.
+	 * @param monitor
+	 * @return	The identifiers contained in a reference pointing to one of the given paths.
+	 * @throws MissingNatureException
+	 * @throws IOException
+	 * @throws CoreException 
+	 */
+	protected List<Identifier> getReferencingIdentifiersInFileForTargetPaths(IFile file,Collection<IASTModelPath> paths, IProgressMonitor monitor)
+	throws MissingNatureException, IOException, CoreException {
+		
+		//Gather all sources which reference this path
+		IASTModelPath candidatePath;
+		IASTReference[] referenceArray = getReferences(file,monitor);
+		List<IASTReference> matchingSources=new LinkedList<IASTReference>();
+		for (IASTReference ref : referenceArray) {
+			candidatePath=ref.getTarget();
+			if(candidatePath!=null){
+				if (paths.contains(candidatePath)) {
+					matchingSources.add(ref);
+				}
+			}
+		}
+		
+		//Find Identifiers which are part of the given Source.
+		IFileRegion region;
+		ASTUtil astUtil=new ASTUtil(getAst(file,monitor));
+		List<Identifier> identifiers=new LinkedList<Identifier>();
+		for(IASTReference reference:matchingSources){
+			region=reference.getSource();
+			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset(),region.getLength());
+			Identifier identifier=(Identifier)node;
+			identifiers.add(identifier);
+		}
+		return identifiers;
+	}
+	
+	/**
+	 * Adds changes for all the given identifiers to the given CompositeChange ret.
+	 * The given identifiers have to be in the given file.
+	 * @param identifiers
+	 * @param ast
+	 * @param file
+	 * @param ret
+	 */
+	protected void addMultiTextEdit(Collection<Identifier> identifiers, NesC12AST ast,IFile file,String textChangeName,CompositeChange ret) {
+		if(identifiers.size()>0){
+			MultiTextEdit multiTextEdit=new MultiTextEdit();
+			addChanges4Identifiers(identifiers, info.getNewName(), multiTextEdit, ast);
+			TextChange textChange = new TextFileChange(textChangeName,file);
+			textChange.setEdit(multiTextEdit);
+			ret.add(textChange);
+		}
+		
+	}
 	
 }

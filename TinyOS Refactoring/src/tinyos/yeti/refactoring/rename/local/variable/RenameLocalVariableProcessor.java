@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.localvariable;
+package tinyos.yeti.refactoring.rename.local.variable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -85,8 +85,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 		Identifier identifier = getSelectedIdentifier();
 		if (identifier == null)
 			return false;
-		CompoundStatement compound = getVarUtil()
-				.findDeclaringCompoundStatement(identifier);
+		CompoundStatement compound = getVarUtil().findDeclaringCompoundStatement(identifier);
 		return compound != null;
 	}
 
