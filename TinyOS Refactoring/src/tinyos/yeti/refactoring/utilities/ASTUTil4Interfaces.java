@@ -3,8 +3,10 @@ package tinyos.yeti.refactoring.utilities;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.NesCNameDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Endpoint;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Interface;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceType;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 
 public class ASTUTil4Interfaces {
 
@@ -16,7 +18,8 @@ public class ASTUTil4Interfaces {
 	public static boolean isInterface(Identifier identifier){
 		return isInterfaceDeclaration(identifier)
 			||isInterfaceDefinition(identifier)
-			||isInterfaceImplementation(identifier);
+			||isInterfaceImplementation(identifier)
+			||isComponentWiring(identifier);
 	}
 	
 	/**
@@ -50,6 +53,29 @@ public class ASTUTil4Interfaces {
 		}
 		//The first child is the interface identifier, the second the event/command identifier
 		return identifier.equals((Identifier)parent.getChild(0));
+	}
+	
+	/**
+	 * Checks if the given identifier is part of a interface reference in a module/component wiring.
+	 * @param identifier
+	 * @return
+	 */
+	public static boolean isComponentWiring(Identifier identifier){
+		ASTNode parent=identifier.getParent();
+		if(!ASTUtil.isOfType(parent,ParameterizedIdentifier.class)){
+			return false;
+		}
+		ParameterizedIdentifier pI=(ParameterizedIdentifier)parent;
+		parent=pI.getParent();
+		if(!ASTUtil.isOfType(parent,Endpoint.class)){
+			return false;
+		}
+		Endpoint endpoint=(Endpoint)parent;
+		String fieldName=endpoint.getFieldName(pI);
+		if(Endpoint.SPECIFICATION.equals(fieldName)){
+			return true;
+		}
+		return false;
 	}
 	
 }
