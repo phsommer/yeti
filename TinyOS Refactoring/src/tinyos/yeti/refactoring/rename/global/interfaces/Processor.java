@@ -47,7 +47,7 @@ public class Processor extends RenameProcessor {
 	 * @throws CoreException
 	 * @throws MissingNatureException
 	 */
-	public IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
+	private IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
 		ProjectModel model=getModel();
 		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
 		for(IDeclaration declaration:declarations){
@@ -57,6 +57,21 @@ public class Processor extends RenameProcessor {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Returns a list which doesnt contain aliases which have a different name then the interface to be refactored and therefore dont have to be touched.
+	 * This is needed since aliases in event/command definitions also reference the original interface.
+	 * @param identifiers
+	 */
+	private List<Identifier> getAliasFreeList(List<Identifier> identifiers,String interfaceNameToChange) {
+		List<Identifier> result=new LinkedList<Identifier>();
+		for(Identifier identifier:identifiers){
+			if(interfaceNameToChange.equals(identifier.getName())){
+				result.add(identifier);
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -77,6 +92,7 @@ public class Processor extends RenameProcessor {
 			paths.add(interfaceDeclaration.getPath());
 			for(IFile file:getAllFiles()){
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+				identifiers=getAliasFreeList(identifiers,declaringIdentifier.getName());
 				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
 			}
 			
@@ -116,7 +132,7 @@ public class Processor extends RenameProcessor {
 			if(interfaceDeclaration==null){
 				ret.addFatalError("Did not find an Interface Definition, for selection!");
 			}
-			if(!interfaceDeclaration.getParseFile().isProjectFile()){
+			else if(!interfaceDeclaration.getParseFile().isProjectFile()){
 				ret.addFatalError("Interface definition is out of project range!");
 			}
 		} catch (MissingNatureException e) {
