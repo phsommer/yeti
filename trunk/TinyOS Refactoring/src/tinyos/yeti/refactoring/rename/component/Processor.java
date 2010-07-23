@@ -15,6 +15,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
+import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
@@ -98,6 +99,10 @@ public class Processor extends RenameProcessor {
 				identifiers=getAliasFreeList(identifiers,declaringIdentifier.getName());
 				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
 			}
+			
+			//Adds the change for renaming the file which contains the definition.
+			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), info.getNewName()+".nc");
+			ret.add(resourceChange);
 			
 		} catch (Exception e){
 			e.printStackTrace();

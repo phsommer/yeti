@@ -36,25 +36,6 @@ public class ProjectUtil {
 	}
 	
 	/**
-	 * Tries to load the project.
-	 * @return true if was able to load project, false otherwise.
-	 */
-	public boolean loadProject(){
-		project=editor.getProject();
-		return isProjectLoaded();
-	}
-	
-	/**
-	 * Checks if was able to load the project. 
-	 * If method returns false, the class is useless.
-	 * Try to load project with loadProject().
-	 * @return
-	 */
-	public boolean isProjectLoaded(){
-		return project!=null;
-	}
-	
-	/**
 	 * Parses a given File and returns the Parser.
 	 */
 	public Parser getParser(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
@@ -79,9 +60,6 @@ public class ProjectUtil {
 	 * @throws CoreException
 	 */
 	public Collection<IFile> getAllFiles() throws CoreException{
-		if(!isProjectLoaded()){
-			throw new IllegalStateException("Project is not loaded");
-		}
 		ProjectResourceCollector collector = new ProjectResourceCollector();
 		try {
 			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(collector);
