@@ -33,7 +33,7 @@ public class ASTUTil4Interfaces {
 	}
 	
 	/**
-	 * Checks if the given identifier is part of a interface reference in a provide or use statement of a module.
+	 * Checks if the given identifier is part of a interface reference in a provide or use statement of a module/configuration.
 	 * @param identifier
 	 * @return
 	 */
