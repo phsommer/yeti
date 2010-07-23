@@ -81,7 +81,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.global.field.ActionHandler"
+        	class="tinyos.yeti.refactoring.notavailable.ActionHandler"
         	commandId="tinyos.yeti.refactoring.NoRefactoringAvailable">
 		</handler>
 	</extension>
