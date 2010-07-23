@@ -19,7 +19,7 @@ public class ASTUTil4Interfaces {
 		return isInterfaceDeclaration(identifier)
 			||isInterfaceDefinition(identifier)
 			||isInterfaceImplementation(identifier)
-			||isComponentWiring(identifier);
+			||isComponentWiringInterfacePart(identifier);
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class ASTUTil4Interfaces {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentWiring(Identifier identifier){
+	public static boolean isComponentWiringInterfacePart(Identifier identifier){
 		ASTNode parent=identifier.getParent();
 		if(!ASTUtil.isOfType(parent,ParameterizedIdentifier.class)){
 			return false;
