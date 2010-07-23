@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.global.interfaces;
+package tinyos.yeti.refactoring.rename.component;
 
 
 import java.util.Collection;
@@ -25,12 +25,13 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 
-	private IDeclaration interfaceDeclaration;
+	private IDeclaration componentDefinition;
 	
 	private RenameInfo info;
 
@@ -40,18 +41,20 @@ public class Processor extends RenameProcessor {
 	}
 	
 	/**
-	 * Looks for a interface definition with the given name.
+	 * Looks for a component definition with the given name.
 	 * @param identifier
 	 * @param editor
 	 * @return
 	 * @throws CoreException
 	 * @throws MissingNatureException
 	 */
-	private IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
+	private IDeclaration getComponentDefinition(String componentName) throws CoreException, MissingNatureException{
 		ProjectModel model=getModel();
-		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
+		List<IDeclaration> declarations=new LinkedList<IDeclaration>();
+		declarations.addAll(model.getDeclarations(Kind.MODULE));
+		declarations.addAll(model.getDeclarations(Kind.CONFIGURATION));
 		for(IDeclaration declaration:declarations){
-			if(interfaceName.equals(declaration.getName())){
+			if(componentName.equals(declaration.getName())){
 				return declaration;
 			}
 		}
@@ -60,8 +63,8 @@ public class Processor extends RenameProcessor {
 	}
 	
 	/**
-	 * Returns a list which doesnt contain aliases which have a different name then the interface to be refactored and therefore dont have to be touched.
-	 * This is needed since aliases in event/command definitions also reference the original interface.
+	 * Returns a list which doesnt contain aliases which have a different name then the component to be refactored and therefore dont have to be touched.
+	 * This is needed since aliases in configuration definitions also reference the original component.
 	 * @param identifiers
 	 */
 	private List<Identifier> getAliasFreeList(List<Identifier> identifiers,String interfaceNameToChange) {
@@ -80,16 +83,16 @@ public class Processor extends RenameProcessor {
 		DebugUtil.clearOutput();
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
 		try {
-			//Add Change for interface definition
-			IFile declaringFile=getIFile4ParseFile(interfaceDeclaration.getParseFile());
-			Identifier declaringIdentifier=getIdentifierForPath(interfaceDeclaration.getPath(), pm);
+			//Add Change for component definition
+			IFile declaringFile=getIFile4ParseFile(componentDefinition.getParseFile());
+			Identifier declaringIdentifier=getIdentifierForPath(componentDefinition.getPath(), pm);
 			List<Identifier> identifiers=new LinkedList<Identifier>();
 			identifiers.add(declaringIdentifier);
-			addMultiTextEdit(identifiers, getAst(declaringFile, pm), declaringFile, createTextChangeName("interface", declaringFile), ret);
+			addMultiTextEdit(identifiers, getAst(declaringFile, pm), declaringFile, createTextChangeName("component", declaringFile), ret);
 			
 			//Add Changes for referencing elements
 			Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
-			paths.add(interfaceDeclaration.getPath());
+			paths.add(componentDefinition.getPath());
 			for(IFile file:getAllFiles()){
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=getAliasFreeList(identifiers,declaringIdentifier.getName());
@@ -123,17 +126,17 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!ASTUTil4Interfaces.isInterface(selectedIdentifier)) {
+		if (!ASTUtil4Components.isComponent(selectedIdentifier)) {
 			ret.addFatalError("No Interface selected.");
 		}
 
 		try {
-			interfaceDeclaration = getInterfaceDefinition(selectedIdentifier.getName());
-			if(interfaceDeclaration==null){
-				ret.addFatalError("Did not find an Interface Definition, for selection!");
+			componentDefinition = getComponentDefinition(selectedIdentifier.getName());
+			if(componentDefinition==null){
+				ret.addFatalError("Did not find an component Definition, for selection: "+selectedIdentifier.getName()+"!");
 			}
-			else if(!interfaceDeclaration.getParseFile().isProjectFile()){
-				ret.addFatalError("Interface definition is out of project range!");
+			else if(!componentDefinition.getParseFile().isProjectFile()){
+				ret.addFatalError("Component definition is out of project range!");
 			}
 		} catch (MissingNatureException e) {
 			ret.addFatalError("Project is not ready for refactoring!");

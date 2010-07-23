@@ -19,6 +19,7 @@ public class AvailabilityTester extends PropertyTester {
 		renameLocalFunction, 
 		renameGlobalFunction,
 		renameInterface,
+		renameComponent,
 		NoRefactoringAvailable
 	};
 	private Map<Properies, IRefactoringAvailabilityTester> testerMap = new HashMap<Properies,IRefactoringAvailabilityTester>(); 
@@ -30,6 +31,7 @@ public class AvailabilityTester extends PropertyTester {
 		testerMap.put(Properies.renameLocalFunction, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
 		testerMap.put(Properies.renameGlobalFunction, new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester());
 		testerMap.put(Properies.renameInterface, new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester());
+		testerMap.put(Properies.renameComponent, new tinyos.yeti.refactoring.rename.component.AvailabilityTester());
 	}
 
 	@Override
