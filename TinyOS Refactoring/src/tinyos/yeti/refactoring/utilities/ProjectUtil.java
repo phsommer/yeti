@@ -21,6 +21,7 @@ import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
 import tinyos.yeti.nesc12.Parser;
+import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
 
@@ -36,6 +37,20 @@ public class ProjectUtil {
 		this.editor=editor;
 		this.project=editor.getProject();
 		
+	}
+	
+	/**
+	 * Returns the Ast for the given IFile.
+	 * @param iFile
+	 * @param monitor
+	 * @return
+	 * @throws IOException
+	 * @throws MissingNatureException
+	 */
+	public NesC12AST getAst(IFile iFile, IProgressMonitor monitor)
+			throws IOException, MissingNatureException {
+		// Create Parser for File to construct an AST
+		return (NesC12AST) getParser(iFile, monitor).getAST();
 	}
 	
 	/**
