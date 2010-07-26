@@ -34,67 +34,44 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
-import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 	
 	private RenameInfo info;
-	private ASTUtil utility;
-	private ITextSelection selection;
 	private ASTUtil4Variables varUtil = new ASTUtil4Variables();
 
 	public RenameProcessor(RenameInfo info) {
 		super();
 		this.info = info;
-
-		selection = ActionHandlerUtil.getSelection(info.getEditor());
 	}
 
 	@Override
 	public boolean isApplicable() throws CoreException {
-		return (getAstUtil() != null);
+		return (info.getAstUtil() != null);
 	}
 
-	/**
-	 * Often the first initialization of the Class is before the AST is ready.
-	 * This getter makes sure the AST is used, as soon as it is available.
-	 * 
-	 * @return
-	 */
-	protected ASTUtil getAstUtil() {
-		if (utility == null) {
-			NesC12AST ast = (NesC12AST) info.getEditor().getAST();
-			if (ast != null) {
-				utility = new ASTUtil(ast);
-			}
-		}
-		return utility;
-	}
+
 
 	/**
 	 * 
 	 * @return	The Currently Selected Identifier, null if not an Identifier is Selected.
 	 */
 	protected Identifier getSelectedIdentifier() {
-		ITextSelection selection=getSelection();
-		return utility.getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
+		ITextSelection selection=info.getSelection();
+		return info.getAstUtil().getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
 	}
 
-
-
-	protected ITextSelection getSelection() {
-		return selection;
-	}
 
 
 	protected ASTUtil4Variables getVarUtil() {
 		return varUtil;
 	}
+	
 	protected void addChanges4Identifiers(Collection<Identifier> identifiers,String newName,MultiTextEdit multiTextEdit,NesC12AST ast){
 		ASTUtil util;
 		if(ast==null){
-			util=getAstUtil();
+			util=info.getAstUtil();
 		}else{
 			util=new ASTUtil(ast);
 		}
@@ -106,28 +83,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		}
 	}
 	
-	
-	/**
-	 * Returns the Ast for the currently selected Editor.
-	 * @return
-	 */
-	protected NesC12AST getAst(){
-		return (NesC12AST)info.getEditor().getAST();
-	}
-	
-	/**
-	 * Returns the Ast for the given IFile.
-	 * @param iFile
-	 * @param monitor
-	 * @return
-	 * @throws IOException
-	 * @throws MissingNatureException
-	 */
-	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor)
-			throws IOException, MissingNatureException {
-		// Create Parser for File to construct an AST
-		return (NesC12AST) getParser(iFile, monitor).getAST();
-	}
+
 	
 	/**
 	 * Parses a given File and returns the Parser.
@@ -137,6 +93,9 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return projectUtil.getParser(iFile, monitor);
 	}
 	
+	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
+		return info.getProjectUtil().getAst(iFile, monitor);
+	}
 	
 	/**
 	 * Returns the Ast for the given IFile and loads the given IASTModel for it.
@@ -218,36 +177,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return node.getLogicalPath();
 	}
 	
-//	/**
-//	 * Returns all files of this project.
-//	 * @return
-//	 * @throws CoreException
-//	 */
-//	protected Collection<IFile> getAllFiles() throws CoreException{
-//		IProject project = info.getEditor().getProject();
-//		ProjectResourceCollector collector = new ProjectResourceCollector();
-//		try {
-//			TinyOSPlugin.getDefault().getProjectTOS(project).acceptSourceFiles(collector);
-//		} catch (MissingNatureException e) {
-//			RefactoringPlugin.getDefault().log(
-//					LogLevel.WARNING,
-//					"Refactroing was called while Plugin was not ready: "
-//							+ e.getMessage());
-//			throw new CoreException(new Status(IStatus.ERROR,
-//					RefactoringPlugin.PLUGIN_ID,
-//					"Plugin wasn't ready while calling Rename global Variable Refactoring: "
-//							+ e.getMessage()));
-//		}
-//		Collection<IFile> files=new LinkedList<IFile>();
-//		for(IResource resource:collector.resources){
-//			if(resource.getType() == IResource.FILE) {
-//				IFile file = (IFile) resource;
-//				files.add(file);
-//			}
-//		}
-//		return files;
-//	}
-	
 	protected Collection<IFile> getAllFiles() throws CoreException{
 		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
 		return projectUtil.getAllFiles();
@@ -301,10 +230,10 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected Identifier getIdentifierForPath(IASTModelPath path,IProgressMonitor monitor) 
 	throws MissingNatureException, CoreException, IOException{
-		IFileRegion targetRegion=getModel().getNode(path, monitor).getRegion();
-		IFile targetFile=getIFile4ParseFile(targetRegion.getParseFile());
-		NesC12AST ast=getAst(targetFile,monitor);
-		ASTUtil astUtil=new ASTUtil(ast);
+		IFileRegion targetRegion = getModel().getNode(path, monitor).getRegion();
+		IFile targetFile = getIFile4ParseFile(targetRegion.getParseFile());
+		NesC12AST ast = info.getProjectUtil().getAst(targetFile,monitor);
+		ASTUtil astUtil = new ASTUtil(ast);
 		return astUtil.getASTLeafAtPos(targetRegion.getOffset(),targetRegion.getLength(),Identifier.class);
 	}
 	
@@ -372,7 +301,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		
 		//Find Identifiers which are part of the given Source.
 		IFileRegion region;
-		ASTUtil astUtil=new ASTUtil(getAst(file,monitor));
+		ASTUtil astUtil=new ASTUtil(info.getProjectUtil().getAst(file,monitor));
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
