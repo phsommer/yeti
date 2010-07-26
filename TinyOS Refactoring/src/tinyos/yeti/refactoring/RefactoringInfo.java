@@ -63,7 +63,7 @@ public class RefactoringInfo {
 	 * Returns the Ast for the currently selected Editor.
 	 * @return
 	 */
-	protected NesC12AST getAst(){
+	public NesC12AST getAst(){
 		return (NesC12AST)getEditor().getAST();
 	}
 	
