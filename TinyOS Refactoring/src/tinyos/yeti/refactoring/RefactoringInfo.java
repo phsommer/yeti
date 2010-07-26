@@ -2,6 +2,10 @@ package tinyos.yeti.refactoring;
 
 import tinyos.yeti.editors.NesCEditor;
 
+/**
+ * Carries around all Information needed to execute a Refactoring
+ * This Class is meant to be extended for each Refactoring
+ */
 public class RefactoringInfo {
 
 	private String inputPageName;
