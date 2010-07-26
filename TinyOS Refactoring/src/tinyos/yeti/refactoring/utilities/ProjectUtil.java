@@ -25,9 +25,12 @@ import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
 
 public class ProjectUtil {
-	
+
 	private NesCEditor editor;
-	private IProject project; 
+	private IProject project;
+	
+	private static ParserCache parserChache = new ParserCache();
+	
 	
 	public ProjectUtil(NesCEditor editor){
 		this.editor=editor;
@@ -39,18 +42,30 @@ public class ProjectUtil {
 	 * Parses a given File and returns the Parser.
 	 */
 	public Parser getParser(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
+		// check if parser is already in cache
+		Parser parser = parserChache.get(iFile);
+		if(parser != null){
+			return parser;
+		}
+		
 		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
 
 		File file = iFile.getLocation().toFile();
 		IParseFile parseFile = projectModel.parseFile(file);
-
-		Parser parser = (Parser) projectModel.newParser(parseFile, null, monitor);
+		
+		iFile.getModificationStamp();
+		
+		parser = (Parser) projectModel.newParser(parseFile, null, monitor);
 		parser.setCreateAST(true);
 		parser.setFollowIncludes(true);
 		parser.setGatherGlobalFieldInformation(true);
 		parser.setResolveFullModel(true);
 		parser.setASTModel(editor.getASTModel());
 		parser.parse(new FileMultiReader(file), monitor);
+		
+		// Add parser to cache for future use
+		parserChache.add(iFile, parser);
+		
 		return parser;
 	}
 
