@@ -11,8 +11,8 @@ import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
+import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.preprocessor.PreprocessorReader;
 import tinyos.yeti.refactoring.RefactoringPlugin;
@@ -382,17 +382,17 @@ public class ASTUtil {
 	}
 	
 	/**
-	 * Returns the root node in the ast for a module implementation.
-	 * Null if the given node is not in an implementation.
-	 * @param node
+	 * Checks if the fieldName of the childToCheck in the given parent equals the expectedName
+	 * @param parent
+	 * @param childToCheck
+	 * @param expectedName
 	 * @return
 	 */
-	public static NesCExternalDefinitionList getLocalImplementationNodeIfInside(ASTNode node){
-		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil.getParentForName(node, NesCExternalDefinitionList.class);
-		if(root==null){
-			return null;
+	public static boolean checkFieldName(AbstractFixedASTNode parent,ASTNode childToCheck,String expectedName){
+		if(expectedName==null||parent==null){
+			return false;
 		}
-		return (NesCExternalDefinitionList)root;
+		String fieldName=parent.getFieldName(childToCheck);
+		return expectedName.equals(fieldName);
 	}
 }

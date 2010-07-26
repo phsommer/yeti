@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.component;
+package tinyos.yeti.refactoring.rename.alias;
 
 
 import java.util.Collection;
@@ -11,20 +11,27 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 
+import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
+import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Aliases;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
@@ -81,6 +88,14 @@ public class Processor extends RenameProcessor {
 	throws CoreException,OperationCanceledException {
 		DebugUtil.clearOutput();
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
+		Identifier selectedIdentifier=getSelectedIdentifier();
+		if(ASTUtil4Aliases.isComponentAlias(selectedIdentifier)){
+			createConfigurationImplementationLocalChange(selectedIdentifier,ret);
+			return ret;
+		}
+		
+		
+		
 		try {
 			//Add Change for component definition
 			IFile declaringFile=getIFile4ParseFile(componentDefinition.getParseFile());
@@ -109,6 +124,33 @@ public class Processor extends RenameProcessor {
 		return ret;
 	}
 
+	/**
+	 * If the selected alias identifier is a rename in NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.
+	 * This Method will create these local changes.
+	 * @param selectedIdentifier
+	 * @param ret The CompositeChange where to add the changes.
+	 */
+	private void createConfigurationImplementationLocalChange(Identifier selectedIdentifier, CompositeChange ret) {
+		ConfigurationDeclarationList implementationRoot=ASTUtil4Components.getConfigurationImplementationNodeIfInside(selectedIdentifier);
+		if(implementationRoot==null){	//Should never happen since the selected identifier has to be in a NesC "components" statement which only can appear in a Implementation of a NesC Configuration.
+			DebugUtil.addOutput("RootNode is Null");
+			ret.add(new NullChange("There is a implementation problem!"));
+			return;
+		}
+		Collection<Identifier> localIdentifiers=ASTUtil.getAllNodesOfType(implementationRoot, Identifier.class);
+		Collection<Identifier> identifiers2Change=new LinkedList<Identifier>();
+		String targetName=selectedIdentifier.getName();
+		for(Identifier identifier:localIdentifiers){
+			if(targetName.equals(identifier.getName())){
+				identifiers2Change.add(identifier);
+			}
+		}
+		NesCEditor editor=info.getEditor();
+		IFile editedFile=(IFile)editor.getResource();
+		NesC12AST ast=info.getAst();
+		addMultiTextEdit(identifiers2Change, ast, editedFile, createTextChangeName("alias", editedFile), ret);
+	}
+
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,CheckConditionsContext context) 
 	throws CoreException,OperationCanceledException {
@@ -129,10 +171,14 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!ASTUtil4Components.isComponent(selectedIdentifier)) {
-			ret.addFatalError("No Interface selected.");
+		if (!ASTUtil4Aliases.isAlias(selectedIdentifier)) {
+			ret.addFatalError("No Alias selected.");
 		}
 
+		//TODO
+		if(true){
+			return ret;
+		}
 		try {
 			componentDefinition = getComponentDefinition(selectedIdentifier.getName());
 			if(componentDefinition==null){
@@ -155,7 +201,7 @@ public class Processor extends RenameProcessor {
 
 	@Override
 	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.renameFunction.Processor";
+		return "tinyos.yeti.refactoring.rename.alias.Processor";
 	}
 
 	@Override

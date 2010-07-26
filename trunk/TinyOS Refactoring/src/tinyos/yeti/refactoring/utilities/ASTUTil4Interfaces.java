@@ -70,12 +70,7 @@ public class ASTUTil4Interfaces {
 		if(!ASTUtil.isOfType(parent,Endpoint.class)){
 			return false;
 		}
-		Endpoint endpoint=(Endpoint)parent;
-		String fieldName=endpoint.getFieldName(pI);
-		if(Endpoint.SPECIFICATION.equals(fieldName)){
-			return true;
-		}
-		return false;
+		return ASTUtil.checkFieldName((Endpoint)parent, pI, Endpoint.SPECIFICATION);
 	}
 	
 }

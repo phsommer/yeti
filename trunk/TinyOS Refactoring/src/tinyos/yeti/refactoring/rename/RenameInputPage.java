@@ -11,8 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import tinyos.yeti.refactoring.rename.RenameInfo;
-
 public class RenameInputPage extends UserInputWizardPage {
 
 	RenameInfo info;

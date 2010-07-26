@@ -151,7 +151,7 @@ public class ASTUtil4Functions {
 	public static Identifier getLocalFunctionDefinitionIdentifier(Identifier identifier){
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil.getLocalImplementationNodeIfInside(identifier);
+		ASTNode root=ASTUtil4Components.getModuleImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;
@@ -176,7 +176,7 @@ public class ASTUtil4Functions {
 	public static Identifier getLocalFunctionDeclarationIdentifier(Identifier identifier){
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil.getLocalImplementationNodeIfInside(identifier);
+		ASTNode root=ASTUtil4Components.getModuleImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;

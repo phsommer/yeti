@@ -104,7 +104,7 @@ public class ASTUtil4Variables {
 	 * @return the identifier, null if the given identifier is not part of a implementation local variable.
 	 */
 	public static Identifier getImplementationLocalVariableDeclarationIdentifier(Identifier identifier){
-		NesCExternalDefinitionList implementationNode=ASTUtil.getLocalImplementationNodeIfInside(identifier);
+		NesCExternalDefinitionList implementationNode=ASTUtil4Components.getModuleImplementationNodeIfInside(identifier);
 		if(implementationNode==null){	//the identifier is outside of a implementation scope
 			return null;
 		}
@@ -129,7 +129,7 @@ public class ASTUtil4Variables {
 	 * @param result
 	 * @return
 	 */
-	public Collection<Identifier> getAllIdentifiers(ASTNode compound,String identifierName){
+	public Collection<Identifier> getAllIdentifiersWithoutOwnDeclaration(ASTNode compound,String identifierName){
 		//Add identifiers of the current Compound. This Compound must declare The identifier.
 		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName, CompoundStatement.class);
 		Collection<CompoundStatement> candidates=getEnclosedCompounds(compound);
