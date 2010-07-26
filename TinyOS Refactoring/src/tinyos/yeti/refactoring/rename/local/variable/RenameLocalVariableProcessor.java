@@ -140,7 +140,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 
 		// Find the CompoundStatement which declares the identifier
 		CompoundStatement declaringCompound = ASTUtil4Variables.findDeclaringCompoundStatement(currentlySelected);
-		Collection<Identifier> identifiers = getVarUtil().getAllIdentifiers(
+		Collection<Identifier> identifiers = getVarUtil().getAllIdentifiersWithoutOwnDeclaration(
 				declaringCompound, currentlySelected.getName());
 		return identifiers;
 	}
