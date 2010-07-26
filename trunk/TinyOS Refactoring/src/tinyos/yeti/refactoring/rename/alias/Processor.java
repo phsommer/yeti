@@ -1,6 +1,7 @@
 package tinyos.yeti.refactoring.rename.alias;
 
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
-import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.IASTModelPath;
@@ -27,9 +27,10 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Aliases;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
@@ -69,6 +70,26 @@ public class Processor extends RenameProcessor {
 	}
 	
 	/**
+	 * Looks for a interface definition with the given name.
+	 * @param identifier
+	 * @param editor
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
+	private IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
+		ProjectModel model=getModel();
+		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
+		for(IDeclaration declaration:declarations){
+			if(interfaceName.equals(declaration.getName())){
+				return declaration;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Returns a list which doesnt contain aliases which have a different name then the component to be refactored and therefore dont have to be touched.
 	 * This is needed since aliases in configuration definitions also reference the original component.
 	 * @param identifiers
@@ -89,40 +110,85 @@ public class Processor extends RenameProcessor {
 		DebugUtil.clearOutput();
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
 		Identifier selectedIdentifier=getSelectedIdentifier();
+		
+		//If it is a component alias, this is a pure local change.
 		if(ASTUtil4Aliases.isComponentAlias(selectedIdentifier)){
 			createConfigurationImplementationLocalChange(selectedIdentifier,ret);
 			return ret;
 		}
 		
-		
-		
+		//Else, if it is a interface alias, it is a global matter
 		try {
-			//Add Change for component definition
-			IFile declaringFile=getIFile4ParseFile(componentDefinition.getParseFile());
-			Identifier declaringIdentifier=getIdentifierForPath(componentDefinition.getPath(), pm);
-			List<Identifier> identifiers=new LinkedList<Identifier>();
-			identifiers.add(declaringIdentifier);
-			addMultiTextEdit(identifiers, getAst(declaringFile, pm), declaringFile, createTextChangeName("component", declaringFile), ret);
-			
-			//Add Changes for referencing elements
-			Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
-			paths.add(componentDefinition.getPath());
-			for(IFile file:getAllFiles()){
-				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-				identifiers=getAliasFreeList(identifiers,declaringIdentifier.getName());
-				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
-			}
-			
-			//Adds the change for renaming the file which contains the definition.
-			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), info.getNewName()+".nc");
-			ret.add(resourceChange);
-			
-		} catch (Exception e){
-			e.printStackTrace();
+			createInterfaceAliasChange(selectedIdentifier,ret,pm);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		DebugUtil.printOutput();
 		return ret;
 	}
+
+	/**
+	 * If the selected alias is an alias for a interface, in a module/configuration specification, then this method creates the appropriate changes.
+	 * @param selectedIdentifier
+	 * @param ret
+	 * @throws MissingNatureException 
+	 * @throws CoreException 
+	 * @throws IOException 
+	 */
+	private void createInterfaceAliasChange(Identifier selectedIdentifier, CompositeChange ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
+		//Get the name of the component which defines the alias
+		String sourceComponentName=getNameOFSourceComponent(selectedIdentifier);
+		if(sourceComponentName==null){
+			ret.add(new NullChange("Implementation problem"));
+			return;
+		}
+		
+		//Get the ast of the defining component
+		IDeclaration sourceDefinition=getComponentDefinition(sourceComponentName);
+		IFile declaringFile=getIFile4ParseFile(sourceDefinition.getParseFile());
+		NesC12AST ast=getAst(declaringFile, pm);
+		
+		//Get the InterfaceRerefence of the aliased interface in the ast which defines the alias
+		InterfaceReference interfaceReference=ASTUtil4Aliases.getInterfaceNameWithAlias(selectedIdentifier.getName(),ast.getRoot());
+
+		//Add Changes for referencing elements. Also the aliases reference the interface which they alias.
+		Identifier aliasDefinition=ASTUTil4Interfaces.getInterfaceAliasIdentifier(interfaceReference);
+		List<Identifier> identifiers=new LinkedList<Identifier>();
+
+		Identifier aliasedInterfaceNameIdentifier=ASTUTil4Interfaces.getInterfaceNameIdentifier(interfaceReference);
+		IDeclaration interfaceDefinition=getInterfaceDefinition(aliasedInterfaceNameIdentifier.getName());
+		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
+		paths.add(interfaceDefinition.getPath());
+		for(IFile file:getAllFiles()){
+			identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+			identifiers=getAliasFreeList(identifiers,selectedIdentifier.getName());
+			if(file.equals(declaringFile)){	//Add change for alias definition
+				identifiers.add(aliasDefinition);
+			}
+			addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+		}
+		
+	}
+	
+	/**
+	 * Tries to find the name of the component, in whichs specification the alias is defined.
+	 * @param selectedIdentifier
+	 * @return
+	 */
+	private String getNameOFSourceComponent(Identifier selectedIdentifier){
+		String sourceComponentName=null;
+		if(ASTUtil4Aliases.isInterfaceAliasingInSpecification(selectedIdentifier)){
+			Identifier componentIdentifier=ASTUtil4Components.getIdentifierOFComponentDefinition(selectedIdentifier);
+			if(componentIdentifier==null){	//Should never happen.
+				return null;
+			}
+			sourceComponentName=componentIdentifier.getName();
+		}
+		return sourceComponentName;
+	}
+	
+
 
 	/**
 	 * If the selected alias identifier is a rename in NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.

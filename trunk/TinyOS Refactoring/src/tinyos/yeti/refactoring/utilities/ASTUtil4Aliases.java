@@ -5,9 +5,12 @@ import java.util.LinkedList;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.AccessList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ComponentList;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Configuration;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Module;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
 
 public class ASTUtil4Aliases {
@@ -61,6 +64,11 @@ public class ASTUtil4Aliases {
 		return false;
 	}
 	
+	/**
+	 * Checks if the given identifier is an Alias for a component in the implementation of a nesc configuration.
+	 * @param identifier
+	 * @return
+	 */
 	public static boolean isComponentAlias(Identifier identifier){
 		//Check if the given identifier even is in an implementation.
 		ConfigurationDeclarationList implementationNode=ASTUtil4Components.getConfigurationImplementationNodeIfInside(identifier);
@@ -81,6 +89,34 @@ public class ASTUtil4Aliases {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the "InterfaceReference" of the interface, which has the given alias, in the ast which includes the given node.
+	 * Returns null if there is no interface with such an alias in the given ast.
+	 * @param name
+	 * @param astNode 
+	 * @return
+	 */
+	public static InterfaceReference getInterfaceNameWithAlias(String alias, ASTNode node) {
+		AccessList specificationNode=null;
+		if(ASTUtil4Components.isConfiguration(node)){
+			Configuration configuration=ASTUtil4Components.getConfigurationNode(node);
+			specificationNode=(AccessList)configuration.getField(Configuration.CONNECTIONS);
+		}else if(ASTUtil4Components.isModule(node)){
+			Module module=(Module)ASTUtil4Components.getModuleNode(node);
+			specificationNode=(AccessList)module.getField(Module.CONNECTIONS);
+		}else{
+			return null;
+		}
+		Collection<InterfaceReference> iRefs=ASTUtil.getAllNodesOfType(specificationNode, InterfaceReference.class);
+		for(InterfaceReference ref:iRefs){
+			Identifier renameIdentifier=(Identifier)ref.getField(InterfaceReference.RENAME);
+			if(renameIdentifier!=null&&alias.equals(renameIdentifier.getName())){
+				return ref;
+			}
+		}
+		return null;
 	}
 	
 	

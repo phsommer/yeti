@@ -5,6 +5,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.NesCNameDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Endpoint;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Interface;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceType;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 
@@ -71,6 +72,25 @@ public class ASTUTil4Interfaces {
 			return false;
 		}
 		return ASTUtil.checkFieldName((Endpoint)parent, pI, Endpoint.SPECIFICATION);
+	}
+	
+	/**
+	 * Reads the identifier of the interface out of a InterfaceReference
+	 * @param reference
+	 * @return
+	 */
+	public static Identifier getInterfaceNameIdentifier(InterfaceReference reference){
+		InterfaceType interfaceType=(InterfaceType)reference.getField(InterfaceReference.NAME);
+		return (Identifier)interfaceType.getField(InterfaceType.NAME);
+	}
+	
+	/**
+	 * Reads the identifier of the interface alias out of a InterfaceReference
+	 * @param reference
+	 * @return
+	 */
+	public static Identifier getInterfaceAliasIdentifier(InterfaceReference reference){
+		return (Identifier)reference.getField(InterfaceReference.RENAME);
 	}
 	
 }

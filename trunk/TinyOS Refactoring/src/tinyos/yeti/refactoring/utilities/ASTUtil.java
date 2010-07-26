@@ -395,4 +395,19 @@ public class ASTUtil {
 		String fieldName=parent.getFieldName(childToCheck);
 		return expectedName.equals(fieldName);
 	}
+	
+	/**
+	 * Returns the root of the ast which this node includes;
+	 * @param node
+	 * @return
+	 */
+	public static ASTNode getAstRoot(ASTNode node){
+		ASTNode parent=node.getParent();
+		ASTNode child=node;
+		while(parent!=null){
+			child=parent;
+			parent=parent.getParent();
+		}
+		return child;
+	}
 }

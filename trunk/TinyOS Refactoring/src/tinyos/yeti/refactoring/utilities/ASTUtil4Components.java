@@ -1,5 +1,7 @@
 package tinyos.yeti.refactoring.utilities;
 
+import java.util.Collection;
+
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Configuration;
@@ -107,7 +109,7 @@ public class ASTUtil4Components {
 	 * Returns the root node in the ast for a configuration implementation.
 	 * Null if the given node is not in an implementation.
 	 * @param node
-	 * @return
+	 * @return 
 	 */
 	public static ConfigurationDeclarationList getConfigurationImplementationNodeIfInside(ASTNode node){
 		//Get the root node for the local implementation of this module.
@@ -116,6 +118,70 @@ public class ASTUtil4Components {
 			return null;
 		}
 		return (ConfigurationDeclarationList)root;
+	}
+	
+	/**
+	 * Returns the "Module" node of the AST which includes the given node.Returns null if the node is not in an ast with a module node, which means this is with verry high probability no module file.
+	 * @param node
+	 * @return
+	 */
+	public static Module getModuleNode(ASTNode node){
+		ASTNode root=ASTUtil.getAstRoot(node);
+		Collection<Module> modules=ASTUtil.getChildsOfType(root,Module.class);
+		if(modules.size()!=1){
+			return null;
+		}
+		return modules.iterator().next();
+	}
+	
+	/**
+	 * Same as getModuleNode, but for Configuration.
+	 * @param node
+	 * @return
+	 */
+	public static Configuration getConfigurationNode(ASTNode node){
+		ASTNode root=ASTUtil.getAstRoot(node);
+		Collection<Configuration> configuration=ASTUtil.getChildsOfType(root,Configuration.class);
+		if(configuration.size()!=1){
+			return null;
+		}
+		return configuration.iterator().next();
+	}
+	
+	/**
+	 * Checks if the given node is part of a module ast.
+	 * @param node
+	 * @return
+	 */
+	public static boolean isModule(ASTNode node){
+		return getModuleNode(node)!=null;
+	}
+	
+	/**
+	 * Checks if the given node is part of a configuration ast.
+	 * @param node
+	 * @return
+	 */
+	public static boolean isConfiguration(ASTNode node){
+		return getConfigurationNode(node)!=null;
+	}
+	
+	/**
+	 * If the given node is in a configuration or a module, this method returns the identifier of the module, else it returns null.
+	 * @param selectedIdentifier
+	 * @return
+	 */
+	public static Identifier getIdentifierOFComponentDefinition(ASTNode node){
+		Identifier id=null;
+		ASTNode root=ASTUtil.getAstRoot(node);
+		if(ASTUtil4Components.isConfiguration(root)){
+			Configuration configuration=ASTUtil4Components.getConfigurationNode(node);
+			id=(Identifier)configuration.getField(Configuration.NAME);
+		}else if(ASTUtil4Components.isModule(root)){
+			Module module=ASTUtil4Components.getModuleNode(node);
+			id=(Identifier)module.getField(Module.NAME);
+		}
+		return id;
 	}
 	
 }
