@@ -26,9 +26,9 @@ import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory.AstType;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
@@ -113,7 +113,7 @@ public class Processor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 		DebugUtil.clearOutput();
-		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		
 		//If it is a component alias, this is a pure local change.
@@ -209,25 +209,10 @@ public class Processor extends RenameProcessor {
 		if(createdType!=AstType.CONFIGURATION){
 			throw new IllegalStateException("This method should never be called, if the given identifier is not in a configuration ast!");
 		}
+		ConfigurationAstAnalyzer configurationAnalyzer=analyzerFactory.getConfigurationAnalyzer();
+		Collection<Identifier> identifiers2Change=configurationAnalyzer.getComponentAliasIdentifiersWithName(selectedIdentifier.getName());
 		
 		
-		
-		
-		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
-		ConfigurationDeclarationList implementationRoot=astUtil4Components.getConfigurationImplementationNodeIfInside(selectedIdentifier);
-		if(implementationRoot==null){	//Should never happen since the selected identifier has to be in a NesC "components" statement which only can appear in a Implementation of a NesC Configuration.
-			DebugUtil.addOutput("RootNode is Null");
-			ret.add(new NullChange("There is a implementation problem!"));
-			return;
-		}
-		Collection<Identifier> localIdentifiers=astUtil.getAllNodesOfType(implementationRoot, Identifier.class);
-		Collection<Identifier> identifiers2Change=new LinkedList<Identifier>();
-		String targetName=selectedIdentifier.getName();
-		for(Identifier identifier:localIdentifiers){
-			if(targetName.equals(identifier.getName())){
-				identifiers2Change.add(identifier);
-			}
-		}
 		NesCEditor editor=info.getEditor();
 		IFile editedFile=(IFile)editor.getResource();
 		NesC12AST ast=info.getAst();

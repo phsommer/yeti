@@ -4,11 +4,11 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.AccessList;
 
-public class ComponentAstAnalyser {
+public class ComponentAstAnalyser extends AstAnalyzer {
 	
-	private TranslationUnit root;
-	private Identifier componentIdentifier;
-	private AccessList specification;
+	protected TranslationUnit root;
+	protected Identifier componentIdentifier;
+	protected AccessList specification;
 	
 	public ComponentAstAnalyser(TranslationUnit root,Identifier componentIdentifier, AccessList specification) {
 		super();
