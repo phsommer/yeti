@@ -78,16 +78,33 @@ public class ASTUtil {
 	 * @return The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
 	 */
 	private  ASTNode getASTLeafAtPos(int pos){
+		
+		ASTNode node = getDeepestAstNodeAtPos(pos);
+		  
+		if(node.getChildrenCount() == 0){
+			return node;
+		} else {
+			// Happens for example if the Cursor is at a blank position
+			return null;
+		}
+	}
+	
+	/**
+	 * Retruns the deepest AST node which spans over the given Position 
+	 * @param pos
+	 * @return The AST Node spaning over the Position. If no vaild Position is given, the Root node is returned.
+	 */
+	public ASTNode getDeepestAstNodeAtPos(int pos){
 		ASTNode root = ast.getRoot();
 		boolean foundChild=true;
 		while(root.getChildrenCount() > 0 && foundChild){
 			foundChild=false;
-			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
+			for(int i=0; i < root.getChildrenCount() && !foundChild; i++){
 				ASTNode child = root.getChild(i);
 				
-				// It happend to us that we got null values
+				// It happened to us that we got null values
 				if(child!=null){
-					if(end(child) >= pos){
+					if(end(child) >= pos && start(child) <= pos){
 						foundChild=true;
 						root=root.getChild(i);
 					}
@@ -95,13 +112,7 @@ public class ASTUtil {
 			}	
 		}
 		
-		// Cause it's only checked if end(child) >= pos the start has to be checked too.  
-		if(foundChild && pos >= start(root)){
-			return root;
-		} else {
-			// Happens for example if the Cursor is at a blank position
-			return null;
-		}
+		return root;
 	}
 
 	/**
@@ -183,7 +194,7 @@ public class ASTUtil {
 	 */
 	public static ASTNode getParentForName(ASTNode child,Class<? extends ASTNode> type){
 		ASTNode parent=child.getParent();
-		if(parent==null){
+		if(parent == null){
 			return null;
 		}
 		if(parent.getClass().equals(type)){
