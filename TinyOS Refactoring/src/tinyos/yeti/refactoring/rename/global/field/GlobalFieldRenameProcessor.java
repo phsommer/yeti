@@ -20,13 +20,13 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.preprocessor.RangeDescription;
+import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.rename.global.FieldKind;
 import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 
@@ -55,7 +55,7 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 			//Gather all identifiers of the field on a per file base.
 			for(IFile file:files2FieldInfos.keySet()){
 				NesC12AST ast=getAst(file, pm);
-				ASTUtil astUtil=new ASTUtil(ast);
+				ASTPositioning astPositioning=new ASTPositioning(ast);
 				Collection<Identifier> identifiers=new LinkedList<Identifier>();
 				Collection<FieldInfo> fieldInfos=files2FieldInfos.get(file);
 				
@@ -63,7 +63,7 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 				for(FieldInfo fieldInfo:fieldInfos){
 					if(fieldInfo.getKind()!=FieldKind.INCLUDED_DECLARATION){	//Included Declarations don't have to be changed.
 						RangeDescription description=fieldInfo.getField().getRange();
-						Identifier id=(Identifier)astUtil.getASTLeafAtAstPos(description.getLeft());
+						Identifier id=(Identifier)astPositioning.getASTLeafAtAstPos(description.getLeft());
 						identifiers.add(id);
 					}
 				}

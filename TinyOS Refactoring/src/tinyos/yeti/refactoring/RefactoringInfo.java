@@ -4,7 +4,7 @@ import org.eclipse.jface.text.ITextSelection;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
@@ -18,7 +18,7 @@ public class RefactoringInfo {
 	private String inputWizardName;
 	private NesCEditor editor;
 	private ITextSelection selection;
-	private ASTUtil utility;
+	private ASTPositioning astPositioning;
 	
 	public RefactoringInfo(NesCEditor editor, String inputPageName, String inputWizardName) {
 		this.editor = editor;
@@ -73,14 +73,14 @@ public class RefactoringInfo {
 	 * 
 	 * @return
 	 */
-	public ASTUtil getAstUtil() {
-		if (utility == null) {
+	public ASTPositioning getAstPositioning() {
+		if (astPositioning == null) {
 			NesC12AST ast = getAst();
 			if (ast != null) {
-				utility = new ASTUtil(ast);
+				astPositioning = new ASTPositioning(ast);
 			}
 		}
-		return utility;
+		return astPositioning;
 	}
 	
 	public ProjectUtil getProjectUtil(){

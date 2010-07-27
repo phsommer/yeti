@@ -79,9 +79,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 
 	@Override
 	public boolean isApplicable() throws CoreException {
-		// If the AST Util is not available, the refactoring is not available
-		if (info.getAstUtil() == null)
-			return false;
 		// Tests if a LOCAL Variable is selected
 		Identifier identifier = getSelectedIdentifier();
 		if (identifier == null)

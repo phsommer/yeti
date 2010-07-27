@@ -5,7 +5,7 @@ import org.eclipse.jface.text.ITextSelection;
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public abstract class RenameAvailabilityTester implements tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester {
@@ -14,7 +14,7 @@ public abstract class RenameAvailabilityTester implements tinyos.yeti.refactorin
 	public boolean test(ITextSelection receiver) {
 		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
 		NesC12AST ast = (NesC12AST) editor.getAST();
-		ASTUtil util = new ASTUtil(ast);
+		ASTPositioning util = new ASTPositioning(ast);
 		Identifier selectedIdentifier = util.getASTLeafAtPos(receiver.getOffset(),receiver.getLength(), Identifier.class);
 		if(selectedIdentifier==null){
 			return false;

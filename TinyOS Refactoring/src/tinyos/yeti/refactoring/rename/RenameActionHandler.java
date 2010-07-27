@@ -12,7 +12,7 @@ import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.DefaultRefactoringWizard;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public abstract class RenameActionHandler extends AbstractHandler implements IHandler{
@@ -22,7 +22,7 @@ public abstract class RenameActionHandler extends AbstractHandler implements IHa
 		
 		NesCEditor editor = ActionHandlerUtil.getNesCEditor(event);
 		ITextSelection selection = ActionHandlerUtil.getSelection(editor);
-		ASTUtil util = new ASTUtil((NesC12AST) editor.getAST());
+		ASTPositioning util = new ASTPositioning((NesC12AST) editor.getAST());
 		Identifier id=util.getASTLeafAtPos(selection.getOffset(),selection.getLength(), Identifier.class);
 		if(id==null){
 			return null;

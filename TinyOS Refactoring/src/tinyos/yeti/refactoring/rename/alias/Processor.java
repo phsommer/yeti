@@ -28,6 +28,8 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory.AstType;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
@@ -191,12 +193,22 @@ public class Processor extends RenameProcessor {
 
 
 	/**
-	 * If the selected alias identifier is a rename in NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.
+	 * If the selected alias identifier is a rename in a NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.
 	 * This Method will create these local changes.
 	 * @param selectedIdentifier
 	 * @param ret The CompositeChange where to add the changes.
 	 */
 	private void createConfigurationImplementationLocalChange(Identifier selectedIdentifier, CompositeChange ret) {
+		AstAnalyzerFactory analyzerFactory=new AstAnalyzerFactory();
+		AstType createdType=analyzerFactory.createAnalyzer(selectedIdentifier);
+		if(createdType!=AstType.CONFIGURATION){
+			throw new IllegalStateException("This method should never be called, if the given identifier is not in a configuration ast!");
+		}
+		
+		
+		
+		
+		
 		ConfigurationDeclarationList implementationRoot=ASTUtil4Components.getConfigurationImplementationNodeIfInside(selectedIdentifier);
 		if(implementationRoot==null){	//Should never happen since the selected identifier has to be in a NesC "components" statement which only can appear in a Implementation of a NesC Configuration.
 			DebugUtil.addOutput("RootNode is Null");
