@@ -1,0 +1,186 @@
+package tinyos.yeti.refactoring.ast;
+
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchWindow;
+
+import tinyos.yeti.editors.MultiPageNesCEditor;
+import tinyos.yeti.editors.NesCEditor;
+import tinyos.yeti.ep.parser.INesCAST;
+import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
+import tinyos.yeti.preprocessor.PreprocessorReader;
+import tinyos.yeti.refactoring.RefactoringPlugin;
+
+public class ASTPositioning {
+	private NesC12AST ast;
+	private PreprocessorReader reader;
+	
+	/**
+	 * Finds the editor by itself. Attention, this Constructor works only if the Editor has the Focus. 
+	 * As soon as an other Window opens, this is no longer the case.
+	 * @throws NullPointerException If the AST is not yet initialized.
+	 * @throws IllegalStateException If the found AST or Editor is not of the expected type.
+	 */
+	public ASTPositioning(){
+		IWorkbenchWindow w=	RefactoringPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+		IEditorPart editorPart = w.getActivePage().getActiveEditor();
+		
+		NesCEditor editor = null;
+		if(editorPart instanceof NesCEditor){
+			editor = (NesCEditor)editorPart;
+		} else if (editorPart instanceof MultiPageNesCEditor) {
+			editor = ((MultiPageNesCEditor) editorPart).getNesCEditor();
+		} else {
+			throw new IllegalStateException("Found editor was not a NesCEditor but a " + editorPart.getClass().getCanonicalName());
+		}
+		INesCAST ast = editor.getAST();
+		if(ast instanceof NesC12AST){
+			init((NesC12AST) ast);
+		} else if(ast == null){
+			throw new NullPointerException("The AST must not be NULL");
+		} else {
+			(new Exception()).printStackTrace();
+			throw new IllegalStateException("The AST of the Editor has to be a NesC12AST but was "+ ast.getClass().getCanonicalName());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param ast The AST to be used. Must not be NULL
+	 * @throws NullPointerException if the ast is NULL
+	 */
+	public ASTPositioning(NesC12AST ast){
+		if(ast == null){
+			throw new NullPointerException("The given AST must not be NULL");
+		}
+		init(ast);
+	}
+	
+	
+	private void init(NesC12AST ast){
+		this.ast=ast;
+		reader=ast.getReader();
+	}
+	
+	/**
+	 * Method returns the AST-Leaf that relates to the Position specified in pos in the not preprocessed input file. 
+	 * @param pos Position in the original Input File
+	 * @return The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
+	 */
+	private  ASTNode getASTLeafAtPos(int pos){
+		
+		ASTNode node = getDeepestAstNodeAtPos(pos);
+		  
+		if(node.getChildrenCount() == 0){
+			return node;
+		} else {
+			// Happens for example if the Cursor is at a blank position
+			return null;
+		}
+	}
+	
+	/**
+	 * Retruns the deepest AST node which spans over the given Position 
+	 * @param pos
+	 * @return The AST Node spaning over the Position. If no vaild Position is given, the Root node is returned.
+	 */
+	public ASTNode getDeepestAstNodeAtPos(int pos){
+		ASTNode root = ast.getRoot();
+		boolean foundChild=true;
+		while(root.getChildrenCount() > 0 && foundChild){
+			foundChild=false;
+			for(int i=0; i < root.getChildrenCount() && !foundChild; i++){
+				ASTNode child = root.getChild(i);
+				
+				// It happened to us that we got null values
+				if(child!=null){
+					if(end(child) >= pos && start(child) <= pos){
+						foundChild=true;
+						root=root.getChild(i);
+					}
+				}
+			}	
+		}
+		
+		return root;
+	}
+
+	/**
+	 * Finds an AST leave at a Preprocessed Pos
+	 * TODO: Is that really necessary to have twice, almost the same Method?
+	 */
+	public  ASTNode getASTLeafAtAstPos(int pos){
+		ASTNode root = ast.getRoot();
+		boolean foundChild=true;
+		while(root.getChildrenCount() > 0 && foundChild){
+			foundChild=false;
+			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
+				ASTNode child = root.getChild(i);
+				
+				// It happend to us that we got null values
+				if(child!=null){
+					if(child.getRange().getRight() >= pos){
+						foundChild=true;
+						root=root.getChild(i);
+					}
+				}
+			}	
+		}
+		
+		// Cause it's only checked if end(child) >= pos the start has to be checked too.  
+		if(foundChild && pos >= root.getRange().getLeft()){
+			return root;
+		} else {
+			// Happens for example if the Cursor is at a blank position
+			return null;
+		}
+	}
+	
+	/**
+	 * Method returns the AST-Leaf that relates to the Position specified in the not preprocessed input file.
+	 * Uses the middle point of the selection, which may lead to a more accurate result. 
+	 * @param start The assumed Position where the leaf you are looking for starts.
+	 * @param length The assumed length of the area which the leaf includes.
+	 * @return	 The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
+	 */
+	public  ASTNode getASTLeafAtPos(int start,int length){
+		start+=length/2;
+		return getASTLeafAtPos(start);
+	}
+	
+	/**
+ 	*
+ 	* @param <T> The type which the Leaf is you are looking for. 
+ 	* @param start The assumed Position where the leaf you are looking for starts.
+ 	* @param lenth The assumed length of the area which the leaf includes.
+ 	* @param type	The type which the Leaf is you are looking for. 
+ 	* @return The currently selected ASTNode Element. Null if the given type does not match the selected Element.
+ 	*/
+	@SuppressWarnings("unchecked") // Eclipse thinks that we have a unchecked Class cast. But it's not unchecked.
+	public <T extends ASTNode> T getASTLeafAtPos(int start,int length,Class<T> type) {
+		ASTNode currentlySelected = this.getASTLeafAtPos(start,length);
+		if(type.isInstance(currentlySelected)){
+			return (T) currentlySelected;
+		} else {
+			return null;
+		}
+	}
+	
+
+	
+	/**
+	 * Returns the Begin-Offset of node in the not preprocessed input file
+	 * @param node The node you wan't to know the offset of.
+	 * @return	Well, the offset.
+	 */
+	public int start(ASTNode node){
+		return reader.inputLocation(ast.getOffsetAtBegin(node).getPreprocessedOffset(), true);
+	}
+
+	/**
+	 * As start, just the end.
+	 */
+	public int end(ASTNode node){
+		return reader.inputLocation(ast.getOffsetAtEnd(node).getPreprocessedOffset(), true);
+	}
+}

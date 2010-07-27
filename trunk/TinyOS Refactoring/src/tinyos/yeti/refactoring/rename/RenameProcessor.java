@@ -32,7 +32,7 @@ import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
@@ -48,7 +48,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 
 	@Override
 	public boolean isApplicable() throws CoreException {
-		return (info.getAstUtil() != null);
+		return (info.getAstPositioning() != null);
 	}
 
 
@@ -59,7 +59,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected Identifier getSelectedIdentifier() {
 		ITextSelection selection=info.getSelection();
-		return info.getAstUtil().getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
+		return info.getAstPositioning().getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
 	}
 
 
@@ -69,11 +69,11 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 	
 	protected void addChanges4Identifiers(Collection<Identifier> identifiers,String newName,MultiTextEdit multiTextEdit,NesC12AST ast){
-		ASTUtil util;
+		ASTPositioning util;
 		if(ast==null){
-			util=info.getAstUtil();
+			util=info.getAstPositioning();
 		}else{
-			util=new ASTUtil(ast);
+			util=new ASTPositioning(ast);
 		}
 		for (Identifier identifier : identifiers) {
 			int beginOffset = util.start(identifier);
@@ -233,7 +233,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		IFileRegion targetRegion = getModel().getNode(path, monitor).getRegion();
 		IFile targetFile = getIFile4ParseFile(targetRegion.getParseFile());
 		NesC12AST ast = info.getProjectUtil().getAst(targetFile,monitor);
-		ASTUtil astUtil = new ASTUtil(ast);
+		ASTPositioning astUtil = new ASTPositioning(ast);
 		return astUtil.getASTLeafAtPos(targetRegion.getOffset(),targetRegion.getLength(),Identifier.class);
 	}
 	
@@ -247,7 +247,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @throws IOException
 	 */
 	protected Identifier getIdentifierForArea(int left,int right,NesC12AST ast,IProgressMonitor monitor) {
-		ASTUtil astUtil=new ASTUtil(ast);
+		ASTPositioning astUtil=new ASTPositioning(ast);
 		return astUtil.getASTLeafAtPos(left,right-left,Identifier.class);
 	}
 	
@@ -301,7 +301,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		
 		//Find Identifiers which are part of the given Source.
 		IFileRegion region;
-		ASTUtil astUtil=new ASTUtil(info.getProjectUtil().getAst(file,monitor));
+		ASTPositioning astUtil=new ASTPositioning(info.getProjectUtil().getAst(file,monitor));
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();

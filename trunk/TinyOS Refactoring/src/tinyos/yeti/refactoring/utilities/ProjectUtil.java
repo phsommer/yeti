@@ -36,7 +36,6 @@ public class ProjectUtil {
 	public ProjectUtil(NesCEditor editor){
 		this.editor=editor;
 		this.project=editor.getProject();
-		
 	}
 	
 	/**
@@ -119,6 +118,6 @@ public class ProjectUtil {
 	 * @throws MissingNatureException
 	 */
 	public ProjectModel getModel() throws MissingNatureException{
-		return TinyOSPlugin.getDefault().getProjectTOS(editor.getProject()).getModel();
+		return TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
 	}
 }
