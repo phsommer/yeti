@@ -8,7 +8,8 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
-		return ASTUtil4Variables.isImplementationLocalVariable(selectedIdentifier);
+		ASTUtil4Variables asttil4Variables=new ASTUtil4Variables();
+		return asttil4Variables.isImplementationLocalVariable(selectedIdentifier);
 	}
 	
 }

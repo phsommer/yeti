@@ -26,6 +26,8 @@ import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 
+	private ASTUtil4Variables astUtil4Variables=new ASTUtil4Variables();
+	
 	private RenameInfo info;
 
 	public Processor(RenameInfo info) {
@@ -47,13 +49,13 @@ public class Processor extends RenameProcessor {
 			Identifier selectedIdentifier = getSelectedIdentifier();
 			
 			//Get the local declaration.
-			Identifier localDeclarationId=ASTUtil4Variables.getImplementationLocalVariableDeclarationIdentifier(selectedIdentifier);
+			Identifier localDeclarationId=astUtil4Variables.getImplementationLocalVariableDeclarationIdentifier(selectedIdentifier);
 			if(localDeclarationId==null){	//If this happens this means, that the selected identifier is not part of a implementation local variable. This case should never happen because of earlier checks.
 				return new NullChange();
 			}
 			
 			//Get the references to the local function.
-			InitDeclarator initDeclarator=ASTUtil4Variables.identifierToInitDeclarator(localDeclarationId);
+			InitDeclarator initDeclarator=astUtil4Variables.identifierToInitDeclarator(localDeclarationId);
 			IASTModelPath targetPath=initDeclarator.resolveField().getPath();
 			Collection<IASTModelPath> targetPaths=new LinkedList<IASTModelPath>();
 			targetPaths.add(targetPath);
@@ -95,7 +97,7 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!(ASTUtil4Variables.isImplementationLocalVariable(selectedIdentifier))) {
+		if (!(astUtil4Variables.isImplementationLocalVariable(selectedIdentifier))) {
 			ret.addFatalError("No Implementation Local Variable selected.");
 		}
 		return ret;

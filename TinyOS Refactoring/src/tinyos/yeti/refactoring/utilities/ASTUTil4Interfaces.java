@@ -11,12 +11,23 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 
 public class ASTUTil4Interfaces {
 
+	private ASTUtil astUtil;
+	
+	public ASTUTil4Interfaces(){
+		astUtil=new ASTUtil();
+	}
+	
+	public ASTUTil4Interfaces(ASTUtil astUtil) {
+		super();
+		this.astUtil = astUtil;
+	}
+	
 	/**
 	 * Checks if the given identifier is part of an AST node associated to an interface.
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isInterface(Identifier identifier){
+	public boolean isInterface(Identifier identifier){
 		return isInterfaceDeclaration(identifier)
 			||isInterfaceDefinition(identifier)
 			||isInterfaceImplementation(identifier)
@@ -29,8 +40,8 @@ public class ASTUTil4Interfaces {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isInterfaceDefinition(Identifier identifier){
-		return ASTUtil.isOfType(identifier.getParent(), Interface.class);
+	public boolean isInterfaceDefinition(Identifier identifier){
+		return astUtil.isOfType(identifier.getParent(), Interface.class);
 	}
 	
 	/**
@@ -38,8 +49,8 @@ public class ASTUTil4Interfaces {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isInterfaceDeclaration(Identifier identifier){
-		return ASTUtil.isOfType(identifier.getParent(), InterfaceType.class);
+	public boolean isInterfaceDeclaration(Identifier identifier){
+		return astUtil.isOfType(identifier.getParent(), InterfaceType.class);
 	}
 	
 	/**
@@ -47,9 +58,9 @@ public class ASTUTil4Interfaces {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isInterfaceImplementation(Identifier identifier){
+	public boolean isInterfaceImplementation(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent, NesCNameDeclarator.class)){
+		if(!astUtil.isOfType(parent, NesCNameDeclarator.class)){
 			return false;
 		}
 		//The first child is the interface identifier, the second the event/command identifier
@@ -61,17 +72,17 @@ public class ASTUTil4Interfaces {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentWiringInterfacePart(Identifier identifier){
+	public boolean isComponentWiringInterfacePart(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent,ParameterizedIdentifier.class)){
+		if(!astUtil.isOfType(parent,ParameterizedIdentifier.class)){
 			return false;
 		}
 		ParameterizedIdentifier pI=(ParameterizedIdentifier)parent;
 		parent=pI.getParent();
-		if(!ASTUtil.isOfType(parent,Endpoint.class)){
+		if(!astUtil.isOfType(parent,Endpoint.class)){
 			return false;
 		}
-		return ASTUtil.checkFieldName((Endpoint)parent, pI, Endpoint.SPECIFICATION);
+		return astUtil.checkFieldName((Endpoint)parent, pI, Endpoint.SPECIFICATION);
 	}
 	
 	/**
@@ -79,7 +90,7 @@ public class ASTUTil4Interfaces {
 	 * @param reference
 	 * @return
 	 */
-	public static Identifier getInterfaceNameIdentifier(InterfaceReference reference){
+	public Identifier getInterfaceNameIdentifier(InterfaceReference reference){
 		InterfaceType interfaceType=(InterfaceType)reference.getField(InterfaceReference.NAME);
 		return (Identifier)interfaceType.getField(InterfaceType.NAME);
 	}
@@ -89,7 +100,7 @@ public class ASTUTil4Interfaces {
 	 * @param reference
 	 * @return
 	 */
-	public static Identifier getInterfaceAliasIdentifier(InterfaceReference reference){
+	public Identifier getInterfaceAliasIdentifier(InterfaceReference reference){
 		return (Identifier)reference.getField(InterfaceReference.RENAME);
 	}
 	

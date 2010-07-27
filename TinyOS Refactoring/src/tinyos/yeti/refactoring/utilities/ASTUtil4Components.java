@@ -14,12 +14,23 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
 
 public class ASTUtil4Components {
 	
+	private ASTUtil astUtil;
+	
+	public ASTUtil4Components(){
+		astUtil=new ASTUtil();
+	}
+	
+	public ASTUtil4Components(ASTUtil astUtil) {
+		super();
+		this.astUtil = astUtil;
+	}
+	
 	/**
 	 * Checks if the given identifier is part of an AST node associated to an NesC component like a module or a configuration.
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponent(Identifier identifier){
+	public boolean isComponent(Identifier identifier){
 		return isComponentDefinition(identifier)
 			||isComponentDeclaration(identifier)
 			||isComponentWiringComponentPartNotAliased(identifier);
@@ -30,9 +41,9 @@ public class ASTUtil4Components {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentDefinition(Identifier identifier){
+	public boolean isComponentDefinition(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(	ASTUtil.isOfType(parent, Configuration.class)||ASTUtil.isOfType(parent, Module.class)){
+		if(	astUtil.isOfType(parent, Configuration.class)||astUtil.isOfType(parent, Module.class)){
 			return true;
 		}
 		return false;
@@ -43,12 +54,12 @@ public class ASTUtil4Components {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentDeclaration(Identifier identifier){
+	public boolean isComponentDeclaration(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent, RefComponent.class)){
+		if(!astUtil.isOfType(parent, RefComponent.class)){
 			return false;
 		}
-		return ASTUtil.checkFieldName((RefComponent)parent, identifier, RefComponent.NAME);
+		return astUtil.checkFieldName((RefComponent)parent, identifier, RefComponent.NAME);
 	}
 	
 	/**
@@ -56,17 +67,17 @@ public class ASTUtil4Components {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentWiringComponentPart(Identifier identifier){
+	public boolean isComponentWiringComponentPart(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent,ParameterizedIdentifier.class)){
+		if(!astUtil.isOfType(parent,ParameterizedIdentifier.class)){
 			return false;
 		}
 		ParameterizedIdentifier pI=(ParameterizedIdentifier)parent;
 		parent=pI.getParent();
-		if(!ASTUtil.isOfType(parent,Endpoint.class)){
+		if(!astUtil.isOfType(parent,Endpoint.class)){
 			return false;
 		}
-		return ASTUtil.checkFieldName((Endpoint)parent, pI, Endpoint.COMPONENT);
+		return astUtil.checkFieldName((Endpoint)parent, pI, Endpoint.COMPONENT);
 	}
 	
 	/**
@@ -74,20 +85,21 @@ public class ASTUtil4Components {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentWiringComponentPartNotAliased(Identifier identifier){
+	public boolean isComponentWiringComponentPartNotAliased(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent,ParameterizedIdentifier.class)){
+		if(!astUtil.isOfType(parent,ParameterizedIdentifier.class)){
 			return false;
 		}
 		ParameterizedIdentifier pI=(ParameterizedIdentifier)parent;
 		parent=pI.getParent();
-		if(!ASTUtil.isOfType(parent,Endpoint.class)){
+		if(!astUtil.isOfType(parent,Endpoint.class)){
 			return false;
 		}
-		if(!ASTUtil.checkFieldName((Endpoint)parent, pI, Endpoint.COMPONENT)){
+		if(!astUtil.checkFieldName((Endpoint)parent, pI, Endpoint.COMPONENT)){
 			return false;
 		}
-		return !ASTUtil4Aliases.isComponentAlias(identifier);
+		ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases(astUtil);
+		return !astUtil4Aliases.isComponentAlias(identifier);
 	}
 
 	/**
@@ -96,9 +108,9 @@ public class ASTUtil4Components {
 	 * @param node
 	 * @return
 	 */
-	public static NesCExternalDefinitionList getModuleImplementationNodeIfInside(ASTNode node){
+	public NesCExternalDefinitionList getModuleImplementationNodeIfInside(ASTNode node){
 		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil.getParentForName(node, NesCExternalDefinitionList.class);
+		ASTNode root=astUtil.getParentForName(node, NesCExternalDefinitionList.class);
 		if(root==null){
 			return null;
 		}
@@ -111,9 +123,9 @@ public class ASTUtil4Components {
 	 * @param node
 	 * @return 
 	 */
-	public static ConfigurationDeclarationList getConfigurationImplementationNodeIfInside(ASTNode node){
+	public ConfigurationDeclarationList getConfigurationImplementationNodeIfInside(ASTNode node){
 		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil.getParentForName(node, ConfigurationDeclarationList.class);
+		ASTNode root=astUtil.getParentForName(node, ConfigurationDeclarationList.class);
 		if(root==null){
 			return null;
 		}
@@ -125,9 +137,9 @@ public class ASTUtil4Components {
 	 * @param node
 	 * @return
 	 */
-	public static Module getModuleNode(ASTNode node){
-		ASTNode root=ASTUtil.getAstRoot(node);
-		Collection<Module> modules=ASTUtil.getChildsOfType(root,Module.class);
+	public Module getModuleNode(ASTNode node){
+		ASTNode root=astUtil.getAstRoot(node);
+		Collection<Module> modules=astUtil.getChildsOfType(root,Module.class);
 		if(modules.size()!=1){
 			return null;
 		}
@@ -139,9 +151,9 @@ public class ASTUtil4Components {
 	 * @param node
 	 * @return
 	 */
-	public static Configuration getConfigurationNode(ASTNode node){
-		ASTNode root=ASTUtil.getAstRoot(node);
-		Collection<Configuration> configuration=ASTUtil.getChildsOfType(root,Configuration.class);
+	public Configuration getConfigurationNode(ASTNode node){
+		ASTNode root=astUtil.getAstRoot(node);
+		Collection<Configuration> configuration=astUtil.getChildsOfType(root,Configuration.class);
 		if(configuration.size()!=1){
 			return null;
 		}
@@ -153,7 +165,7 @@ public class ASTUtil4Components {
 	 * @param node
 	 * @return
 	 */
-	public static boolean isModule(ASTNode node){
+	public boolean isModule(ASTNode node){
 		return getModuleNode(node)!=null;
 	}
 	
@@ -162,7 +174,7 @@ public class ASTUtil4Components {
 	 * @param node
 	 * @return
 	 */
-	public static boolean isConfiguration(ASTNode node){
+	public boolean isConfiguration(ASTNode node){
 		return getConfigurationNode(node)!=null;
 	}
 	
@@ -171,14 +183,16 @@ public class ASTUtil4Components {
 	 * @param selectedIdentifier
 	 * @return
 	 */
-	public static Identifier getIdentifierOFComponentDefinition(ASTNode node){
+	public Identifier getIdentifierOFComponentDefinition(ASTNode node){
+		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
+		
 		Identifier id=null;
-		ASTNode root=ASTUtil.getAstRoot(node);
-		if(ASTUtil4Components.isConfiguration(root)){
-			Configuration configuration=ASTUtil4Components.getConfigurationNode(node);
+		ASTNode root=astUtil.getAstRoot(node);
+		if(astUtil4Components.isConfiguration(root)){
+			Configuration configuration=astUtil4Components.getConfigurationNode(node);
 			id=(Identifier)configuration.getField(Configuration.NAME);
-		}else if(ASTUtil4Components.isModule(root)){
-			Module module=ASTUtil4Components.getModuleNode(node);
+		}else if(astUtil4Components.isModule(root)){
+			Module module=astUtil4Components.getModuleNode(node);
 			id=(Identifier)module.getField(Module.NAME);
 		}
 		return id;

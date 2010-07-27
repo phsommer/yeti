@@ -44,6 +44,9 @@ public class Processor extends RenameProcessor {
 	
 	private RenameInfo info;
 
+	private ASTUtil astUtil=new ASTUtil();
+	private ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases(astUtil);
+	
 	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
@@ -114,7 +117,7 @@ public class Processor extends RenameProcessor {
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		
 		//If it is a component alias, this is a pure local change.
-		if(ASTUtil4Aliases.isComponentAlias(selectedIdentifier)){
+		if(astUtil4Aliases.isComponentAlias(selectedIdentifier)){
 			createConfigurationImplementationLocalChange(selectedIdentifier,ret);
 			return ret;
 		}
@@ -152,13 +155,14 @@ public class Processor extends RenameProcessor {
 		NesC12AST ast=getAst(declaringFile, pm);
 		
 		//Get the InterfaceRerefence of the aliased interface in the ast which defines the alias
-		InterfaceReference interfaceReference=ASTUtil4Aliases.getInterfaceNameWithAlias(selectedIdentifier.getName(),ast.getRoot());
+		InterfaceReference interfaceReference=astUtil4Aliases.getInterfaceNameWithAlias(selectedIdentifier.getName(),ast.getRoot());
 
 		//Add Changes for referencing elements. Also the aliases reference the interface which they alias.
-		Identifier aliasDefinition=ASTUTil4Interfaces.getInterfaceAliasIdentifier(interfaceReference);
+		ASTUTil4Interfaces astuTil4Interfaces=new ASTUTil4Interfaces();
+		Identifier aliasDefinition=astuTil4Interfaces.getInterfaceAliasIdentifier(interfaceReference);
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 
-		Identifier aliasedInterfaceNameIdentifier=ASTUTil4Interfaces.getInterfaceNameIdentifier(interfaceReference);
+		Identifier aliasedInterfaceNameIdentifier=astuTil4Interfaces.getInterfaceNameIdentifier(interfaceReference);
 		IDeclaration interfaceDefinition=getInterfaceDefinition(aliasedInterfaceNameIdentifier.getName());
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		paths.add(interfaceDefinition.getPath());
@@ -180,8 +184,9 @@ public class Processor extends RenameProcessor {
 	 */
 	private String getNameOFSourceComponent(Identifier selectedIdentifier){
 		String sourceComponentName=null;
-		if(ASTUtil4Aliases.isInterfaceAliasingInSpecification(selectedIdentifier)){
-			Identifier componentIdentifier=ASTUtil4Components.getIdentifierOFComponentDefinition(selectedIdentifier);
+		if(astUtil4Aliases.isInterfaceAliasingInSpecification(selectedIdentifier)){
+			ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
+			Identifier componentIdentifier=astUtil4Components.getIdentifierOFComponentDefinition(selectedIdentifier);
 			if(componentIdentifier==null){	//Should never happen.
 				return null;
 			}
@@ -208,14 +213,14 @@ public class Processor extends RenameProcessor {
 		
 		
 		
-		
-		ConfigurationDeclarationList implementationRoot=ASTUtil4Components.getConfigurationImplementationNodeIfInside(selectedIdentifier);
+		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
+		ConfigurationDeclarationList implementationRoot=astUtil4Components.getConfigurationImplementationNodeIfInside(selectedIdentifier);
 		if(implementationRoot==null){	//Should never happen since the selected identifier has to be in a NesC "components" statement which only can appear in a Implementation of a NesC Configuration.
 			DebugUtil.addOutput("RootNode is Null");
 			ret.add(new NullChange("There is a implementation problem!"));
 			return;
 		}
-		Collection<Identifier> localIdentifiers=ASTUtil.getAllNodesOfType(implementationRoot, Identifier.class);
+		Collection<Identifier> localIdentifiers=astUtil.getAllNodesOfType(implementationRoot, Identifier.class);
 		Collection<Identifier> identifiers2Change=new LinkedList<Identifier>();
 		String targetName=selectedIdentifier.getName();
 		for(Identifier identifier:localIdentifiers){
@@ -249,7 +254,7 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!ASTUtil4Aliases.isAlias(selectedIdentifier)) {
+		if (!astUtil4Aliases.isAlias(selectedIdentifier)) {
 			ret.addFatalError("No Alias selected.");
 		}
 

@@ -26,6 +26,8 @@ import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 
+	private ASTUtil4Functions astUtil4Functions=new ASTUtil4Functions();
+	
 	private RenameInfo info;
 
 	public Processor(RenameInfo info) {
@@ -48,18 +50,18 @@ public class Processor extends RenameProcessor {
 			
 			//Get the local Definition and if there is one the declaration.
 			Collection<Identifier> identifiers=new LinkedList<Identifier>();
-			Identifier localDefinitionId=ASTUtil4Functions.getLocalFunctionDefinitionIdentifier(selectedIdentifier);
+			Identifier localDefinitionId=astUtil4Functions.getLocalFunctionDefinitionIdentifier(selectedIdentifier);
 			if(localDefinitionId==null){	//If this happens this means, that the selected identifier is not part of a local function. This case should never happen because of earlier checks.
 				return new NullChange();
 			}
 			identifiers.add(localDefinitionId);
-			Identifier localDeclarationId=ASTUtil4Functions.getLocalFunctionDeclarationIdentifier(selectedIdentifier);
+			Identifier localDeclarationId=astUtil4Functions.getLocalFunctionDeclarationIdentifier(selectedIdentifier);
 			if(localDeclarationId!=null){	//If there is a declartion of the function we add its identifier to be changed.
 				identifiers.add(localDeclarationId);
 			}
 			
 			//Get the references to the local function.
-			FunctionDefinition definition=ASTUtil4Functions.identifierToFunctionDefinition(localDefinitionId);
+			FunctionDefinition definition=astUtil4Functions.identifierToFunctionDefinition(localDefinitionId);
 			IASTModelPath targetPath=definition.resolveNode().getPath();
 			Collection<IASTModelPath> targetPaths=new LinkedList<IASTModelPath>();
 			targetPaths.add(targetPath);
@@ -101,7 +103,7 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!(ASTUtil4Functions.isLocalFunction(selectedIdentifier))) {
+		if (!(astUtil4Functions.isLocalFunction(selectedIdentifier))) {
 			ret.addFatalError("No Local Function selected.");
 		}
 		return ret;

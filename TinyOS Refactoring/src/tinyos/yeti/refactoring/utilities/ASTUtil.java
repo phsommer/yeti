@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
-import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
 /**
@@ -20,7 +19,7 @@ public class ASTUtil {
 	 * @param type Class Type which we are expecting.
 	 * @return true if node instanceof type. False if node is null or not instanceof type
 	 */
-	public static boolean isOfType(ASTNode node,Class<? extends ASTNode> type){
+	public boolean isOfType(ASTNode node,Class<? extends ASTNode> type){
 		return type.isInstance(node);
 	}
 	
@@ -30,7 +29,7 @@ public class ASTUtil {
 	 * @param type The type of the ASTNode we are looking for
 	 * @return null if no parent matches, else matching Parent.
 	 */
-	public static ASTNode getParentForName(ASTNode child,Class<? extends ASTNode> type){
+	public ASTNode getParentForName(ASTNode child,Class<? extends ASTNode> type){
 		ASTNode parent=child.getParent();
 		if(parent == null){
 			return null;
@@ -48,7 +47,7 @@ public class ASTUtil {
 	 * @param ancestorSequence The sequence of expected class types.
 	 * @return True if the childsAncestor sequence(or a long enough part of it) matches the given ancestorSequence. 
 	 */
-	public static boolean checkAncestorSequence(ASTNode child,Class<? extends ASTNode>[] ancestorSequence){
+	public boolean checkAncestorSequence(ASTNode child,Class<? extends ASTNode>[] ancestorSequence){
 		ASTNode parent=child;
 		for(Class<? extends ASTNode> c:ancestorSequence){
 			parent=parent.getParent();
@@ -66,8 +65,8 @@ public class ASTUtil {
 	 * @param successorSequence the types of the expected sequence.
 	 * @return the node which is at the end of the sequence with the type of the last element in the successorSequence. Null if there is no such sequence.
 	 */
-	public static ASTNode checkSuccessorSequence(ASTNode root,Class<? extends ASTNode>[] successorSequence){
-		if(!ASTUtil.isOfType(root, successorSequence[0])){
+	public ASTNode checkSuccessorSequence(ASTNode root,Class<? extends ASTNode>[] successorSequence){
+		if(!isOfType(root, successorSequence[0])){
 			return null;
 		}
 		ASTNode parent=root;
@@ -81,7 +80,7 @@ public class ASTUtil {
 				ASTNode child=parent.getChild(childIndex);
 				if(child!=null){
 					DebugUtil.addOutput("\tchild type: "+child.getClass());
-					if(ASTUtil.isOfType(child,type)){
+					if(isOfType(child,type)){
 						//The last type matches a child
 						if(successorIndex==successorSequence.length-1){
 							return parent.getChild(childIndex);
@@ -100,44 +99,12 @@ public class ASTUtil {
 		return null;
 	}
 	
-	
-	/**
-	 * 
-	 * @param root ASTNode which child's are checked for being Identifier with name indentifierName 
-	 * @param identifierName Name of the Identifier you are looking for
-	 * @param stopClass 
-	 * @return A list with all occurrences of Identifiers below the root parameter in the AST
-	 */
-	public static <T> Collection<Identifier> getIncludedIdentifiers(ASTNode root, String identifierName,Class<T> stopClass){
-		LinkedList<Identifier> ret = new LinkedList<Identifier>();
-		getIncludedIdentifiers_sub(root, identifierName, ret,stopClass);
-		return ret;
-	}
-	
-	private static <T> void getIncludedIdentifiers_sub(ASTNode root,String identifierName,Collection<Identifier> result,Class<T> stopClass){
-		ASTNode child=null;
-		Identifier identifier=null;
-		for(int i=0;i<root.getChildrenCount();++i){
-			child=root.getChild(i);
-			if(child!=null){
-				if(child instanceof Identifier){
-					identifier=(Identifier)child;
-					if(identifier.getName().equals(identifierName)){
-						result.add(identifier);
-					}
-				} else if(!child.getClass().equals(stopClass)){
-					getIncludedIdentifiers_sub(child, identifierName, result,stopClass);
-				}
-			}
-		}
-	}
-	
 	/**
 	 * Returns the Children of a node as Collection of ASTNode
 	 * @param node
 	 * @return
 	 */
-	public static Collection<ASTNode> getChilds(ASTNode node){
+	public Collection<ASTNode> getChilds(ASTNode node){
 		Collection<ASTNode> ret = new LinkedList<ASTNode>();
 		for(int i = 0; i < node.getChildrenCount(); i++){
 			ret.add(node.getChild(i));
@@ -149,8 +116,8 @@ public class ASTUtil {
 	 * @param node
 	 * @return the CompoundStatement which encloses the given Node, null if the Node is not in a Function.
 	 */
-	public static CompoundStatement getEnclosingCompound(ASTNode node) {
-		ASTNode parent = ASTUtil.getParentForName(node,CompoundStatement.class);
+	public CompoundStatement getEnclosingCompound(ASTNode node) {
+		ASTNode parent = getParentForName(node,CompoundStatement.class);
 		if (parent == null) {
 			// System.err.println("NOT IN A CompoundStatement!!!");
 			return null;
@@ -167,14 +134,14 @@ public class ASTUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> getAllNodesOfType(ASTNode root,Class<T> type){
+	public <T> Collection<T> getAllNodesOfType(ASTNode root,Class<T> type){
 		//Add identifiers of the current Compound. This Compound must declare The identifier.
 		Collection<T> matchingNodes=new LinkedList<T>();
 		if(type.isInstance(root)){
 			matchingNodes.add((T)root);
 		}
 		Collection<ASTNode> candidates=new LinkedList<ASTNode>();
-		candidates.addAll(ASTUtil.getChilds(root));
+		candidates.addAll(getChilds(root));
 		Collection<ASTNode> newCandidates=null;
 		while(candidates.size()>0){
 			newCandidates=new LinkedList<ASTNode>();
@@ -183,7 +150,7 @@ public class ASTUtil {
 					if(type.isInstance(candidate)){	
 						matchingNodes.add((T)candidate);
 					}
-					newCandidates.addAll(ASTUtil.getChilds(candidate));
+					newCandidates.addAll(getChilds(candidate));
 				}
 				candidates=newCandidates;
 			}
@@ -199,11 +166,11 @@ public class ASTUtil {
 	 * @return The matching childs, empty list if no matches.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> Collection<T> getChildsOfType(ASTNode parent,Class<T> type){
+	public <T extends ASTNode> Collection<T> getChildsOfType(ASTNode parent,Class<T> type){
 		Collection<T> results=new LinkedList<T>();
-		Collection<ASTNode> childs=ASTUtil.getChilds(parent);
+		Collection<ASTNode> childs=getChilds(parent);
 		for(ASTNode child:childs){
-			if(ASTUtil.isOfType(child,type)){
+			if(isOfType(child,type)){
 				results.add((T)child);
 			}
 		}
@@ -217,7 +184,7 @@ public class ASTUtil {
 	 * @param expectedName
 	 * @return
 	 */
-	public static boolean checkFieldName(AbstractFixedASTNode parent,ASTNode childToCheck,String expectedName){
+	public boolean checkFieldName(AbstractFixedASTNode parent,ASTNode childToCheck,String expectedName){
 		if(expectedName==null||parent==null){
 			return false;
 		}
@@ -230,7 +197,7 @@ public class ASTUtil {
 	 * @param node
 	 * @return
 	 */
-	public static TranslationUnit getAstRoot(ASTNode node){
+	public TranslationUnit getAstRoot(ASTNode node){
 		ASTNode parent=node.getParent();
 		ASTNode child=node;
 		while(parent!=null){
@@ -249,7 +216,7 @@ public class ASTUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> T getFirstChildOfType(ASTNode parent,Class<T> type){
+	public <T extends ASTNode> T getFirstChildOfType(ASTNode parent,Class<T> type){
 		Collection<ASTNode> childs=getChilds(parent);
 		for(ASTNode child:childs){
 			if(isOfType(child,type)){

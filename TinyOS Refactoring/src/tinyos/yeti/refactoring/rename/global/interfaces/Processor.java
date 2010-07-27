@@ -127,7 +127,8 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!ASTUTil4Interfaces.isInterface(selectedIdentifier)) {
+		ASTUTil4Interfaces astUTil4Interfaces=new ASTUTil4Interfaces();
+		if (!astUTil4Interfaces.isInterface(selectedIdentifier)) {
 			ret.addFatalError("No Interface selected.");
 		}
 

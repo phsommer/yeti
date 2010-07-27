@@ -8,7 +8,8 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
-		return ASTUtil4Aliases.isAlias(selectedIdentifier);
+		ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases();
+		return astUtil4Aliases.isAlias(selectedIdentifier);
 	}
 	
 

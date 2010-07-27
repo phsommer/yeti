@@ -14,13 +14,27 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Module;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
 
 public class ASTUtil4Aliases {
+	
+	private ASTUtil astUtil;
+	private ASTUtil4Components astUtil4Components;
+	
+	public ASTUtil4Aliases(){
+		astUtil=new ASTUtil();
+		astUtil4Components=new ASTUtil4Components(astUtil);
+	}
+	
+	public ASTUtil4Aliases(ASTUtil astUtil) {
+		super();
+		this.astUtil = astUtil;
+		astUtil4Components=new ASTUtil4Components(astUtil);
+	}
 
 	/**
 	 * Checks if the given identifier is part of an AST node associated to an NesC alias like a component alias or a interface alias, which are introduces with the "as" keyword.
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isAlias(Identifier identifier){
+	public boolean isAlias(Identifier identifier){
 		return isInterfaceAliasingInSpecification(identifier)
 			||isComponentAlias(identifier);
 	}
@@ -30,12 +44,12 @@ public class ASTUtil4Aliases {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isInterfaceAliasingInSpecification(Identifier identifier){
+	public boolean isInterfaceAliasingInSpecification(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent, InterfaceReference.class)){
+		if(!astUtil.isOfType(parent, InterfaceReference.class)){
 			return false;
 		}
-		return ASTUtil.checkFieldName((InterfaceReference)parent, identifier, InterfaceReference.RENAME);
+		return astUtil.checkFieldName((InterfaceReference)parent, identifier, InterfaceReference.RENAME);
 	}
 	
 	/**
@@ -43,12 +57,12 @@ public class ASTUtil4Aliases {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentAliasingInComponentsStatement(Identifier identifier){
+	public boolean isComponentAliasingInComponentsStatement(Identifier identifier){
 		ASTNode parent=identifier.getParent();
-		if(!ASTUtil.isOfType(parent, RefComponent.class)){
+		if(!astUtil.isOfType(parent, RefComponent.class)){
 			return false;
 		}
-		return ASTUtil.checkFieldName((RefComponent)parent, identifier, RefComponent.RENAME);
+		return astUtil.checkFieldName((RefComponent)parent, identifier, RefComponent.RENAME);
 	}
 	
 	/**
@@ -56,8 +70,8 @@ public class ASTUtil4Aliases {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentAliasingInComponentWiring(Identifier identifier){
-		if(!ASTUtil4Components.isComponentWiringComponentPart(identifier)){
+	public boolean isComponentAliasingInComponentWiring(Identifier identifier){
+		if(!astUtil4Components.isComponentWiringComponentPart(identifier)){
 			return false;
 		}
 		
@@ -69,17 +83,17 @@ public class ASTUtil4Aliases {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isComponentAlias(Identifier identifier){
+	public boolean isComponentAlias(Identifier identifier){
 		//Check if the given identifier even is in an implementation.
-		ConfigurationDeclarationList implementationNode=ASTUtil4Components.getConfigurationImplementationNodeIfInside(identifier);
+		ConfigurationDeclarationList implementationNode=astUtil4Components.getConfigurationImplementationNodeIfInside(identifier);
 		if(implementationNode==null){
 			return false;
 		}
 		//Check all Component aliases, if there alias name equals the one of the given identifier; 
-		Collection<ComponentList> componentLists=ASTUtil.getChildsOfType(implementationNode, ComponentList.class);
+		Collection<ComponentList> componentLists=astUtil.getChildsOfType(implementationNode, ComponentList.class);
 		Collection<RefComponent> refComponents=new LinkedList<RefComponent>();
 		for(ComponentList cl:componentLists){
-			refComponents.addAll(ASTUtil.getAllNodesOfType(cl, RefComponent.class));
+			refComponents.addAll(astUtil.getAllNodesOfType(cl, RefComponent.class));
 		}
 		String targetName=identifier.getName();
 		for(RefComponent ref:refComponents){
@@ -98,18 +112,18 @@ public class ASTUtil4Aliases {
 	 * @param astNode 
 	 * @return
 	 */
-	public static InterfaceReference getInterfaceNameWithAlias(String alias, ASTNode node) {
+	public InterfaceReference getInterfaceNameWithAlias(String alias, ASTNode node) {
 		AccessList specificationNode=null;
-		if(ASTUtil4Components.isConfiguration(node)){
-			Configuration configuration=ASTUtil4Components.getConfigurationNode(node);
+		if(astUtil4Components.isConfiguration(node)){
+			Configuration configuration=astUtil4Components.getConfigurationNode(node);
 			specificationNode=(AccessList)configuration.getField(Configuration.CONNECTIONS);
-		}else if(ASTUtil4Components.isModule(node)){
-			Module module=(Module)ASTUtil4Components.getModuleNode(node);
+		}else if(astUtil4Components.isModule(node)){
+			Module module=(Module)astUtil4Components.getModuleNode(node);
 			specificationNode=(AccessList)module.getField(Module.CONNECTIONS);
 		}else{
 			return null;
 		}
-		Collection<InterfaceReference> iRefs=ASTUtil.getAllNodesOfType(specificationNode, InterfaceReference.class);
+		Collection<InterfaceReference> iRefs=astUtil.getAllNodesOfType(specificationNode, InterfaceReference.class);
 		for(InterfaceReference ref:iRefs){
 			Identifier renameIdentifier=(Identifier)ref.getField(InterfaceReference.RENAME);
 			if(renameIdentifier!=null&&alias.equals(renameIdentifier.getName())){
@@ -118,25 +132,5 @@ public class ASTUtil4Aliases {
 		}
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

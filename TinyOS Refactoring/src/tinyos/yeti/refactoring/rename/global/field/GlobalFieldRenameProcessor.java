@@ -105,7 +105,9 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!(ASTUtil4Functions.isGlobalFunction(selectedIdentifier)||ASTUtil4Variables.isGlobalVariable(selectedIdentifier))) {
+		ASTUtil4Functions astUtil4Functions=new ASTUtil4Functions();
+		ASTUtil4Variables astUtil4Variables=new ASTUtil4Variables();
+		if (!(astUtil4Functions.isGlobalFunction(selectedIdentifier)||astUtil4Variables.isGlobalVariable(selectedIdentifier))) {
 			ret.addFatalError("No Global Field selected.");
 		}
 		return ret;

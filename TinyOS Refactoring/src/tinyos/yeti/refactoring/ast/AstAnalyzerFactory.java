@@ -12,6 +12,8 @@ import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
 
 public class AstAnalyzerFactory {
+	
+	private ASTUtil astUtil=new ASTUtil();
 
 	public static enum AstType{
 		MODULE,
@@ -29,12 +31,13 @@ public class AstAnalyzerFactory {
 	 * @param node An arbitrary node of the ast of which we want a component ast. 
 	 */
 	public AstType createAnalyzer(ASTNode node){
-		TranslationUnit root=ASTUtil.getAstRoot(node);
+		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
+		TranslationUnit root=astUtil.getAstRoot(node);
 		boolean valid=false;
-		if(ASTUtil4Components.isConfiguration(root)){
+		if(astUtil4Components.isConfiguration(root)){
 			valid=initializeConfigurationComponent(root);
 			createdType=AstType.CONFIGURATION;
-		}else if(ASTUtil4Components.isModule(root)){
+		}else if(astUtil4Components.isModule(root)){
 			valid=initializeModuleComponent(root);
 			createdType=AstType.MODULE;
 		}
@@ -49,7 +52,7 @@ public class AstAnalyzerFactory {
 	 * @return true if initialization was possible, false if it failed.
 	 */
 	private boolean initializeConfigurationComponent(TranslationUnit root){
-		Configuration configuration=ASTUtil.getFirstChildOfType(root, Configuration.class);
+		Configuration configuration=astUtil.getFirstChildOfType(root, Configuration.class);
 		if(configuration==null){
 			return false;
 		}
@@ -69,7 +72,7 @@ public class AstAnalyzerFactory {
 	 * @return true if initialization was possible, false if it failed.
 	 */
 	private boolean initializeModuleComponent(TranslationUnit root){
-		Module module=ASTUtil.getFirstChildOfType(root, Module.class);
+		Module module=astUtil.getFirstChildOfType(root, Module.class);
 		if(module==null){
 			return false;
 		}

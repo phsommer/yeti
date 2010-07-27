@@ -13,6 +13,17 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
 public class ASTUtil4Functions {
 	
+	private ASTUtil astUtil;
+	
+	public ASTUtil4Functions(){
+		astUtil=new ASTUtil();
+	}
+	
+	public ASTUtil4Functions(ASTUtil astUtil) {
+		super();
+		this.astUtil = astUtil;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static final Class<? extends ASTNode>[] functionDeclarationAncestorSequence=new Class[]{
 		DeclaratorName.class,
@@ -57,8 +68,8 @@ public class ASTUtil4Functions {
 	 * @param identifier The identifier which is in question.
 	 * @return true if the given identifier is the name of the function, in a function declaration. False otherwise.
 	 */
-	public static boolean isFunctionDeclaration(Identifier identifier){
-		return ASTUtil.checkAncestorSequence(identifier,functionDeclarationAncestorSequence);
+	public boolean isFunctionDeclaration(Identifier identifier){
+		return astUtil.checkAncestorSequence(identifier,functionDeclarationAncestorSequence);
 	}
 	
 	/**
@@ -66,8 +77,8 @@ public class ASTUtil4Functions {
 	 * @param identifier The identifier which is in question.
 	 * @return true if the given identifier is the name of the function, in a function definition. False otherwise.
 	 */
-	public static boolean isFunctionDefinition(Identifier identifier){
-		return ASTUtil.checkAncestorSequence(identifier,functionDefinitionAncestorSequence);
+	public boolean isFunctionDefinition(Identifier identifier){
+		return astUtil.checkAncestorSequence(identifier,functionDefinitionAncestorSequence);
 	}
 	
 	/**
@@ -75,8 +86,8 @@ public class ASTUtil4Functions {
 	 * @param identifier The identifier which is in question.
 	 * @return true if the given identifier is the name of the function, in a function call. False otherwise.
 	 */
-	public static boolean isFunctionCall(Identifier identifier){
-		return ASTUtil.checkAncestorSequence(identifier,functionCallAncestorSequence);	
+	public boolean isFunctionCall(Identifier identifier){
+		return astUtil.checkAncestorSequence(identifier,functionCallAncestorSequence);	
 	}
 	
 	/**
@@ -84,7 +95,7 @@ public class ASTUtil4Functions {
 	 * @param identifier
 	 * @return
 	 */
-	public static FunctionPart identifyFunctionPart(Identifier identifier){
+	public FunctionPart identifyFunctionPart(Identifier identifier){
 		if(isFunctionDeclaration(identifier)){
 			return FunctionPart.DECLARATION;
 		}else if(isFunctionDefinition(identifier)){
@@ -100,34 +111,17 @@ public class ASTUtil4Functions {
 	 * @param identifier The identifier which is in question.
 	 * @return True if the given identifier is the name of a function. False otherwise and especially if the given identifier is NULL. 
 	 */
-	public static boolean isGlobalFunction(Identifier identifier){
+	public boolean isGlobalFunction(Identifier identifier){
 		if(identifier==null){
 			return false;
 		}
-		if(ASTUtil4Functions.isLocalFunction(identifier)){
+		if(isLocalFunction(identifier)){
 			return false;
 		}
 		
 		return 	identifyFunctionPart(identifier)!=FunctionPart.NO_FUNCTION_PART;
 	}
 	
-	/**
-	 * Pulls the identifier out of a functionDefinition.
-	 * @param definition
-	 * @return	
-	 */
-	public static Identifier getIdentifierOfFunctionDefinition(FunctionDefinition definition){
-		return (Identifier)ASTUtil.checkSuccessorSequence(definition, functionDefinitionIdentifierSuccessorSequence);
-	}
-	
-	/**
-	 * Pulls the identifier out of a declaration, if this declaration declares a function.
-	 * @param definition
-	 * @return	The identifier of the functionDeclaration, null if the given declaration doesnt contain a function declaration.
-	 */
-	public static Identifier getIdentifierOfFunctionDeclaration(Declaration declaration){
-		return (Identifier)ASTUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);
-	}
 	
 	/**
 	 * Checks if the given Identifier is part of a local function definiton.
@@ -137,7 +131,7 @@ public class ASTUtil4Functions {
 	 * @param identifier
 	 * @return True if this identifier is part of a local function inside an implementation scope.
 	 */
-	public static boolean isLocalFunction(Identifier identifier){
+	public boolean isLocalFunction(Identifier identifier){
 		return getLocalFunctionDefinitionIdentifier(identifier)!=null;
 	}
 	
@@ -148,16 +142,17 @@ public class ASTUtil4Functions {
 	 * @param identifier
 	 * @return Null if the given identifier is not part of a local function.
 	 */
-	public static Identifier getLocalFunctionDefinitionIdentifier(Identifier identifier){
+	public Identifier getLocalFunctionDefinitionIdentifier(Identifier identifier){
+		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil4Components.getModuleImplementationNodeIfInside(identifier);
+		ASTNode root=astUtil4Components.getModuleImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;
 		}
 		//Try to find the functionDefinition with the name of the identifier.
-		for(FunctionDefinition definition:ASTUtil.getChildsOfType(root, FunctionDefinition.class)){
+		for(FunctionDefinition definition:astUtil.getChildsOfType(root, FunctionDefinition.class)){
 			Identifier id=getIdentifierOfFunctionDefinition(definition);
 			if(id!=null&&targetName.equals(id.getName())){
 				return id;
@@ -173,16 +168,17 @@ public class ASTUtil4Functions {
 	 * @param identifier
 	 * @return Null if the given identifier is not part of a local function.
 	 */
-	public static Identifier getLocalFunctionDeclarationIdentifier(Identifier identifier){
+	public Identifier getLocalFunctionDeclarationIdentifier(Identifier identifier){
+		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=ASTUtil4Components.getModuleImplementationNodeIfInside(identifier);
+		ASTNode root=astUtil4Components.getModuleImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;
 		}
 		//Try to find the functionDeclaration with the name of the identifier.
-		for(Declaration declaration:ASTUtil.getChildsOfType(root, Declaration.class)){
+		for(Declaration declaration:astUtil.getChildsOfType(root, Declaration.class)){
 			Identifier id=getIdentifierOfFunctionDeclaration(declaration);
 			if(id!=null&&targetName.equals(id.getName())){
 				return id;
@@ -192,12 +188,31 @@ public class ASTUtil4Functions {
 	}
 	
 	/**
+	 * Pulls the identifier out of a functionDefinition.
+	 * @param definition
+	 * @return	
+	 */
+	public Identifier getIdentifierOfFunctionDefinition(FunctionDefinition definition){
+		return (Identifier)astUtil.checkSuccessorSequence(definition, functionDefinitionIdentifierSuccessorSequence);
+	}
+	
+	/**
+	 * Pulls the identifier out of a declaration, if this declaration declares a function.
+	 * @param definition
+	 * @return	The identifier of the functionDeclaration, null if the given declaration doesnt contain a function declaration.
+	 */
+	public Identifier getIdentifierOfFunctionDeclaration(Declaration declaration){
+		return (Identifier)astUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);
+	}
+	
+	
+	/**
 	 * Returns the FunctionDefinition of which the given identifier is part.
 	 * @param id
 	 * @return The ancestor FunctionDefinition. Null if this id is not part of a FunctionDefinition.
 	 */
-	public static FunctionDefinition identifierToFunctionDefinition(Identifier id){
-		if(!ASTUtil.checkAncestorSequence(id, functionDefinitionAncestorSequence)){
+	public FunctionDefinition identifierToFunctionDefinition(Identifier id){
+		if(!astUtil.checkAncestorSequence(id, functionDefinitionAncestorSequence)){
 			return null;
 		}
 		return (FunctionDefinition)id.getParent().getParent().getParent();
