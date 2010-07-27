@@ -8,7 +8,8 @@ public class GlobalFunctionAvailabilityTester extends RenameAvailabilityTester{
 
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
-		return ASTUtil4Functions.isGlobalFunction(selectedIdentifier);
+		ASTUtil4Functions astUtil4Functions=new ASTUtil4Functions();
+		return astUtil4Functions.isGlobalFunction(selectedIdentifier);
 	}
 	
 }

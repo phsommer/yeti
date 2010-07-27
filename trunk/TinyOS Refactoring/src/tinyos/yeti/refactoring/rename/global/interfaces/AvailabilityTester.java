@@ -8,7 +8,8 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
-		return ASTUTil4Interfaces.isInterface(selectedIdentifier);
+		ASTUTil4Interfaces astUTil4Interfaces=new ASTUTil4Interfaces();
+		return astUTil4Interfaces.isInterface(selectedIdentifier);
 	}
 	
 

@@ -8,7 +8,8 @@ public class GlobalVariableAvailabilityTester extends RenameAvailabilityTester{
 
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
-		return ASTUtil4Variables.isGlobalVariable(selectedIdentifier);
+		ASTUtil4Variables astUtil4Variables=new ASTUtil4Variables();
+		return astUtil4Variables.isGlobalVariable(selectedIdentifier);
 	}
 	
 

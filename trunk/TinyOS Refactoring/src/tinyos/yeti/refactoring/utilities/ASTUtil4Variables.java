@@ -22,6 +22,17 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
 public class ASTUtil4Variables {
+	
+	private ASTUtil astUtil;
+	
+	public ASTUtil4Variables(){
+		astUtil=new ASTUtil();
+	}
+	
+	public ASTUtil4Variables(ASTUtil astUtil) {
+		super();
+		this.astUtil = astUtil;
+	}
 
 	@SuppressWarnings("unchecked")
 	private static final Class<? extends ASTNode>[] variableDeclarationAncestorSequence=new Class[]{
@@ -44,8 +55,8 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isVariableDeclaration(Identifier identifier){
-		return ASTUtil.checkAncestorSequence(identifier, variableDeclarationAncestorSequence);
+	public boolean isVariableDeclaration(Identifier identifier){
+		return astUtil.checkAncestorSequence(identifier, variableDeclarationAncestorSequence);
 	}
 	
 	/**
@@ -53,7 +64,7 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isVariableUsage(Identifier identifier){
+	public boolean isVariableUsage(Identifier identifier){
 		ASTNode parent=identifier.getParent();
 		if(!(parent instanceof IdentifierExpression)){
 			return false;
@@ -72,7 +83,7 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isGlobalVariable(Identifier identifier){
+	public boolean isGlobalVariable(Identifier identifier){
 		if(isLocalVariable(identifier)||isImplementationLocalVariable(identifier)){
 			return false;
 		}
@@ -84,7 +95,7 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isLocalVariable(Identifier variable){
+	public boolean isLocalVariable(Identifier variable){
 		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
 		return (declaringCompound!=null);
 	}
@@ -94,7 +105,7 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public static boolean isImplementationLocalVariable(Identifier identifier){
+	public boolean isImplementationLocalVariable(Identifier identifier){
 		return null!=getImplementationLocalVariableDeclarationIdentifier(identifier);
 	}
 	
@@ -103,15 +114,16 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return the identifier, null if the given identifier is not part of a implementation local variable.
 	 */
-	public static Identifier getImplementationLocalVariableDeclarationIdentifier(Identifier identifier){
-		NesCExternalDefinitionList implementationNode=ASTUtil4Components.getModuleImplementationNodeIfInside(identifier);
+	public Identifier getImplementationLocalVariableDeclarationIdentifier(Identifier identifier){
+		ASTUtil4Components astUtil4Components=new ASTUtil4Components();
+		NesCExternalDefinitionList implementationNode=astUtil4Components.getModuleImplementationNodeIfInside(identifier);
 		if(implementationNode==null){	//the identifier is outside of a implementation scope
 			return null;
 		}
 		String identifierName=identifier.getName();
-		Collection<Declaration> declarations=ASTUtil.getChildsOfType(implementationNode, Declaration.class);
+		Collection<Declaration> declarations=astUtil.getChildsOfType(implementationNode, Declaration.class);
 		for(Declaration declaration:declarations){
-			Identifier id=(Identifier)ASTUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);
+			Identifier id=(Identifier)astUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);
 			if(id!=null&&identifierName.equals(id.getName())){
 				return id;
 			}
@@ -131,7 +143,7 @@ public class ASTUtil4Variables {
 	 */
 	public Collection<Identifier> getAllIdentifiersWithoutOwnDeclaration(ASTNode compound,String identifierName){
 		//Add identifiers of the current Compound. This Compound must declare The identifier.
-		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName, CompoundStatement.class);
+		Collection<Identifier> identifiers=getIncludedIdentifiers(compound, identifierName, CompoundStatement.class);
 		Collection<CompoundStatement> candidates=getEnclosedCompounds(compound);
 		Collection<CompoundStatement> newCandidates=null;
 		Collection<Identifier> currentIdentifiers=null;
@@ -166,7 +178,7 @@ public class ASTUtil4Variables {
 	}
 	
 	private void getEnclosedCompounds_sub(ASTNode parent,Collection<CompoundStatement> result){
-		for(ASTNode child: ASTUtil.getChilds(parent)){
+		for(ASTNode child: astUtil.getChilds(parent)){
 			if(child!=null){
 				if(child instanceof CompoundStatement){
 					result.add((CompoundStatement)child);
@@ -185,7 +197,7 @@ public class ASTUtil4Variables {
 	 * @return The identifiers in the given Compound, which are not in a sub-Compound. EmptyList, if there are no identifiers, null if there are identifiers with an own declarator.
 	 */
 	private Collection<Identifier> getIdentifiersWithoutOwnDeclaration(CompoundStatement compound,String identifierName){
-		Collection<Identifier> identifiers=ASTUtil.getIncludedIdentifiers(compound, identifierName,CompoundStatement.class);
+		Collection<Identifier> identifiers=getIncludedIdentifiers(compound, identifierName,CompoundStatement.class);
 		if(identifiers.size()==0){
 			return Collections.emptyList();
 		}
@@ -198,14 +210,46 @@ public class ASTUtil4Variables {
 	
 	
 	/**
+	 * 
+	 * @param root ASTNode which child's are checked for being Identifier with name indentifierName 
+	 * @param identifierName Name of the Identifier you are looking for
+	 * @param stopClass 
+	 * @return A list with all occurrences of Identifiers below the root parameter in the AST
+	 */
+	public <T> Collection<Identifier> getIncludedIdentifiers(ASTNode root, String identifierName,Class<T> stopClass){
+		LinkedList<Identifier> ret = new LinkedList<Identifier>();
+		getIncludedIdentifiers_sub(root, identifierName, ret,stopClass);
+		return ret;
+	}
+	
+	private <T> void getIncludedIdentifiers_sub(ASTNode root,String identifierName,Collection<Identifier> result,Class<T> stopClass){
+		ASTNode child=null;
+		Identifier identifier=null;
+		for(int i=0;i<root.getChildrenCount();++i){
+			child=root.getChild(i);
+			if(child!=null){
+				if(child instanceof Identifier){
+					identifier=(Identifier)child;
+					if(identifier.getName().equals(identifierName)){
+						result.add(identifier);
+					}
+				} else if(!child.getClass().equals(stopClass)){
+					getIncludedIdentifiers_sub(child, identifierName, result,stopClass);
+				}
+			}
+		}
+	}
+	
+
+	/**
 	 * This Method can be used to Check, if these identifiers are part of a local variable.
 	 * @param identifiers
 	 * @return Returns a DeclaratorName, if some of the given Identifiers has such a parent. Null if there is no such parent.
 	 */
-	public static DeclaratorName getDeclaratorName(Collection<Identifier> identifiers){
+	public DeclaratorName getDeclaratorName(Collection<Identifier> identifiers){
 		ASTNode candidate=null;
 		for(Identifier identifier:identifiers){
-			candidate=ASTUtil.getParentForName(identifier, DeclaratorName.class);
+			candidate=astUtil.getParentForName(identifier, DeclaratorName.class);
 			if(candidate!=null){
 				return (DeclaratorName)candidate;
 			}
@@ -218,7 +262,7 @@ public class ASTUtil4Variables {
 	 * @param identifier
 	 * @return
 	 */
-	public static CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
+	public CompoundStatement findDeclaringCompoundStatement(Identifier identifier){
 		String name=identifier.getName();
 		ASTNode child=identifier;
 		CompoundStatement parent=null;
@@ -229,13 +273,13 @@ public class ASTUtil4Variables {
 		while(!foundDeclaration){
 
 			//Find Enclosing CompoundStatement
-			parent = ASTUtil.getEnclosingCompound(child);
+			parent = astUtil.getEnclosingCompound(child);
 			if(parent==null)return null;
 			if(parent.getParent() instanceof FunctionDefinition){
 				extendedToFunctionBorder=true;
 			}
 			//Get Identifiers in Compound with same Name
-			identifiers=ASTUtil.getIncludedIdentifiers(parent, name,CompoundStatement.class);
+			identifiers=getIncludedIdentifiers(parent, name,CompoundStatement.class);
 
 			//Check if the declaration is in the actual compound statement. If so, this is a local variable
 			if(getDeclaratorName(identifiers)!=null){
@@ -257,12 +301,13 @@ public class ASTUtil4Variables {
 	 * @param id
 	 * @return The ancestor InitDeclarator. Null if this id is not part of a InitDeclarator.
 	 */
-	public static InitDeclarator identifierToInitDeclarator(Identifier id){
-		if(!ASTUtil.checkAncestorSequence(id,variableDeclarationAncestorSequence)){
+	public InitDeclarator identifierToInitDeclarator(Identifier id){
+		if(!astUtil.checkAncestorSequence(id,variableDeclarationAncestorSequence)){
 			return null;
 		}
 		return (InitDeclarator)id.getParent().getParent();
 		
 	}
+	
 	
 }
