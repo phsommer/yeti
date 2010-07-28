@@ -7,6 +7,7 @@ public class Info extends RefactoringInfo{
 
 	private String functionName;
 	
+	
 	public Info(NesCEditor editor) {
 		super(editor, "Extract Infos", "Extract Function Wizzard");
 	}
@@ -17,6 +18,14 @@ public class Info extends RefactoringInfo{
 
 	public String getFunctionName() {
 		return functionName;
+	}
+	
+	public int getSelectionBegin(){
+		return getSelection().getOffset();
+	}
+	
+	public int getSelectionEnd(){
+		return getSelectionBegin()+getSelection().getLength();
 	}
 
 }
