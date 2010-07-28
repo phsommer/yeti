@@ -122,7 +122,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	}
 	
 	/**
-	 * Returns all component Identifiers in the configuration implementation with the given alias.
+	 * Returns all component Identifiers in the configuration implementation which reference or define the given alias.
 	 * If the given name is not an alias, an empty list is returned.
 	 * @param name
 	 * @return

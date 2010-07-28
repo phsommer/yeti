@@ -6,7 +6,7 @@ import tinyos.yeti.refactoring.utilities.ASTUtil;
 public class AstAnalyzer {
 	protected ASTUtil astUtil=new ASTUtil();
 	
-	protected ASTUtil getASTUtil(){
+	public ASTUtil getASTUtil(){
 		return astUtil;
 	}
 }
