@@ -107,7 +107,9 @@ public class ASTUtil {
 	public Collection<ASTNode> getChilds(ASTNode node){
 		Collection<ASTNode> ret = new LinkedList<ASTNode>();
 		for(int i = 0; i < node.getChildrenCount(); i++){
-			ret.add(node.getChild(i));
+			if(node.getChild(i) != null){
+				ret.add(node.getChild(i));
+			}
 		}
 		return ret;
 	}
