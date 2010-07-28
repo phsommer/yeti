@@ -18,6 +18,8 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 
 	private ConfigurationDeclarationList implementation;
 	private Collection<RefComponent> components;
+	private Collection<Identifier> referencedComponents;
+	private Collection<String> namesOfReferencedComponents;
 	private Collection<Identifier> componentAliases;
 	private Collection<Endpoint> wiringEndpoints;
 	private Collection<Identifier> wiringComponentPartIdentifiers;
@@ -42,6 +44,31 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 			}
 		}
 		return components;
+	}
+	
+	/**
+	 * Gathers all identifiers which are found in the configuration implementation in a NesC "components" statement, which reference some NesC Component.
+	 * @return
+	 */
+	public Collection<Identifier> getIdentifiersOfReferencedComponents(){
+		if(referencedComponents==null){
+			referencedComponents= collectFieldsWithName(getComponentDeclarations(), RefComponent.NAME);
+		}
+		return referencedComponents;
+	}
+	
+	/**
+	 * Gathers all identifier names which are found in the configuration implementation in a NesC "components" statement, which reference some NesC Component.
+	 * @return
+	 */
+	public Collection<String> getNamesOfReferencedComponents(){
+		if(namesOfReferencedComponents==null){
+			namesOfReferencedComponents=new LinkedList<String>(); 
+			for(Identifier identifier:getIdentifiersOfReferencedComponents()){
+				namesOfReferencedComponents.add(identifier.getName());
+			}
+		}
+		return namesOfReferencedComponents;
 	}
 	
 	/**
