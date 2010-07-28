@@ -28,7 +28,9 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
+import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory.AstType;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
@@ -46,6 +48,8 @@ public class Processor extends RenameProcessor {
 
 	private ASTUtil astUtil=new ASTUtil();
 	private ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases(astUtil);
+	
+	private AstAnalyzerFactory astAnalyzerFactory;
 	
 	public Processor(RenameInfo info) {
 		super(info);
@@ -116,6 +120,9 @@ public class Processor extends RenameProcessor {
 		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		
+		//Decide the AstType which the selection is in and instantiate the needes analyzer.
+		astAnalyzerFactory=new AstAnalyzerFactory(selectedIdentifier);
+		
 		//If it is a component alias, this is a pure local change.
 		if(astUtil4Aliases.isComponentAlias(selectedIdentifier)){
 			createConfigurationImplementationLocalChange(selectedIdentifier,ret);
@@ -142,41 +149,71 @@ public class Processor extends RenameProcessor {
 	 * @throws IOException 
 	 */
 	private void createInterfaceAliasChange(Identifier selectedIdentifier, CompositeChange ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
+		String aliasName=selectedIdentifier.getName();
+		
 		//Get the name of the component which defines the alias
 		String sourceComponentName=getNameOFSourceComponent(selectedIdentifier);
-		if(sourceComponentName==null){
-			ret.add(new NullChange("Implementation problem"));
-			return;
-		}
+		DebugUtil.addOutput("sourceComponentName: "+sourceComponentName);
 		
-		//Get the ast of the defining component
+		//Get the ComponentAstAnalyzer of the defining component
 		IDeclaration sourceDefinition=getComponentDefinition(sourceComponentName);
 		IFile declaringFile=getIFile4ParseFile(sourceDefinition.getParseFile());
 		NesC12AST ast=getAst(declaringFile, pm);
+		AstAnalyzerFactory factory4DefiningAst=new AstAnalyzerFactory(ast.getRoot());
+		if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
+			ret.add(new NullChange("Implementation problem"));	//The alias definition has to be in a NesC module/configuration specification.
+		}
+		ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
+
+		//Get the Identifier in the defining component which stands for the alias in the alias definition.
+		componentAnalyzer.getAliasIdentifier4InterfaceAliasName(selectedIdentifier.getName());
+		Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(aliasName);
+		DebugUtil.addOutput("aliasDefinition: "+aliasDefinition.getName());
 		
-		//Get the InterfaceRerefence of the aliased interface in the ast which defines the alias
-		InterfaceReference interfaceReference=astUtil4Aliases.getInterfaceNameWithAlias(selectedIdentifier.getName(),ast.getRoot());
-
-		//Add Changes for referencing elements. Also the aliases reference the interface which they alias.
-		ASTUTil4Interfaces astuTil4Interfaces=new ASTUTil4Interfaces();
-		Identifier aliasDefinition=astuTil4Interfaces.getInterfaceAliasIdentifier(interfaceReference);
-		List<Identifier> identifiers=new LinkedList<Identifier>();
-
-		Identifier aliasedInterfaceNameIdentifier=astuTil4Interfaces.getInterfaceNameIdentifier(interfaceReference);
-		IDeclaration interfaceDefinition=getInterfaceDefinition(aliasedInterfaceNameIdentifier.getName());
+		//Get the interface definition of the interface which is aliased.
+		//Get all references to it and filter out the one which are aliases.
+		//For those add changes.
+		String aliasedInterfaceName=componentAnalyzer.getInterfaceName4InterfaceAliasName(aliasName);
+		IDeclaration interfaceDefinition=getInterfaceDefinition(aliasedInterfaceName);
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		paths.add(interfaceDefinition.getPath());
+		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IFile file:getAllFiles()){
-			identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-			identifiers=getAliasFreeList(identifiers,selectedIdentifier.getName());
-			if(file.equals(declaringFile)){	//Add change for alias definition
+			if(file.equals(declaringFile)){	//Add change for alias definition this is the only NesC Component which can be a module which can have references to the interface definition which belong to the given alias.
+				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+				identifiers=getAliasFreeList(identifiers,aliasName);
 				identifiers.add(aliasDefinition);
+				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
 			}
-			addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+			else if(isConfigurationReferencingDefiningModule(sourceComponentName,file,pm)){	//All other references have to be in a NesC Configuration
+				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+				identifiers=getAliasFreeList(identifiers,aliasName);
+				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+			}
+			
 		}
 		
 	}
 	
+	/**
+	 * Checks if the given file includes a configuration which references the defining module.
+	 * The reason for this check is, that there can be other modules which rename the same interface with the same alias, the references to this alias would without this check also be changed.
+	 * @param file
+	 * @return
+	 * @throws MissingNatureException 
+	 * @throws IOException 
+	 */
+	private boolean isConfigurationReferencingDefiningModule(String definingModuleName,IFile file,IProgressMonitor pm) throws IOException, MissingNatureException {
+		NesC12AST ast=getAst(file, pm);
+		AstAnalyzerFactory factory4referencingEntity=new AstAnalyzerFactory(ast.getRoot());
+		if(!factory4referencingEntity.hasConfigurationAnalyzerCreated()){	//The defining module is treated separatly.
+			return false;
+		}
+		ConfigurationAstAnalyzer analyzer=factory4referencingEntity.getConfigurationAnalyzer();
+		Collection<String> referencedComponents=analyzer.getNamesOfReferencedComponents();
+		return referencedComponents.contains(definingModuleName);
+	}
+
 	/**
 	 * Tries to find the name of the component, in whichs specification the alias is defined.
 	 * @param selectedIdentifier
@@ -184,13 +221,8 @@ public class Processor extends RenameProcessor {
 	 */
 	private String getNameOFSourceComponent(Identifier selectedIdentifier){
 		String sourceComponentName=null;
-		if(astUtil4Aliases.isInterfaceAliasingInSpecification(selectedIdentifier)){
-			ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
-			Identifier componentIdentifier=astUtil4Components.getIdentifierOFComponentDefinition(selectedIdentifier);
-			if(componentIdentifier==null){	//Should never happen.
-				return null;
-			}
-			sourceComponentName=componentIdentifier.getName();
+		if(astUtil4Aliases.isInterfaceAliasingInSpecification(selectedIdentifier)){	//In this case the selection is in the component which defines the alias.
+			sourceComponentName=astAnalyzerFactory.getComponentAnalyzer().getComponentName();
 		}
 		return sourceComponentName;
 	}
@@ -204,14 +236,10 @@ public class Processor extends RenameProcessor {
 	 * @param ret The CompositeChange where to add the changes.
 	 */
 	private void createConfigurationImplementationLocalChange(Identifier selectedIdentifier, CompositeChange ret) {
-		AstAnalyzerFactory analyzerFactory=new AstAnalyzerFactory();
-		AstType createdType=analyzerFactory.createAnalyzer(selectedIdentifier);
-		if(createdType!=AstType.CONFIGURATION){
+		if(astAnalyzerFactory.hasConfigurationAnalyzerCreated()){
 			throw new IllegalStateException("This method should never be called, if the given identifier is not in a configuration ast!");
 		}
-		ConfigurationAstAnalyzer configurationAnalyzer=analyzerFactory.getConfigurationAnalyzer();
-		Collection<Identifier> identifiers2Change=configurationAnalyzer.getComponentAliasIdentifiersWithName(selectedIdentifier.getName());
-		
+		Collection<Identifier> identifiers2Change=astAnalyzerFactory.getConfigurationAnalyzer().getComponentAliasIdentifiersWithName(selectedIdentifier.getName());
 		
 		NesCEditor editor=info.getEditor();
 		IFile editedFile=(IFile)editor.getResource();

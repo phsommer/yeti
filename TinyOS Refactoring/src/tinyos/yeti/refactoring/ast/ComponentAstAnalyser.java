@@ -1,7 +1,9 @@
 package tinyos.yeti.refactoring.ast;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
@@ -23,12 +25,21 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	private Collection<InterfaceReference> interfaceReferences;
 	private Collection<Identifier> referencedInterfaceIdentifiers;
 	private Collection<Identifier> referencedInterfaceAliasIdentifiers;
+	private Map<Identifier,Identifier> alias2AliasedInterface;
 	
 	public ComponentAstAnalyser(TranslationUnit root,Identifier componentIdentifier, AccessList specification) {
 		super();
 		this.root = root;
 		this.componentIdentifier = componentIdentifier;
 		this.specification = specification;
+	}
+	
+	/**
+	 * Returns the name of this component.
+	 * @return
+	 */
+	public String getComponentName(){
+		return componentIdentifier.getName();
 	}
 	
 	/**
@@ -91,4 +102,82 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 		return childs;
 	}
 	
+	/**
+	 * Returns a map which maps an interface alias identifier to the identifier of the interface it aliases, in the specification of a NesC Component.
+	 * @return
+	 */
+	public Map<Identifier,Identifier> getAlias2AliasedInterface(){
+		if(alias2AliasedInterface==null){
+			alias2AliasedInterface=new HashMap<Identifier, Identifier>();
+			for(InterfaceReference reference:getInterfaceReferences()){
+				Identifier aliasIdentifier=(Identifier)reference.getField(InterfaceReference.RENAME);
+				if(aliasIdentifier!=null){
+					InterfaceType type=(InterfaceType)reference.getField(InterfaceReference.NAME);
+					if(type!=null){
+						Identifier interfaceIdentifier=(Identifier)type.getField(InterfaceType.NAME);
+						if(interfaceIdentifier!=null){
+							alias2AliasedInterface.put(aliasIdentifier, interfaceIdentifier);
+						}
+					}
+				}
+			}
+		}
+		return alias2AliasedInterface;
+	}
+	
+	/**
+	 * Returns the identifier of the interface which is aliased with the given alias, in the specification of a NesC Component.
+	 * Use {@link tinyos.yeti.refactoring.ast.AstAnalyzer#getAliasIdentifier4InterfaceAliasName(String alias) getIdentifierForInterfaceAliasName} to get the alias identifier.
+	 * @param alias
+	 * @return
+	 */
+	public Identifier getInerfaceIdentifier4InterfaceAliasIdentifier(Identifier alias){
+		return getAlias2AliasedInterface().get(alias);
+	}
+	
+	/**
+	 * Returns the Identifier of the interface alias with the given name in the specification of a NesC Component.
+	 * Returns null if there is no alias with the given name.
+	 * @param alias
+	 * @return
+	 */
+	public Identifier getAliasIdentifier4InterfaceAliasName(String alias){
+		for(Identifier identifier:getReferencedInterfaceAliasIdentifiers()){
+			if(alias.equals(identifier.getName())){
+				return identifier;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the identifier of the interface with the given name in the specification of a NesC Component.
+	 * Returns null if there is no alias with the given name.
+	 * @param alias
+	 * @return
+	 */
+	public Identifier getInterfaceIdentifier4InterfaceAliasName(String alias){
+		Identifier aliasIdentifier= getAliasIdentifier4InterfaceAliasName(alias);
+		if(aliasIdentifier!=null){
+			return getInerfaceIdentifier4InterfaceAliasIdentifier(aliasIdentifier);
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the name of the interface with the given name in the specification of a NesC Component.
+	 * Returns null if there is no alias with the given name.
+	 * @param alias
+	 * @return
+	 */
+	public String getInterfaceName4InterfaceAliasName(String alias){
+		Identifier interfaceIdentifier= getInterfaceIdentifier4InterfaceAliasName(alias);
+		if(interfaceIdentifier!=null){
+			return interfaceIdentifier.getName();
+		}
+		return null;
+	}
+	
 }
+
+	

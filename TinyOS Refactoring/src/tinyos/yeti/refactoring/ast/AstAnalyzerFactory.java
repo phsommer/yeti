@@ -27,8 +27,23 @@ public class AstAnalyzerFactory {
 	private ModuleAstAnalyzer moduleAnalyzer;
 	
 	/**
-	 * Creates a component Ast.
-	 * @param node An arbitrary node of the ast of which we want a component ast. 
+	 * Creates a new AstAnalyzerFactory.
+	 * To be of use the createAnalyzer method has first to be called.
+	 */
+	public AstAnalyzerFactory(){}
+	
+	/**
+	 * The same as calling the empty constructor and afterwards createAnalyzer.
+	 * @param node
+	 */
+	public AstAnalyzerFactory(ASTNode node){
+		createAnalyzer(node);
+	}
+	
+	/**
+	 * Tries to create an AstAnalyzer.
+	 * @param node
+	 * @return The AstType for which an specific AstAnalyzer has been created. Returns AstType.INVALID if not an valid ast is given.
 	 */
 	public AstType createAnalyzer(ASTNode node){
 		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
@@ -89,14 +104,6 @@ public class AstAnalyzerFactory {
 	public AstType getCreatedType() {
 		return createdType;
 	}
-	
-	/**
-	 * Checks if the created Type is an AstComponentType.
-	 * @return
-	 */
-	public boolean hasComponentCreated(){
-		return createdType==AstType.MODULE||createdType==AstType.CONFIGURATION;
-	}
 
 	public ConfigurationAstAnalyzer getConfigurationAnalyzer() {
 		if(createdType==AstType.CONFIGURATION){
@@ -122,6 +129,30 @@ public class AstAnalyzerFactory {
 		}else{
 			throw new IllegalStateException("No Module has been created!");
 		}
+	}
+
+	/**
+	 * Checks if this factory created a ConfigurationAstAnalyzer.
+	 * @return
+	 */
+	public boolean hasConfigurationAnalyzerCreated() {
+		return createdType==AstType.CONFIGURATION;
+	}
+	
+	/**
+	 * Checks if this factory created a ModuleAstAnalyzer.
+	 * @return
+	 */
+	public boolean hasModuleAnalyzerCreated() {
+		return createdType==AstType.MODULE;
+	}
+	
+	/**
+	 * Checks if this factory created a ComponentAstAnalyzer.
+	 * @return
+	 */
+	public boolean hasComponentAnalyzerCreated(){
+		return createdType==AstType.MODULE||createdType==AstType.CONFIGURATION;
 	}
 	
 	
