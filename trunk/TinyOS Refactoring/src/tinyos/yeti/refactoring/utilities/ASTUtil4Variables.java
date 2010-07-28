@@ -4,12 +4,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterTypeList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArithmeticExpression;
@@ -97,7 +100,44 @@ public class ASTUtil4Variables {
 	 */
 	public boolean isLocalVariable(Identifier variable){
 		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
-		return (declaringCompound!=null);
+		if(declaringCompound!=null){
+			return true;
+		}
+		
+		ParameterTypeList ptl = null;
+		try {
+			FunctionDefinition fd = (FunctionDefinition) astUtil
+					.getParentForName(variable, FunctionDefinition.class);
+			if (fd == null) {
+				return false;
+			}
+
+			FunctionDeclarator fdec = (FunctionDeclarator) fd.getDeclarator();
+			if (fdec == null) {
+				return false;
+			}
+
+			ptl = (ParameterTypeList) fdec.getParameters();
+			if (ptl == null) {
+				return false;
+			}
+		} catch (ClassCastException e) {
+			return false;
+		}
+		
+		Queue<ASTNode> q = new LinkedList<ASTNode>();
+		q.add(ptl);
+		while(!q.isEmpty()){
+			ASTNode node = q.poll();
+			if(node instanceof Identifier){
+				if(((Identifier) node).getName().equals(variable.getName())){
+					return true;
+				} 
+			}else {
+				q.addAll(astUtil.getChilds(node));
+			}
+		}
+		return false;
 	}
 	
 	/**
