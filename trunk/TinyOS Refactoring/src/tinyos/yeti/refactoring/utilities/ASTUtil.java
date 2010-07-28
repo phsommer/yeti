@@ -2,6 +2,7 @@ package tinyos.yeti.refactoring.utilities;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
@@ -101,11 +102,10 @@ public class ASTUtil {
 	
 	/**
 	 * Returns the Children of a node as Collection of ASTNode
-	 * @param node
-	 * @return
+	 * The left element is the first in the list.
 	 */
-	public Collection<ASTNode> getChilds(ASTNode node){
-		Collection<ASTNode> ret = new LinkedList<ASTNode>();
+	public List<ASTNode> getChilds(ASTNode node){
+		List<ASTNode> ret = new LinkedList<ASTNode>();
 		for(int i = 0; i < node.getChildrenCount(); i++){
 			if(node.getChild(i) != null){
 				ret.add(node.getChild(i));
