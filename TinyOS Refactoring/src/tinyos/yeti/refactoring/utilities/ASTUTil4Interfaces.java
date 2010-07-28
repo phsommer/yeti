@@ -59,6 +59,10 @@ public class ASTUTil4Interfaces {
 	 * @return
 	 */
 	public boolean isInterfaceImplementation(Identifier identifier){
+		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(identifier);
+		if(selectionIdentifier.isInterfaceAliasInNescFunction()){
+			return false;
+		}
 		ASTNode parent=identifier.getParent();
 		if(!astUtil.isOfType(parent, NesCNameDeclarator.class)){
 			return false;

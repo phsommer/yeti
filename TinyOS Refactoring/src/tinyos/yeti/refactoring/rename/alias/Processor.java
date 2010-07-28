@@ -26,30 +26,20 @@ import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
-import tinyos.yeti.refactoring.ast.AstAnalyzerFactory.AstType;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Aliases;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
+import tinyos.yeti.refactoring.utilities.AliasSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
-
-	private IDeclaration componentDefinition;
 	
 	private RenameInfo info;
-
-	private ASTUtil astUtil=new ASTUtil();
-	private ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases(astUtil);
 	
-	private AstAnalyzerFactory astAnalyzerFactory;
+	private AstAnalyzerFactory factory4Selection;
+	private AliasSelectionIdentifier selectionIdentifier;
 	
 	public Processor(RenameInfo info) {
 		super(info);
@@ -118,20 +108,16 @@ public class Processor extends RenameProcessor {
 	throws CoreException,OperationCanceledException {
 		DebugUtil.clearOutput();
 		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
-		Identifier selectedIdentifier=getSelectedIdentifier();
-		
-		//Decide the AstType which the selection is in and instantiate the needes analyzer.
-		astAnalyzerFactory=new AstAnalyzerFactory(selectedIdentifier);
 		
 		//If it is a component alias, this is a pure local change.
-		if(astUtil4Aliases.isComponentAlias(selectedIdentifier)){
-			createConfigurationImplementationLocalChange(selectedIdentifier,ret);
+		if(selectionIdentifier.isComponentAlias()){
+			createConfigurationImplementationLocalChange(ret);
 			return ret;
 		}
 		
 		//Else, if it is a interface alias, it is a global matter
 		try {
-			createInterfaceAliasChange(selectedIdentifier,ret,pm);
+			createInterfaceAliasChange(ret,pm);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -148,11 +134,12 @@ public class Processor extends RenameProcessor {
 	 * @throws CoreException 
 	 * @throws IOException 
 	 */
-	private void createInterfaceAliasChange(Identifier selectedIdentifier, CompositeChange ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
+	private void createInterfaceAliasChange(CompositeChange ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
+		Identifier selectedIdentifier=selectionIdentifier.getSelection();
 		String aliasName=selectedIdentifier.getName();
 		
 		//Get the name of the component which defines the alias
-		String sourceComponentName=getNameOFSourceComponent(selectedIdentifier);
+		String sourceComponentName=getNameOFSourceComponent();
 		DebugUtil.addOutput("sourceComponentName: "+sourceComponentName);
 		
 		//Get the ComponentAstAnalyzer of the defining component
@@ -219,10 +206,10 @@ public class Processor extends RenameProcessor {
 	 * @param selectedIdentifier
 	 * @return
 	 */
-	private String getNameOFSourceComponent(Identifier selectedIdentifier){
+	private String getNameOFSourceComponent(){
 		String sourceComponentName=null;
-		if(astUtil4Aliases.isInterfaceAliasingInSpecification(selectedIdentifier)){	//In this case the selection is in the component which defines the alias.
-			sourceComponentName=astAnalyzerFactory.getComponentAnalyzer().getComponentName();
+		if(selectionIdentifier.isInterfaceAliasingInSpecification()){	//In this case the selection is in the component which defines the alias.
+			sourceComponentName=factory4Selection.getComponentAnalyzer().getComponentName();
 		}
 		return sourceComponentName;
 	}
@@ -232,14 +219,13 @@ public class Processor extends RenameProcessor {
 	/**
 	 * If the selected alias identifier is a rename in a NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.
 	 * This Method will create these local changes.
-	 * @param selectedIdentifier
 	 * @param ret The CompositeChange where to add the changes.
 	 */
-	private void createConfigurationImplementationLocalChange(Identifier selectedIdentifier, CompositeChange ret) {
-		if(astAnalyzerFactory.hasConfigurationAnalyzerCreated()){
+	private void createConfigurationImplementationLocalChange(CompositeChange ret) {
+		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
 			throw new IllegalStateException("This method should never be called, if the given identifier is not in a configuration ast!");
 		}
-		Collection<Identifier> identifiers2Change=astAnalyzerFactory.getConfigurationAnalyzer().getComponentAliasIdentifiersWithName(selectedIdentifier.getName());
+		Collection<Identifier> identifiers2Change=factory4Selection.getConfigurationAnalyzer().getComponentAliasIdentifiersWithName(selectionIdentifier.getSelection().getName());
 		
 		NesCEditor editor=info.getEditor();
 		IFile editedFile=(IFile)editor.getResource();
@@ -267,24 +253,10 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		if (!astUtil4Aliases.isAlias(selectedIdentifier)) {
+		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
+		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
+		if (!selectionIdentifier.isAlias(selectedIdentifier)) {
 			ret.addFatalError("No Alias selected.");
-		}
-
-		//TODO
-		if(true){
-			return ret;
-		}
-		try {
-			componentDefinition = getComponentDefinition(selectedIdentifier.getName());
-			if(componentDefinition==null){
-				ret.addFatalError("Did not find an component Definition, for selection: "+selectedIdentifier.getName()+"!");
-			}
-			else if(!componentDefinition.getParseFile().isProjectFile()){
-				ret.addFatalError("Component definition is out of project range!");
-			}
-		} catch (MissingNatureException e) {
-			ret.addFatalError("Project is not ready for refactoring!");
 		}
 		return ret;
 	}

@@ -98,8 +98,8 @@ public class ASTUtil4Components {
 		if(!astUtil.checkFieldName((Endpoint)parent, pI, Endpoint.COMPONENT)){
 			return false;
 		}
-		ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases(astUtil);
-		return !astUtil4Aliases.isComponentAlias(identifier);
+		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(identifier);
+		return !selectionIdentifier.isComponentAlias();
 	}
 
 	/**
