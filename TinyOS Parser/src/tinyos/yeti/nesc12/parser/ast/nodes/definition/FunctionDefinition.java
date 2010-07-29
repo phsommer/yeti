@@ -75,8 +75,13 @@ public class FunctionDefinition extends AbstractFixedASTNode implements External
 	public static final Flag IN_FUNCTION = new Flag( "currently resolving function" );
 	public static final Flag IN_FUNCTION_BODY = new Flag( "currently resolving body of function" );
 
+    public static final String SPECIFIERS = "specifiers";
+    public static final String DECLARATOR = "declarator";
+    public static final String DECLARATIONS = "declarations";
+    public static final String BODY = "body";
+	
 	public FunctionDefinition(){
-		super( "FunctionDefinition", "specifiers", "declarator", "declarations", "body" );
+		super( "FunctionDefinition", SPECIFIERS, DECLARATOR, DECLARATIONS, BODY );
 	}
 
 	public FunctionDefinition( DeclarationSpecifierList specifiers, Declarator declarator, DeclarationList declarations, CompoundStatement body ){
