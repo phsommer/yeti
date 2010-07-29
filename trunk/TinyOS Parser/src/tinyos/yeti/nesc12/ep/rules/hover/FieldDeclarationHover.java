@@ -38,7 +38,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.utility.Icon;
 
 public class FieldDeclarationHover extends AbstractInformationRule implements IHoverInformationRule{
-	public IHoverInformation getInformation( NesC12AST ast, DocumentRegionInformation region ){
+	public IHoverInformation getInformation( NesC12AST ast, DocumentRegionInformation region ){		
 		ASTNode node = region.getNode();
 		if( !(node instanceof Identifier ))
 			return null;

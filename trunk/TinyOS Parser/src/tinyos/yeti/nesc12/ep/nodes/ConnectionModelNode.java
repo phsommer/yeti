@@ -629,7 +629,7 @@ public class ConnectionModelNode extends StandardModelNode{
             }
 
             EndpointModelConnection connection = new EndpointModelConnection(
-                    old, 
+                    component, old, 
                     endpoint,
                     componentName, specificationName,
                     endpoint.resolveParameters(), implicit, isInternal() );
