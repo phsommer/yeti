@@ -92,7 +92,7 @@ public class NesCEndpoint extends AbstractBinding {
         }
     }
     
-    public Binding getComponentReference(){
+    public NesCComponent getComponentReference(){
     	ComponentModelNode node = getComponent();
     	if( node != null ){
     		return node.resolve(bindings);
