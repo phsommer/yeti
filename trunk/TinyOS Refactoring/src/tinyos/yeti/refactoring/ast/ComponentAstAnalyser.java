@@ -35,6 +35,14 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	}
 	
 	/**
+	 * Returns the name identifier of this component.
+	 * @return
+	 */
+	public Identifier getComponentIdentifier(){
+		return componentIdentifier;
+	}
+	
+	/**
 	 * Returns the name of this component.
 	 * @return
 	 */
@@ -82,26 +90,7 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 		}
 		return referencedInterfaceAliasIdentifiers;
 	}
-	
-	/**
-	 * Collects of every given parent the field with the fieldName and adds it to the returned collection, if it is not null.
-	 * @param <CHILD_TYPE>	The type which the field with the given fielName has.
-	 * @param parents	The AbstractFixedASTNodes of which we want to collect a field/child. 
-	 * @param fieldName The name of the field we are interested in.
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	protected <CHILD_TYPE> Collection<CHILD_TYPE> collectFieldsWithName(Collection<? extends AbstractFixedASTNode> parents,String fieldName){
-		Collection<CHILD_TYPE> childs=new LinkedList<CHILD_TYPE>();
-		for(AbstractFixedASTNode parent:parents){
-			CHILD_TYPE child=(CHILD_TYPE)parent.getField(fieldName);
-			if(child!=null){
-				childs.add(child);
-			}
-		}
-		return childs;
-	}
-	
+
 	/**
 	 * Returns a map which maps an interface alias identifier to the identifier of the interface it aliases, in the specification of a NesC Component.
 	 * @return
@@ -178,6 +167,35 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 		return null;
 	}
 	
+	/**
+	 * Checks if the given name is actually an alias, which is a rename with the NesC "as" keyword, of an interface in the specification of a NesC component.
+	 * @param name
+	 * @return
+	 */
+	public boolean isDefinedInterfaceAliasName(String name){
+		Identifier alisaIdentifier=getAliasIdentifier4InterfaceAliasName(name);
+		return alisaIdentifier!=null;
+	}
+	
+	
+	/**
+	 * Collects of every given parent the field with the fieldName and adds it to the returned collection, if it is not null.
+	 * @param <CHILD_TYPE>	The type which the field with the given fielName has.
+	 * @param parents	The AbstractFixedASTNodes of which we want to collect a field/child. 
+	 * @param fieldName The name of the field we are interested in.
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected <CHILD_TYPE> Collection<CHILD_TYPE> collectFieldsWithName(Collection<? extends AbstractFixedASTNode> parents,String fieldName){
+		Collection<CHILD_TYPE> childs=new LinkedList<CHILD_TYPE>();
+		for(AbstractFixedASTNode parent:parents){
+			CHILD_TYPE child=(CHILD_TYPE)parent.getField(fieldName);
+			if(child!=null){
+				childs.add(child);
+			}
+		}
+		return childs;
+	}
 }
 
 	

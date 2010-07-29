@@ -11,6 +11,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Module;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
+import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
 
 public class ASTUtil4Components {
 	

@@ -8,6 +8,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Interface;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceReference;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.InterfaceType;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
+import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
 
 public class ASTUTil4Interfaces {
 
