@@ -120,4 +120,23 @@ public class ProjectUtil {
 	public ProjectModel getModel() throws MissingNatureException{
 		return TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
 	}
+	
+	/**
+	 * Searchs all project files to find the matching IFile to the given IParseFile
+	 * @param parseFile
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
+	public IFile getIFile4ParseFile(IParseFile parseFile) throws CoreException, MissingNatureException{
+		Collection<IFile> files = getAllFiles();
+		for(IFile file:files){
+			File f = file.getLocation().toFile();
+			IParseFile otherPF = getModel().parseFile(f);
+			if(parseFile.equals(otherPF)){
+				return file;
+			}
+		}
+		return null;
+	}
 }

@@ -25,6 +25,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IFileRegion;
 import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.reference.IASTReference;
+import tinyos.yeti.model.ParseFile;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
@@ -200,24 +201,10 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return true;
 	}
 	
-	/**
-	 * Searchs all project files to find the matching IFile to the given IParseFile
-	 * @param parseFile
-	 * @return
-	 * @throws CoreException
-	 * @throws MissingNatureException
-	 */
-	protected IFile getIFile4ParseFile(IParseFile parseFile) throws CoreException, MissingNatureException{
-		Collection<IFile> files = getAllFiles();
-		for(IFile file:files){
-			File f = file.getLocation().toFile();
-			IParseFile otherPF = getModel().parseFile(f);
-			if(parseFile.equals(otherPF)){
-				return file;
-			}
-		}
-		return null;
+	protected IFile getIFile4ParseFile(ParseFile parseFile) throws CoreException, MissingNatureException{
+		return info.getProjectUtil().getIFile4ParseFile(parseFile);
 	}
+
 	
 	/**
 	 * Looks for the Identifier of a given IASTModelPath.
@@ -231,7 +218,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	protected Identifier getIdentifierForPath(IASTModelPath path,IProgressMonitor monitor) 
 	throws MissingNatureException, CoreException, IOException{
 		IFileRegion targetRegion = getModel().getNode(path, monitor).getRegion();
-		IFile targetFile = getIFile4ParseFile(targetRegion.getParseFile());
+		IFile targetFile = info.getProjectUtil().getIFile4ParseFile(targetRegion.getParseFile());
 		NesC12AST ast = info.getProjectUtil().getAst(targetFile,monitor);
 		ASTPositioning astUtil = new ASTPositioning(ast);
 		return astUtil.getASTLeafAtPos(targetRegion.getOffset(),targetRegion.getLength(),Identifier.class);
