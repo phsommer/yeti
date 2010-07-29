@@ -20,4 +20,8 @@ public class DebugUtil {
 	public static void clearOutput(){
 		endOutput="";
 	}
+	
+	public static void immediatePrint(String output){
+		System.err.println(output);
+	}
 }

@@ -138,6 +138,22 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	}
 	
 	/**
+	 * Returns the associated Component identifier in a NesC components statement for the componentAlias identifier in the statement.
+	 * Returns null if there is no such componentAlias.
+	 * @param componentAlias
+	 * @return
+	 */
+	public Identifier getComponentIdentifier4ComponentAliasIdentifier(Identifier componentAlias){
+		for(Identifier id:getComponentAliasIdentifiers()){
+			if(id==componentAlias){
+				RefComponent parent=(RefComponent)id.getParent();
+				return (Identifier)parent.getField(RefComponent.NAME);
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Adds all identifiers of the identifiers collection, which have the same name as name, to the result collection.  
 	 * @param name
 	 * @param identifiers
@@ -149,5 +165,46 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 				result.add(id);
 			}
 		}
+	}
+
+	/**
+	 * Returns the component identifier of the component which this interfaceIdentifier is associated with.
+	 * The given interfaceIdentifier has to be in a component wiring statement.
+	 * This component identifier is either the component field of the endpoint in which the given interfaceIdentifier is or 
+	 * the identifier of this configuration itself, in case the given interfaceIdentifier actually references an interface in this configurations specification.
+	 * Note: If the interface identifier has a associated component field in the wiring, then this component identifier can also be an alias defined in this configuration components statements.
+	 * Returns null if the given identifier doesn't appear in a componentWiring Specification part.  
+	 * @param selection
+	 */
+	public Identifier getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(Identifier interfaceIdentifier) {
+		Collection<Identifier> identifiers=getWiringSpecificationPartIdentifiers();
+		//TODO replace with call to InterfaceSelectionIdentifier as soon as this class is created.
+		//Check if the given identifier is an interfaceIdentifier
+		boolean found=false;
+		for(Identifier identifier:identifiers){
+			if(identifier==interfaceIdentifier){
+				found=true;
+			}
+		}
+		if(!found){
+			return null;
+		}
+		
+		//Try to get associated Component of the wiring
+		Endpoint endpoint=(Endpoint)astUtil.getParentForName(interfaceIdentifier, Endpoint.class);
+		if(endpoint==null){
+			return null;
+		}
+		ParameterizedIdentifier pI=(ParameterizedIdentifier)endpoint.getField(Endpoint.COMPONENT);
+		if(pI==null){
+			return null;
+		}
+		Identifier targetComponent=(Identifier)pI.getField(ParameterizedIdentifier.IDENTIFIER);
+		if(targetComponent!=null){
+			return targetComponent;
+		}
+		
+		//If there is no component associated with the interface, it has to be an implicit reference to the this configuration itself.
+		return componentIdentifier;
 	}
 }

@@ -73,14 +73,12 @@ public class ASTUtil {
 		ASTNode parent=root;
 		for(int successorIndex=1;successorIndex<successorSequence.length;++successorIndex){
 			Class<? extends ASTNode> type=successorSequence[successorIndex];
-			DebugUtil.addOutput("Checking Type "+type);
 			int childrens=parent.getChildrenCount();
 			boolean foundNextSuccessor=false;
 			//try to find a matching child for the current type
 			for(int childIndex=0;!foundNextSuccessor&&childIndex<childrens;++childIndex){
 				ASTNode child=parent.getChild(childIndex);
 				if(child!=null){
-					DebugUtil.addOutput("\tchild type: "+child.getClass());
 					if(isOfType(child,type)){
 						//The last type matches a child
 						if(successorIndex==successorSequence.length-1){
@@ -96,7 +94,6 @@ public class ASTUtil {
 				return null;
 			}
 		}
-		DebugUtil.addOutput("is Null");
 		return null;
 	}
 	

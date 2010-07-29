@@ -31,7 +31,7 @@ import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.utilities.AliasSelectionIdentifier;
+import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
@@ -203,15 +203,30 @@ public class Processor extends RenameProcessor {
 
 	/**
 	 * Tries to find the name of the component, in whichs specification the alias is defined.
+	 * Returns null if the selected identifier is not an interfaceIdentifier.
 	 * @param selectedIdentifier
 	 * @return
 	 */
 	private String getNameOFSourceComponent(){
-		String sourceComponentName=null;
-		if(selectionIdentifier.isInterfaceAliasingInSpecification()){	//In this case the selection is in the component which defines the alias.
-			sourceComponentName=factory4Selection.getComponentAnalyzer().getComponentName();
+		if(selectionIdentifier.isInterfaceAliasingInSpecification()||selectionIdentifier.isInterfaceAliasInNescFunction()){	//In this case the selection is in the component which defines the alias.
+			return factory4Selection.getComponentAnalyzer().getComponentName();
+		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring()){	//TODO: DAS FUNKTIONIERT NICHT RICHTIG
+			ConfigurationAstAnalyzer analyzer=factory4Selection.getConfigurationAnalyzer();
+			Identifier associatedComponent=analyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(selectionIdentifier.getSelection());
+			if(associatedComponent==null){	//this should never happen
+				throw new IllegalStateException("Could not find an associated Component for the given interface identifier");
+			}
+			if(associatedComponent==analyzer.getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
+				return associatedComponent.getName();
+			}
+			Identifier realComponent=analyzer.getComponentIdentifier4ComponentAliasIdentifier(associatedComponent);
+			if(realComponent!=null){	//If the associatedComponent is allready the real component, then realComponent is null.
+				return realComponent.getName();
+			}
+			return associatedComponent.getName();
+			
 		}
-		return sourceComponentName;
+		return null;
 	}
 	
 

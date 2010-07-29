@@ -2,7 +2,7 @@ package tinyos.yeti.refactoring.rename.alias;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameAvailabilityTester;
-import tinyos.yeti.refactoring.utilities.AliasSelectionIdentifier;
+import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
 
 public class AvailabilityTester extends RenameAvailabilityTester{
 
