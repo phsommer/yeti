@@ -1,8 +1,10 @@
 package tinyos.yeti.refactoring.extractFunction;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,8 +13,10 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -21,10 +25,10 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
+import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declarator;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.AssignmentExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.Expression;
@@ -38,21 +42,25 @@ import tinyos.yeti.nesc12.parser.ast.nodes.statement.DoWhileStatement;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.ForStatement;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.Statement;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.WhileStatement;
+import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.Filter;
+import tinyos.yeti.refactoring.utilities.StringUtil;
 
 public class Processor extends RefactoringProcessor {
 
 	private Info info;
 	private ASTUtil astUtil;
 	private ASTUtil4Variables varUtil;
+	private ASTPositioning astPos;
 
 	public Processor(Info info) {
 		this.info = info;
 		this.astUtil = new ASTUtil();
 		this.varUtil = new ASTUtil4Variables(astUtil);
+		this.astPos = new ASTPositioning(info.getAst());
 	}
 
 	@Override
@@ -152,7 +160,7 @@ public class Processor extends RefactoringProcessor {
 		// Which names to check are defined in this cs => only occurrences of
 		// those within cs after end are interesting
 		namesToCheck = new HashSet<String>(namesToCheck);
-		Set<String> localyDefined = getLocalyDefinedVariables(cs);
+		Set<String> localyDefined = getLocalyDefinedVariableNames(cs);
 		Set<String> ret = getLocalyReadAfterEnd(cs, namesToCheck);
 		namesToCheck.removeAll(localyDefined);
 		namesToCheck.remove(ret);
@@ -168,11 +176,11 @@ public class Processor extends RefactoringProcessor {
 
 	private Set<String> getLocalyReadAfterEnd(CompoundStatement cs,
 			final Set<String> namesToCheck) {
-		
+
 		Collection<Statement> childs = new LinkedList<Statement>();
-		for(ASTNode c : astUtil.getChilds(cs)){
+		for (ASTNode c : astUtil.getChilds(cs)) {
 			// Childs of CompoundStatement are always Statements
-			 childs.add((Statement) c);
+			childs.add((Statement) c);
 		}
 
 		// For Loops, commands before the selection might be executed after the
@@ -205,16 +213,24 @@ public class Processor extends RefactoringProcessor {
 			}
 		};
 
-		return exploreVariableNamespace(nodesToCheck, filter);
+		Set<Identifier> ids = exploreVariableNamespace(nodesToCheck, filter);
+		return getNames(ids);
 	}
 
 	/**
 	 * Returns the Names of the Variables that are defined in the given
 	 * CompoundStatement
 	 */
-	private Set<String> getLocalyDefinedVariables(ASTNode cs) {
+	private Set<String> getLocalyDefinedVariableNames(ASTNode cs) {
 		Set<String> ret = new HashSet<String>();
+		for(VariableDeclaration d: getLocalVariableDeclarations(cs)){
+			ret.addAll(d.getVariableNames());	
+		}
 
+		return ret;
+	}
+	
+	private Set<VariableDeclaration> getLocalVariableDeclarations(ASTNode cs){
 		Collection<ASTNode> nodesToCheckForDeclarations = new LinkedList<ASTNode>();
 
 		// All Statements in the Compound Statement
@@ -226,32 +242,40 @@ public class Processor extends RefactoringProcessor {
 			ForStatement loop = (ForStatement) parent;
 			nodesToCheckForDeclarations.add(loop.getInit());
 		}
-
-		for (ASTNode child : nodesToCheckForDeclarations) {
-			if (isDeclaration(child)) {
-				Declaration d = (Declaration) child;
-				ret.addAll(getDeclaredVariableNames(d));
-			}
+		
+		// For FunctionDeclarations
+		if(parent instanceof FunctionDefinition){
+			FunctionDefinition funcDef = (FunctionDefinition) parent;
+			Collection<ASTNode> defs = astUtil.getChilds(funcDef.getDeclarator().getFunction().getParameters());
+			nodesToCheckForDeclarations.addAll(defs);
 		}
-
-		return ret;
+		
+		return getTopLevelDeclarations(nodesToCheckForDeclarations);
 	}
-	
-	private boolean isDeclaration(ASTNode node){
+
+	private boolean isDeclaration(ASTNode node) {
 		return (node instanceof Declaration);
 	}
-	
-	private Set<String> getDeclaredVariableNames(Declaration d){
+
+	/*private Set<String> getDeclaredVariableNames(Declaration d) {
 		Set<String> ret = new HashSet<String>();
 		for (int j = 0; d.getInitlist().getChildrenCount() > j; j++) {
 			InitDeclaratorList idl = d.getInitlist();
 			Declarator declarator = idl.getNoError(j).getDeclarator();
-			Identifier id = (Identifier) declarator.getChild(0);
+			Identifier id = (Identifier) getFirstIdentifier(declarator);
 			ret.add(id.getName());
 		}
 		return ret;
-	}
+	}*/
+	
+	/*private String getDeclaredVariableNames(ParameterDeclaration d) {
+		return getFirstIdentifier(d.getDeclarator()).getName();
+	}*/
 
+	/**
+	 * Fields that are defined within the Statements to extract, but are still visible after 
+	 * the End of the selection (so highest level declarations) are not filterd out.
+	 */
 	private Set<String> getPotentionalyChangedLocalVariables() {
 		Filter<Identifier> filter = new Filter<Identifier>() {
 			@Override
@@ -261,52 +285,61 @@ public class Processor extends RefactoringProcessor {
 		};
 
 		List<Statement> statements = getStatementsToExtract();
-		return exploreVariableNamespace(statements, filter);
+		Set<Identifier> ids = exploreVariableNamespace(statements, filter);
+		Set<String> names =  getNames(ids);
+		return names;
+	}
+	
+	private Set<String> getNames(Set<Identifier> ids){
+		Set<String> names = new HashSet<String>();
+		for(Identifier id: ids){
+			names.add(id.getName());
+		}
+		return names;
 	}
 
-	private Set<String> exploreVariableNamespace(ASTNode node,
+	private Set<Identifier> exploreVariableNamespace(ASTNode node,
 			Filter<Identifier> test) {
 		return exploreVariableNamespace_sub(node, test, new HashSet<String>());
 	}
 
-	private Set<String> exploreVariableNamespace(Collection<Statement> statements,
-			Filter<Identifier> test) {
-		
-		
-		Set<String> ret = new HashSet<String>();
-		Set<String> declarations = new HashSet<String>();
-		for(Statement s : statements){
-			ret.addAll(exploreVariableNamespace(s, test));
+	private Set<Identifier> exploreVariableNamespace(
+			Collection<Statement> statements, Filter<Identifier> test) {
+
+		Set<Identifier> ret = new HashSet<Identifier>();
+			
+		for(Statement statement: statements){
+			 ret.addAll(exploreVariableNamespace(statement, test));
 		}
-		// localy declarated variables don't need to be passed
-		ret.removeAll(declarations);
 		
+
 		return ret;
 	}
-	
-	private Set<String> getTopLevelDeclarations(Collection<Statement> statements){
-		Set<String> declarations = new HashSet<String>();
-		for(Statement s : statements){
-			if(isDeclaration(s)){
-				Declaration d = (Declaration)s;
-				declarations.addAll(getDeclaredVariableNames(d));
+
+	private Set<VariableDeclaration> getTopLevelDeclarations(Collection<? extends ASTNode> statements) {
+		Set<VariableDeclaration> declarations = new HashSet<VariableDeclaration>();
+		for (ASTNode s : statements) {
+			if (isDeclaration(s)) {
+				declarations.add(new VariableDeclaration((Declaration) s,info));
+			}
+			if(s instanceof ParameterDeclaration){
+				declarations.add(new VariableDeclaration((ParameterDeclaration) s, info));
 			}
 		}
 		return declarations;
 	}
 
-	private Set<String> exploreVariableNamespace_sub(ASTNode node,
+	private Set<Identifier> exploreVariableNamespace_sub(ASTNode node,
 			Filter<Identifier> test, Set<String> shadowedVars) {
 		Queue<ASTNode> nodesToCheck = new LinkedList<ASTNode>();
 		nodesToCheck.add(node);
-		Set<String> vars = new HashSet<String>();
+		Set<Identifier> vars = new HashSet<Identifier>();
 		while (!nodesToCheck.isEmpty()) {
 			ASTNode child = nodesToCheck.poll();
 			if (child instanceof Identifier) {
 				Identifier id = (Identifier) child;
 				if (!shadowedVars.contains(id.getName()) && test.test(id)) {
-					String name = id.getName();
-					vars.add(name);
+					vars.add(id);
 				}
 			} else if (child instanceof CompoundStatement
 					|| child instanceof ForStatement) {
@@ -317,13 +350,13 @@ public class Processor extends RefactoringProcessor {
 				if (child instanceof CompoundStatement) {
 					CompoundStatement child_cs = (CompoundStatement) child;
 					child_shadowedVars
-							.addAll(getLocalyDefinedVariables(child_cs));
+							.addAll(getLocalyDefinedVariableNames(child_cs));
 				}
 
 				if (child instanceof ForStatement) {
 					ForStatement child_for = (ForStatement) child;
 					child_shadowedVars
-							.addAll(getLocalyDefinedVariables(child_for
+							.addAll(getLocalyDefinedVariableNames(child_for
 									.getInit()));
 				}
 
@@ -419,13 +452,13 @@ public class Processor extends RefactoringProcessor {
 	private Set<String> getOutputParameters() {
 		// check the Area to extract for write operations on those variables
 		Set<String> changedVariablesInAreaToExtract = getPotentionalyChangedLocalVariables();
-
+		
 		// Get all Identifiers used after the Area to extract.
 		CompoundStatement cs = getDeepedstCompoundSuperstatement();
 		Set<String> varibalesReadAfterAreaToExtract = getReadLocalVariablesAfterArea2Extract(
 				Collections.unmodifiableSet(changedVariablesInAreaToExtract),
 				cs);
-		
+
 		// Return Variables that are modified in the area to extract, but also
 		// read afterwords
 		varibalesReadAfterAreaToExtract
@@ -436,15 +469,157 @@ public class Processor extends RefactoringProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
+		try {
+			System.out.println(generateNewFunction());
+		} catch (MissingNatureException e) {
+			Status status = new Status(IStatus.ERROR,RefactoringPlugin.PLUGIN_ID,"Could not Read the Source file.(NatureMissing) "+e.getLocalizedMessage());
+			throw new CoreException(status);
+		} catch (IOException e) {
+			Status status = new Status(IStatus.ERROR,RefactoringPlugin.PLUGIN_ID,"Could not Read the Source file.(IO Error) "+e.getLocalizedMessage());
+			throw new CoreException(status);
+		}
+		return new NullChange();
+	}
+
+	private String generateNewFunction() throws CoreException, MissingNatureException, IOException {
+		info.setFunctionName("newFunction");
 		Set<String> outputParameter = getOutputParameters();
 		Set<String> inputParameter = getInputParameter();
 		// if a variable is an output parameter, there is no need to also create
 		// an input Parameter
 		inputParameter.removeAll(outputParameter);
-
 		System.err.println("Output Paramteter: " + outputParameter
 				+ "\nInput Parameter: " + inputParameter);
-		return new NullChange();
+
+		String returnType = "void";
+
+		// function header
+		StringBuffer func = new StringBuffer();
+		func.append(returnType);
+		func.append(" ");
+		func.append(info.getFunctionName());
+		func.append("(");
+		LinkedList<String> params = new LinkedList<String>();
+		for (String var : outputParameter) {
+			params.add(getVariableType(var) + " *" +var);
+		}
+
+		
+		for (String var : inputParameter) {
+			params.add(getVariableType(var) + " " + var);
+		}
+		func.append(StringUtil.joinString(params, ", "));
+		func.append(")\n{\n");
+		func.append(getFunctionBody(outputParameter,inputParameter));
+		func.append("\n}\n");
+
+		return func.toString();
+	}
+
+	private String getFunctionBody(Set<String> outputParameter,Set<String> inputParameter) throws CoreException, MissingNatureException, IOException {
+		StringBuffer funcBody = new StringBuffer();
+		List<Statement> origStatements = getStatementsToExtract();
+		Statement lastStatement = null;
+		for(Statement statement: origStatements){
+			// to preserve the programmers code Layout
+			if(lastStatement != null){
+				funcBody.append(astPos.getSourceBetween(lastStatement, statement,info.getProjectUtil()));
+			}
+			
+			if(isDeclaration(statement)){
+				// Output Parameter don't need to be Declared, they get decleard in the Header
+				Set<String> varNamesToKeep = new HashSet<String>((new VariableDeclaration((Declaration) statement,info)).getVariableNames());
+				varNamesToKeep.removeAll(outputParameter);
+				varNamesToKeep.removeAll(inputParameter);
+				funcBody.append(new VariableDeclaration((Declaration) statement,info).getPartialDeclaration(varNamesToKeep));
+			} else {
+				funcBody.append(replaceOutputParameter(statement,outputParameter));
+			}
+			
+			lastStatement = statement;
+		}
+		
+		return funcBody.toString();
+	}
+
+	private String replaceOutputParameter(Statement statement,
+			Set<String> outputParameter) throws CoreException, MissingNatureException, IOException {
+		int begin = astPos.start(statement);
+		String ret = astPos.getSourceCode(statement,info.getProjectUtil());
+		
+		// We get the identifiers in order from getAllIdentifiers.
+		List<Identifier> identifiers = getAllIdentifier(statement);
+		// But we have to start with the last, cause then the position-offset of the primer
+		// Identifier does not change
+		Collections.reverse(identifiers);
+		
+		for(Identifier identifier: identifiers){
+			if(outputParameter.contains(identifier.getName())){
+				int idOffsetBegin = astPos.start(identifier)-begin;
+				int idOffsetEnd = astPos.end(identifier)-begin;
+				ret = ret.substring(0, idOffsetBegin) + "(*" + identifier.getName() + ")" + ret.substring(idOffsetEnd); 
+			}
+		}
+		
+		return ret;
+	}
+
+	/**
+	 * Returns all the Identifier Childs of node in Depth-First-Search-Order
+	 */
+	private List<Identifier> getAllIdentifier(ASTNode node) {
+		Set<Identifier> ids = exploreVariableNamespace(node, new Filter<Identifier>() {
+
+			@Override
+			public boolean test(Identifier toTest) {
+				return true;
+			}
+		});
+		
+		List<Identifier> ret = new LinkedList<Identifier>(ids);
+		
+		Collections.sort(ret, new Comparator<Identifier>() {
+			@Override
+			public int compare(Identifier o1, Identifier o2) {
+				Integer begin1 = astPos.start(o1);
+				Integer begin2 = astPos.start(o2);
+				return begin1.compareTo(begin2);
+			}
+		});
+		
+		return ret;
+	}
+
+	private String getVariableType(String var) throws CoreException, MissingNatureException, IOException {
+		VariableDeclaration dec = findDeclaration(var, getStatementsToExtract().iterator().next());
+		if(dec == null){
+			throw new CoreException(new Status(IStatus.ERROR, RefactoringPlugin.PLUGIN_ID, "Could not determine the Type of Variable "+var));
+		}
+		return dec.getType();
+	}
+	
+	/*private String getDeclaredType(Declaration dec) throws CoreException, MissingNatureException, IOException{
+		return getSourceCode(dec.getSpecifiers());
+	}*/
+	
+	/**
+	 * If the declaration of the Variable varName is found, it is returned
+	 * Otherwise null is returned
+	 */
+	private VariableDeclaration findDeclaration(String varName, ASTNode node){
+		boolean found=false;
+		while(!found && node.getParent() != null){
+			found = getLocalyDefinedVariableNames(node.getParent()).contains(varName);
+			if(found){
+				for(VariableDeclaration dec: getLocalVariableDeclarations(node.getParent())){
+					if(dec.getVariableNames().contains(varName)){
+						return dec;
+					}
+				}
+			}
+			node = node.getParent();
+		}
+		return null;
 	}
 
 	private Set<String> getInputParameter() {
@@ -455,9 +630,9 @@ public class Processor extends RefactoringProcessor {
 			}
 		};
 
-		Collection<Statement> selectedStatements = 	getStatementsToExtract();
-		
-		Set<String> ret = exploreVariableNamespace(selectedStatements, filter);
+		Collection<Statement> selectedStatements = getStatementsToExtract();
+
+		Set<String> ret = getNames(exploreVariableNamespace(selectedStatements, filter));
 		ret.removeAll(getTopLevelDeclarations(selectedStatements));
 		return ret;
 	}
