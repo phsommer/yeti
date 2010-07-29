@@ -1,15 +1,23 @@
 package tinyos.yeti.refactoring.ast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.INesCAST;
+import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.preprocessor.PreprocessorReader;
 import tinyos.yeti.refactoring.RefactoringPlugin;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class ASTPositioning {
 	private NesC12AST ast;
@@ -183,4 +191,48 @@ public class ASTPositioning {
 	public int end(ASTNode node){
 		return reader.inputLocation(ast.getOffsetAtEnd(node).getPreprocessedOffset(), true);
 	}
+	
+	/**
+	 * Returns the code, this Part of the Ast was generated from
+	 * @throws MissingNatureException 
+	 * @throws CoreException 
+	 * @throws IOException 
+	 */
+	public String getSourceCode(ASTNode node, ProjectUtil projectUtil) throws CoreException, MissingNatureException, IOException {
+		int begin = start(node);
+		int end = end(node);
+		int len = end - begin;
+	
+		IFile nodeSource = projectUtil.getIFile4ParseFile(ast.getParseFile());
+		
+		return getStringFromFile(begin, len, nodeSource);
+	}
+	
+	private String getStringFromFile(int offset, int len, IFile file) throws CoreException, MissingNatureException, IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
+		br.skip(offset);
+		char[] buff = new char[len];
+		br.read(buff, 0, len);
+		String sourceCode = new String(buff);
+		
+		return sourceCode;
+	}
+	
+	/**
+	 * Returns the SourceCode between two AST nodes
+	 */
+	public String getSourceBetween(ASTNode first, ASTNode second, ProjectUtil projectUtil) throws CoreException, MissingNatureException, IOException{
+		if(end(first) > start(second)){
+			throw new IllegalArgumentException("The second node has to be left of the first Node.");
+		}
+		
+		int endFirst =end(first);
+		int beginSecond = start(second);
+		int len = beginSecond - endFirst;
+		
+		IFile nodeSource = projectUtil.getIFile4ParseFile(ast.getParseFile());
+		
+		return getStringFromFile(endFirst, len , nodeSource);
+	}
+	
 }
