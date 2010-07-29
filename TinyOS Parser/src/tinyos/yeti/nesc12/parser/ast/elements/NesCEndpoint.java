@@ -83,7 +83,7 @@ public class NesCEndpoint extends AbstractBinding {
     
     public Binding getSegmentChild( int segment, int index ) {
         switch( segment ){
-        	case 0: return getComponent();
+        	case 0: return getComponentReference();
             case 1: return getReference();
             case 2: return getParameter( index );
             case 3: return used == null ? used = new UsedBinding() : used;
@@ -92,17 +92,12 @@ public class NesCEndpoint extends AbstractBinding {
         }
     }
     
-    public Binding getComponent(){
-    	ModelConnection component = endpoint.getComponentReference();
-    	if( component != null ){
-    		ICancellationMonitor monitor = bindings.getCancellationMonitor();
-            ModelNode result = endpoint.getDeclarationResolver().resolve( component, monitor.getProgressMonitor() );
-            monitor.checkCancellation();
-            
-            if( result instanceof ComponentModelNode ){
-            	return ((ComponentModelNode)result).resolve(bindings);
-            }
+    public Binding getComponentReference(){
+    	ComponentModelNode node = getComponent();
+    	if( node != null ){
+    		return node.resolve(bindings);
     	}
+    	
     	return null;
     }
     
@@ -121,6 +116,20 @@ public class NesCEndpoint extends AbstractBinding {
             }
         }
         return null;
+    }
+    
+    public ComponentModelNode getComponent(){
+    	ModelConnection component = endpoint.getComponentReference();
+    	if( component != null ){
+    		ICancellationMonitor monitor = bindings.getCancellationMonitor();
+            ModelNode result = endpoint.getDeclarationResolver().resolve( component, monitor.getProgressMonitor() );
+            monitor.checkCancellation();
+            
+            if( result instanceof ComponentModelNode ){
+            	return ((ComponentModelNode)result);
+            }
+    	}
+    	return null;
     }
     
     public NesCInterfaceReference getInterface(){
