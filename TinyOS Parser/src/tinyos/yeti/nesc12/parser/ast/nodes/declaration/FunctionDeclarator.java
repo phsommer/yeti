@@ -36,8 +36,12 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ErrorASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
 public class FunctionDeclarator extends AbstractFixedASTNode implements Declarator {
+	
+    public static final String DECLARATOR = "declarator";
+    public static final String PARAMETERS = "parameters";
+	
     public FunctionDeclarator(){
-        super( "FunctionDeclarator", "declarator", "parameters" );
+        super( "FunctionDeclarator", DECLARATOR, PARAMETERS );
     }
 
     public FunctionDeclarator( Declarator declarator, ASTNode parameters ){
