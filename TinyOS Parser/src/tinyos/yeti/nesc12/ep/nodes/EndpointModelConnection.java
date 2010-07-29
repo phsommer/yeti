@@ -48,10 +48,11 @@ public class EndpointModelConnection extends ModelConnection{
         public void write( EndpointModelConnection value, IStorage storage ) throws IOException{
             super.write( value, storage );
             
+            storage.write( value.component );
             storage.write( value.reference );
             
-            storage.writeString( value.component );
-            storage.writeString( value.specificaton );
+            storage.writeString( value.componentName );
+            storage.writeString( value.specificatonName );
             
             if( value.index == null ){
                 storage.out().writeInt( -1 );
@@ -72,10 +73,11 @@ public class EndpointModelConnection extends ModelConnection{
         public EndpointModelConnection read( EndpointModelConnection value, IStorage storage ) throws IOException{
             super.read( value, storage );
             
+            value.component = storage.read();
             value.reference = storage.read();
             
-            value.component = storage.readString();
-            value.specificaton = storage.readString();
+            value.componentName = storage.readString();
+            value.specificatonName = storage.readString();
             
             int size = storage.in().readInt();
             if( size >= 0 ){
@@ -92,10 +94,11 @@ public class EndpointModelConnection extends ModelConnection{
         }
     };
     
+    private ModelConnection component;
     private ModelConnection reference;
     
-    private String component;
-    private String specificaton;
+    private String componentName;
+    private String specificatonName;
     
     private Value[] index;
     private boolean implicit;
@@ -107,29 +110,32 @@ public class EndpointModelConnection extends ModelConnection{
     
     /**
      * Creates a new connection
+     * @param component the component to which this connection points, may be <code>null</code>
      * @param reference the connection to which this connection points indirectly
      * @param node the node which created this connection
-     * @param component in case of an endpoint of the form "x.y", "x"
-     * @param specification in case of an endpoint of the form "x.y", "x". Otherwise <code>null</code>.
+     * @param componentName in case of an endpoint of the form "x.y", "x"
+     * @param specificationName in case of an endpoint of the form "x.y", "y". Otherwise <code>null</code>.
      * @param index parameters for arrayed references
      * @param implicit whether this endpoint was implicit or not
      * @param intern whether this endpoint refers to an element from the uses/provides list or not
      */
     public EndpointModelConnection( 
+    		ModelConnection component,
             ModelConnection reference,
             ASTNode node,
-            String component, String specification, 
+            String componentName, String specificationName, 
             Value[] index, boolean implicit, boolean intern ){
         
         super( reference.getIdentifier(), node );
-        if( specification == null )
-            setLabel( component );
+        if( specificationName == null )
+            setLabel( componentName );
         else 
-            setLabel( component + "." + specification );
+            setLabel( componentName + "." + specificationName );
         
-        this.reference = reference;
         this.component = component;
-        this.specificaton = specification;
+        this.reference = reference;
+        this.componentName = componentName;
+        this.specificatonName = specificationName;
         this.index = index;
         this.implicit = implicit;
         this.intern = intern;
@@ -156,12 +162,16 @@ public class EndpointModelConnection extends ModelConnection{
         return reference;
     }
     
+    public ModelConnection getComponentReference(){
+    	return component;
+    }
+    
     public String getComponent() {
-        return component;
+        return componentName;
     }
     
     public String getSpecificaton() {
-        return specificaton;
+        return specificatonName;
     }
     
     public Value[] getIndex() {
@@ -187,9 +197,9 @@ public class EndpointModelConnection extends ModelConnection{
     }
     
     public NesCEndpoint resolve( BindingResolver bindings ){
-        String id = "connection." + getIdentifier() + " - " + component;
-        if( specificaton != null )
-            id += "." + specificaton;
+        String id = "connection." + getIdentifier() + " - " + componentName;
+        if( specificatonName != null )
+            id += "." + specificatonName;
         
         Binding result = bindings.getBinding( getPath(), id );
         if( result == null ){

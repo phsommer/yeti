@@ -25,6 +25,8 @@ import tinyos.yeti.ep.parser.Tag;
 import tinyos.yeti.nesc12.ep.BindingResolver;
 import tinyos.yeti.nesc12.ep.ModelConnection;
 import tinyos.yeti.nesc12.ep.ModelNode;
+import tinyos.yeti.nesc12.ep.nodes.ComponentModelNode;
+import tinyos.yeti.nesc12.ep.nodes.ComponentReferenceModelConnection;
 import tinyos.yeti.nesc12.ep.nodes.EndpointModelConnection;
 import tinyos.yeti.nesc12.ep.nodes.FieldModelConnection;
 import tinyos.yeti.nesc12.ep.nodes.FieldModelNode;
@@ -59,32 +61,49 @@ public class NesCEndpoint extends AbstractBinding {
     
     public String getSegmentName( int segment ) {
         switch( segment ){
-            case 0: return "reference";
-            case 1: return "parameter";
-            case 2: return "used";
-            case 3: return "provided";
+        	case 0: return "component";
+            case 1: return "reference";
+            case 2: return "parameter";
+            case 3: return "used";
+            case 4: return "provided";
             default: return null;
         }
     }
     
     public int getSegmentSize( int segment ) {
         switch( segment ){
-            case 0: return 1;
-            case 1: return getParameterCount();
-            case 2: return 1;
+        	case 0: return 1;
+            case 1: return 1;
+            case 2: return getParameterCount();
             case 3: return 1;
+            case 4: return 1;
             default: return 0;
         }
     }
     
     public Binding getSegmentChild( int segment, int index ) {
         switch( segment ){
-            case 0: return getReference();
-            case 1: return getParameter( index );
-            case 2: return used == null ? used = new UsedBinding() : used;
-            case 3: return provided == null ? provided = new ProvidedBinding() : provided;
+        	case 0: return getComponent();
+            case 1: return getReference();
+            case 2: return getParameter( index );
+            case 3: return used == null ? used = new UsedBinding() : used;
+            case 4: return provided == null ? provided = new ProvidedBinding() : provided;
             default: return null;
         }
+    }
+    
+    public Binding getComponent(){
+    	ModelConnection component = endpoint.getComponentReference();
+    	if( component != null ){
+    		ICancellationMonitor monitor = bindings.getCancellationMonitor();
+            ModelNode result = endpoint.getDeclarationResolver().resolve( component, monitor.getProgressMonitor() );
+            monitor.checkCancellation();
+            
+            if( result instanceof ComponentModelNode ){
+            	return ((ComponentModelNode)result).resolve(bindings);
+            }
+    	}
+    	return null;
     }
     
     public Binding getReference(){
