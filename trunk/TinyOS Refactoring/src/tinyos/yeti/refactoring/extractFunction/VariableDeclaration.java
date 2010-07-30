@@ -127,6 +127,14 @@ public class VariableDeclaration {
 		return null;
 	}
 	
+	public ASTNode getAstNode(){
+		if(isParameterDeclaration()){
+			return this.pd;
+		} else {
+			return this.d;
+		}
+	}
+	
 	public static boolean isDeclaration(ASTNode node) {
 		return isDeclarationP(node) || isParameterDeclaration(node);
 	}
