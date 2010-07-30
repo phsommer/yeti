@@ -12,9 +12,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
-import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
-import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
@@ -110,18 +107,6 @@ public class Processor extends RenameProcessor {
 	}
 
 	@Override
-	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,CheckConditionsContext context) 
-	throws CoreException,OperationCanceledException {
-		RefactoringStatus ret = new RefactoringStatus();
-		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is not Applicable");
-		}
-		return ret;
-		// TODO checkFinalConditions not yet implemented
-
-	}
-
-	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 	throws CoreException, OperationCanceledException {
 		RefactoringStatus ret = new RefactoringStatus();
@@ -146,35 +131,6 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("Project is not ready for refactoring!");
 		}
 		return ret;
-	}
-
-	@Override
-	public Object[] getElements() {
-		// TODO Auto-generated method stub
-		return new Object[] {};
-	}
-
-	@Override
-	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.renameFunction.Processor";
-	}
-
-	@Override
-	public String getProcessorName() {
-		return info.getInputPageName();
-	}
-
-	@Override
-	public boolean isApplicable() 
-	throws CoreException {
-		return super.isApplicable();
-	}
-
-	@Override
-	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,SharableParticipants sharedParticipants) 
-	throws CoreException {
-		// TODO Auto-generated method stub
-		return new RefactoringParticipant[] {};
 	}
 
 }
