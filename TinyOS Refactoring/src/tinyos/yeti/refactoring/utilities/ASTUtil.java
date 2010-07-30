@@ -30,13 +30,14 @@ public class ASTUtil {
 	 * @param type The type of the ASTNode we are looking for
 	 * @return null if no parent matches, else matching Parent.
 	 */
-	public ASTNode getParentForName(ASTNode child,Class<? extends ASTNode> type){
+	@SuppressWarnings("unchecked")
+	public <T extends ASTNode> T getParentForName(ASTNode child,Class<T> type){
 		ASTNode parent=child.getParent();
 		if(parent == null){
 			return null;
 		}
 		if(parent.getClass().equals(type)){
-			return parent;
+			return (T) parent;
 		}
 		return getParentForName(parent, type);
 	}
