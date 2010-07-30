@@ -31,6 +31,7 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
+import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
@@ -250,15 +251,6 @@ public class Processor extends RefactoringProcessor {
 		}
 		return names;
 	}
-	
-	private Set<String> getNames(Collection<VariableDeclaration> decs){
-		Set<String> names = new HashSet<String>();
-		for (VariableDeclaration dec : decs) {
-			names.addAll(dec.getVariableNames());
-		}
-		return names;
-		
-	}
 
 	private Set<Identifier> exploreVariableNamespace(ASTNode node,
 			Filter<Identifier> test) {
@@ -440,7 +432,7 @@ public class Processor extends RefactoringProcessor {
 		try {
 			String newFunction = generateNewFunction();
 			int newFunctionPos = getNewFunctionPos();
-			multiTextEdit.addChild(new InsertEdit(newFunctionPos, "\n\n"+newFunction));
+			multiTextEdit.addChild(new InsertEdit(newFunctionPos, newFunction+"\n\n"));
 
 			TextEdit selectionReplacement = getSelection2FunctionCallReplacement();
 			multiTextEdit.addChild(selectionReplacement);
@@ -463,9 +455,11 @@ public class Processor extends RefactoringProcessor {
 
 	private TextEdit getSelection2FunctionCallReplacement() throws CoreException, MissingNatureException, IOException {
 		String extractedDeclarations = getExtractedDeclarations();
-		String newFunctionCall = getFunctionCall();
-		String selectionReplacement = extractedDeclarations + "\n"
+		String newFunctionCall = getNewLine()+getFunctionCall();
+		String newLine = getNewLine();
+		String selectionReplacement = newLine + extractedDeclarations + newLine
 				+ newFunctionCall;
+		System.out.println(selectionReplacement);
 
 		int extractedCodeBegin = info.getSelectionBegin();
 		int extractedCodeLenth = info.getSelectionEnd()
@@ -478,9 +472,22 @@ public class Processor extends RefactoringProcessor {
 	/**
 	 * Very simple way to get the right amount of newlines before return
 	 */
-	/*private String getNewLine(){
+	private String getNewLine(){
+		String ret="\n";
+		int levels = getLevelsOfAcestorCompoundStatements(info.getStatementsToExtract().iterator().next());
+		for(int i=1; i < levels; i++){
+			ret +="\t";
+		}
+		return ret;
+	}
 	
-	}*/
+	private int getLevelsOfAcestorCompoundStatements(ASTNode node){
+		int levels;
+		for(levels = 0; node != null ; levels++){
+			node = astUtil.getParentForName(node, CompoundStatement.class);
+		}
+		return levels;
+	}
 
 	private String getExtractedDeclarations() throws CoreException, MissingNatureException, IOException {
 		StringBuffer ret = new StringBuffer();
@@ -493,8 +500,8 @@ public class Processor extends RefactoringProcessor {
 		for(VariableDeclaration dec : variableDeclarations){
 			String partialDeclaration = dec.getPartialDeclaration(potentialyExtractedDeclarations);
 			if(!partialDeclaration.equals("")){
+				ret.append(getNewLine());
 				ret.append(partialDeclaration);
-				ret.append("\n");
 			}
 			
 		}
@@ -587,7 +594,7 @@ public class Processor extends RefactoringProcessor {
 			params.add(getVariableType(var) + " " + var);
 		}
 		func.append(StringUtil.joinString(params, ", "));
-		func.append(")\n{\n");
+		func.append(")\n{"+getNewLine());
 		func.append(getFunctionBody(outputParameter, inputParameter));
 		func.append("\n}\n");
 
@@ -616,7 +623,7 @@ public class Processor extends RefactoringProcessor {
 						.getVariableNames());
 				varNamesToKeep.removeAll(outputParameter);
 				varNamesToKeep.removeAll(inputParameter);
-				varNamesToKeep.remove(getInternalyUnusedDeclarations());
+				varNamesToKeep.removeAll(getInternalyUnusedDeclarations());
 				funcBody.append(dec.getPartialDeclaration(varNamesToKeep));
 			} else {
 				funcBody.append(replaceOutputParameter(statement,
