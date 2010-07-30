@@ -15,8 +15,10 @@ import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.preprocessor.PreprocessorReader;
 import tinyos.yeti.refactoring.RefactoringPlugin;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class ASTPositioning {
@@ -233,6 +235,20 @@ public class ASTPositioning {
 		IFile nodeSource = projectUtil.getIFile4ParseFile(ast.getParseFile());
 		
 		return getStringFromFile(endFirst, len , nodeSource);
+	}
+	
+	public CompoundStatement getDeepedstSuperCompoundSuperstatement(int pos) {
+		ASTNode beginNode = getDeepestAstNodeAtPos(
+				pos);
+
+		CompoundStatement ret = null;
+		if (beginNode instanceof CompoundStatement) {
+			ret = (CompoundStatement) beginNode;
+		} else {
+			ret = (CompoundStatement) (new ASTUtil()).getParentForName(beginNode,
+					CompoundStatement.class);
+		}
+		return ret;
 	}
 	
 }
