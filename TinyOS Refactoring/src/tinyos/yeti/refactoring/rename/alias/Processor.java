@@ -144,11 +144,14 @@ public class Processor extends RenameProcessor {
 		
 		//Get the ComponentAstAnalyzer of the defining component
 		IDeclaration sourceDefinition=getComponentDefinition(sourceComponentName);
+		if(sourceDefinition==null){
+			throw new IllegalStateException("Could not find a definition for the source component.");
+		}
 		IFile declaringFile=getIFile4ParseFile(sourceDefinition.getParseFile());
 		NesC12AST ast=getAst(declaringFile, pm);
 		AstAnalyzerFactory factory4DefiningAst=new AstAnalyzerFactory(ast.getRoot());
 		if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
-			ret.add(new NullChange("Implementation problem"));	//The alias definition has to be in a NesC module/configuration specification.
+			ret.add(new NullChange("Implementation problem"));	//The alias definition has to be in a NesC component specification.
 		}
 		ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
 
@@ -210,16 +213,19 @@ public class Processor extends RenameProcessor {
 	private String getNameOFSourceComponent(){
 		if(selectionIdentifier.isInterfaceAliasingInSpecification()||selectionIdentifier.isInterfaceAliasInNescFunction()){	//In this case the selection is in the component which defines the alias.
 			return factory4Selection.getComponentAnalyzer().getComponentName();
-		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring()){	//TODO: DAS FUNKTIONIERT NICHT RICHTIG
+		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring()){	
+			DebugUtil.immediatePrint("isInterfaceAliasInNescComponentWiring");
 			ConfigurationAstAnalyzer analyzer=factory4Selection.getConfigurationAnalyzer();
 			Identifier associatedComponent=analyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(selectionIdentifier.getSelection());
+			DebugUtil.immediatePrint("Associated Component: "+((associatedComponent!=null)?associatedComponent.getName():"null"));
 			if(associatedComponent==null){	//this should never happen
 				throw new IllegalStateException("Could not find an associated Component for the given interface identifier");
 			}
 			if(associatedComponent==analyzer.getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
 				return associatedComponent.getName();
 			}
-			Identifier realComponent=analyzer.getComponentIdentifier4ComponentAliasIdentifier(associatedComponent);
+			Identifier realComponent=analyzer.getComponentIdentifier4ComponentAliasIdentifier(associatedComponent.getName());
+			DebugUtil.immediatePrint("Real Component: "+((realComponent!=null)?realComponent.getName():"null"));
 			if(realComponent!=null){	//If the associatedComponent is allready the real component, then realComponent is null.
 				return realComponent.getName();
 			}
