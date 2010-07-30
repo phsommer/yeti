@@ -80,6 +80,10 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		Collection<Identifier> componentWirings=configurationAnalyzer.getWiringComponentPartIdentifiers();
+		DebugUtil.immediatePrint("componentWirings: "+componentWirings.size());
+		for(Identifier id:componentWirings){
+			DebugUtil.immediatePrint(id.getName());
+		}
 		return containsIdentifierInstance(componentWirings);
 	}
 	
@@ -93,7 +97,6 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		Identifier alias=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName());
-		DebugUtil.immediatePrint("isInterfaceAliasingInSpecification "+(alias==identifier));
 		return alias==identifier;
 	}
 
@@ -104,16 +107,13 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 */
 	public boolean isInterfaceAliasInNescFunction() {
 		if(!analyzerFactory.hasModuleAnalyzerCreated()){
-			DebugUtil.immediatePrint("isInterfaceAliasInNescFunction "+false);
 			return false;
 		}
 		Collection<Identifier> identifiers=moduleAnalyzer.getNesCFunctionImplementationInterfaceIdentifiers();
 		if(!containsIdentifierInstance(identifiers)){
-			DebugUtil.immediatePrint("isInterfaceAliasInNescFunction "+false);
 			return false;
 		}
 		boolean val=moduleAnalyzer.isDefinedInterfaceAliasName(identifier.getName());
-		DebugUtil.immediatePrint("isInterfaceAliasInNescFunction "+val);
 		return val;
 	}
 	
@@ -124,11 +124,9 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 */
 	public boolean isInterfaceAliasInNescComponentWiring(){
 		if(!analyzerFactory.hasConfigurationAnalyzerCreated()){
-			DebugUtil.immediatePrint("isInterfaceAliasInNescComponentWiring false");
 			return false;
 		}
 		boolean val=containsIdentifierInstance(configurationAnalyzer.getWiringSpecificationPartIdentifiers());
-		DebugUtil.immediatePrint("isInterfaceAliasInNescComponentWiring "+val);
 		return val;
 	}
 }

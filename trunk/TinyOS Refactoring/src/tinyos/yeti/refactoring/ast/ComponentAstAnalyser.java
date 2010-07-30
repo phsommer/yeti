@@ -26,6 +26,7 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	private Collection<Identifier> referencedInterfaceIdentifiers;
 	private Collection<Identifier> referencedInterfaceAliasIdentifiers;
 	private Map<Identifier,Identifier> alias2AliasedInterface;
+	private Map<Identifier,Identifier> interfaceLocalName2InterfaceGlobalName;
 	
 	public ComponentAstAnalyser(TranslationUnit root,Identifier componentIdentifier, AccessList specification) {
 		super();
@@ -92,22 +93,44 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	}
 
 	/**
+	 * Returns a map which maps the interfaceLocalNameIdentifier, which is an interface rename with the NesC "as" keyword in the Component Specification,
+	 * to the interfaceGlobalName, which is the interface bevor the as keyword in the specificaion.
+	 * If there is no as keyword for a given interface reference then interfaceGlobalName==interfaceLocalName.
+	 * @return
+	 */
+	public Map<Identifier,Identifier> getInterfaceLocalName2InterfaceGlobalName(){
+		if(interfaceLocalName2InterfaceGlobalName==null){
+			interfaceLocalName2InterfaceGlobalName=new HashMap<Identifier, Identifier>();
+			for(InterfaceReference reference:getInterfaceReferences()){
+				InterfaceType type=(InterfaceType)reference.getField(InterfaceReference.NAME);
+				if(type!=null){
+					Identifier interfaceGlobalName=(Identifier)type.getField(InterfaceType.NAME);
+					if(interfaceGlobalName!=null){
+						Identifier interfaceLocalName=(Identifier)reference.getField(InterfaceReference.RENAME);
+						if(interfaceLocalName==null){
+							interfaceLocalName=interfaceGlobalName;
+						}
+						interfaceLocalName2InterfaceGlobalName.put(interfaceLocalName, interfaceGlobalName);
+					}
+				}
+			}
+		}
+		return interfaceLocalName2InterfaceGlobalName;
+	}
+	
+	/**
 	 * Returns a map which maps an interface alias identifier to the identifier of the interface it aliases, in the specification of a NesC Component.
+	 * Returns null if there is no such alias in the specification.
 	 * @return
 	 */
 	public Map<Identifier,Identifier> getAlias2AliasedInterface(){
 		if(alias2AliasedInterface==null){
 			alias2AliasedInterface=new HashMap<Identifier, Identifier>();
-			for(InterfaceReference reference:getInterfaceReferences()){
-				Identifier aliasIdentifier=(Identifier)reference.getField(InterfaceReference.RENAME);
-				if(aliasIdentifier!=null){
-					InterfaceType type=(InterfaceType)reference.getField(InterfaceReference.NAME);
-					if(type!=null){
-						Identifier interfaceIdentifier=(Identifier)type.getField(InterfaceType.NAME);
-						if(interfaceIdentifier!=null){
-							alias2AliasedInterface.put(aliasIdentifier, interfaceIdentifier);
-						}
-					}
+			Map<Identifier,Identifier> interfaceLocal2Global=getInterfaceLocalName2InterfaceGlobalName();
+			for(Identifier interfaceLocalName:interfaceLocal2Global.keySet()){
+				Identifier interfaceGlobalName=interfaceLocal2Global.get(interfaceLocalName);
+				if(interfaceLocalName!=interfaceGlobalName){
+					alias2AliasedInterface.put(interfaceLocalName,interfaceGlobalName);
 				}
 			}
 		}

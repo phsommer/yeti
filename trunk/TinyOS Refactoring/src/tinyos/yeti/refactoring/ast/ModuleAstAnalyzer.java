@@ -12,7 +12,6 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.AccessList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class ModuleAstAnalyzer extends ComponentAstAnalyser {
 

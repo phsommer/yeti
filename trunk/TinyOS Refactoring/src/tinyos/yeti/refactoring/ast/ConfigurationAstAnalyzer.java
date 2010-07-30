@@ -2,7 +2,9 @@ package tinyos.yeti.refactoring.ast;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -13,11 +15,13 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Connection;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Endpoint;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 
 	private ConfigurationDeclarationList implementation;
 	private Collection<RefComponent> components;
+	private Map<Identifier,Identifier> componentLocalName2ComponentGlobalName;
 	private Collection<Identifier> referencedComponents;
 	private Collection<String> namesOfReferencedComponents;
 	private Collection<Identifier> componentAliases;
@@ -44,6 +48,29 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 			}
 		}
 		return components;
+	}
+	
+	/**
+	 * Returns a map which maps the componentLocalNameIdentifier, which is an component rename with the NesC "components" keyword in the configuration implementation,
+	 * to the componentGlobalName, which is the component before the as keyword in the configuration implementation.
+	 * If there is no as keyword for a given component reference then componentGlobalName==componentLocalName.
+	 * @return
+	 */
+	public Map<Identifier,Identifier> getComponentLocalName2ComponentGlobalName(){
+		if(componentLocalName2ComponentGlobalName==null){
+			componentLocalName2ComponentGlobalName=new HashMap<Identifier, Identifier>();
+			for(RefComponent reference:getComponentDeclarations()){
+				Identifier componentGlobalName=(Identifier)reference.getField(RefComponent.NAME);
+				if(componentGlobalName!=null){
+					Identifier componentLocalName=(Identifier)reference.getField(RefComponent.RENAME);
+					if(componentLocalName==null){
+						componentLocalName=componentGlobalName;
+					}
+					componentLocalName2ComponentGlobalName.put(componentLocalName, componentGlobalName);
+				}
+			}
+		}
+		return componentLocalName2ComponentGlobalName;
 	}
 	
 	/**
@@ -103,8 +130,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	 */
 	public Collection<Identifier> getWiringComponentPartIdentifiers(){
 		if(wiringComponentPartIdentifiers==null){
-			Collection<ParameterizedIdentifier> parameterizedIdentifiers=collectFieldsWithName(getWiringEndpoints(),Endpoint.COMPONENT);
-			wiringComponentPartIdentifiers=collectFieldsWithName(parameterizedIdentifiers, ParameterizedIdentifier.IDENTIFIER);
+			collectWiringsIdentifiers();
 		}
 		return wiringComponentPartIdentifiers;
 	}
@@ -115,10 +141,53 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	 */
 	public Collection<Identifier> getWiringSpecificationPartIdentifiers(){
 		if(wiringSpecificationPartIdentifiers==null){
-			Collection<ParameterizedIdentifier> parameterizedIdentifiers=collectFieldsWithName(getWiringEndpoints(),Endpoint.SPECIFICATION);
-			wiringSpecificationPartIdentifiers=collectFieldsWithName(parameterizedIdentifiers, ParameterizedIdentifier.IDENTIFIER);
+			collectWiringsIdentifiers();
 		}
 		return wiringSpecificationPartIdentifiers;
+	}
+	
+	/**
+	 * 	Gathers all component identifier parts of a NesC wiring.
+	 * 	And Gathers all interface identifier parts of a NesC wiring.
+	 */
+	private void collectWiringsIdentifiers(){
+		DebugUtil.immediatePrint("collectWiringsIdentifiers");
+		wiringComponentPartIdentifiers=new LinkedList<Identifier>();
+		wiringSpecificationPartIdentifiers=new LinkedList<Identifier>();
+		for(Endpoint endpoint:getWiringEndpoints()){
+			ParameterizedIdentifier componentPart=(ParameterizedIdentifier)endpoint.getField(Endpoint.COMPONENT);
+			ParameterizedIdentifier specificationPart=(ParameterizedIdentifier)endpoint.getField(Endpoint.SPECIFICATION);
+			if(componentPart!=null&&specificationPart!=null){
+				DebugUtil.immediatePrint("both !=null");
+				
+				Identifier component=(Identifier)componentPart.getField(ParameterizedIdentifier.IDENTIFIER);
+				DebugUtil.immediatePrint("id: "+component.getName());
+				Identifier interFace=(Identifier)specificationPart.getField(ParameterizedIdentifier.IDENTIFIER);
+				if(component!=null&&interFace!=null){	//This shoudl always be true, otherwise there was a problem in the parser.
+					wiringComponentPartIdentifiers.add(component);
+					wiringSpecificationPartIdentifiers.add(interFace);
+				}
+			}else if(componentPart!=null){	//In this case component part can be an interface or an component
+				DebugUtil.immediatePrint("component !=null");
+				Identifier candidate=(Identifier)componentPart.getField(ParameterizedIdentifier.IDENTIFIER);
+				DebugUtil.immediatePrint("id: "+candidate.getName());
+				if(candidate!=null){
+					if(isComponentName(candidate)){
+						wiringComponentPartIdentifiers.add(candidate);
+					}else{	//If it is not a component name it has to be an interface name.
+						wiringSpecificationPartIdentifiers.add(candidate);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks if the given identifier is a component reference or an alias of such a reference in a NesC components statement.
+	 * @return
+	 */
+	private boolean isComponentName(Identifier componentIdentifier){
+		return getComponentLocalName2ComponentGlobalName().containsKey(componentIdentifier);
 	}
 	
 	/**
@@ -143,9 +212,9 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	 * @param componentAlias
 	 * @return
 	 */
-	public Identifier getComponentIdentifier4ComponentAliasIdentifier(Identifier componentAlias){
+	public Identifier getComponentIdentifier4ComponentAliasIdentifier(String componentAlias){
 		for(Identifier id:getComponentAliasIdentifiers()){
-			if(id==componentAlias){
+			if(componentAlias.equals(id.getName())){
 				RefComponent parent=(RefComponent)id.getParent();
 				return (Identifier)parent.getField(RefComponent.NAME);
 			}
@@ -199,11 +268,13 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 		if(pI==null){
 			return null;
 		}
+		DebugUtil.immediatePrint("getAssociatedComponentIdentifier4InterfaceIdentifierInWiring");
 		Identifier targetComponent=(Identifier)pI.getField(ParameterizedIdentifier.IDENTIFIER);
-		if(targetComponent!=null){
+		if(targetComponent!=interfaceIdentifier){	//If there is just one identifier involved in the wiring, the identifier is in the component field of the Endpoint. => If the target component == the given identifier then this must be a interface identifier
+			DebugUtil.immediatePrint("Has Target");
 			return targetComponent;
 		}
-		
+		DebugUtil.immediatePrint("No Target");
 		//If there is no component associated with the interface, it has to be an implicit reference to the this configuration itself.
 		return componentIdentifier;
 	}
