@@ -27,8 +27,6 @@ import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.AssignmentExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.Expression;
@@ -253,25 +251,6 @@ public class Processor extends RefactoringProcessor {
 		return getTopLevelDeclarations(nodesToCheckForDeclarations);
 	}
 
-	private boolean isDeclaration(ASTNode node) {
-		return (node instanceof Declaration);
-	}
-
-	/*private Set<String> getDeclaredVariableNames(Declaration d) {
-		Set<String> ret = new HashSet<String>();
-		for (int j = 0; d.getInitlist().getChildrenCount() > j; j++) {
-			InitDeclaratorList idl = d.getInitlist();
-			Declarator declarator = idl.getNoError(j).getDeclarator();
-			Identifier id = (Identifier) getFirstIdentifier(declarator);
-			ret.add(id.getName());
-		}
-		return ret;
-	}*/
-	
-	/*private String getDeclaredVariableNames(ParameterDeclaration d) {
-		return getFirstIdentifier(d.getDeclarator()).getName();
-	}*/
-
 	/**
 	 * Fields that are defined within the Statements to extract, but are still visible after 
 	 * the End of the selection (so highest level declarations) are not filterd out.
@@ -319,11 +298,9 @@ public class Processor extends RefactoringProcessor {
 	private Set<VariableDeclaration> getTopLevelDeclarations(Collection<? extends ASTNode> statements) {
 		Set<VariableDeclaration> declarations = new HashSet<VariableDeclaration>();
 		for (ASTNode s : statements) {
-			if (isDeclaration(s)) {
-				declarations.add(new VariableDeclaration((Declaration) s,info));
-			}
-			if(s instanceof ParameterDeclaration){
-				declarations.add(new VariableDeclaration((ParameterDeclaration) s, info));
+			if (VariableDeclaration.isDeclaration(s)) {
+				VariableDeclaration dec = VariableDeclaration.factory(s, info);
+				declarations.add(dec);
 			}
 		}
 		return declarations;
@@ -526,12 +503,13 @@ public class Processor extends RefactoringProcessor {
 				funcBody.append(astPos.getSourceBetween(lastStatement, statement,info.getProjectUtil()));
 			}
 			
-			if(isDeclaration(statement)){
+			if(VariableDeclaration.isDeclaration(statement)){
+				VariableDeclaration dec = VariableDeclaration.factory(statement, info);
 				// Output Parameter don't need to be Declared, they get decleard in the Header
-				Set<String> varNamesToKeep = new HashSet<String>((new VariableDeclaration((Declaration) statement,info)).getVariableNames());
+				Set<String> varNamesToKeep = new HashSet<String>(dec.getVariableNames());
 				varNamesToKeep.removeAll(outputParameter);
 				varNamesToKeep.removeAll(inputParameter);
-				funcBody.append(new VariableDeclaration((Declaration) statement,info).getPartialDeclaration(varNamesToKeep));
+				funcBody.append(dec.getPartialDeclaration(varNamesToKeep));
 			} else {
 				funcBody.append(replaceOutputParameter(statement,outputParameter));
 			}
@@ -597,10 +575,7 @@ public class Processor extends RefactoringProcessor {
 		}
 		return dec.getType();
 	}
-	
-	/*private String getDeclaredType(Declaration dec) throws CoreException, MissingNatureException, IOException{
-		return getSourceCode(dec.getSpecifiers());
-	}*/
+
 	
 	/**
 	 * If the declaration of the Variable varName is found, it is returned

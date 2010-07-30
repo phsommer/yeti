@@ -126,4 +126,30 @@ public class VariableDeclaration {
 		}
 		return null;
 	}
+	
+	public static boolean isDeclaration(ASTNode node) {
+		return isDeclarationP(node) || isParameterDeclaration(node);
+	}
+	
+	private static boolean isDeclarationP(ASTNode node){
+		return (node instanceof Declaration);
+	}
+	
+	private static boolean isParameterDeclaration(ASTNode node){
+		return (node instanceof ParameterDeclaration);
+	}
+	
+	/**
+	 * Returns a VariableDeclaration for the ASTNode if it was a Variable declaration
+	 * @throws IllegalArgumentException if the AST node is not a Variable declaration
+	 */
+	public static VariableDeclaration factory(ASTNode node, Info info){
+		if(isDeclarationP(node)){
+			return new VariableDeclaration((Declaration) node, info);
+		} else if (isParameterDeclaration(node)){
+			return new VariableDeclaration((ParameterDeclaration) node, info);
+		} else {
+			throw new IllegalArgumentException("VariableDeclaration Object can only be created using ASTNodes that declare a Variable.");
+		}
+	}
 }
