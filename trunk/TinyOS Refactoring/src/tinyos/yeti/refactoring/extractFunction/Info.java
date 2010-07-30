@@ -9,12 +9,11 @@ import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.Statement;
 import tinyos.yeti.refactoring.RefactoringInfo;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 
 public class Info extends RefactoringInfo{
 
 	private String functionName;
+	private List<Statement> statementsToExtract = null;
 	
 	
 	public Info(NesCEditor editor) {
@@ -35,6 +34,10 @@ public class Info extends RefactoringInfo{
 	 * @throws IllegalStateException If no statement is selected to be extracted.
 	 */
 	public List<Statement> getStatementsToExtract() {
+		if(statementsToExtract != null){
+			// Createing a new LinkedList prevents from caller changing local List 
+			return new LinkedList<Statement>(statementsToExtract);
+		}
 		int begin = getOrigSelectionBegin();
 		int end = getOrigSelectionEnd();
 		ASTPositioning util = getAstPositioning();
@@ -57,8 +60,9 @@ public class Info extends RefactoringInfo{
 		if(ret.size() < 1){
 			throw new IllegalStateException("At least one Statement has to be Selected.");
 		}
-
-		return ret;
+		
+		this.statementsToExtract = ret;
+		return new LinkedList<Statement>(ret);
 	}
 	
 	/**
