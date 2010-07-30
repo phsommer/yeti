@@ -31,7 +31,6 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
-import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
@@ -61,7 +60,6 @@ public class Processor extends RefactoringProcessor {
 	private ASTUtil astUtil;
 	private ASTUtil4Variables varUtil;
 	private ASTPositioning astPos;
-	private String newLine = null;
 
 	public Processor(Info info) {
 		this.info = info;
@@ -95,10 +93,12 @@ public class Processor extends RefactoringProcessor {
 	/**
 	 * To extract a Function the whole extracted Area should be part of one
 	 * Block. Otherwise you would extract eg. half of a loop body. This Method
-	 * tests wether begin and end are in the same Block.
+	 * tests whether begin and end are in the same Block.
 	 */
 	private boolean isInSameCompoundStatement(int begin, int end) {
 		// System.err.println("Begin:"+begin+" End:"+end);
+		// makes shure, that if the selection ends after a sub block, this is correct seen.
+		end++;
 		ASTNode beginNode = info.getAstPositioning().getDeepestAstNodeAtPos(
 				begin);
 		ASTNode endNode = info.getAstPositioning().getDeepestAstNodeAtPos(end);
@@ -459,7 +459,6 @@ public class Processor extends RefactoringProcessor {
 		String newLine = getNewLine();
 		String selectionReplacement = newLine + extractedDeclarations + newLine
 				+ newFunctionCall;
-		System.out.println(selectionReplacement);
 
 		int extractedCodeBegin = info.getSelectionBegin();
 		int extractedCodeLenth = info.getSelectionEnd()
@@ -470,7 +469,7 @@ public class Processor extends RefactoringProcessor {
 	}
 	
 	/**
-	 * Very simple way to get the right amount of newlines before return
+	 * Very simple way to get the right amount of tabs before return
 	 */
 	private String getNewLine(){
 		String ret="\n";
@@ -570,13 +569,9 @@ public class Processor extends RefactoringProcessor {
 
 	private String generateNewFunction() throws CoreException,
 			MissingNatureException, IOException {
-		info.setFunctionName("newFunction");
 		Set<String> outputParameter = getOutputParameters();
 		Set<String> inputParameter = getInputParameter();
 		
-		System.err.println("Output Paramteter: " + outputParameter
-				+ "\nInput Parameter: " + inputParameter);
-
 		String returnType = "void";
 
 		// function header
