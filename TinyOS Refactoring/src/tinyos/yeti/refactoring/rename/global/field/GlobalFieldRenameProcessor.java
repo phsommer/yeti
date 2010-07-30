@@ -13,8 +13,6 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
-import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
-import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.nesc12.ep.NesC12AST;
@@ -111,35 +109,6 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 			ret.addFatalError("No Global Field selected.");
 		}
 		return ret;
-	}
-
-	@Override
-	public Object[] getElements() {
-		// TODO Auto-generated method stub
-		return new Object[] {};
-	}
-
-	@Override
-	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.renameFunction.Processor";
-	}
-
-	@Override
-	public String getProcessorName() {
-		return info.getInputPageName();
-	}
-
-	@Override
-	public boolean isApplicable() 
-	throws CoreException {
-		return super.isApplicable();
-	}
-
-	@Override
-	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,SharableParticipants sharedParticipants) 
-	throws CoreException {
-		// TODO Auto-generated method stub
-		return new RefactoringParticipant[] {};
 	}
 
 }

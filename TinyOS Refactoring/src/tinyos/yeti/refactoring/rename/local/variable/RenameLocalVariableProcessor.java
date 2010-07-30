@@ -14,8 +14,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
-import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
-import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -65,21 +63,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 	}
 
 	@Override
-	public Object[] getElements() {
-		return new Object[] { info.getEditor().getEditorInput() };
-	}
-
-	@Override
-	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.renameLocalVariable.RenameLocalVariableProcessor";
-	}
-
-	@Override
-	public String getProcessorName() {
-		return "Rename Local Variable Prozessor";
-	}
-
-	@Override
 	public boolean isApplicable() throws CoreException {
 		// Tests if a LOCAL Variable is selected
 		Identifier identifier = getSelectedIdentifier();
@@ -87,12 +70,6 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 			return false;
 		CompoundStatement compound = astUtil4Variables.findDeclaringCompoundStatement(identifier);
 		return compound != null;
-	}
-
-	@Override
-	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,
-			SharableParticipants sharedParticipants) throws CoreException {
-		return new RefactoringParticipant[0];
 	}
 
 	@Override

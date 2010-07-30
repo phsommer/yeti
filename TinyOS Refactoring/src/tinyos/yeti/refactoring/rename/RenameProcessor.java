@@ -10,10 +10,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
+import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
+import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
+import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
@@ -50,8 +55,41 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	public boolean isApplicable() throws CoreException {
 		return (info.getAstPositioning() != null);
 	}
+	
+	@Override
+	public Object[] getElements() {
+		// TODO Auto-generated method stub
+		return new Object[] {};
+	}
 
+	@Override
+	public String getIdentifier() {
+		return getClass().getCanonicalName();
+	}
 
+	@Override
+	public String getProcessorName() {
+		return info.getInputPageName();
+	}
+
+	@Override
+	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,SharableParticipants sharedParticipants) 
+	throws CoreException {
+		// TODO Auto-generated method stub
+		return new RefactoringParticipant[] {};
+	}
+	
+	@Override
+	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,CheckConditionsContext context) 
+	throws CoreException,OperationCanceledException {
+		RefactoringStatus ret = new RefactoringStatus();
+		if (!isApplicable()) {
+			ret.addFatalError("The Refactoring is not Applicable");
+		}
+		return ret;
+		// TODO checkFinalConditions not yet implemented
+
+	}
 
 	/**
 	 * 

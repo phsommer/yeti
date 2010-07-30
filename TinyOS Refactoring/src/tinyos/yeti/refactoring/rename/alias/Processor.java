@@ -14,9 +14,6 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
-import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
-import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.IASTModelPath;
@@ -102,28 +99,55 @@ public class Processor extends RenameProcessor {
 		}
 		return result;
 	}
+	
+	/**
+	 * Checks if the given file includes a configuration which references the defining module.
+	 * The reason for this check is, that there can be other modules which rename the same interface with the same alias, the references to this alias would without this check also be changed.
+	 * @param file
+	 * @return
+	 * @throws MissingNatureException 
+	 * @throws IOException 
+	 */
+	private boolean isConfigurationReferencingDefiningModule(String definingModuleName,IFile file,IProgressMonitor pm) throws IOException, MissingNatureException {
+		NesC12AST ast=getAst(file, pm);
+		AstAnalyzerFactory factory4referencingEntity=new AstAnalyzerFactory(ast.getRoot());
+		if(!factory4referencingEntity.hasConfigurationAnalyzerCreated()){	//The defining module is treated separatly.
+			return false;
+		}
+		ConfigurationAstAnalyzer analyzer=factory4referencingEntity.getConfigurationAnalyzer();
+		Collection<String> referencedComponents=analyzer.getNamesOfReferencedComponents();
+		return referencedComponents.contains(definingModuleName);
+	}
 
-	@Override
-	public Change createChange(IProgressMonitor pm) 
-	throws CoreException,OperationCanceledException {
-		DebugUtil.clearOutput();
-		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
-		
-		//If it is a component alias, this is a pure local change.
-		if(selectionIdentifier.isComponentAlias()){
-			createConfigurationImplementationLocalChange(ret);
-			return ret;
+	/**
+	 * Tries to find the name of the component, in whichs specification the alias is defined.
+	 * Returns null if the selected identifier is not an interfaceIdentifier.
+	 * @param selectedIdentifier
+	 * @return
+	 */
+	private String getNameOFSourceComponent(){
+		if(selectionIdentifier.isInterfaceAliasingInSpecification()||selectionIdentifier.isInterfaceAliasInNescFunction()){	//In this case the selection is in the component which defines the alias.
+			return factory4Selection.getComponentAnalyzer().getComponentName();
+		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring()){	
+			DebugUtil.immediatePrint("isInterfaceAliasInNescComponentWiring");
+			ConfigurationAstAnalyzer analyzer=factory4Selection.getConfigurationAnalyzer();
+			Identifier associatedComponent=analyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(selectionIdentifier.getSelection());
+			DebugUtil.immediatePrint("Associated Component: "+((associatedComponent!=null)?associatedComponent.getName():"null"));
+			if(associatedComponent==null){	//this should never happen
+				throw new IllegalStateException("Could not find an associated Component for the given interface identifier");
+			}
+			if(associatedComponent==analyzer.getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
+				return associatedComponent.getName();
+			}
+			Identifier realComponent=analyzer.getComponentIdentifier4ComponentAliasIdentifier(associatedComponent.getName());
+			DebugUtil.immediatePrint("Real Component: "+((realComponent!=null)?realComponent.getName():"null"));
+			if(realComponent!=null){	//If the associatedComponent is allready the real component, then realComponent is null.
+				return realComponent.getName();
+			}
+			return associatedComponent.getName();
+			
 		}
-		
-		//Else, if it is a interface alias, it is a global matter
-		try {
-			createInterfaceAliasChange(ret,pm);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		DebugUtil.printOutput();
-		return ret;
+		return null;
 	}
 
 	/**
@@ -179,63 +203,9 @@ public class Processor extends RenameProcessor {
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=getAliasFreeList(identifiers,aliasName);
 				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
-			}
-			
+			}	
 		}
-		
 	}
-	
-	/**
-	 * Checks if the given file includes a configuration which references the defining module.
-	 * The reason for this check is, that there can be other modules which rename the same interface with the same alias, the references to this alias would without this check also be changed.
-	 * @param file
-	 * @return
-	 * @throws MissingNatureException 
-	 * @throws IOException 
-	 */
-	private boolean isConfigurationReferencingDefiningModule(String definingModuleName,IFile file,IProgressMonitor pm) throws IOException, MissingNatureException {
-		NesC12AST ast=getAst(file, pm);
-		AstAnalyzerFactory factory4referencingEntity=new AstAnalyzerFactory(ast.getRoot());
-		if(!factory4referencingEntity.hasConfigurationAnalyzerCreated()){	//The defining module is treated separatly.
-			return false;
-		}
-		ConfigurationAstAnalyzer analyzer=factory4referencingEntity.getConfigurationAnalyzer();
-		Collection<String> referencedComponents=analyzer.getNamesOfReferencedComponents();
-		return referencedComponents.contains(definingModuleName);
-	}
-
-	/**
-	 * Tries to find the name of the component, in whichs specification the alias is defined.
-	 * Returns null if the selected identifier is not an interfaceIdentifier.
-	 * @param selectedIdentifier
-	 * @return
-	 */
-	private String getNameOFSourceComponent(){
-		if(selectionIdentifier.isInterfaceAliasingInSpecification()||selectionIdentifier.isInterfaceAliasInNescFunction()){	//In this case the selection is in the component which defines the alias.
-			return factory4Selection.getComponentAnalyzer().getComponentName();
-		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring()){	
-			DebugUtil.immediatePrint("isInterfaceAliasInNescComponentWiring");
-			ConfigurationAstAnalyzer analyzer=factory4Selection.getConfigurationAnalyzer();
-			Identifier associatedComponent=analyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(selectionIdentifier.getSelection());
-			DebugUtil.immediatePrint("Associated Component: "+((associatedComponent!=null)?associatedComponent.getName():"null"));
-			if(associatedComponent==null){	//this should never happen
-				throw new IllegalStateException("Could not find an associated Component for the given interface identifier");
-			}
-			if(associatedComponent==analyzer.getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
-				return associatedComponent.getName();
-			}
-			Identifier realComponent=analyzer.getComponentIdentifier4ComponentAliasIdentifier(associatedComponent.getName());
-			DebugUtil.immediatePrint("Real Component: "+((realComponent!=null)?realComponent.getName():"null"));
-			if(realComponent!=null){	//If the associatedComponent is allready the real component, then realComponent is null.
-				return realComponent.getName();
-			}
-			return associatedComponent.getName();
-			
-		}
-		return null;
-	}
-	
-
 
 	/**
 	 * If the selected alias identifier is a rename in a NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.
@@ -254,18 +224,30 @@ public class Processor extends RenameProcessor {
 		addMultiTextEdit(identifiers2Change, ast, editedFile, createTextChangeName("alias", editedFile), ret);
 	}
 
+	
 	@Override
-	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,CheckConditionsContext context) 
+	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		RefactoringStatus ret = new RefactoringStatus();
-		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is not Applicable");
+		DebugUtil.clearOutput();
+		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
+		
+		//If it is a component alias, this is a pure local change.
+		if(selectionIdentifier.isComponentAlias()){
+			createConfigurationImplementationLocalChange(ret);
+			return ret;
 		}
+		
+		//Else, if it is a interface alias, it is a global matter
+		try {
+			createInterfaceAliasChange(ret,pm);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		DebugUtil.printOutput();
 		return ret;
-		// TODO checkFinalConditions not yet implemented
-
 	}
-
+	
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 	throws CoreException, OperationCanceledException {
@@ -280,35 +262,6 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("No Alias selected.");
 		}
 		return ret;
-	}
-
-	@Override
-	public Object[] getElements() {
-		// TODO Auto-generated method stub
-		return new Object[] {};
-	}
-
-	@Override
-	public String getIdentifier() {
-		return "tinyos.yeti.refactoring.rename.alias.Processor";
-	}
-
-	@Override
-	public String getProcessorName() {
-		return info.getInputPageName();
-	}
-
-	@Override
-	public boolean isApplicable() 
-	throws CoreException {
-		return super.isApplicable();
-	}
-
-	@Override
-	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,SharableParticipants sharedParticipants) 
-	throws CoreException {
-		// TODO Auto-generated method stub
-		return new RefactoringParticipant[] {};
 	}
 
 }
