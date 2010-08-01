@@ -151,26 +151,21 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	 * 	And Gathers all interface identifier parts of a NesC wiring.
 	 */
 	private void collectWiringsIdentifiers(){
-		DebugUtil.immediatePrint("collectWiringsIdentifiers");
 		wiringComponentPartIdentifiers=new LinkedList<Identifier>();
 		wiringInterfacePartIdentifiers=new LinkedList<Identifier>();
 		for(Endpoint endpoint:getWiringEndpoints()){
 			ParameterizedIdentifier componentPart=(ParameterizedIdentifier)endpoint.getField(Endpoint.COMPONENT);
 			ParameterizedIdentifier specificationPart=(ParameterizedIdentifier)endpoint.getField(Endpoint.SPECIFICATION);
 			if(componentPart!=null&&specificationPart!=null){
-				DebugUtil.immediatePrint("both !=null");
 				
 				Identifier component=(Identifier)componentPart.getField(ParameterizedIdentifier.IDENTIFIER);
-				DebugUtil.immediatePrint("id: "+component.getName());
 				Identifier interFace=(Identifier)specificationPart.getField(ParameterizedIdentifier.IDENTIFIER);
 				if(component!=null&&interFace!=null){	//This shoudl always be true, otherwise there was a problem in the parser.
 					wiringComponentPartIdentifiers.add(component);
 					wiringInterfacePartIdentifiers.add(interFace);
 				}
 			}else if(componentPart!=null){	//In this case component part can be an interface or an component
-				DebugUtil.immediatePrint("component !=null");
 				Identifier candidate=(Identifier)componentPart.getField(ParameterizedIdentifier.IDENTIFIER);
-				DebugUtil.immediatePrint("id: "+candidate.getName());
 				if(candidate!=null){
 					if(isComponentName(candidate)){
 						wiringComponentPartIdentifiers.add(candidate);
@@ -268,13 +263,10 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 		if(pI==null){
 			return null;
 		}
-		DebugUtil.immediatePrint("getAssociatedComponentIdentifier4InterfaceIdentifierInWiring");
 		Identifier targetComponent=(Identifier)pI.getField(ParameterizedIdentifier.IDENTIFIER);
 		if(targetComponent!=interfaceIdentifier){	//If there is just one identifier involved in the wiring, the identifier is in the component field of the Endpoint. => If the target component == the given identifier then this must be a interface identifier
-			DebugUtil.immediatePrint("Has Target");
 			return targetComponent;
 		}
-		DebugUtil.immediatePrint("No Target");
 		//If there is no component associated with the interface, it has to be an implicit reference to the this configuration itself.
 		return componentIdentifier;
 	}

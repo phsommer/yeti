@@ -86,10 +86,6 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		Collection<Identifier> componentWirings=configurationAnalyzer.getWiringComponentPartIdentifiers();
-		DebugUtil.immediatePrint("componentWirings: "+componentWirings.size());
-		for(Identifier id:componentWirings){
-			DebugUtil.immediatePrint(id.getName());
-		}
 		return containsIdentifierInstance(componentWirings);
 	}
 	
@@ -143,9 +139,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 		if(!analyzerFactory.hasConfigurationAnalyzerCreated()){
 			return null;
 		}
-		DebugUtil.immediatePrint("Contains?");
 		if(!containsIdentifierInstance(configurationAnalyzer.getWiringInterfacePartIdentifiers())){
-			DebugUtil.immediatePrint("Contains not");
 			return null;
 		}
 		String componentName=configurationAnalyzer.getUseDefiningComponent4InterfaceInWiring(identifier);
@@ -163,7 +157,6 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 				return null;
 			}
 			ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
-			DebugUtil.immediatePrint("has component Analyzer: "+componentAnalyzer.getComponentName());
 			Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName());
 			if(aliasDefinition==null){
 				return null;
