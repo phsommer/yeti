@@ -22,8 +22,7 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
+import tinyos.yeti.refactoring.selection.ComponentSelectionIdentifier;
 
 public class Processor extends RenameProcessor {
 
@@ -112,9 +111,9 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		ASTUtil4Components astUtil4Components=new ASTUtil4Components();
-		if (!astUtil4Components.isComponent(selectedIdentifier)) {
-			ret.addFatalError("No Interface selected.");
+		ComponentSelectionIdentifier selectionIdentifier=new ComponentSelectionIdentifier(selectedIdentifier);
+		if (!selectionIdentifier.isComponent(selectedIdentifier)) {
+			ret.addFatalError("No Component selected.");
 		}
 
 		try {

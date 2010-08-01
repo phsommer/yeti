@@ -143,10 +143,9 @@ public class ASTUtil4Functions {
 	 * @return Null if the given identifier is not part of a local function.
 	 */
 	public Identifier getLocalFunctionDefinitionIdentifier(Identifier identifier){
-		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=astUtil4Components.getModuleImplementationNodeIfInside(identifier);
+		ASTNode root=astUtil.getModuleImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;
@@ -169,10 +168,9 @@ public class ASTUtil4Functions {
 	 * @return Null if the given identifier is not part of a local function.
 	 */
 	public Identifier getLocalFunctionDeclarationIdentifier(Identifier identifier){
-		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
 		String targetName=identifier.getName();
 		//Get the root node for the local implementation of this module.
-		ASTNode root=astUtil4Components.getModuleImplementationNodeIfInside(identifier);
+		ASTNode root=astUtil.getModuleImplementationNodeIfInside(identifier);
 		//Test if the identifier is located inside a implementation.
 		if(root==null){
 			return null;

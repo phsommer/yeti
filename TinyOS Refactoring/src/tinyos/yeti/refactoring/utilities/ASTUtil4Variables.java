@@ -155,8 +155,7 @@ public class ASTUtil4Variables {
 	 * @return the identifier, null if the given identifier is not part of a implementation local variable.
 	 */
 	public Identifier getImplementationLocalVariableDeclarationIdentifier(Identifier identifier){
-		ASTUtil4Components astUtil4Components=new ASTUtil4Components();
-		NesCExternalDefinitionList implementationNode=astUtil4Components.getModuleImplementationNodeIfInside(identifier);
+		NesCExternalDefinitionList implementationNode=astUtil.getModuleImplementationNodeIfInside(identifier);
 		if(implementationNode==null){	//the identifier is outside of a implementation scope
 			return null;
 		}

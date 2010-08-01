@@ -11,7 +11,7 @@ import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 public class SelectionIdentifier {
 
 	protected Identifier identifier;
-	protected AstAnalyzerFactory analyzerFactory;
+	protected AstAnalyzerFactory factory4Selection;
 	protected ComponentAstAnalyser componentAnalyzer;
 	protected ConfigurationAstAnalyzer configurationAnalyzer;
 	protected ModuleAstAnalyzer moduleAnalyzer;
@@ -33,7 +33,7 @@ public class SelectionIdentifier {
 	 */
 	protected SelectionIdentifier(Identifier identifier,AstAnalyzerFactory analyzerFactory){
 		this.identifier=identifier;
-		this.analyzerFactory=analyzerFactory;
+		this.factory4Selection=analyzerFactory;
 		if(analyzerFactory.hasComponentAnalyzerCreated()){
 			componentAnalyzer=analyzerFactory.getComponentAnalyzer();
 		}

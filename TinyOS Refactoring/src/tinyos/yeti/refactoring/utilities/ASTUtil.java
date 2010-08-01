@@ -7,6 +7,7 @@ import java.util.List;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
 /**
@@ -224,5 +225,20 @@ public class ASTUtil {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the root node in the ast for a module implementation.
+	 * Null if the given node is not in an implementation.
+	 * @param node
+	 * @return
+	 */
+	public NesCExternalDefinitionList getModuleImplementationNodeIfInside(ASTNode node){
+		//Get the root node for the local implementation of this module.
+		ASTNode root=getParentForName(node, NesCExternalDefinitionList.class);
+		if(root==null){
+			return null;
+		}
+		return (NesCExternalDefinitionList)root;
 	}
 }
