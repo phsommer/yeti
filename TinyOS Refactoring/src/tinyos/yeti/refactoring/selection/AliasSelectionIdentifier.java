@@ -2,11 +2,18 @@ package tinyos.yeti.refactoring.selection;
 
 import java.util.Collection;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class AliasSelectionIdentifier extends SelectionIdentifier{
+	
 	
 	/**
 	 * @see SelectionIdentifier(Identifier identifier)
@@ -53,7 +60,6 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 */
 	public boolean isInterfaceAlias(){
 		return isInterfaceAliasingInSpecification()
-		||isInterfaceAliasInNescComponentWiring()
 		||isInterfaceAliasInNescFunction();
 	}
 	
@@ -122,11 +128,71 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @param identifier
 	 * @return
 	 */
-	public boolean isInterfaceAliasInNescComponentWiring(){
+	public boolean isInterfaceAliasInNescComponentWiring(ProjectUtil util, IProgressMonitor monitor){
+		return getDefinitionOfInterfaceAliasInNescComponentWiring(util, monitor)!=null;
+	}
+	
+	/**
+	 * Checks if the given identifier is an Alias for a interface in a NesC component wiring in the implementation of a NesC Configuration implementation.
+	 * But: Instead of returning a boolean value, this method returns a AstAnalyzer factory which is initialized for the component ast, which defines the interface alias in its specification.
+	 * Returns null, if the identifier is no interface alias in a NesC component wiring or if the defining component is out of project range. 
+	 * @param identifier
+	 * @return
+	 */
+	public AstAnalyzerFactory getDefinitionOfInterfaceAliasInNescComponentWiring(ProjectUtil util,IProgressMonitor monitor){
 		if(!analyzerFactory.hasConfigurationAnalyzerCreated()){
-			return false;
+			return null;
 		}
-		boolean val=containsIdentifierInstance(configurationAnalyzer.getWiringSpecificationPartIdentifiers());
-		return val;
+		DebugUtil.immediatePrint("Contains?");
+		if(!containsIdentifierInstance(configurationAnalyzer.getWiringInterfacePartIdentifiers())){
+			DebugUtil.immediatePrint("Contains not");
+			return null;
+		}
+		String componentName=configurationAnalyzer.getUseDefiningComponent4InterfaceInWiring(identifier);
+		try {
+			IDeclaration sourceDefinition=util.getComponentDefinition(componentName);
+			if(sourceDefinition==null){
+				return null;
+			}
+			IFile declaringFile=util.getDeclaringFile(sourceDefinition);
+			if(declaringFile==null||!util.isProjectFile(declaringFile)){	//If the source definition is not in this project, we are not allowed/able to rename the alias.
+				return null;
+			}
+			AstAnalyzerFactory factory4DefiningAst=new AstAnalyzerFactory(declaringFile,util,monitor);
+			if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
+				return null;
+			}
+			ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
+			DebugUtil.immediatePrint("has component Analyzer: "+componentAnalyzer.getComponentName());
+			Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName());
+			if(aliasDefinition==null){
+				return null;
+			}
+			return factory4DefiningAst;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

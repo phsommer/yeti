@@ -38,13 +38,17 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 	
 	private RenameInfo info;
-	private ASTUtil4Variables varUtil = new ASTUtil4Variables();
+	
+	private boolean refactoringMarkedAsInfeasible=false;
+	private String reason4Infeasibility;
+	
+	private ProjectUtil projectUtil;
 
 	public RenameProcessor(RenameInfo info) {
 		super();
@@ -86,9 +90,19 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		if (!isApplicable()) {
 			ret.addFatalError("The Refactoring is not Applicable");
 		}
+		if(refactoringMarkedAsInfeasible){
+			ret.addFatalError(reason4Infeasibility);
+		}
 		return ret;
-		// TODO checkFinalConditions not yet implemented
-
+	}
+	
+	/**
+	 * Marks the refactoring as infeasible and will set the final condition check to fail.
+	 * @param reason Message that will be shown to the user with the reason for the infeasibility of this refactoring.
+	 */
+	protected void markRefactoringAsInfeasible(String reason){
+		refactoringMarkedAsInfeasible=true;
+		reason4Infeasibility=reason;
 	}
 
 	/**
@@ -99,13 +113,14 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		ITextSelection selection=info.getSelection();
 		return info.getAstPositioning().getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
 	}
-
-
-
-	protected ASTUtil4Variables getVarUtil() {
-		return varUtil;
-	}
 	
+	/**
+	 * Adds a replace edit for every identifier in identifiers to the multitextedit.
+	 * @param identifiers
+	 * @param newName	the new name for the identifier.
+	 * @param multiTextEdit
+	 * @param ast the ast which includes the identifiers.
+	 */
 	protected void addChanges4Identifiers(Collection<Identifier> identifiers,String newName,MultiTextEdit multiTextEdit,NesC12AST ast){
 		ASTPositioning util;
 		if(ast==null){
@@ -127,8 +142,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * Parses a given File and returns the Parser.
 	 */
 	protected Parser getParser(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
-		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
-		return projectUtil.getParser(iFile, monitor);
+		return getProjectUtil().getParser(iFile, monitor);
 	}
 	
 	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
@@ -161,13 +175,33 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 
 	/**
+	 * Returns a projectUtil.
+	 * @return
+	 * @throws MissingNatureException
+	 */
+	protected ProjectUtil getProjectUtil() {
+		if(projectUtil==null){
+			projectUtil=new ProjectUtil(info.getEditor());
+		}
+		return projectUtil;
+	}
+	
+	/**
 	 * Returns the projectModel of this project.
 	 * @return
 	 * @throws MissingNatureException
 	 */
 	protected ProjectModel getModel() throws MissingNatureException{
-		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
-		return projectUtil.getModel();
+		return getProjectUtil().getModel();
+	}
+	
+	/**
+	 * Gets all IFiles of this project.
+	 * @return
+	 * @throws CoreException
+	 */
+	protected Collection<IFile> getAllFiles() throws CoreException{
+		return getProjectUtil().getAllFiles();
 	}
 	
 	/**
@@ -215,11 +249,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return node.getLogicalPath();
 	}
 	
-	protected Collection<IFile> getAllFiles() throws CoreException{
-		ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
-		return projectUtil.getAllFiles();
-	}
-	
 	/**
 	 * Compares to IFileRegions
 	 * @param a
@@ -238,6 +267,13 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return true;
 	}
 	
+	/**
+	 * Returns all Project Files.
+	 * @param parseFile
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
 	protected IFile getIFile4ParseFile(IParseFile parseFile) throws CoreException, MissingNatureException{
 		return info.getProjectUtil().getIFile4ParseFile(parseFile);
 	}
@@ -298,16 +334,40 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 	
 	/**
+	 * Checks if the target of the given path is inside the project.
+	 * @param targetPath
+	 * @return
+	 */
+	private boolean isPathTargetInsideProject(IASTModelPath targetPath){
+		return getProjectUtil().isProjectFile(targetPath.getParseFile());
+	}
+	
+	/**
+	 * Adds just paths to the returned collection, which have a target file inside the project.
+	 * @param paths
+	 * @return
+	 */
+	protected Collection<IASTModelPath> filterOutNonProjectPaths(Collection<IASTModelPath> paths){
+		Collection<IASTModelPath> validPaths=new LinkedList<IASTModelPath>();
+		for(IASTModelPath path:paths){
+			if(isPathTargetInsideProject(path)){
+				validPaths.add(path);
+			}
+		}
+		return validPaths;
+	}
+	
+	/**
 	 * Returns the identifiers which are part of a reference which points to one of the given paths.
 	 * @param file	The file in which we are looking for referencing sources.
-	 * @param paths	 The paths for which we search referencing sources.
+	 * @param tartgetPaths	 The paths for which we search referencing sources. If a paths target is not inside the project it will not be used to search for references.
 	 * @param monitor
 	 * @return	The identifiers contained in a reference pointing to one of the given paths.
 	 * @throws MissingNatureException
 	 * @throws IOException
 	 * @throws CoreException 
 	 */
-	protected List<Identifier> getReferencingIdentifiersInFileForTargetPaths(IFile file,Collection<IASTModelPath> paths, IProgressMonitor monitor)
+	protected List<Identifier> getReferencingIdentifiersInFileForTargetPaths(IFile file,Collection<IASTModelPath> tartgetPaths, IProgressMonitor monitor)
 	throws MissingNatureException, IOException, CoreException {
 		
 		//Gather all sources which reference this path
@@ -317,7 +377,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		for (IASTReference ref : referenceArray) {
 			candidatePath=ref.getTarget();
 			if(candidatePath!=null){
-				if (paths.contains(candidatePath)) {
+				if (tartgetPaths.contains(candidatePath)) {
 					matchingSources.add(ref);
 				}
 			}
@@ -329,9 +389,17 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
+			DebugUtil.addOutput("REgion: "+region.toString());
 			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset(),region.getLength());
+			DebugUtil.addOutput("node:");
+			if(node==null){
+				DebugUtil.addOutput("Target: "+reference.getTarget().toString());
+				DebugUtil.addOutput("Source is null");
+			}
 			Identifier identifier=(Identifier)node;
-			identifiers.add(identifier);
+			if(identifier!=null){	//There appear sometimes null values which we dont care about.
+				identifiers.add(identifier);
+			}
 		}
 		return identifiers;
 	}

@@ -18,8 +18,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
-import tinyos.yeti.ep.parser.IDeclaration.Kind;
-import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -41,48 +39,6 @@ public class Processor extends RenameProcessor {
 	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
-	}
-	
-	/**
-	 * Looks for a component definition with the given name.
-	 * @param identifier
-	 * @param editor
-	 * @return
-	 * @throws CoreException
-	 * @throws MissingNatureException
-	 */
-	private IDeclaration getComponentDefinition(String componentName) throws CoreException, MissingNatureException{
-		ProjectModel model=getModel();
-		List<IDeclaration> declarations=new LinkedList<IDeclaration>();
-		declarations.addAll(model.getDeclarations(Kind.MODULE));
-		declarations.addAll(model.getDeclarations(Kind.CONFIGURATION));
-		for(IDeclaration declaration:declarations){
-			if(componentName.equals(declaration.getName())){
-				return declaration;
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Looks for a interface definition with the given name.
-	 * @param identifier
-	 * @param editor
-	 * @return
-	 * @throws CoreException
-	 * @throws MissingNatureException
-	 */
-	private IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
-		ProjectModel model=getModel();
-		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
-		for(IDeclaration declaration:declarations){
-			if(interfaceName.equals(declaration.getName())){
-				return declaration;
-			}
-		}
-		
-		return null;
 	}
 	
 	/**
@@ -125,26 +81,12 @@ public class Processor extends RenameProcessor {
 	 * @param selectedIdentifier
 	 * @return
 	 */
-	private String getNameOFSourceComponent(){
+	private String getNameOFSourceComponent(IProgressMonitor monitor){
 		if(selectionIdentifier.isInterfaceAliasingInSpecification()||selectionIdentifier.isInterfaceAliasInNescFunction()){	//In this case the selection is in the component which defines the alias.
 			return factory4Selection.getComponentAnalyzer().getComponentName();
-		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring()){	
-			DebugUtil.immediatePrint("isInterfaceAliasInNescComponentWiring");
+		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring(getProjectUtil(),monitor)){	
 			ConfigurationAstAnalyzer analyzer=factory4Selection.getConfigurationAnalyzer();
-			Identifier associatedComponent=analyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(selectionIdentifier.getSelection());
-			DebugUtil.immediatePrint("Associated Component: "+((associatedComponent!=null)?associatedComponent.getName():"null"));
-			if(associatedComponent==null){	//this should never happen
-				throw new IllegalStateException("Could not find an associated Component for the given interface identifier");
-			}
-			if(associatedComponent==analyzer.getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
-				return associatedComponent.getName();
-			}
-			Identifier realComponent=analyzer.getComponentIdentifier4ComponentAliasIdentifier(associatedComponent.getName());
-			DebugUtil.immediatePrint("Real Component: "+((realComponent!=null)?realComponent.getName():"null"));
-			if(realComponent!=null){	//If the associatedComponent is allready the real component, then realComponent is null.
-				return realComponent.getName();
-			}
-			return associatedComponent.getName();
+			return analyzer.getUseDefiningComponent4InterfaceInWiring(selectionIdentifier.getSelection());
 			
 		}
 		return null;
@@ -163,24 +105,34 @@ public class Processor extends RenameProcessor {
 		String aliasName=selectedIdentifier.getName();
 		
 		//Get the name of the component which defines the alias
-		String sourceComponentName=getNameOFSourceComponent();
+		String sourceComponentName=getNameOFSourceComponent(pm);
 		DebugUtil.addOutput("sourceComponentName: "+sourceComponentName);
 		
 		//Get the ComponentAstAnalyzer of the defining component
-		IDeclaration sourceDefinition=getComponentDefinition(sourceComponentName);
+		IDeclaration sourceDefinition=getProjectUtil().getComponentDefinition(sourceComponentName);
 		if(sourceDefinition==null){
-			throw new IllegalStateException("Could not find a definition for the source component.");
+			String reason="Could not find a definition for the source component.";
+			markRefactoringAsInfeasible(reason);
+			ret.add(new NullChange(reason));
+			return;
 		}
-		IFile declaringFile=getIFile4ParseFile(sourceDefinition.getParseFile());
-		NesC12AST ast=getAst(declaringFile, pm);
-		AstAnalyzerFactory factory4DefiningAst=new AstAnalyzerFactory(ast.getRoot());
+		IFile declaringFile=getProjectUtil().getDeclaringFile(sourceDefinition);
+		if(declaringFile==null||!getProjectUtil().isProjectFile(declaringFile)){	//If the source definition is not in this project, we are not allowed/able to rename the alias.
+			String reason="The component which defines the alias is out of project range!";
+			markRefactoringAsInfeasible(reason);
+			ret.add(new NullChange(reason));
+			return;
+		}
+		AstAnalyzerFactory factory4DefiningAst=new AstAnalyzerFactory(declaringFile,getProjectUtil(), pm);
 		if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
-			ret.add(new NullChange("Implementation problem"));	//The alias definition has to be in a NesC component specification.
+			String reason="Alias Definition was not in a NesC component specification!";
+			markRefactoringAsInfeasible(reason);
+			ret.add(new NullChange(reason));
+			return;	//The alias definition has to be in a NesC component specification.
 		}
 		ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
 
 		//Get the Identifier in the defining component which stands for the alias in the alias definition.
-		componentAnalyzer.getAliasIdentifier4InterfaceAliasName(selectedIdentifier.getName());
 		Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(aliasName);
 		DebugUtil.addOutput("aliasDefinition: "+aliasDefinition.getName());
 		
@@ -188,11 +140,12 @@ public class Processor extends RenameProcessor {
 		//Get all references to it and filter out the one which are aliases.
 		//For those add changes.
 		String aliasedInterfaceName=componentAnalyzer.getInterfaceName4InterfaceAliasName(aliasName);
-		IDeclaration interfaceDefinition=getInterfaceDefinition(aliasedInterfaceName);
+		IDeclaration interfaceDefinition=getProjectUtil().getInterfaceDefinition(aliasedInterfaceName);
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		paths.add(interfaceDefinition.getPath());
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IFile file:getAllFiles()){
+			
 			if(file.equals(declaringFile)){	//Add change for alias definition this is the only NesC Component which can be a module which can have references to the interface definition which belong to the given alias.
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=getAliasFreeList(identifiers,aliasName);
@@ -229,6 +182,9 @@ public class Processor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 		DebugUtil.clearOutput();
+		Identifier selectedIdentifier=getSelectedIdentifier();
+		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
+		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
 		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
 		
 		//If it is a component alias, this is a pure local change.
@@ -254,12 +210,6 @@ public class Processor extends RenameProcessor {
 		RefactoringStatus ret = new RefactoringStatus();
 		if (!isApplicable()) {
 			ret.addFatalError("The Refactoring is no Accessable");
-		}
-		Identifier selectedIdentifier=getSelectedIdentifier();
-		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
-		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
-		if (!selectionIdentifier.isAlias(selectedIdentifier)) {
-			ret.addFatalError("No Alias selected.");
 		}
 		return ret;
 	}

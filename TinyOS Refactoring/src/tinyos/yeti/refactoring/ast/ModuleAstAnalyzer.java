@@ -3,9 +3,11 @@ package tinyos.yeti.refactoring.ast;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclarationSpecifierList;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.NesCNameDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.StorageClass;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
@@ -47,11 +49,17 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyser {
 			nesCFunctionDeclarationNames=new LinkedList<NesCNameDeclarator>();
 			for(FunctionDefinition functionDefinition:getFunctionDefinitionsInImplementation()){
 				if(isNesCFunction(functionDefinition)){
-					FunctionDeclarator functionDeclarator=(FunctionDeclarator)functionDefinition.getField(FunctionDefinition.DECLARATOR);
+					AbstractFixedASTNode declarator=(AbstractFixedASTNode)functionDefinition.getField(FunctionDefinition.DECLARATOR);
+					FunctionDeclarator functionDeclarator;
+					if(declarator instanceof PointerDeclarator){
+						functionDeclarator=(FunctionDeclarator)declarator.getField(PointerDeclarator.DECLARATOR);
+					}else{
+						functionDeclarator=(FunctionDeclarator)declarator;
+					}
 					if(functionDeclarator!=null){
-						NesCNameDeclarator declarator=(NesCNameDeclarator)functionDeclarator.getField(FunctionDeclarator.DECLARATOR);
-						if(declarator!=null){
-							nesCFunctionDeclarationNames.add(declarator);
+						NesCNameDeclarator nescDeclarator=(NesCNameDeclarator)functionDeclarator.getField(FunctionDeclarator.DECLARATOR);
+						if(nescDeclarator!=null){
+							nesCFunctionDeclarationNames.add(nescDeclarator);
 						}
 					}
 				}

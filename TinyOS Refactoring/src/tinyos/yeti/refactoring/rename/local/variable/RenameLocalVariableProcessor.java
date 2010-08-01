@@ -116,7 +116,7 @@ public class RenameLocalVariableProcessor extends RenameProcessor {
 
 		// Find the CompoundStatement which declares the identifier
 		CompoundStatement declaringCompound = astUtil4Variables.findDeclaringCompoundStatement(currentlySelected);
-		Collection<Identifier> identifiers = getVarUtil().getAllIdentifiersWithoutOwnDeclaration(
+		Collection<Identifier> identifiers =astUtil4Variables.getAllIdentifiersWithoutOwnDeclaration(
 				declaringCompound, currentlySelected.getName());
 		return identifiers;
 	}
