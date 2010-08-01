@@ -106,7 +106,6 @@ public class Processor extends RenameProcessor {
 		
 		//Get the name of the component which defines the alias
 		String sourceComponentName=getNameOFSourceComponent(pm);
-		DebugUtil.addOutput("sourceComponentName: "+sourceComponentName);
 		
 		//Get the ComponentAstAnalyzer of the defining component
 		IDeclaration sourceDefinition=getProjectUtil().getComponentDefinition(sourceComponentName);
@@ -134,7 +133,6 @@ public class Processor extends RenameProcessor {
 
 		//Get the Identifier in the defining component which stands for the alias in the alias definition.
 		Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(aliasName);
-		DebugUtil.addOutput("aliasDefinition: "+aliasDefinition.getName());
 		
 		//Get the interface definition of the interface which is aliased.
 		//Get all references to it and filter out the one which are aliases.
@@ -181,7 +179,6 @@ public class Processor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		DebugUtil.clearOutput();
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
 		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
@@ -200,7 +197,6 @@ public class Processor extends RenameProcessor {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		DebugUtil.printOutput();
 		return ret;
 	}
 	

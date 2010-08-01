@@ -78,7 +78,6 @@ public class Processor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		DebugUtil.clearOutput();
 		//If the selection was identified as interface alias, the alias processor is used.
 		//This alias is handled by the interface processor, since we have no process monitor when we are deciding the processor type.
 		//Without process monitor we are unable to get an ast and without ast or at least a node we cant create a AstAnalyzer => we cannot decide if it is an interface or actually an alias.
@@ -110,7 +109,6 @@ public class Processor extends RenameProcessor {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		DebugUtil.printOutput();
 		return ret;
 	}
 

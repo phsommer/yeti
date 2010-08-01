@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ltk.core.refactoring.NullChange;
 
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.builder.ProjectResourceCollector;
@@ -28,7 +27,6 @@ import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
-import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 
 public class ProjectUtil {
 

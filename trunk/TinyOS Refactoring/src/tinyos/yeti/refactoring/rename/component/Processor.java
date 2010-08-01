@@ -76,7 +76,6 @@ public class Processor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		DebugUtil.clearOutput();
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
 		try {
 			//Add Change for component definition
@@ -102,7 +101,6 @@ public class Processor extends RenameProcessor {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		DebugUtil.printOutput();
 		return ret;
 	}
 

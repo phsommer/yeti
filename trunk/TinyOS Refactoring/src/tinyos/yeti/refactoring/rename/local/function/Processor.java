@@ -35,10 +35,6 @@ public class Processor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		DebugUtil.clearOutput();
-		DebugUtil.addOutput("Hello Local");
-		
-		
 		CompositeChange ret = new CompositeChange("Rename local function "+ info.getOldName() + " to " + info.getNewName());
 		try {
 			
@@ -76,7 +72,6 @@ public class Processor extends RenameProcessor {
 		catch (Exception e){
 			e.printStackTrace();
 		}
-		DebugUtil.printOutput();
 		return ret;
 	}
 

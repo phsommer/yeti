@@ -389,13 +389,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
-			DebugUtil.addOutput("REgion: "+region.toString());
 			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset(),region.getLength());
-			DebugUtil.addOutput("node:");
-			if(node==null){
-				DebugUtil.addOutput("Target: "+reference.getTarget().toString());
-				DebugUtil.addOutput("Source is null");
-			}
 			Identifier identifier=(Identifier)node;
 			if(identifier!=null){	//There appear sometimes null values which we dont care about.
 				identifiers.add(identifier);
