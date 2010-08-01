@@ -1,6 +1,7 @@
 package tinyos.yeti.refactoring.ast;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,7 +17,6 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Module;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
-import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class AstAnalyzerFactory {
@@ -66,13 +66,12 @@ public class AstAnalyzerFactory {
 	 * @return The AstType for which an specific AstAnalyzer has been created. Returns AstType.INVALID if not an valid ast is given.
 	 */
 	public AstType createAnalyzer(ASTNode node){
-		ASTUtil4Components astUtil4Components=new ASTUtil4Components(astUtil);
 		TranslationUnit root=astUtil.getAstRoot(node);
 		boolean valid=false;
-		if(astUtil4Components.isConfiguration(root)){
+		if(isConfiguration(root)){
 			valid=initializeConfigurationComponent(root);
 			createdType=AstType.CONFIGURATION;
-		}else if(astUtil4Components.isModule(root)){
+		}else if(isModule(root)){
 			valid=initializeModuleComponent(root);
 			createdType=AstType.MODULE;
 		}
@@ -173,6 +172,52 @@ public class AstAnalyzerFactory {
 	 */
 	public boolean hasComponentAnalyzerCreated(){
 		return createdType==AstType.MODULE||createdType==AstType.CONFIGURATION;
+	}
+	
+	/**
+	 * Returns the "Module" node of the AST which includes the given node.Returns null if the node is not in an ast with a module node, which means this is with verry high probability no module file.
+	 * @param node
+	 * @return
+	 */
+	private Module getModuleNode(ASTNode node){
+		ASTNode root=astUtil.getAstRoot(node);
+		Collection<Module> modules=astUtil.getChildsOfType(root,Module.class);
+		if(modules.size()!=1){
+			return null;
+		}
+		return modules.iterator().next();
+	}
+	
+	/**
+	 * Same as getModuleNode, but for Configuration.
+	 * @param node
+	 * @return
+	 */
+	private Configuration getConfigurationNode(ASTNode node){
+		ASTNode root=astUtil.getAstRoot(node);
+		Collection<Configuration> configuration=astUtil.getChildsOfType(root,Configuration.class);
+		if(configuration.size()!=1){
+			return null;
+		}
+		return configuration.iterator().next();
+	}
+	
+	/**
+	 * Checks if the given node is part of a module ast.
+	 * @param node
+	 * @return
+	 */
+	private boolean isModule(ASTNode node){
+		return getModuleNode(node)!=null;
+	}
+	
+	/**
+	 * Checks if the given node is part of a configuration ast.
+	 * @param node
+	 * @return
+	 */
+	private boolean isConfiguration(ASTNode node){
+		return getConfigurationNode(node)!=null;
 	}
 	
 	

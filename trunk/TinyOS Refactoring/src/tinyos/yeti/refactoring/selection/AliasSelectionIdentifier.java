@@ -9,7 +9,6 @@ import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class AliasSelectionIdentifier extends SelectionIdentifier{
@@ -36,7 +35,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isAlias(Identifier identifier){
-		if(!analyzerFactory.hasComponentAnalyzerCreated()){
+		if(!factory4Selection.hasComponentAnalyzerCreated()){
 			return false;
 		}
 		return isComponentAlias()
@@ -69,7 +68,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isComponentAliasingInComponentsStatement(){
-		if(!analyzerFactory.hasConfigurationAnalyzerCreated()){
+		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
 			return false;
 		}
 		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
@@ -82,11 +81,16 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isComponentAliasingInComponentWiring(){
-		if(!analyzerFactory.hasConfigurationAnalyzerCreated()){
+		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
 			return false;
 		}
 		Collection<Identifier> componentWirings=configurationAnalyzer.getWiringComponentPartIdentifiers();
-		return containsIdentifierInstance(componentWirings);
+		if(!containsIdentifierInstance(componentWirings)){
+			return false;
+		}
+		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
+		return componentAliases.contains(identifier);
+
 	}
 	
 	/**
@@ -95,7 +99,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isInterfaceAliasingInSpecification(){
-		if(!analyzerFactory.hasComponentAnalyzerCreated()){
+		if(!factory4Selection.hasComponentAnalyzerCreated()){
 			return false;
 		}
 		Identifier alias=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName());
@@ -108,7 +112,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isInterfaceAliasInNescFunction() {
-		if(!analyzerFactory.hasModuleAnalyzerCreated()){
+		if(!factory4Selection.hasModuleAnalyzerCreated()){
 			return false;
 		}
 		Collection<Identifier> identifiers=moduleAnalyzer.getNesCFunctionImplementationInterfaceIdentifiers();
@@ -136,7 +140,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public AstAnalyzerFactory getDefinitionOfInterfaceAliasInNescComponentWiring(ProjectUtil util,IProgressMonitor monitor){
-		if(!analyzerFactory.hasConfigurationAnalyzerCreated()){
+		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
 			return null;
 		}
 		if(!containsIdentifierInstance(configurationAnalyzer.getWiringInterfacePartIdentifiers())){
