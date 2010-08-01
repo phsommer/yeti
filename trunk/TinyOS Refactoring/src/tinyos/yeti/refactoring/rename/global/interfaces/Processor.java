@@ -22,11 +22,15 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 
+	boolean selectionisInterfaceAliasInNesCComponentWiring=false;
+	private tinyos.yeti.refactoring.rename.alias.Processor aliasProcessor;
+	
 	private IDeclaration interfaceDeclaration;
 	
 	private RenameInfo info;
@@ -75,6 +79,12 @@ public class Processor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 		DebugUtil.clearOutput();
+		//If the selection was identified as interface alias, the alias processor is used.
+		//This alias is handled by the interface processor, since we have no process monitor when we are deciding the processor type.
+		//Without process monitor we are unable to get an ast and without ast or at least a node we cant create a AstAnalyzer => we cannot decide if it is an interface or actually an alias.
+		if(selectionisInterfaceAliasInNesCComponentWiring){	
+			return aliasProcessor.createChange(pm);
+		}
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
 		try {
 			//Add Change for interface definition
@@ -118,17 +128,45 @@ public class Processor extends RenameProcessor {
 		}
 
 		try {
+			boolean isInterface=true;
+			String message="If you see that, there happened something unexpected!";
 			interfaceDeclaration = getInterfaceDefinition(selectedIdentifier.getName());
 			if(interfaceDeclaration==null){
-				ret.addFatalError("Did not find an Interface Definition, for selection!");
+				isInterface=false;
+				message="Did not find an Interface Definition, for selection!";
 			}
 			else if(!interfaceDeclaration.getParseFile().isProjectFile()){
-				ret.addFatalError("Interface definition is out of project range!");
+				isInterface=false;
+				message="Interface definition is out of project range!";
+			}
+			if(!isInterface){
+				boolean isAlias=handleCaseInterfaceAliasInNesCComponentWiring(selectedIdentifier, pm);
+				if(!isAlias){
+					ret.addFatalError(message);
+				}
 			}
 		} catch (MissingNatureException e) {
 			ret.addFatalError("Project is not ready for refactoring!");
 		}
 		return ret;
+	}
+	
+	/**
+	 * Since we have no process monitor when we are deciding the processor type, we have to handle this case in the interface processor.
+	 * Without process monitor we are unable to get an ast and without ast or at least a node we cant create a AstAnalyzer of the defining file
+	 *  => we cannot decide if it is an interface or actually an alias.
+	 * @param selectedIdentifier
+	 * @param monitor
+	 * @return
+	 */
+	private boolean handleCaseInterfaceAliasInNesCComponentWiring(Identifier selectedIdentifier,IProgressMonitor monitor){
+		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
+		if(!selectionIdentifier.isInterfaceAliasInNescComponentWiring(getProjectUtil(),monitor)){
+			return false;
+		}
+		selectionisInterfaceAliasInNesCComponentWiring=true;
+		aliasProcessor=new tinyos.yeti.refactoring.rename.alias.Processor(info);
+		return true;
 	}
 
 }

@@ -1,5 +1,12 @@
 package tinyos.yeti.refactoring.ast;
 
+import java.io.IOException;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import tinyos.yeti.nature.MissingNatureException;
+import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -10,6 +17,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Module;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Components;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class AstAnalyzerFactory {
 	
@@ -38,6 +46,18 @@ public class AstAnalyzerFactory {
 	 */
 	public AstAnalyzerFactory(ASTNode node){
 		createAnalyzer(node);
+	}
+	
+	/**
+	 * Tries to create an AstAnalyzerFactory for the ast of the given file.
+	 * @param file
+	 * @param monitor
+	 * @throws IOException
+	 * @throws MissingNatureException
+	 */
+	public AstAnalyzerFactory(IFile file, ProjectUtil util, IProgressMonitor monitor) throws IOException, MissingNatureException{
+		NesC12AST ast=util.getAst(file, monitor);
+		createAnalyzer(ast.getRoot());
 	}
 	
 	/**

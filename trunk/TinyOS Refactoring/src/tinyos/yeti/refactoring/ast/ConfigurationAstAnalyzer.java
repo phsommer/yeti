@@ -27,7 +27,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	private Collection<Identifier> componentAliases;
 	private Collection<Endpoint> wiringEndpoints;
 	private Collection<Identifier> wiringComponentPartIdentifiers;
-	private Collection<Identifier> wiringSpecificationPartIdentifiers;
+	private Collection<Identifier> wiringInterfacePartIdentifiers;
 
 	public ConfigurationAstAnalyzer(TranslationUnit root,Identifier componentIdentifier, AccessList specification,ConfigurationDeclarationList implementation) {
 		super(root, componentIdentifier, specification);
@@ -136,14 +136,14 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	}
 	
 	/**
-	 * Gathers all specification, which are interfaceNames, identifier parts of a NesC wiring.
+	 * Gathers all interface identifier parts of a NesC wiring.
 	 * @return
 	 */
-	public Collection<Identifier> getWiringSpecificationPartIdentifiers(){
-		if(wiringSpecificationPartIdentifiers==null){
+	public Collection<Identifier> getWiringInterfacePartIdentifiers(){
+		if(wiringInterfacePartIdentifiers==null){
 			collectWiringsIdentifiers();
 		}
-		return wiringSpecificationPartIdentifiers;
+		return wiringInterfacePartIdentifiers;
 	}
 	
 	/**
@@ -153,7 +153,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	private void collectWiringsIdentifiers(){
 		DebugUtil.immediatePrint("collectWiringsIdentifiers");
 		wiringComponentPartIdentifiers=new LinkedList<Identifier>();
-		wiringSpecificationPartIdentifiers=new LinkedList<Identifier>();
+		wiringInterfacePartIdentifiers=new LinkedList<Identifier>();
 		for(Endpoint endpoint:getWiringEndpoints()){
 			ParameterizedIdentifier componentPart=(ParameterizedIdentifier)endpoint.getField(Endpoint.COMPONENT);
 			ParameterizedIdentifier specificationPart=(ParameterizedIdentifier)endpoint.getField(Endpoint.SPECIFICATION);
@@ -165,7 +165,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 				Identifier interFace=(Identifier)specificationPart.getField(ParameterizedIdentifier.IDENTIFIER);
 				if(component!=null&&interFace!=null){	//This shoudl always be true, otherwise there was a problem in the parser.
 					wiringComponentPartIdentifiers.add(component);
-					wiringSpecificationPartIdentifiers.add(interFace);
+					wiringInterfacePartIdentifiers.add(interFace);
 				}
 			}else if(componentPart!=null){	//In this case component part can be an interface or an component
 				DebugUtil.immediatePrint("component !=null");
@@ -175,7 +175,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 					if(isComponentName(candidate)){
 						wiringComponentPartIdentifiers.add(candidate);
 					}else{	//If it is not a component name it has to be an interface name.
-						wiringSpecificationPartIdentifiers.add(candidate);
+						wiringInterfacePartIdentifiers.add(candidate);
 					}
 				}
 			}
@@ -246,7 +246,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	 * @param selection
 	 */
 	public Identifier getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(Identifier interfaceIdentifier) {
-		Collection<Identifier> identifiers=getWiringSpecificationPartIdentifiers();
+		Collection<Identifier> identifiers=getWiringInterfacePartIdentifiers();
 		//TODO replace with call to InterfaceSelectionIdentifier as soon as this class is created.
 		//Check if the given identifier is an interfaceIdentifier
 		boolean found=false;
@@ -277,5 +277,26 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 		DebugUtil.immediatePrint("No Target");
 		//If there is no component associated with the interface, it has to be an implicit reference to the this configuration itself.
 		return componentIdentifier;
+	}
+	
+	/**
+	 * Returns the name of the component with which this interface wiring is associated.
+	 * Returns null, if the given identifier is no interface identifier in a wiring. 
+	 * @param identifier
+	 * @return
+	 */
+	public String getUseDefiningComponent4InterfaceInWiring(Identifier interfaceIdentifier){
+		Identifier associatedComponent=getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(interfaceIdentifier);
+		if(associatedComponent==null){	//this should never happen
+			return null;
+		}
+		if(associatedComponent==getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
+			return associatedComponent.getName();
+		}
+		Identifier realComponent=getComponentIdentifier4ComponentAliasIdentifier(associatedComponent.getName());
+		if(realComponent!=null){	//If the associatedComponent is allready the real component, then realComponent is null.
+			return realComponent.getName();
+		}
+		return associatedComponent.getName();
 	}
 }

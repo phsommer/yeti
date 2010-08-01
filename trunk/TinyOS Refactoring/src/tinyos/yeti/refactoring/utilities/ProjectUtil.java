@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -12,11 +13,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ltk.core.refactoring.NullChange;
 
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.builder.ProjectResourceCollector;
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.IParseFile;
+import tinyos.yeti.ep.parser.IDeclaration;
+import tinyos.yeti.ep.parser.IDeclaration.Kind;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc.FileMultiReader;
@@ -24,6 +28,7 @@ import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.RefactoringPlugin.LogLevel;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 
 public class ProjectUtil {
 
@@ -32,6 +37,10 @@ public class ProjectUtil {
 	
 	private static ParserCache parserChache = new ParserCache();
 	
+	public ProjectUtil(){
+		this.editor=ActionHandlerUtil.getActiveEditor().getNesCEditor();
+		this.project=editor.getProject();
+	}
 	
 	public ProjectUtil(NesCEditor editor){
 		this.editor=editor;
@@ -131,12 +140,96 @@ public class ProjectUtil {
 	public IFile getIFile4ParseFile(IParseFile parseFile) throws CoreException, MissingNatureException{
 		Collection<IFile> files = getAllFiles();
 		for(IFile file:files){
-			File f = file.getLocation().toFile();
-			IParseFile otherPF = getModel().parseFile(f);
+			IParseFile otherPF = getIParseFile4IFile(file);
 			if(parseFile.equals(otherPF)){
 				return file;
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the IParseFile for the given IFile
+	 * @param file
+	 * @return
+	 * @throws MissingNatureException
+	 */
+	public IParseFile getIParseFile4IFile(IFile file) throws MissingNatureException{
+		File f = file.getLocation().toFile();
+		IParseFile pF = getModel().parseFile(f);
+		return pF;
+	}
+	
+	/**
+	 * Checks if the given file is a project file, which means if it is a file defined in this project.
+	 * @param file
+	 * @return
+	 * @throws MissingNatureException
+	 */
+	public boolean isProjectFile(IFile file) throws MissingNatureException{
+		return getIParseFile4IFile(file).isProjectFile();
+	}
+	
+	/**
+	 * Checks if the given file is a project file, which means if it is a file defined in this project.
+	 * @param file
+	 * @return
+	 * @throws MissingNatureException
+	 */
+	public boolean isProjectFile(IParseFile file){
+		return file.isProjectFile();
+	}
+	
+	/**
+	 * Looks for a component definition with the given name.
+	 * @param identifier
+	 * @param editor
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
+	public IDeclaration getComponentDefinition(String componentName) throws CoreException, MissingNatureException{
+		ProjectModel model=getModel();
+		List<IDeclaration> declarations=new LinkedList<IDeclaration>();
+		declarations.addAll(model.getDeclarations(Kind.MODULE));
+		declarations.addAll(model.getDeclarations(Kind.CONFIGURATION));
+		for(IDeclaration declaration:declarations){
+			if(componentName.equals(declaration.getName())){
+				return declaration;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Looks for a interface definition with the given name.
+	 * @param identifier
+	 * @param editor
+	 * @return
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 */
+	public IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
+		ProjectModel model=getModel();
+		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
+		for(IDeclaration declaration:declarations){
+			if(interfaceName.equals(declaration.getName())){
+				return declaration;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the IFile which contains the given declaration.
+	 * @param declaration
+	 * @return
+	 * @throws MissingNatureException 
+	 * @throws CoreException 
+	 */
+	public IFile getDeclaringFile(IDeclaration declaration) throws CoreException, MissingNatureException{
+		return getIFile4ParseFile(declaration.getParseFile());
 	}
 }
