@@ -23,13 +23,14 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 	
 	/**
 	 * Checks if the given identifier is part of an AST node associated to an interface.
+	 * If the selected Identifier is an alias in a nesc function definition, this function will return false.
 	 * @param identifier
 	 * @return
 	 */
 	public boolean isInterface(){
 		return isInterfaceDeclaration()
 			||isInterfaceDefinition()
-			||isInterfaceImplementation()
+			||isInterfaceImplementationAndNoAlias()
 			||isComponentWiringInterfacePart();
 	}
 	
@@ -68,6 +69,19 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		return containsIdentifierInstance(moduleAnalyzer.getNesCFunctionImplementationInterfaceIdentifiers());
+	}
+	
+	/**
+	 * Checks if the given identifier is part of a interface reference in a event or call implementation of a module and also that it is no interface alias.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isInterfaceImplementationAndNoAlias(){
+		if(!isInterfaceImplementation()){
+			return false;
+		}
+		AliasSelectionIdentifier aliasSelection=new AliasSelectionIdentifier(identifier,factory4Selection);
+		return !aliasSelection.isInterfaceAliasInNescFunction();
 	}
 	
 	/**

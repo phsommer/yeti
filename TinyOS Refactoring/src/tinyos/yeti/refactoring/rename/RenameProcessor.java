@@ -83,6 +83,16 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 	
 	@Override
+	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+	throws CoreException, OperationCanceledException {
+		RefactoringStatus ret = new RefactoringStatus();
+		if (!isApplicable()) {
+			ret.addFatalError("The Refactoring is no Accessable");
+		}
+		return ret;
+	}
+	
+	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,CheckConditionsContext context) 
 	throws CoreException,OperationCanceledException {
 		RefactoringStatus ret = new RefactoringStatus();
@@ -424,6 +434,21 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected String createTextChangeName(String entityName,IFile file){
 		return "Replacing "+entityName+" name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+	}
+	
+	/**
+	 * Returns a list which only contains identifiers which have the same name as the given name.
+	 * This is needed since aliases in event/command definitions and so on and the real entity names often reference the original entity.
+	 * @param identifiers
+	 */
+	protected List<Identifier> throwAwayDifferentNames(List<Identifier> identifiers,String wishedName) {
+		List<Identifier> result=new LinkedList<Identifier>();
+		for(Identifier identifier:identifiers){
+			if(wishedName.equals(identifier.getName())){
+				result.add(identifier);
+			}
+		}
+		return result;
 	}
 	
 }

@@ -41,21 +41,6 @@ public class Processor extends RenameProcessor {
 	}
 	
 	/**
-	 * Returns a list which doesnt contain aliases which have a different name then the component to be refactored and therefore dont have to be touched.
-	 * This is needed since aliases in configuration definitions also reference the original component.
-	 * @param identifiers
-	 */
-	private List<Identifier> getAliasFreeList(List<Identifier> identifiers,String interfaceNameToChange) {
-		List<Identifier> result=new LinkedList<Identifier>();
-		for(Identifier identifier:identifiers){
-			if(interfaceNameToChange.equals(identifier.getName())){
-				result.add(identifier);
-			}
-		}
-		return result;
-	}
-	
-	/**
 	 * Checks if the given file includes a configuration which references the defining module.
 	 * The reason for this check is, that there can be other modules which rename the same interface with the same alias, the references to this alias would without this check also be changed.
 	 * @param file
@@ -145,13 +130,13 @@ public class Processor extends RenameProcessor {
 			
 			if(file.equals(declaringFile)){	//Add change for alias definition this is the only NesC Component which can be a module which can have references to the interface definition which belong to the given alias.
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-				identifiers=getAliasFreeList(identifiers,aliasName);
+				identifiers=throwAwayDifferentNames(identifiers,aliasName);
 				identifiers.add(aliasDefinition);
 				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
 			}
 			else if(isConfigurationReferencingDefiningModule(sourceComponentName,file,pm)){	//All other references have to be in a NesC Configuration
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-				identifiers=getAliasFreeList(identifiers,aliasName);
+				identifiers=throwAwayDifferentNames(identifiers,aliasName);
 				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
 			}	
 		}

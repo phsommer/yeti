@@ -16,8 +16,6 @@ import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
-import tinyos.yeti.ep.parser.IDeclaration.Kind;
-import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameInfo;
@@ -37,41 +35,6 @@ public class Processor extends RenameProcessor {
 	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
-	}
-	
-	/**
-	 * Looks for a interface definition with the given name.
-	 * @param identifier
-	 * @param editor
-	 * @return
-	 * @throws CoreException
-	 * @throws MissingNatureException
-	 */
-	private IDeclaration getInterfaceDefinition(String interfaceName) throws CoreException, MissingNatureException{
-		ProjectModel model=getModel();
-		List<IDeclaration> declarations=model.getDeclarations(Kind.INTERFACE);
-		for(IDeclaration declaration:declarations){
-			if(interfaceName.equals(declaration.getName())){
-				return declaration;
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Returns a list which doesnt contain aliases which have a different name then the interface to be refactored and therefore dont have to be touched.
-	 * This is needed since aliases in event/command definitions also reference the original interface.
-	 * @param identifiers
-	 */
-	private List<Identifier> getAliasFreeList(List<Identifier> identifiers,String interfaceNameToChange) {
-		List<Identifier> result=new LinkedList<Identifier>();
-		for(Identifier identifier:identifiers){
-			if(interfaceNameToChange.equals(identifier.getName())){
-				result.add(identifier);
-			}
-		}
-		return result;
 	}
 
 	@Override
@@ -97,7 +60,7 @@ public class Processor extends RenameProcessor {
 			paths.add(interfaceDeclaration.getPath());
 			for(IFile file:getAllFiles()){
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-				identifiers=getAliasFreeList(identifiers,declaringIdentifier.getName());
+				identifiers=throwAwayDifferentNames(identifiers,declaringIdentifier.getName());
 				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
 			}
 			
@@ -127,7 +90,7 @@ public class Processor extends RenameProcessor {
 		try {
 			boolean isInterface=true;
 			String message="If you see that, there happened something unexpected!";
-			interfaceDeclaration = getInterfaceDefinition(selectedIdentifier.getName());
+			interfaceDeclaration = getProjectUtil().getInterfaceDefinition(selectedIdentifier.getName());
 			if(interfaceDeclaration==null){
 				isInterface=false;
 				message="Did not find an Interface Definition, for selection!";
