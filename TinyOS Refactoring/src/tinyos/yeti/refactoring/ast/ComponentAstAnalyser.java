@@ -178,7 +178,6 @@ public class ComponentAstAnalyser extends NesCAstAnalyzer {
 		Identifier alisaIdentifier=getAliasIdentifier4InterfaceAliasName(name);
 		return alisaIdentifier!=null;
 	}
-
 }
 
 	

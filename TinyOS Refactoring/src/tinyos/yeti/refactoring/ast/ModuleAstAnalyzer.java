@@ -1,7 +1,10 @@
 package tinyos.yeti.refactoring.ast;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclarationSpecifierList;
@@ -22,6 +25,7 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyser {
 	private Collection<NesCNameDeclarator> nesCFunctionDeclarationNames;
 	private Collection<Identifier> nesCFunctionImplementationInterfaceIdentifiers;
 	private Collection<Identifier> nesCFunctionImplementationFunctionIdentifiers;
+	private Map<Identifier,Collection<Identifier>> localInterfaceName2AssociatedFunctionNames;
 
 	public ModuleAstAnalyzer(TranslationUnit root,Identifier componentIdentifier, AccessList specification,NesCExternalDefinitionList implementation) {
 		super(root, componentIdentifier, specification);
@@ -66,6 +70,50 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyser {
 			}
 		}
 		return nesCFunctionDeclarationNames;
+	}
+	
+	/**
+	 * Returns a map which maps the local interface name to its associated functions, which are defined in this module.
+	 * The local interface name may be the name of a real nesc interface or just an alias defined in this modules specification for a nesc interface.
+	 * @return
+	 */
+	public Map<Identifier,Collection<Identifier>> getLocalInterfaceName2AssociatedFunctionNames(){
+		if(localInterfaceName2AssociatedFunctionNames==null){
+			localInterfaceName2AssociatedFunctionNames=new HashMap<Identifier,Collection<Identifier>>();
+			Collection<NesCNameDeclarator> nameDeclarators=getNesCFunctionDeclarationNames();
+			for(NesCNameDeclarator nameDeclarator:nameDeclarators){
+				Identifier interfac=(Identifier)nameDeclarator.getField(NesCNameDeclarator.INTERFACE);
+				Identifier function=(Identifier)nameDeclarator.getField(NesCNameDeclarator.FUNCTION_NAME);
+				if(interfac!=null&&function!=null){
+					Collection<Identifier> functions=localInterfaceName2AssociatedFunctionNames.get(interfac);
+					if(functions==null){
+						functions=new LinkedList<Identifier>();
+						localInterfaceName2AssociatedFunctionNames.put(interfac, functions);
+					}
+					functions.add(function);
+				}
+					
+			}
+		}
+		return localInterfaceName2AssociatedFunctionNames;
+	}
+	
+	
+	/**
+	 * Returns the associated local interface name, could be a alias in the specification of this nesc module, of a function identifier in the module implementation.
+	 * @param functionIdentifier
+	 * @return
+	 */
+	public Identifier getAssociatedInterfaceName4FunctionIdentifier(Identifier functionIdentifier){
+		Map<Identifier,Collection<Identifier>> map=getLocalInterfaceName2AssociatedFunctionNames();
+		Set<Identifier> localInterfaceNames=map.keySet(); 
+		for(Identifier localInterfaceName:localInterfaceNames){
+			Collection<Identifier> functions=map.get(localInterfaceName);
+			if(astUtil.containsIdentifierInstance(functionIdentifier,functions)){
+				return localInterfaceName;
+			}
+		}
+		return null;
 	}
 	
 	/**

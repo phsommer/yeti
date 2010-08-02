@@ -11,22 +11,25 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
-import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
+import org.eclipse.ltk.core.refactoring.NullChange;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
+import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.selection.NescFunctionSelectionIdentifier;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
-
-	boolean selectionisInterfaceAliasInNesCComponentWiring=false;
-	private tinyos.yeti.refactoring.rename.alias.Processor aliasProcessor;
-	
-	private IDeclaration interfaceDeclaration;
 	
 	private RenameInfo info;
+	
+	private AstAnalyzerFactory factory4Selection;
+	private NescFunctionSelectionIdentifier selectionIdentifier;
 
 	public Processor(RenameInfo info) {
 		super(info);
@@ -34,50 +37,69 @@ public class Processor extends RenameProcessor {
 	}
 	
 	/**
-	 * Returns a list which doesnt contain aliases which have a different name then the interface to be refactored and therefore dont have to be touched.
-	 * This is needed since aliases in event/command definitions also reference the original interface.
-	 * @param identifiers
+	 * Returns the name of the interface which declares the selected function.
+	 * @return
 	 */
-	private List<Identifier> getAliasFreeList(List<Identifier> identifiers,String interfaceNameToChange) {
-		List<Identifier> result=new LinkedList<Identifier>();
-		for(Identifier identifier:identifiers){
-			if(interfaceNameToChange.equals(identifier.getName())){
-				result.add(identifier);
-			}
+	private String getInterfaceDefinitionName(){
+		if(selectionIdentifier.isFunctionDeclaration()){
+			InterfaceAstAnalyzer analyzer=factory4Selection.getInterfaceAnalyzer();
+			return analyzer.getEntityIdentifier().getName();
 		}
-		return result;
+		else if(selectionIdentifier.isFunctionDefinition()){
+			ModuleAstAnalyzer analyzer=factory4Selection.getModuleAnalyzer();
+			Identifier localInterfaceName=analyzer.getAssociatedInterfaceName4FunctionIdentifier(selectionIdentifier.getSelection());
+			return analyzer.getInterfaceLocalName2InterfaceGlobalName().get(localInterfaceName).getName();
+		}
+		return null;
 	}
 
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		//If the selection was identified as interface alias, the alias processor is used.
-		//This alias is handled by the interface processor, since we have no process monitor when we are deciding the processor type.
-		//Without process monitor we are unable to get an ast and without ast or at least a node we cant create a AstAnalyzer => we cannot decide if it is an interface or actually an alias.
-		if(selectionisInterfaceAliasInNesCComponentWiring){	
-			return aliasProcessor.createChange(pm);
-		}
-		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = new CompositeChange("Rename Nesc Function "+ info.getOldName() + " to " + info.getNewName());
+		Identifier selectedIdentifier=getSelectedIdentifier();
+		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
+		selectionIdentifier=new NescFunctionSelectionIdentifier(selectedIdentifier,factory4Selection);
 		try {
+			String definingInterfaceName=getInterfaceDefinitionName();
+			ProjectUtil projectUtil=getProjectUtil();
+			IDeclaration definingInterfaceDeclaration=projectUtil.getInterfaceDefinition(definingInterfaceName);
+			
 			//Add Change for interface definition
-			IFile declaringFile=getIFile4ParseFile(interfaceDeclaration.getParseFile());
-			Identifier declaringIdentifier=getIdentifierForPath(interfaceDeclaration.getPath(), pm);
+			IFile declaringFile=getIFile4ParseFile(definingInterfaceDeclaration.getParseFile());
+			if(!projectUtil.isProjectFile(declaringFile)){
+				markRefactoringAsInfeasible("Defining interface is out of project range!");
+				return new NullChange();
+			}
+			AstAnalyzerFactory factory4definingInterface=new AstAnalyzerFactory(declaringFile, projectUtil, pm);
+			if(!factory4definingInterface.hasInterfaceAnalyzerCreated()){
+				markRefactoringAsInfeasible("Defining interface is out of project range!");
+				return new NullChange();
+			}
+			InterfaceAstAnalyzer analyzer=factory4definingInterface.getInterfaceAnalyzer();
+			Identifier definingIdentifier=null;
+			for(Identifier id:analyzer.getNesCFunctionIdentifiers()){
+				if(id.equals(selectedIdentifier)){
+					definingIdentifier=id;
+				}
+			}
+			if(definingIdentifier==null){
+				markRefactoringAsInfeasible("Function Declaration not found!");
+				return new NullChange();
+			}
 			List<Identifier> identifiers=new LinkedList<Identifier>();
-			identifiers.add(declaringIdentifier);
-			addMultiTextEdit(identifiers, getAst(declaringFile, pm), declaringFile, createTextChangeName("interface", declaringFile), ret);
+			identifiers.add(definingIdentifier);
+			addMultiTextEdit(identifiers, getAst(declaringFile, pm), declaringFile, createTextChangeName("nesc function", declaringFile), ret);
 			
 			//Add Changes for referencing elements
 			Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
-			paths.add(interfaceDeclaration.getPath());
+			paths.add(definingInterfaceDeclaration.getPath());
 			for(IFile file:getAllFiles()){
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-				identifiers=getAliasFreeList(identifiers,declaringIdentifier.getName());
-				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+				identifiers=throwAwayDifferentNames(identifiers, definingIdentifier.getName());
+				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("nesc function", file), ret);
 			}
 			
-			//Adds the change for renaming the file which contains the definition.
-			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), info.getNewName()+".nc");
-			ret.add(resourceChange);
 			
 		} catch (Exception e){
 			e.printStackTrace();

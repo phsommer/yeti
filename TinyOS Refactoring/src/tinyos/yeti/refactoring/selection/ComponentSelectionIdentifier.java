@@ -49,7 +49,7 @@ public class ComponentSelectionIdentifier extends SelectionIdentifier {
 			return false;
 		}
 		Collection<Identifier> identifiers=configurationAnalyzer.getIdentifiersOfReferencedComponents();
-		return containsIdentifierInstance(identifiers);
+		return astUtil.containsIdentifierInstance(identifier,identifiers);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class ComponentSelectionIdentifier extends SelectionIdentifier {
 		for(Identifier id:identifiers){
 			DebugUtil.immediatePrint(id.getName());
 		}
-		if(!containsIdentifierInstance(identifiers)){
+		if(!astUtil.containsIdentifierInstance(identifier,identifiers)){
 			return false;
 		}
 		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(identifier,factory4Selection);

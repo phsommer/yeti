@@ -85,7 +85,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		Collection<Identifier> componentWirings=configurationAnalyzer.getWiringComponentPartIdentifiers();
-		if(!containsIdentifierInstance(componentWirings)){
+		if(!astUtil.containsIdentifierInstance(identifier,componentWirings)){
 			return false;
 		}
 		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
@@ -116,7 +116,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		Collection<Identifier> identifiers=moduleAnalyzer.getNesCFunctionImplementationInterfaceIdentifiers();
-		if(!containsIdentifierInstance(identifiers)){
+		if(!astUtil.containsIdentifierInstance(identifier,identifiers)){
 			return false;
 		}
 		boolean val=moduleAnalyzer.isDefinedInterfaceAliasName(identifier.getName());
@@ -143,7 +143,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
 			return null;
 		}
-		if(!containsIdentifierInstance(configurationAnalyzer.getWiringInterfacePartIdentifiers())){
+		if(!astUtil.containsIdentifierInstance(identifier,configurationAnalyzer.getWiringInterfacePartIdentifiers())){
 			return null;
 		}
 		String componentName=configurationAnalyzer.getUseDefiningComponent4InterfaceInWiring(identifier);

@@ -1,13 +1,12 @@
 package tinyos.yeti.refactoring.selection;
 
-import java.util.Collection;
-
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
 
 public class SelectionIdentifier {
 
@@ -17,6 +16,7 @@ public class SelectionIdentifier {
 	protected ConfigurationAstAnalyzer configurationAnalyzer;
 	protected ModuleAstAnalyzer moduleAnalyzer;
 	protected InterfaceAstAnalyzer interfaceAnalyzer;
+	protected ASTUtil astUtil=new ASTUtil();
 	
 	/**
 	 * Creates A Selection Identifier for the given identifier.
@@ -56,19 +56,6 @@ public class SelectionIdentifier {
 	 */
 	public Identifier getSelection(){
 		return identifier;
-	}
-	
-	/**
-	 * Checks if the given identifier instance is part of the given collection.
-	 * @return
-	 */
-	protected boolean containsIdentifierInstance(Collection<Identifier> identifiers){
-		for(Identifier identifier:identifiers){
-			if(identifier==this.identifier){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 }

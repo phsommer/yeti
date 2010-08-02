@@ -33,7 +33,7 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 		if(!factory4Selection.hasInterfaceAnalyzerCreated()){
 			return false;
 		}
-		return containsIdentifierInstance(interfaceAnalyzer.getNesCFunctionIdentifiers());
+		return astUtil.containsIdentifierInstance(identifier,interfaceAnalyzer.getNesCFunctionIdentifiers());
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 		if(!factory4Selection.hasModuleAnalyzerCreated()){
 			return false;
 		}
-		return containsIdentifierInstance(moduleAnalyzer.getNesCFunctionImplementationFunctionIdentifiers());
+		return astUtil.containsIdentifierInstance(identifier,moduleAnalyzer.getNesCFunctionImplementationFunctionIdentifiers());
 	}
 
 }
