@@ -23,7 +23,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
-import tinyos.yeti.refactoring.utilities.ASTUTil4Interfaces;
+import tinyos.yeti.refactoring.selection.InterfaceSelectionIdentifier;
 
 public class Processor extends RenameProcessor {
 
@@ -119,8 +119,8 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("The Refactoring is no Accessable");
 		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
-		ASTUTil4Interfaces astUTil4Interfaces=new ASTUTil4Interfaces();
-		if (!astUTil4Interfaces.isInterface(selectedIdentifier)) {
+		InterfaceSelectionIdentifier selectionIdentifier=new InterfaceSelectionIdentifier(selectedIdentifier);
+		if (!selectionIdentifier.isInterface()) {
 			ret.addFatalError("No Interface selected.");
 		}
 

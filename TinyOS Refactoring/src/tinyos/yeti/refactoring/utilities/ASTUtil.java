@@ -1,6 +1,7 @@
 package tinyos.yeti.refactoring.utilities;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -104,6 +105,9 @@ public class ASTUtil {
 	 * The left element is the first in the list.
 	 */
 	public List<ASTNode> getChilds(ASTNode node){
+		if(node == null){
+			return Collections.emptyList();
+		}
 		List<ASTNode> ret = new LinkedList<ASTNode>();
 		for(int i = 0; i < node.getChildrenCount(); i++){
 			if(node.getChild(i) != null){
@@ -240,5 +244,24 @@ public class ASTUtil {
 			return null;
 		}
 		return (NesCExternalDefinitionList)root;
+	}
+	
+	/**
+	 * Collects of every given parent the field with the fieldName and adds it to the returned collection, if it is not null.
+	 * @param <CHILD_TYPE>	The type which the field with the given fielName has.
+	 * @param parents	The AbstractFixedASTNodes of which we want to collect a field/child. 
+	 * @param fieldName The name of the field we are interested in.
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <CHILD_TYPE> Collection<CHILD_TYPE> collectFieldsWithName(Collection<? extends AbstractFixedASTNode> parents,String fieldName){
+		Collection<CHILD_TYPE> childs=new LinkedList<CHILD_TYPE>();
+		for(AbstractFixedASTNode parent:parents){
+			CHILD_TYPE child=(CHILD_TYPE)parent.getField(fieldName);
+			if(child!=null){
+				childs.add(child);
+			}
+		}
+		return childs;
 	}
 }

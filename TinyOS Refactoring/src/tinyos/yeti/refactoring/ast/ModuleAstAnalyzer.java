@@ -76,7 +76,7 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyser {
 	 */
 	public Collection<Identifier> getNesCFunctionImplementationInterfaceIdentifiers(){
 		if(nesCFunctionImplementationInterfaceIdentifiers==null){
-			nesCFunctionImplementationInterfaceIdentifiers=collectFieldsWithName(getNesCFunctionDeclarationNames(), NesCNameDeclarator.INTERFACE);
+			nesCFunctionImplementationInterfaceIdentifiers=astUtil.collectFieldsWithName(getNesCFunctionDeclarationNames(), NesCNameDeclarator.INTERFACE);
 		}
 		return nesCFunctionImplementationInterfaceIdentifiers;
 	}
@@ -87,7 +87,7 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyser {
 	 */
 	public Collection<Identifier> getNesCFunctionImplementationFunctionIdentifiers(){
 		if(nesCFunctionImplementationFunctionIdentifiers==null){
-			nesCFunctionImplementationFunctionIdentifiers=collectFieldsWithName(getNesCFunctionDeclarationNames(), NesCNameDeclarator.FUNCTION_NAME);
+			nesCFunctionImplementationFunctionIdentifiers=astUtil.collectFieldsWithName(getNesCFunctionDeclarationNames(), NesCNameDeclarator.FUNCTION_NAME);
 		}
 		return nesCFunctionImplementationFunctionIdentifiers;
 	}

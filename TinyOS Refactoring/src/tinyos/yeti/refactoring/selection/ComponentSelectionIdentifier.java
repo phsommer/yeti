@@ -36,7 +36,7 @@ public class ComponentSelectionIdentifier extends SelectionIdentifier {
 		if(!factory4Selection.hasComponentAnalyzerCreated()){
 			return false;
 		}
-		return componentAnalyzer.getComponentIdentifier()==identifier;
+		return componentAnalyzer.getEntityIdentifier()==identifier;
 	}
 	
 	/**
