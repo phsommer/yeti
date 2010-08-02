@@ -8,6 +8,7 @@ import java.util.List;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
+import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 
@@ -263,5 +264,18 @@ public class ASTUtil {
 			}
 		}
 		return childs;
+	}
+	
+	/**
+	 * Checks if the given identifier instance is part of the given collection.
+	 * @return
+	 */
+	public boolean containsIdentifierInstance(Identifier identifier, Collection<Identifier> identifiers){
+		for(Identifier id:identifiers){
+			if(id==identifier){
+				return true;
+			}
+		}
+		return false;
 	}
 }

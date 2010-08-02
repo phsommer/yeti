@@ -56,7 +56,7 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 		if(!factory4Selection.hasComponentAnalyzerCreated()){
 			return false;
 		}
-		return containsIdentifierInstance(componentAnalyzer.getReferencedInterfaceIdentifiers());
+		return astUtil.containsIdentifierInstance(identifier,componentAnalyzer.getReferencedInterfaceIdentifiers());
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 		if(!factory4Selection.hasModuleAnalyzerCreated()){
 			return false;
 		}
-		return containsIdentifierInstance(moduleAnalyzer.getNesCFunctionImplementationInterfaceIdentifiers());
+		return astUtil.containsIdentifierInstance(identifier,moduleAnalyzer.getNesCFunctionImplementationInterfaceIdentifiers());
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
 			return false;
 		}
-		return containsIdentifierInstance(configurationAnalyzer.getWiringInterfacePartIdentifiers());
+		return astUtil.containsIdentifierInstance(identifier,configurationAnalyzer.getWiringInterfacePartIdentifiers());
 	}
 	
 
