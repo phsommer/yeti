@@ -24,6 +24,8 @@ public class AvailabilityTester implements IRefactoringAvailabilityTester{
 			return false;
 		} catch (CoreException e) {
 			return false;
+		} catch (Throwable t){
+			return false;
 		}
 	}
 
