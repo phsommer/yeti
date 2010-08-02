@@ -30,6 +30,9 @@ import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
 
 public class Datadef extends AbstractFixedASTNode implements ConfigurationDeclaration{
+	
+	public static final String DECLARATION = "declaration";
+	
     public Datadef(){
         super( "Datadef", "declaration" );
     }

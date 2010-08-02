@@ -34,6 +34,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
 public class DeclaratorName extends AbstractFixedASTNode implements Declarator{
+    public static final String NAME = "name";
     public DeclaratorName(){
         super( "DeclaratorName", "name" );
     }
