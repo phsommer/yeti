@@ -78,7 +78,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	 */
 	public Collection<Identifier> getIdentifiersOfReferencedComponents(){
 		if(referencedComponents==null){
-			referencedComponents= collectFieldsWithName(getComponentDeclarations(), RefComponent.NAME);
+			referencedComponents= astUtil.collectFieldsWithName(getComponentDeclarations(), RefComponent.NAME);
 		}
 		return referencedComponents;
 	}
@@ -104,7 +104,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	public Collection<Identifier> getComponentAliasIdentifiers(){
 		if(componentAliases==null){
 			Collection<RefComponent> components=getComponentDeclarations();
-			componentAliases=collectFieldsWithName(components, RefComponent.RENAME);
+			componentAliases=astUtil.collectFieldsWithName(components, RefComponent.RENAME);
 		}
 		return componentAliases;
 	}
@@ -116,8 +116,8 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 	public Collection<Endpoint> getWiringEndpoints(){
 		if(wiringEndpoints==null){
 			Collection<Connection> connections=astUtil.getChildsOfType(implementation, Connection.class);
-			wiringEndpoints=collectFieldsWithName(connections, Connection.LEFT);
-			Collection<Endpoint> rightEndpoints=collectFieldsWithName(connections, Connection.RIGHT);
+			wiringEndpoints=astUtil.collectFieldsWithName(connections, Connection.LEFT);
+			Collection<Endpoint> rightEndpoints=astUtil.collectFieldsWithName(connections, Connection.RIGHT);
 			wiringEndpoints.addAll(rightEndpoints);
 		}
 		return wiringEndpoints;
@@ -267,7 +267,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 			return targetComponent;
 		}
 		//If there is no component associated with the interface, it has to be an implicit reference to the this configuration itself.
-		return componentIdentifier;
+		return getEntityIdentifier();
 	}
 	
 	/**
@@ -281,7 +281,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
 		if(associatedComponent==null){	//this should never happen
 			return null;
 		}
-		if(associatedComponent==getComponentIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
+		if(associatedComponent==getEntityIdentifier()){	//In this case the interfaceIdentifier has a implizit reference on the configuration itself.
 			return associatedComponent.getName();
 		}
 		Identifier realComponent=getComponentIdentifier4ComponentAliasIdentifier(associatedComponent.getName());

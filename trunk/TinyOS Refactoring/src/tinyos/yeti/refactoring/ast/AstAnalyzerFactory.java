@@ -14,6 +14,8 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.AccessList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Configuration;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ConfigurationDeclarationList;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.DatadefList;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Interface;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Module;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
@@ -33,6 +35,7 @@ public class AstAnalyzerFactory {
 	private AstType createdType=AstType.INVALID;
 	private ConfigurationAstAnalyzer configurationAnalyzer;
 	private ModuleAstAnalyzer moduleAnalyzer;
+	private InterfaceAstAnalyzer interfaceAnalyzer;
 	
 	/**
 	 * Creates a new AstAnalyzerFactory.
@@ -69,11 +72,14 @@ public class AstAnalyzerFactory {
 		TranslationUnit root=astUtil.getAstRoot(node);
 		boolean valid=false;
 		if(isConfiguration(root)){
-			valid=initializeConfigurationComponent(root);
+			valid=initializeConfigurationAnalyzer(root);
 			createdType=AstType.CONFIGURATION;
 		}else if(isModule(root)){
-			valid=initializeModuleComponent(root);
+			valid=initializeModuleAnalyzer(root);
 			createdType=AstType.MODULE;
+		}else if(isInterface(node)){
+			valid=initializeInterfaceAnalyzer(root);
+			createdType=AstType.INTERFACE;
 		}
 		if(!valid){
 			createdType=AstType.INVALID;
@@ -82,10 +88,28 @@ public class AstAnalyzerFactory {
 	}
 	
 	/**
+	 * Initializes this class for the case that the root node is part of a NesC Interface Ast.
+	 * @return true if initialization was possible, false if it failed.
+	 */
+	private boolean initializeInterfaceAnalyzer(TranslationUnit root) {
+		Interface interfac=astUtil.getFirstChildOfType(root, Interface.class);
+		if(interfac==null){
+			return false;
+		}
+		Identifier interfacIdentifier=(Identifier)interfac.getField(Interface.NAME);
+		DatadefList body=(DatadefList)interfac.getField(Interface.BODY);
+		if(interfacIdentifier==null||body==null){
+			return false;
+		}
+		interfaceAnalyzer=new InterfaceAstAnalyzer(root, interfacIdentifier, body);
+		return true;
+	}
+
+	/**
 	 * Initializes this class for the case that the root node is part of a NesC Configuration Ast.
 	 * @return true if initialization was possible, false if it failed.
 	 */
-	private boolean initializeConfigurationComponent(TranslationUnit root){
+	private boolean initializeConfigurationAnalyzer(TranslationUnit root){
 		Configuration configuration=astUtil.getFirstChildOfType(root, Configuration.class);
 		if(configuration==null){
 			return false;
@@ -105,7 +129,7 @@ public class AstAnalyzerFactory {
 	 * Initializes this class for the case that the root node is part of a NesC Configuration Ast.
 	 * @return true if initialization was possible, false if it failed.
 	 */
-	private boolean initializeModuleComponent(TranslationUnit root){
+	private boolean initializeModuleAnalyzer(TranslationUnit root){
 		Module module=astUtil.getFirstChildOfType(root, Module.class);
 		if(module==null){
 			return false;
@@ -128,7 +152,7 @@ public class AstAnalyzerFactory {
 		if(createdType==AstType.CONFIGURATION){
 			return configurationAnalyzer;
 		}else{
-			throw new IllegalStateException("No Configuration has been created!");
+			throw new IllegalStateException("No configuration analyzer has been created!");
 		}
 	}
 
@@ -136,7 +160,15 @@ public class AstAnalyzerFactory {
 		if(createdType==AstType.MODULE){
 			return moduleAnalyzer;
 		}else{
-			throw new IllegalStateException("No Module has been created!");
+			throw new IllegalStateException("No module analyzer has been created!");
+		}
+	}
+	
+	public InterfaceAstAnalyzer getInterfaceAnalyzer() {
+		if(createdType==AstType.INTERFACE){
+			return interfaceAnalyzer;
+		}else{
+			throw new IllegalStateException("No interface analyzer has been created!");
 		}
 	}
 	
@@ -164,6 +196,14 @@ public class AstAnalyzerFactory {
 	 */
 	public boolean hasModuleAnalyzerCreated() {
 		return createdType==AstType.MODULE;
+	}
+	
+	/**
+	 * Checks if this factory created a InterfaceAstAnalyzer.
+	 * @return
+	 */
+	public boolean hasInterfaceAnalyzerCreated() {
+		return createdType==AstType.INTERFACE;
 	}
 	
 	/**
@@ -203,6 +243,20 @@ public class AstAnalyzerFactory {
 	}
 	
 	/**
+	 * Same as getModuleNode, but for Interface.
+	 * @param node
+	 * @return
+	 */
+	private Interface getInterfaceNode(ASTNode node){
+		ASTNode root=astUtil.getAstRoot(node);
+		Collection<Interface> interfaces=astUtil.getChildsOfType(root,Interface.class);
+		if(interfaces.size()!=1){
+			return null;
+		}
+		return interfaces.iterator().next();
+	}
+	
+	/**
 	 * Checks if the given node is part of a module ast.
 	 * @param node
 	 * @return
@@ -218,6 +272,15 @@ public class AstAnalyzerFactory {
 	 */
 	private boolean isConfiguration(ASTNode node){
 		return getConfigurationNode(node)!=null;
+	}
+	
+	/**
+	 * Checks if the given node is part of a interface ast.
+	 * @param node
+	 * @return
+	 */
+	private boolean isInterface(ASTNode node){
+		return getInterfaceNode(node)!=null;
 	}
 	
 	

@@ -82,7 +82,7 @@ public class Processor extends RenameProcessor {
 	 */
 	private String getNameOFSourceComponent(IProgressMonitor monitor){
 		if(selectionIdentifier.isInterfaceAliasingInSpecification()||selectionIdentifier.isInterfaceAliasInNescFunction()){	//In this case the selection is in the component which defines the alias.
-			return factory4Selection.getComponentAnalyzer().getComponentName();
+			return factory4Selection.getComponentAnalyzer().getEntityName();
 		}else if(selectionIdentifier.isInterfaceAliasInNescComponentWiring(getProjectUtil(),monitor)){	
 			ConfigurationAstAnalyzer analyzer=factory4Selection.getConfigurationAnalyzer();
 			return analyzer.getUseDefiningComponent4InterfaceInWiring(selectionIdentifier.getSelection());

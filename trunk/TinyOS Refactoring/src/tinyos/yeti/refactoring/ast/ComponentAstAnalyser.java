@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Access;
@@ -16,10 +15,8 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedInterface;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedInterfaceList;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 
-public class ComponentAstAnalyser extends AstAnalyzer {
+public class ComponentAstAnalyser extends NesCAstAnalyzer {
 	
-	protected TranslationUnit root;
-	protected Identifier componentIdentifier;
 	protected AccessList specification;
 	
 	private Collection<InterfaceReference> interfaceReferences;
@@ -29,26 +26,8 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	private Map<Identifier,Identifier> interfaceLocalName2InterfaceGlobalName;
 	
 	public ComponentAstAnalyser(TranslationUnit root,Identifier componentIdentifier, AccessList specification) {
-		super();
-		this.root = root;
-		this.componentIdentifier = componentIdentifier;
+		super(root,componentIdentifier);
 		this.specification = specification;
-	}
-	
-	/**
-	 * Returns the name identifier of this component.
-	 * @return
-	 */
-	public Identifier getComponentIdentifier(){
-		return componentIdentifier;
-	}
-	
-	/**
-	 * Returns the name of this component.
-	 * @return
-	 */
-	public String getComponentName(){
-		return componentIdentifier.getName();
 	}
 	
 	/**
@@ -59,12 +38,12 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 		if(interfaceReferences==null){
 			ASTUtil astUtil=getASTUtil();
 			Collection<Access> accesses=astUtil.getChildsOfType(specification, Access.class);
-			Collection<ParameterizedInterfaceList> interfaceLists=collectFieldsWithName(accesses, Access.INTERFACES);
+			Collection<ParameterizedInterfaceList> interfaceLists=astUtil.collectFieldsWithName(accesses, Access.INTERFACES);
 			Collection<ParameterizedInterface> parametrizedInterfaces=new LinkedList<ParameterizedInterface>();
 			for(ParameterizedInterfaceList list: interfaceLists){
 				parametrizedInterfaces.addAll(astUtil.getChildsOfType(list, ParameterizedInterface.class));
 			}
-			interfaceReferences=collectFieldsWithName(parametrizedInterfaces,ParameterizedInterface.REFERENCE);
+			interfaceReferences=astUtil.collectFieldsWithName(parametrizedInterfaces,ParameterizedInterface.REFERENCE);
 		}
 		return interfaceReferences;
 	}
@@ -75,8 +54,8 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	 */
 	public Collection<Identifier> getReferencedInterfaceIdentifiers(){
 		if(referencedInterfaceIdentifiers==null){
-			Collection<InterfaceType> interfaceTypes=collectFieldsWithName(getInterfaceReferences(),InterfaceReference.NAME);
-			referencedInterfaceIdentifiers=collectFieldsWithName(interfaceTypes, InterfaceType.NAME);
+			Collection<InterfaceType> interfaceTypes=astUtil.collectFieldsWithName(getInterfaceReferences(),InterfaceReference.NAME);
+			referencedInterfaceIdentifiers=astUtil.collectFieldsWithName(interfaceTypes, InterfaceType.NAME);
 		}
 		return referencedInterfaceIdentifiers;
 	}
@@ -87,7 +66,7 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 	 */
 	public Collection<Identifier> getReferencedInterfaceAliasIdentifiers(){
 		if(referencedInterfaceAliasIdentifiers==null){
-			referencedInterfaceAliasIdentifiers=collectFieldsWithName(getInterfaceReferences(), InterfaceReference.RENAME);
+			referencedInterfaceAliasIdentifiers=astUtil.collectFieldsWithName(getInterfaceReferences(), InterfaceReference.RENAME);
 		}
 		return referencedInterfaceAliasIdentifiers;
 	}
@@ -199,26 +178,7 @@ public class ComponentAstAnalyser extends AstAnalyzer {
 		Identifier alisaIdentifier=getAliasIdentifier4InterfaceAliasName(name);
 		return alisaIdentifier!=null;
 	}
-	
-	
-	/**
-	 * Collects of every given parent the field with the fieldName and adds it to the returned collection, if it is not null.
-	 * @param <CHILD_TYPE>	The type which the field with the given fielName has.
-	 * @param parents	The AbstractFixedASTNodes of which we want to collect a field/child. 
-	 * @param fieldName The name of the field we are interested in.
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	protected <CHILD_TYPE> Collection<CHILD_TYPE> collectFieldsWithName(Collection<? extends AbstractFixedASTNode> parents,String fieldName){
-		Collection<CHILD_TYPE> childs=new LinkedList<CHILD_TYPE>();
-		for(AbstractFixedASTNode parent:parents){
-			CHILD_TYPE child=(CHILD_TYPE)parent.getField(fieldName);
-			if(child!=null){
-				childs.add(child);
-			}
-		}
-		return childs;
-	}
+
 }
 
 	
