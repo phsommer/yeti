@@ -10,8 +10,6 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
 		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
 		return selectionIdentifier.isAlias(selectedIdentifier);
-//		ASTUtil4Aliases astUtil4Aliases=new ASTUtil4Aliases();
-//		return astUtil4Aliases.isAlias(selectedIdentifier);
 	}
 	
 

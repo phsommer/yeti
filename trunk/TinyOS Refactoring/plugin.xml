@@ -38,7 +38,7 @@
 		<command
 			id="tinyos.yeti.refactoring.rename.global.interfaces"
 			categoryId="tinyos.yeti.refactoring"
-			name="Rename Interfaces"/>
+			name="Rename Interface"/>
 			
 		<command
 			id="tinyos.yeti.refactoring.rename.component"
@@ -49,6 +49,11 @@
 			id="tinyos.yeti.refactoring.rename.alias"
 			categoryId="tinyos.yeti.refactoring"
 			name="Rename Alias"/>
+			
+		<command
+			id="tinyos.yeti.refactoring.rename.nesc.function"
+			categoryId="tinyos.yeti.refactoring"
+			name="Rename Nesc Function"/>
 			
 		<command
 			id="tinyos.yeti.refactoring.extractFunction"
@@ -103,6 +108,11 @@
 		<handler
         	class="tinyos.yeti.refactoring.rename.alias.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.alias">
+		</handler>
+		
+		<handler
+        	class="tinyos.yeti.refactoring.rename.nesc.function.ActionHandler"
+        	commandId="tinyos.yeti.refactoring.rename.nesc.function">
 		</handler>
 		
 		<handler
@@ -269,6 +279,21 @@
     		</command>
     		
     		<command
+       			commandId="tinyos.yeti.refactoring.rename.nesc.function"
+       			id= "RenameNescFunction"
+       			label= "Rename Nesc Function">
+       			
+      			<visibleWhen checkEnabled="false">
+        			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+        			<iterate ifEmpty="false">
+          				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+          				<test property="tinyos.yeti.refactoring.isAvailable.renameNescFunction" 
+            				forcePluginActivation="true" />
+       				</iterate>          		
+      			</visibleWhen> 
+    		</command>
+    		
+    		<command
        			commandId="tinyos.yeti.refactoring.extractFunction"
        			id= "extractFunction"
        			label= "ExtractFunction">
@@ -401,19 +426,6 @@
           			</visibleWhen>
         		</command>
         		
-        		<command 
-        			commandId="tinyos.yeti.refactoring.extractFunction">
-          			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
-          			<visibleWhen checkEnabled="false">
-            			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
-          				<iterate ifEmpty="false">
-          	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
-              				<test property="tinyos.yeti.refactoring.isAvailable.extractFunction" 
-                    			forcePluginActivation="true" />
-          				</iterate>          		
-          			</visibleWhen>
-        		</command>
-        		
 				<command 
         			commandId="tinyos.yeti.refactoring.rename.alias">
           			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
@@ -422,6 +434,32 @@
           				<iterate ifEmpty="false">
           	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
               				<test property="tinyos.yeti.refactoring.isAvailable.renameAlias" 
+                    			forcePluginActivation="true" />
+          				</iterate>          		
+          			</visibleWhen>
+        		</command>
+        		
+				<command 
+        			commandId="tinyos.yeti.refactoring.rename.nesc.function">
+          			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
+          			<visibleWhen checkEnabled="false">
+            			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+          				<iterate ifEmpty="false">
+          	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+              				<test property="tinyos.yeti.refactoring.isAvailable.renameNescFunction" 
+                    			forcePluginActivation="true" />
+          				</iterate>          		
+          			</visibleWhen>
+        		</command>
+        		    		
+        		<command 
+        			commandId="tinyos.yeti.refactoring.extractFunction">
+          			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
+          			<visibleWhen checkEnabled="false">
+            			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+          				<iterate ifEmpty="false">
+          	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+              				<test property="tinyos.yeti.refactoring.isAvailable.extractFunction" 
                     			forcePluginActivation="true" />
           				</iterate>          		
           			</visibleWhen>
@@ -449,7 +487,7 @@
      		id="tinyos.yeti.refactoring.AvailabilityTester"
      		type="org.eclipse.jface.text.ITextSelection"
      		namespace="tinyos.yeti.refactoring.isAvailable"
-     		properties="renameLocalVariable, renameGlobalVariable, renameImplementationLocalVariable, renameLocalFunction, renameGlobalFunction, renameInterface, renameComponent, renameAlias, extractFunction, NoRefactoringAvailable"
+     		properties="renameLocalVariable, renameGlobalVariable, renameImplementationLocalVariable, renameLocalFunction, renameGlobalFunction, renameInterface, renameComponent, renameAlias, renameNescFunction, extractFunction, NoRefactoringAvailable"
      		class="tinyos.yeti.refactoring.AvailabilityTester" />
  	</extension>
 
