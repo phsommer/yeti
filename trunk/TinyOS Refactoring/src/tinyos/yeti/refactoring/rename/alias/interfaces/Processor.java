@@ -3,6 +3,7 @@ package tinyos.yeti.refactoring.rename.alias.interfaces;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +21,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
-import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
@@ -29,6 +29,7 @@ import tinyos.yeti.refactoring.rename.NameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -49,22 +50,32 @@ public class Processor extends RenameProcessor {
 	}
 	
 	/**
-	 * Checks if the given file includes a configuration which references the defining module.
-	 * The reason for this check is, that there can be other modules which rename the same interface with the same alias, the references to this alias would without this check also be changed.
-	 * @param file
-	 * @return
-	 * @throws MissingNatureException 
-	 * @throws IOException 
+	 * Before this call we have references to the aliased interface which are named after the old alias name.
+	 * The problem is, that these interface aliases can actually be part of a different component, which aliases the same interface with the same alias.
+	 * This function makes sure, that just references to the real defining component are included in the change.
+	 * @param potentialReferences
+	 * @param configurationAnalyzer
+	 * @return	Just identifiers which really are associated to the defining component.
 	 */
-	private boolean isConfigurationReferencingDefiningModule(String definingModuleName,IFile file,IProgressMonitor pm) throws IOException, MissingNatureException {
-		NesC12AST ast=getAst(file, pm);
-		AstAnalyzerFactory factory4referencingEntity=new AstAnalyzerFactory(ast.getRoot());
-		if(!factory4referencingEntity.hasConfigurationAnalyzerCreated()){	//The defining module is treated separatly.
-			return false;
+	private List<Identifier> getIdentifiersReferencingComponent(List<Identifier> potentialReferences,ConfigurationAstAnalyzer configurationAnalyzer) {
+		Collection<String> referencedComponents=configurationAnalyzer.getNamesOfReferencedComponents();
+		if(!referencedComponents.contains(sourceComponentName)){
+			return Collections.emptyList();
 		}
-		ConfigurationAstAnalyzer analyzer=factory4referencingEntity.getConfigurationAnalyzer();
-		Collection<String> referencedComponents=analyzer.getNamesOfReferencedComponents();
-		return referencedComponents.contains(definingModuleName);
+		Map<Identifier,Identifier> localComponentName2GlobalComponentName=configurationAnalyzer.getComponentLocalName2ComponentGlobalName();
+		List<Identifier> realReferences=new LinkedList<Identifier>();
+		for(Identifier candidate:potentialReferences){
+			Identifier associatedLocalComponentNameIdentifier=configurationAnalyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(candidate);
+			String configurationName=configurationAnalyzer.getEntityName();
+			if(!configurationName.equals(associatedLocalComponentNameIdentifier.getName())){ //If the interface belongs to these configuration then it is for sure not associated to the alias defining component
+				Identifier associatedGlobalComponentNameIdentifier=localComponentName2GlobalComponentName.get(associatedLocalComponentNameIdentifier);	//We have to resolve aliases.
+				DebugUtil.immediatePrint("associatedGlobalComponentNameIdentifier "+associatedGlobalComponentNameIdentifier.getName());
+				if(sourceComponentName.equals(associatedGlobalComponentNameIdentifier.getName())){
+					realReferences.add(candidate);
+				}
+			}
+		}
+		return realReferences;
 	}
 
 	/**
@@ -111,23 +122,26 @@ public class Processor extends RenameProcessor {
 		Map<IFile,Collection<Identifier>> files2Identifiers=new HashMap<IFile,Collection<Identifier>>();
 		for(IFile file:getAllFiles()){
 			
-			if(file.equals(declaringFile)){	//Add change for alias definition this is the only NesC Component which can be a module which can have references to the interface definition which belong to the given alias.
+			if(file.equals(declaringFile)){	//Add change for alias definition. This is the only NesC Component, which can be a module, which can have references to the interface definition, which belongs to the given alias.
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=throwAwayDifferentNames(identifiers,aliasName);
 				identifiers.add(aliasDefinition);
 				files2Identifiers.put(file,identifiers);
 			}
-			else if(isConfigurationReferencingDefiningModule(sourceComponentName,file,pm)){	//All other references have to be in a NesC Configuration
+			else {	//All other references which are aliases to the interface in the given component have to be in a NesC Configuration
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=throwAwayDifferentNames(identifiers,aliasName);
 				if(identifiers.size()>0){
-					files2Identifiers.put(file,identifiers);
+					AstAnalyzerFactory factory=new AstAnalyzerFactory(file,getProjectUtil(),pm);
+					if(factory.hasConfigurationAnalyzerCreated()){
+						identifiers=getIdentifiersReferencingComponent(identifiers,factory.getConfigurationAnalyzer());
+						files2Identifiers.put(file,identifiers);
+					}
 				}
 			}	
 		}
 		return files2Identifiers;
 	}
-	
 
 	@Override
 	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm){
@@ -171,6 +185,7 @@ public class Processor extends RenameProcessor {
 			return ret;
 		} catch (Exception e) {
 			ret.addFatalError("Exception Occured during initialization!");
+			e.printStackTrace();
 			return ret;
 		}
 	}
