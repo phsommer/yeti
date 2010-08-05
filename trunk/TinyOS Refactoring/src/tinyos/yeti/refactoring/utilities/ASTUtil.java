@@ -278,4 +278,17 @@ public class ASTUtil {
 		}
 		return false;
 	}
+	
+	/**
+	 * Returns the first identifier of the collection whichs name mathces the given name.
+	 * Returns null if there was no identifier with the given name.
+	 */
+	public Identifier getIdentifierWithEqualName(String name, Collection<Identifier> identifiers) {
+		for(Identifier identifier:identifiers){
+			if(name.equals(identifier.getName())){
+				return identifier;
+			}
+		}
+		return null;
+	}
 }

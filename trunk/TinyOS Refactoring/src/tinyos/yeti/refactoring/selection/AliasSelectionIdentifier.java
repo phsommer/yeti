@@ -34,7 +34,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 * @param identifier
 	 * @return
 	 */
-	public boolean isAlias(Identifier identifier){
+	public boolean isAlias(){
 		if(!factory4Selection.hasComponentAnalyzerCreated()){
 			return false;
 		}

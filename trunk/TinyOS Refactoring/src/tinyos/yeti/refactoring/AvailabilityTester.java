@@ -20,7 +20,8 @@ public class AvailabilityTester extends PropertyTester {
 		renameGlobalFunction,
 		renameInterface,
 		renameComponent,
-		renameAlias,
+		renameComponentAlias,
+		renameInterfaceAlias,
 		renameNescFunction,
 		extractFunction,
 		NoRefactoringAvailable
@@ -35,7 +36,8 @@ public class AvailabilityTester extends PropertyTester {
 		testerMap.put(Properies.renameGlobalFunction, new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester());
 		testerMap.put(Properies.renameInterface, new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester());
 		testerMap.put(Properies.renameComponent, new tinyos.yeti.refactoring.rename.component.AvailabilityTester());
-		testerMap.put(Properies.renameAlias, new tinyos.yeti.refactoring.rename.alias.AvailabilityTester());
+		testerMap.put(Properies.renameComponentAlias, new tinyos.yeti.refactoring.rename.alias.component.AvailabilityTester());
+		testerMap.put(Properies.renameInterfaceAlias, new tinyos.yeti.refactoring.rename.alias.interfaces.AvailabilityTester());
 		testerMap.put(Properies.renameNescFunction, new tinyos.yeti.refactoring.rename.nesc.function.AvailabilityTester());
 		testerMap.put(Properies.extractFunction,new tinyos.yeti.refactoring.extractFunction.AvailabilityTester());
 	}

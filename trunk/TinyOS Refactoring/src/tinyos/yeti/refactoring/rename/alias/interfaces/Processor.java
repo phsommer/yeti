@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.alias;
+package tinyos.yeti.refactoring.rename.alias.interfaces;
 
 
 import java.io.IOException;
@@ -15,7 +15,6 @@ import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
@@ -34,6 +33,10 @@ public class Processor extends RenameProcessor {
 	
 	private AstAnalyzerFactory factory4Selection;
 	private AliasSelectionIdentifier selectionIdentifier;
+	
+	private String sourceComponentName;
+	private AstAnalyzerFactory factory4DefiningAst;
+	private IFile declaringFile;
 	
 	public Processor(RenameInfo info) {
 		super(info);
@@ -85,34 +88,8 @@ public class Processor extends RenameProcessor {
 	 * @throws IOException 
 	 */
 	private void createInterfaceAliasChange(CompositeChange ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
-		Identifier selectedIdentifier=selectionIdentifier.getSelection();
-		String aliasName=selectedIdentifier.getName();
-		
-		//Get the name of the component which defines the alias
-		String sourceComponentName=getNameOFSourceComponent(pm);
-		
-		//Get the ComponentAstAnalyzer of the defining component
-		IDeclaration sourceDefinition=getProjectUtil().getComponentDefinition(sourceComponentName);
-		if(sourceDefinition==null){
-			String reason="Could not find a definition for the source component.";
-			markRefactoringAsInfeasible(reason);
-			ret.add(new NullChange(reason));
-			return;
-		}
-		IFile declaringFile=getProjectUtil().getDeclaringFile(sourceDefinition);
-		if(declaringFile==null||!getProjectUtil().isProjectFile(declaringFile)){	//If the source definition is not in this project, we are not allowed/able to rename the alias.
-			String reason="The component which defines the alias is out of project range!";
-			markRefactoringAsInfeasible(reason);
-			ret.add(new NullChange(reason));
-			return;
-		}
-		AstAnalyzerFactory factory4DefiningAst=new AstAnalyzerFactory(declaringFile,getProjectUtil(), pm);
-		if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
-			String reason="Alias Definition was not in a NesC component specification!";
-			markRefactoringAsInfeasible(reason);
-			ret.add(new NullChange(reason));
-			return;	//The alias definition has to be in a NesC component specification.
-		}
+
+		String aliasName=getSelectedIdentifier().getName();
 		ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
 
 		//Get the Identifier in the defining component which stands for the alias in the alias definition.
@@ -141,57 +118,51 @@ public class Processor extends RenameProcessor {
 			}	
 		}
 	}
-
-	/**
-	 * If the selected alias identifier is a rename in a NesC "components" statement in a NesC Configuration, then the scope of the alias is the implementation of the given configuration.
-	 * This Method will create these local changes.
-	 * @param ret The CompositeChange where to add the changes.
-	 */
-	private void createConfigurationImplementationLocalChange(CompositeChange ret) {
-		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
-			throw new IllegalStateException("This method should never be called, if the given identifier is not in a configuration ast!");
+	
+	@Override
+	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
+		RefactoringStatus ret=new RefactoringStatus();
+		Identifier selectedIdentifier=getSelectedIdentifier();
+		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
+		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
+		try {
+			//Get the name of the component which defines the alias
+			sourceComponentName=getNameOFSourceComponent(pm);
+			
+			//Get the ComponentAstAnalyzer of the defining component
+			IDeclaration sourceDefinition=getProjectUtil().getComponentDefinition(sourceComponentName);
+			if(sourceDefinition==null){
+				ret.addFatalError("Could not find a definition for the source component!");
+				return ret;
+			}
+			declaringFile=getProjectUtil().getDeclaringFile(sourceDefinition);
+			if(declaringFile==null||!getProjectUtil().isProjectFile(declaringFile)){	//If the source definition is not in this project, we are not allowed/able to rename the alias.
+				ret.addFatalError("The component which defines the alias is out of project range!");
+				return ret;
+			}
+			factory4DefiningAst=new AstAnalyzerFactory(declaringFile,getProjectUtil(), pm);
+			if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
+				ret.addFatalError("Alias Definition was not in a NesC component specification!");
+				return ret;
+			}
+			return ret;
+		} catch (Exception e) {
+			ret.addFatalError("Exception Occured during initialization!");
+			return ret;
 		}
-		Collection<Identifier> identifiers2Change=factory4Selection.getConfigurationAnalyzer().getComponentAliasIdentifiersWithName(selectionIdentifier.getSelection().getName());
-		
-		NesCEditor editor=info.getEditor();
-		IFile editedFile=(IFile)editor.getResource();
-		NesC12AST ast=info.getAst();
-		addMultiTextEdit(identifiers2Change, ast, editedFile, createTextChangeName("alias", editedFile), ret);
 	}
-
 	
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		Identifier selectedIdentifier=getSelectedIdentifier();
-		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
-		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
+
 		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
 		
-		//If it is a component alias, this is a pure local change.
-		if(selectionIdentifier.isComponentAlias()){
-			createConfigurationImplementationLocalChange(ret);
-			return ret;
-		}
-		
-		//Else, if it is a interface alias, it is a global matter
 		try {
 			createInterfaceAliasChange(ret,pm);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (Exception e){
+			ret.add(new NullChange("Exception Occured!"));
 		}
 		return ret;
 	}
-	
-	@Override
-	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
-	throws CoreException, OperationCanceledException {
-		RefactoringStatus ret = new RefactoringStatus();
-		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is no Accessable");
-		}
-		return ret;
-	}
-
 }

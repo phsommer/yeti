@@ -38,16 +38,18 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
+import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 	
 	private RenameInfo info;
-	
-	private boolean refactoringMarkedAsInfeasible=false;
-	private String reason4Infeasibility;
-	
+
 	private ProjectUtil projectUtil;
+	private ASTUtil astUtil;
+	
+	private boolean refactoringInitialized=false;
+	private RefactoringStatus initializationStatus;
 
 	public RenameProcessor(RenameInfo info) {
 		super();
@@ -85,9 +87,18 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 	throws CoreException, OperationCanceledException {
+//		clearStatus();
 		RefactoringStatus ret = new RefactoringStatus();
 		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is no Accessable");
+			ret.addFatalError("The Refactoring is not Applicalbe");
+			return ret;
+		}
+		if(!refactoringInitialized){
+			refactoringInitialized=true;
+			initializationStatus=initializeRefactoring(pm);
+		}
+		if(!initializationStatus.isOK()){
+			return initializationStatus;
 		}
 		return ret;
 	}
@@ -99,19 +110,38 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		if (!isApplicable()) {
 			ret.addFatalError("The Refactoring is not Applicable");
 		}
-		if(refactoringMarkedAsInfeasible){
-			ret.addFatalError(reason4Infeasibility);
-		}
+		
+		//Check if the selected new name and the old name are different.
+		String newName=info.getNewName();
+		String oldName=info.getOldName();
+		if(oldName.equals(newName)){
+			ret.addFatalError("The old name and the new name are equal!\nThe refactoring want do anything!");
+			return ret;
+		}else
+		ret=checkConditionsAfterNameSetting(pm);
 		return ret;
 	}
 	
 	/**
-	 * Marks the refactoring as infeasible and will set the final condition check to fail.
-	 * @param reason Message that will be shown to the user with the reason for the infeasibility of this refactoring.
+	 * This method is the first to be called for the whole refactoring.
+	 * It is made sure, that it is only once called by the lifecycle.
+	 * The idea is that subclasses use this method as constructor which has a IProgressMonitor parameter.
+	 * @param pm
+	 * @return
 	 */
-	protected void markRefactoringAsInfeasible(String reason){
-		refactoringMarkedAsInfeasible=true;
-		reason4Infeasibility=reason;
+	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
+		return new RefactoringStatus();
+	}
+	
+	
+	/**
+	 * This method is called after the user has set the new name.
+	 * If the user usese the back button, this method can be called multiple times.
+	 * @param pm
+	 * @return
+	 */
+	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm) {
+		return new RefactoringStatus();
 	}
 
 	/**
@@ -193,6 +223,17 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			projectUtil=new ProjectUtil(info.getEditor());
 		}
 		return projectUtil;
+	}
+	
+	/**
+	 * Returns a ASTUtil instance.
+	 * @return
+	 */
+	protected ASTUtil getAstUtil(){
+		if(astUtil==null){
+			astUtil=new ASTUtil();
+		}
+		return astUtil;
 	}
 	
 	/**

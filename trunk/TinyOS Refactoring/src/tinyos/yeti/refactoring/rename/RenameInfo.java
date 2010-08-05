@@ -9,6 +9,8 @@ public class RenameInfo extends RefactoringInfo{
 	private String newName = null;
 	private String newNameFieldLabel = "New Name:";
 	
+	private RenameInputPage inputPage;
+
 	public RenameInfo(String oldName, NesCEditor editor) {
 		super(editor,"Rename","Getting the new name.");
 		this.oldName = oldName;
@@ -33,6 +35,14 @@ public class RenameInfo extends RefactoringInfo{
 
 	public String getNewNameFieldLabel() {
 		return newNameFieldLabel;
+	}
+	
+	public RenameInputPage getInputPage() {
+		return inputPage;
+	}
+
+	public void setInputPage(RenameInputPage inputPage) {
+		this.inputPage = inputPage;
 	}
 	
 	

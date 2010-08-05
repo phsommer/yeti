@@ -3,8 +3,8 @@ package tinyos.yeti.refactoring.rename;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -13,11 +13,20 @@ import org.eclipse.swt.widgets.Text;
 
 public class RenameInputPage extends UserInputWizardPage {
 
-	RenameInfo info;
+	private RenameInfo info;
+	private boolean newNameSet=false;
 	
 	public RenameInputPage(RenameInfo info) {
 		super(info.getInputPageName());
 		this.info = info;
+	}
+	
+	/**
+	 * Checks if the user has already set the new name for the entity.
+	 * @return
+	 */
+	public boolean isNewNameSet() {
+		return newNameSet;
 	}
 
 	@Override
@@ -40,12 +49,14 @@ public class RenameInputPage extends UserInputWizardPage {
 		newNameTextField.setText( info.getOldName() );
 	    newNameTextField.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
 	    newNameTextField.selectAll();
-	    newNameTextField.addKeyListener( new KeyAdapter() {
-	      public void keyReleased( final KeyEvent e ) {
-	        info.setNewName( newNameTextField.getText() );
-	      }
-	    } );
-
+	    newNameTextField.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+		        info.setNewName( newNameTextField.getText() );
+		        newNameSet=true;
+			}
+		});
 	}
 
 }

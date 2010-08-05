@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.alias;
+package tinyos.yeti.refactoring.rename.alias.component;
 
 import org.eclipse.core.commands.IHandler;
 
