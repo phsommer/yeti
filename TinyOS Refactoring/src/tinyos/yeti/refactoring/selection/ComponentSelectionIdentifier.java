@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class ComponentSelectionIdentifier extends SelectionIdentifier {
 
@@ -62,9 +61,6 @@ public class ComponentSelectionIdentifier extends SelectionIdentifier {
 			return false;
 		}
 		Collection<Identifier> identifiers=configurationAnalyzer.getWiringComponentPartIdentifiers();
-		for(Identifier id:identifiers){
-			DebugUtil.immediatePrint(id.getName());
-		}
 		if(!astUtil.containsIdentifierInstance(identifier,identifiers)){
 			return false;
 		}

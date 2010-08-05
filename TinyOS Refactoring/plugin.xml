@@ -46,9 +46,14 @@
 			name="Rename Component"/>
 			
 		<command
-			id="tinyos.yeti.refactoring.rename.alias"
+			id="tinyos.yeti.refactoring.rename.alias.component"
 			categoryId="tinyos.yeti.refactoring"
-			name="Rename Alias"/>
+			name="Rename Component Alias"/>
+			
+		<command
+			id="tinyos.yeti.refactoring.rename.alias.interfaces"
+			categoryId="tinyos.yeti.refactoring"
+			name="Rename Interface Alias"/>
 			
 		<command
 			id="tinyos.yeti.refactoring.rename.nesc.function"
@@ -106,8 +111,13 @@
 		</handler>
 
 		<handler
-        	class="tinyos.yeti.refactoring.rename.alias.ActionHandler"
-        	commandId="tinyos.yeti.refactoring.rename.alias">
+        	class="tinyos.yeti.refactoring.rename.alias.component.ActionHandler"
+        	commandId="tinyos.yeti.refactoring.rename.alias.component">
+		</handler>
+		
+		<handler
+        	class="tinyos.yeti.refactoring.rename.alias.interfaces.ActionHandler"
+        	commandId="tinyos.yeti.refactoring.rename.alias.interfaces">
 		</handler>
 		
 		<handler
@@ -264,15 +274,30 @@
     		</command>
     				
 			<command
-       			commandId="tinyos.yeti.refactoring.rename.alias"
-       			id= "RenameAlias"
-       			label= "Rename Alias">
+       			commandId="tinyos.yeti.refactoring.rename.alias.component"
+       			id= "RenameComponentAlias"
+       			label= "Rename Component Alias">
        			
       			<visibleWhen checkEnabled="false">
         			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
         			<iterate ifEmpty="false">
           				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
-          				<test property="tinyos.yeti.refactoring.isAvailable.renameAlias" 
+          				<test property="tinyos.yeti.refactoring.isAvailable.renameComponentAlias" 
+            				forcePluginActivation="true" />
+       				</iterate>          		
+      			</visibleWhen> 
+    		</command>
+    		
+			<command
+       			commandId="tinyos.yeti.refactoring.rename.alias.interfaces"
+       			id= "RenameInterfaceAlias"
+       			label= "Rename Interface Alias">
+       			
+      			<visibleWhen checkEnabled="false">
+        			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+        			<iterate ifEmpty="false">
+          				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+          				<test property="tinyos.yeti.refactoring.isAvailable.renameInterfaceAlias" 
             				forcePluginActivation="true" />
        				</iterate>          		
       			</visibleWhen> 
@@ -427,13 +452,26 @@
         		</command>
         		
 				<command 
-        			commandId="tinyos.yeti.refactoring.rename.alias">
+        			commandId="tinyos.yeti.refactoring.rename.alias.component">
           			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
           			<visibleWhen checkEnabled="false">
             			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
           				<iterate ifEmpty="false">
           	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
-              				<test property="tinyos.yeti.refactoring.isAvailable.renameAlias" 
+              				<test property="tinyos.yeti.refactoring.isAvailable.renameComponentAlias" 
+                    			forcePluginActivation="true" />
+          				</iterate>          		
+          			</visibleWhen>
+        		</command>
+        		
+        		<command 
+        			commandId="tinyos.yeti.refactoring.rename.alias.interfaces">
+          			<!-- If checkEnabled = true no additional checks are allowed and the isEnabled() Function of the Action Handler is called. -->
+          			<visibleWhen checkEnabled="false">
+            			<!-- It's a Collection, if iterate is left away, the test will never be executed -->
+          				<iterate ifEmpty="false">
+          	  				<!-- The forcePluginActivation-Parameter is absolutly necessary. Otherwise the Property gets never checkt -->
+              				<test property="tinyos.yeti.refactoring.isAvailable.renameInterfaceAlias" 
                     			forcePluginActivation="true" />
           				</iterate>          		
           			</visibleWhen>
@@ -487,7 +525,7 @@
      		id="tinyos.yeti.refactoring.AvailabilityTester"
      		type="org.eclipse.jface.text.ITextSelection"
      		namespace="tinyos.yeti.refactoring.isAvailable"
-     		properties="renameLocalVariable, renameGlobalVariable, renameImplementationLocalVariable, renameLocalFunction, renameGlobalFunction, renameInterface, renameComponent, renameAlias, renameNescFunction, extractFunction, NoRefactoringAvailable"
+     		properties="renameLocalVariable, renameGlobalVariable, renameImplementationLocalVariable, renameLocalFunction, renameGlobalFunction, renameInterface, renameComponent, renameComponentAlias, renameInterfaceAlias, renameNescFunction, extractFunction, NoRefactoringAvailable"
      		class="tinyos.yeti.refactoring.AvailabilityTester" />
  	</extension>
 

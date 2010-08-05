@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
@@ -26,7 +27,7 @@ import tinyos.yeti.refactoring.selection.InterfaceSelectionIdentifier;
 public class Processor extends RenameProcessor {
 
 	boolean selectionisInterfaceAliasInNesCComponentWiring=false;
-	private tinyos.yeti.refactoring.rename.alias.Processor aliasProcessor;
+	private tinyos.yeti.refactoring.rename.alias.interfaces.Processor aliasProcessor;
 	
 	private IDeclaration interfaceDeclaration;
 	
@@ -73,10 +74,28 @@ public class Processor extends RenameProcessor {
 		}
 		return ret;
 	}
+	
+	@Override
+	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,CheckConditionsContext context){
+		try {
+			if(selectionisInterfaceAliasInNesCComponentWiring){
+				return aliasProcessor.checkFinalConditions(pm, context);
+			}
+			return super.checkFinalConditions(pm, context);
+		} catch (Exception e){
+			RefactoringStatus ret=new RefactoringStatus();
+			ret.addFatalError("Error occured");
+			return ret;
+		}
+	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 	throws CoreException, OperationCanceledException {
+		if(selectionisInterfaceAliasInNesCComponentWiring){
+			return aliasProcessor.checkInitialConditions(pm);
+		}
+		
 		RefactoringStatus ret = new RefactoringStatus();
 		if (!isApplicable()) {
 			ret.addFatalError("The Refactoring is no Accessable");
@@ -100,8 +119,11 @@ public class Processor extends RenameProcessor {
 				message="Interface definition is out of project range!";
 			}
 			if(!isInterface){
-				boolean isAlias=handleCaseInterfaceAliasInNesCComponentWiring(selectedIdentifier, pm);
-				if(!isAlias){
+				handleCaseInterfaceAliasInNesCComponentWiring(selectedIdentifier, pm);
+				if(selectionisInterfaceAliasInNesCComponentWiring){
+					return aliasProcessor.checkInitialConditions(pm);
+				}
+				else{
 					ret.addFatalError(message);
 				}
 			}
@@ -115,18 +137,18 @@ public class Processor extends RenameProcessor {
 	 * Since we have no process monitor when we are deciding the processor type, we have to handle this case in the interface processor.
 	 * Without process monitor we are unable to get an ast and without ast or at least a node we cant create a AstAnalyzer of the defining file
 	 *  => we cannot decide if it is an interface or actually an alias.
+	 *  Sets the fields selecionIsInterfaceAliasInNesCComponentWiring, an if this is an alias the field aliasProcessor.
 	 * @param selectedIdentifier
 	 * @param monitor
-	 * @return
+	 * @return true if the selection is actually an interface alias
 	 */
-	private boolean handleCaseInterfaceAliasInNesCComponentWiring(Identifier selectedIdentifier,IProgressMonitor monitor){
+	private void handleCaseInterfaceAliasInNesCComponentWiring(Identifier selectedIdentifier,IProgressMonitor monitor){
 		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
 		if(!selectionIdentifier.isInterfaceAliasInNescComponentWiring(getProjectUtil(),monitor)){
-			return false;
+			return;
 		}
 		selectionisInterfaceAliasInNesCComponentWiring=true;
-		aliasProcessor=new tinyos.yeti.refactoring.rename.alias.Processor(info);
-		return true;
+		aliasProcessor=new tinyos.yeti.refactoring.rename.alias.interfaces.Processor(info);
 	}
 
 }

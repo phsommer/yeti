@@ -29,11 +29,13 @@ public abstract class RenameActionHandler extends AbstractHandler implements IHa
 		}
 		String oldName =id.getName();
 		RenameInfo info = new RenameInfo(oldName,editor);
+		RenameInputPage inputPage=new RenameInputPage(info);
+		info.setInputPage(inputPage);
 		RenameProcessor processor = createProcessor(info);
 		RenameRefactoring refactoring = new RenameRefactoring(processor);
 		DefaultRefactoringWizard wizard = new DefaultRefactoringWizard(
 				refactoring, 
-				new RenameInputPage(info), 
+				inputPage, 
 				info);
 		RefactoringWizardOpenOperation wizardStarter = new RefactoringWizardOpenOperation(wizard);
 
