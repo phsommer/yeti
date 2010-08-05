@@ -3,8 +3,10 @@ package tinyos.yeti.refactoring.rename.alias.interfaces;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -23,6 +25,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
+import tinyos.yeti.refactoring.rename.NameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
@@ -37,6 +40,8 @@ public class Processor extends RenameProcessor {
 	private String sourceComponentName;
 	private AstAnalyzerFactory factory4DefiningAst;
 	private IFile declaringFile;
+	
+	private Map<IFile,Collection<Identifier>> files2Identifiers;
 	
 	public Processor(RenameInfo info) {
 		super(info);
@@ -80,14 +85,14 @@ public class Processor extends RenameProcessor {
 	}
 
 	/**
-	 * If the selected alias is an alias for a interface, in a module/configuration specification, then this method creates the appropriate changes.
+	 * Collects all identifiers which are affected by this refactoring and associates them with the file they rest in.
 	 * @param selectedIdentifier
 	 * @param ret
 	 * @throws MissingNatureException 
 	 * @throws CoreException 
 	 * @throws IOException 
 	 */
-	private void createInterfaceAliasChange(CompositeChange ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
+	private Map<IFile,Collection<Identifier>> collectIdentifiersToChange(IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
 
 		String aliasName=getSelectedIdentifier().getName();
 		ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
@@ -103,20 +108,37 @@ public class Processor extends RenameProcessor {
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		paths.add(interfaceDefinition.getPath());
 		List<Identifier> identifiers=new LinkedList<Identifier>();
+		Map<IFile,Collection<Identifier>> files2Identifiers=new HashMap<IFile,Collection<Identifier>>();
 		for(IFile file:getAllFiles()){
 			
 			if(file.equals(declaringFile)){	//Add change for alias definition this is the only NesC Component which can be a module which can have references to the interface definition which belong to the given alias.
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=throwAwayDifferentNames(identifiers,aliasName);
 				identifiers.add(aliasDefinition);
-				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+				files2Identifiers.put(file,identifiers);
 			}
 			else if(isConfigurationReferencingDefiningModule(sourceComponentName,file,pm)){	//All other references have to be in a NesC Configuration
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=throwAwayDifferentNames(identifiers,aliasName);
-				addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("interface", file), ret);
+				if(identifiers.size()>0){
+					files2Identifiers.put(file,identifiers);
+				}
 			}	
 		}
+		return files2Identifiers;
+	}
+	
+
+	@Override
+	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm){
+		RefactoringStatus ret=new RefactoringStatus();
+		NameCollissionDetector detector=new NameCollissionDetector();
+		if(factory4DefiningAst.hasModuleAnalyzerCreated()){
+			detector.newInterfaceNameWithLocalInterfaceName(factory4DefiningAst.getComponentAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
+		}else if(factory4DefiningAst.hasConfigurationAnalyzerCreated()){
+			detector.handleCollisions4NewInterfaceNameWithConfigurationLocalName(factory4DefiningAst.getConfigurationAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
+		}
+		return ret;
 	}
 	
 	@Override
@@ -145,6 +167,7 @@ public class Processor extends RenameProcessor {
 				ret.addFatalError("Alias Definition was not in a NesC component specification!");
 				return ret;
 			}
+			files2Identifiers=collectIdentifiersToChange(pm);
 			return ret;
 		} catch (Exception e) {
 			ret.addFatalError("Exception Occured during initialization!");
@@ -159,7 +182,7 @@ public class Processor extends RenameProcessor {
 		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
 		
 		try {
-			createInterfaceAliasChange(ret,pm);
+			addChanges(files2Identifiers, ret, pm);
 		} catch (Exception e){
 			ret.add(new NullChange("Exception Occured!"));
 		}

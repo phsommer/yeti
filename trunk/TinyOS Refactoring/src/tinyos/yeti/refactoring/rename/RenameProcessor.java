@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -152,30 +153,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		ITextSelection selection=info.getSelection();
 		return info.getAstPositioning().getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
 	}
-	
-	/**
-	 * Adds a replace edit for every identifier in identifiers to the multitextedit.
-	 * @param identifiers
-	 * @param newName	the new name for the identifier.
-	 * @param multiTextEdit
-	 * @param ast the ast which includes the identifiers.
-	 */
-	protected void addChanges4Identifiers(Collection<Identifier> identifiers,String newName,MultiTextEdit multiTextEdit,NesC12AST ast){
-		ASTPositioning util;
-		if(ast==null){
-			util=info.getAstPositioning();
-		}else{
-			util=new ASTPositioning(ast);
-		}
-		for (Identifier identifier : identifiers) {
-			int beginOffset = util.start(identifier);
-			int endOffset = util.end(identifier);
-			int length = endOffset - beginOffset;
-			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, newName));
-		}
-	}
-	
-
 	
 	/**
 	 * Parses a given File and returns the Parser.
@@ -449,6 +426,28 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 	
 	/**
+	 * Adds a replace edit for every identifier in identifiers to the multitextedit.
+	 * @param identifiers
+	 * @param newName	the new name for the identifier.
+	 * @param multiTextEdit
+	 * @param ast the ast which includes the identifiers.
+	 */
+	protected void addChanges4Identifiers(Collection<Identifier> identifiers,String newName,MultiTextEdit multiTextEdit,NesC12AST ast){
+		ASTPositioning util;
+		if(ast==null){
+			util=info.getAstPositioning();
+		}else{
+			util=new ASTPositioning(ast);
+		}
+		for (Identifier identifier : identifiers) {
+			int beginOffset = util.start(identifier);
+			int endOffset = util.end(identifier);
+			int length = endOffset - beginOffset;
+			multiTextEdit.addChild(new ReplaceEdit(beginOffset, length, newName));
+		}
+	}
+	
+	/**
 	 * Adds changes for all the given identifiers to the given CompositeChange ret.
 	 * The given identifiers have to be in the given file.
 	 * @param identifiers
@@ -465,6 +464,20 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			ret.add(textChange);
 		}
 		
+	}
+	
+	/**
+	 * Adds for every file in map a multitextedit for all its associated identifiers.
+	 * @param files2Identifiers
+	 * @param ret
+	 * @param pm
+	 * @throws IOException
+	 * @throws MissingNatureException
+	 */
+	public void addChanges(Map<IFile, Collection<Identifier>> files2Identifiers, CompositeChange ret, IProgressMonitor pm) throws IOException, MissingNatureException {
+		for(IFile file:files2Identifiers.keySet()){
+			addMultiTextEdit(files2Identifiers.get(file), getAst(file, pm), file, createTextChangeName("interface", file), ret);
+		}
 	}
 	
 	/**
@@ -490,6 +503,5 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 			}
 		}
 		return result;
-	}
-	
+	}	
 }

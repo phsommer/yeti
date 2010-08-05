@@ -2,22 +2,20 @@ package tinyos.yeti.refactoring.rename.alias.component;
 
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jface.text.Region;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
-import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
+import tinyos.yeti.refactoring.rename.NameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
@@ -42,27 +40,8 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("Selection isnt accurate!");
 			return ret;
 		}
-		
-		//Check if there is a local component name with the same name.
-		ConfigurationAstAnalyzer configurationAnalyzer=factory4Selection.getConfigurationAnalyzer();
-		Identifier toRename=getSelectedIdentifier();
-		Set<Identifier> localComponentNames=configurationAnalyzer.getComponentLocalName2ComponentGlobalName().keySet();
-		Identifier sameName=getAstUtil().getIdentifierWithEqualName(info.getNewName(), localComponentNames);
-		
-		//Check if there is a local interface name with the same name.
-		//This check is only done, if there is not allready a local component name with the same name.
-		if(sameName==null){
-			Set<Identifier> localInterfaceNames=configurationAnalyzer.getInterfaceLocalName2InterfaceGlobalName().keySet();
-			sameName=getAstUtil().getIdentifierWithEqualName(info.getNewName(), localInterfaceNames);
-		}
-		
-		if(sameName!=null){
-			Region toRenameRegion= new Region(toRename.getRange().getLeft(),toRename.getName().length());
-			Region sameNameRegion= new Region(sameName.getRange().getLeft(),sameName.getName().length());
-			ret.addError("You intended to rename the component alias "+toRename.getName()+" to "+sameName.getName(),new FileStatusContext(editedFile, toRenameRegion));
-			ret.addError("You have a collision with this identifier: "+sameName.getName(),new FileStatusContext(editedFile, sameNameRegion));
-			return ret;
-		}
+		NameCollissionDetector detector=new NameCollissionDetector();
+		detector.handleCollisions4NewComponentNameWithConfigurationLocalName(factory4Selection.getConfigurationAnalyzer(),editedFile,info.getOldName(),info.getNewName(),ret);
 		return ret;
 	}
 	
