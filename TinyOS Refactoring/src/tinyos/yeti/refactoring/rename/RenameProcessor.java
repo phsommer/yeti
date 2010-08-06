@@ -40,6 +40,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
@@ -142,7 +143,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @return
 	 */
 	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm) {
-		return new RefactoringStatus();
+		return new RefactoringStatus(); 
 	}
 
 	/**
@@ -407,18 +408,20 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 				if (tartgetPaths.contains(candidatePath)) {
 					matchingSources.add(ref);
 				}
+			}else{
+				DebugUtil.immediatePrint("Null path in: "+file.getName());
 			}
 		}
 		
 		//Find Identifiers which are part of the given Source.
 		IFileRegion region;
-		ASTPositioning astUtil=new ASTPositioning(info.getProjectUtil().getAst(file,monitor));
+		ASTPositioning positioning=new ASTPositioning(info.getProjectUtil().getAst(file,monitor));
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
-			ASTNode node=astUtil.getASTLeafAtPos(region.getOffset(),region.getLength());
+			ASTNode node=positioning.getASTLeafAtPos(region.getOffset(),region.getLength());
 			Identifier identifier=(Identifier)node;
-			if(identifier!=null){	//There appear sometimes null values which we dont care about.
+			if(identifier!=null){	
 				identifiers.add(identifier);
 			}
 		}
