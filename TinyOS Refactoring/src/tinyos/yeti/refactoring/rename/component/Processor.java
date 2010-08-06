@@ -22,6 +22,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
@@ -129,6 +130,19 @@ public class Processor extends RenameProcessor {
 		newFileName=projectUtil.appendFileExtension(info.getNewName());
 		NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
 		detector.handleCollisions4NewFileName(newFileName,declaringIdentifier,declaringFile,getProjectUtil(),status,pm);
+		try {
+			for(IFile file:affectedIdentifiers.keySet()){
+				if(!declaringFile.equals(file)){	//The component itself cannot reference itself.
+					AstAnalyzerFactory factory=new AstAnalyzerFactory(file,projectUtil,pm);
+					if(factory.hasConfigurationAnalyzerCreated()){	//Only configurations can reference other modules.
+						detector.handleCollisions4NewComponentNameWithConfigurationLocalName(factory.getConfigurationAnalyzer(), file, info.getOldName(), info.getNewName(), status);
+					}
+				}
+			}
+		} catch (Exception e){
+			status.addFatalError("Exception during condition checking. See project log for more information.");
+			projectUtil.log("Exception during condition checking.", e);
+		}
 		return status;
 	}
 	
