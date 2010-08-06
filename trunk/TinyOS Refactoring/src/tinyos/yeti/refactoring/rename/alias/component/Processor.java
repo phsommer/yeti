@@ -15,7 +15,7 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.rename.NameCollissionDetector;
+import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
@@ -40,7 +40,7 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("Selection isnt accurate!");
 			return ret;
 		}
-		NameCollissionDetector detector=new NameCollissionDetector();
+		NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
 		detector.handleCollisions4NewComponentNameWithConfigurationLocalName(factory4Selection.getConfigurationAnalyzer(),editedFile,info.getOldName(),info.getNewName(),ret);
 		return ret;
 	}

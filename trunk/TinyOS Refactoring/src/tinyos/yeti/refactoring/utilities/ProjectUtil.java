@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -35,11 +34,6 @@ public class ProjectUtil {
 	private IProject project;
 	
 	private static ParserCache parserChache = new ParserCache();
-	
-	public ProjectUtil(){
-		this.editor=ActionHandlerUtil.getActiveEditor().getNesCEditor();
-		this.project=editor.getProject();
-	}
 	
 	public ProjectUtil(NesCEditor editor){
 		this.editor=editor;
@@ -233,10 +227,27 @@ public class ProjectUtil {
 	}
 	
 	/**
-	 * Writes parameters to the log.
+	 * Writes parameters to the project log.
+	 * @return
+	 */
+	public void log(String msg){
+		TinyOSPlugin.getDefault().log(msg);
+	}
+	
+	/**
+	 * Writes parameters to the project log.
 	 * @return
 	 */
 	public void log(String msg,Exception e){
 		TinyOSPlugin.getDefault().log(msg, e);
+	}
+	
+	/**
+	 * Appends the appropriate file extension string for nesc files to the given string.
+	 * @param fileNamePrefix
+	 * @return
+	 */
+	public String appendFileExtension(String fileNamePrefix){
+		return fileNamePrefix+".nc";
 	}
 }

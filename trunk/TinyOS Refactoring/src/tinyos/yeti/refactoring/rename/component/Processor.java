@@ -22,6 +22,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.ComponentSelectionIdentifier;
@@ -31,7 +32,10 @@ public class Processor extends RenameProcessor {
 
 	private IDeclaration componentDefinition;
 	private IFile declaringFile;
+	private Identifier declaringIdentifier;
 	private Map<IFile,Collection<Identifier>> affectedIdentifiers;
+	
+	private String newFileName;
 	
 	private RenameInfo info;
 
@@ -79,7 +83,7 @@ public class Processor extends RenameProcessor {
 		Map<IFile,Collection<Identifier>> files2Identifiers=new HashMap<IFile, Collection<Identifier>>();
 		
 		//Add Identifier of component definition
-		Identifier declaringIdentifier=getIdentifierForPath(componentDefinition.getPath(), pm);
+		declaringIdentifier=getIdentifierForPath(componentDefinition.getPath(), pm);
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		identifiers.add(declaringIdentifier);
 		files2Identifiers.put(declaringFile, identifiers);
@@ -119,13 +123,23 @@ public class Processor extends RenameProcessor {
 	}
 	
 	@Override
+	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm) {
+		RefactoringStatus status= new RefactoringStatus();
+		ProjectUtil projectUtil=getProjectUtil();
+		newFileName=projectUtil.appendFileExtension(info.getNewName());
+		NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
+		detector.handleCollisions4NewFileName(newFileName,declaringIdentifier,declaringFile,getProjectUtil(),status,pm);
+		return status;
+	}
+	
+	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
 		try {
 			addChanges("component",affectedIdentifiers, ret, pm);
 			//Adds the change for renaming the file which contains the definition.
-			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), info.getNewName()+".nc");
+			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), newFileName);
 			ret.add(resourceChange);
 			
 		} catch (Exception e){

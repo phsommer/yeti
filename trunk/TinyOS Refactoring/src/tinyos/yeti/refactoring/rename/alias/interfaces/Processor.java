@@ -25,7 +25,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.rename.NameCollissionDetector;
+import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
@@ -181,7 +181,7 @@ public class Processor extends RenameProcessor {
 	@Override
 	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm){
 		RefactoringStatus ret=new RefactoringStatus();
-		NameCollissionDetector detector=new NameCollissionDetector();
+		NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
 		if(factory4DefiningAst.hasModuleAnalyzerCreated()){
 			detector.newInterfaceNameWithLocalInterfaceName(factory4DefiningAst.getComponentAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
 		}else if(factory4DefiningAst.hasConfigurationAnalyzerCreated()){

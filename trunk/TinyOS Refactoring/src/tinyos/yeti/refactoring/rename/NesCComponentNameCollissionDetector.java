@@ -1,20 +1,55 @@
 package tinyos.yeti.refactoring.rename;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.Region;
 import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
-public class NameCollissionDetector {
+public class NesCComponentNameCollissionDetector {
 	
 	private ASTUtil astUtil=new ASTUtil();
+	
+	/**
+	 * Checks if the newFileName already exists in the project.
+	 * If it already exists, an error is appended to ret with context information.
+	 * @param newFileName
+	 * @param entityIdentifier	The entity identifier of the nesc entity which is to be renamed. 
+	 * @param projectUtil
+	 * @param ret
+	 */
+	public void handleCollisions4NewFileName(String newFileName, Identifier entityIdentifier, IFile toRename,ProjectUtil projectUtil,RefactoringStatus ret, IProgressMonitor pm){
+		try {
+			Collection<IFile> files=projectUtil.getAllFiles();
+			for(IFile file:files){
+				if(newFileName.equals(file.getName())){
+					Region toRenameRegion= new Region(entityIdentifier.getRange().getLeft(),entityIdentifier.getName().length());
+					ret.addError("You intended to rename the file "+toRename.getName()+" to "+file.getName(),new FileStatusContext(toRename, toRenameRegion));
+					AstAnalyzerFactory factory=new AstAnalyzerFactory(file,projectUtil,pm);
+					if(factory.hasNesCAnalyzerCreated()){
+						Identifier alreadyExisting=factory.getNesCAnalyzer().getEntityIdentifier();
+						Region sameNameRegion= new Region(alreadyExisting.getRange().getLeft(),alreadyExisting.getName().length());
+						ret.addError("There is already a file in the project with the name: "+newFileName,new FileStatusContext(file, sameNameRegion));
+					}else{
+						ret.addError("There is already a file in the project with the name: "+newFileName);
+					}
+				}
+			}
+		} catch (Exception e) {
+			ret.addError("Exception Occured during check if file name already exists. See error log for more information.");
+			projectUtil.log("Exception Occured during check if file name already exists.",e);
+		}
+	}
 	
 	/**
 	 * Checks if the new component name already exists in the given configuration as local name for a component or a interface.
@@ -164,7 +199,7 @@ public class NameCollissionDetector {
 	private void addInfo(Identifier toRename,Identifier sameName, IFile containingFile,RefactoringStatus ret){
 		Region toRenameRegion= new Region(toRename.getRange().getLeft(),toRename.getName().length());
 		Region sameNameRegion= new Region(sameName.getRange().getLeft(),sameName.getName().length());
-		ret.addError("You intended to rename the alias "+toRename.getName()+" to "+sameName.getName(),new FileStatusContext(containingFile, toRenameRegion));
+		ret.addError("You intended to rename the identifier "+toRename.getName()+" to "+sameName.getName(),new FileStatusContext(containingFile, toRenameRegion));
 		ret.addError("This would lead to a collision with this identifier: "+sameName.getName(),new FileStatusContext(containingFile, sameNameRegion));
 	}
 

@@ -154,7 +154,7 @@ public class ASTPositioning {
 	 * @return	 The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
 	 */
 	public  ASTNode getASTLeafAtPos(int start,int length){
-		start+=length/2;
+		start+=(length-1)/2;
 		return getASTLeafAtPos(start);
 	}
 	

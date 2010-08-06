@@ -29,6 +29,7 @@ public class AstAnalyzerFactory {
 		MODULE,
 		CONFIGURATION,
 		INTERFACE,
+		NESCENTITY,
 		INVALID
 	}
 	
@@ -144,10 +145,20 @@ public class AstAnalyzerFactory {
 		return true;
 	}
 
+	/**
+	 * Returns the AstType for which this factory created an Analyzer.
+	 * @return
+	 */
 	public AstType getCreatedType() {
 		return createdType;
 	}
 
+	/**
+	 * Returns the ConfigurationAstAnalyzer which this factory has created.
+	 * Throws IllegalStateException if this factory did not create an ConfigurationAstAnalyzer analyzer.
+	 * Check first with the hasConfigurationAnalyzerCreated method.
+	 * @return
+	 */
 	public ConfigurationAstAnalyzer getConfigurationAnalyzer() {
 		if(createdType==AstType.CONFIGURATION){
 			return configurationAnalyzer;
@@ -156,6 +167,10 @@ public class AstAnalyzerFactory {
 		}
 	}
 
+	/**
+	 * Same as getConfigurationAnalyzer() but for NesC Modules.
+	 * @return
+	 */
 	public ModuleAstAnalyzer getModuleAnalyzer() {
 		if(createdType==AstType.MODULE){
 			return moduleAnalyzer;
@@ -164,6 +179,10 @@ public class AstAnalyzerFactory {
 		}
 	}
 	
+	/**
+	 * Same as getConfigurationAnalyzer() but for NesC Interfaces.
+	 * @return
+	 */
 	public InterfaceAstAnalyzer getInterfaceAnalyzer() {
 		if(createdType==AstType.INTERFACE){
 			return interfaceAnalyzer;
@@ -172,13 +191,33 @@ public class AstAnalyzerFactory {
 		}
 	}
 	
+	/**
+	 * Same as getConfigurationAnalyzer() but for NesC Components.
+	 * @return
+	 */
 	public ComponentAstAnalyser getComponentAnalyzer() {
 		if(createdType==AstType.MODULE){
 			return moduleAnalyzer;
 		}else if(createdType==AstType.CONFIGURATION){
 			return configurationAnalyzer;
 		}else{
-			throw new IllegalStateException("No Module has been created!");
+			throw new IllegalStateException("No component has been created!");
+		}
+	}
+	
+	/**
+	 * Same as getConfigurationAnalyzer() but for NesC Entities.
+	 * @return
+	 */
+	public NesCAstAnalyzer getNesCAnalyzer() {
+		if(createdType==AstType.MODULE){
+			return moduleAnalyzer;
+		}else if(createdType==AstType.CONFIGURATION){
+			return configurationAnalyzer;
+		}else if(createdType==AstType.INTERFACE){
+			return interfaceAnalyzer;
+		}else{
+			throw new IllegalStateException("No nesc ast analyzer has been created!");
 		}
 	}
 
@@ -212,6 +251,15 @@ public class AstAnalyzerFactory {
 	 */
 	public boolean hasComponentAnalyzerCreated(){
 		return createdType==AstType.MODULE||createdType==AstType.CONFIGURATION;
+	}
+	
+	/**
+	 * Checks if this factory created a NesCAstAnalyzer.
+	 * A NesCAnalyzer can be an AstAnalyzer for a NesC component or a NesC interface.
+	 * @return
+	 */
+	public boolean hasNesCAnalyzerCreated(){
+		return hasComponentAnalyzerCreated()||createdType==AstType.INTERFACE;
 	}
 	
 	/**
