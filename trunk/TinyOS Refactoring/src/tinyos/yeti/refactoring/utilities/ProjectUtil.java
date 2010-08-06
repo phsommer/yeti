@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -229,5 +230,13 @@ public class ProjectUtil {
 	 */
 	public IFile getDeclaringFile(IDeclaration declaration) throws CoreException, MissingNatureException{
 		return getIFile4ParseFile(declaration.getParseFile());
+	}
+	
+	/**
+	 * Writes parameters to the log.
+	 * @return
+	 */
+	public void log(String msg,Exception e){
+		TinyOSPlugin.getDefault().log(msg, e);
 	}
 }

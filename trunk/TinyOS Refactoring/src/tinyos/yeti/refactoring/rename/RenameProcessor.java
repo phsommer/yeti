@@ -474,9 +474,9 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @throws IOException
 	 * @throws MissingNatureException
 	 */
-	public void addChanges(Map<IFile, Collection<Identifier>> files2Identifiers, CompositeChange ret, IProgressMonitor pm) throws IOException, MissingNatureException {
+	public void addChanges(String entityName,Map<IFile, Collection<Identifier>> files2Identifiers, CompositeChange ret, IProgressMonitor pm) throws IOException, MissingNatureException {
 		for(IFile file:files2Identifiers.keySet()){
-			addMultiTextEdit(files2Identifiers.get(file), getAst(file, pm), file, createTextChangeName("interface", file), ret);
+			addMultiTextEdit(files2Identifiers.get(file), getAst(file, pm), file, createTextChangeName(entityName, file), ret);
 		}
 	}
 	

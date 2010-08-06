@@ -142,18 +142,6 @@ public class Processor extends RenameProcessor {
 		}
 		return files2Identifiers;
 	}
-
-	@Override
-	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm){
-		RefactoringStatus ret=new RefactoringStatus();
-		NameCollissionDetector detector=new NameCollissionDetector();
-		if(factory4DefiningAst.hasModuleAnalyzerCreated()){
-			detector.newInterfaceNameWithLocalInterfaceName(factory4DefiningAst.getComponentAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
-		}else if(factory4DefiningAst.hasConfigurationAnalyzerCreated()){
-			detector.handleCollisions4NewInterfaceNameWithConfigurationLocalName(factory4DefiningAst.getConfigurationAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
-		}
-		return ret;
-	}
 	
 	@Override
 	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
@@ -184,10 +172,22 @@ public class Processor extends RenameProcessor {
 			files2Identifiers=collectIdentifiersToChange(pm);
 			return ret;
 		} catch (Exception e) {
-			ret.addFatalError("Exception Occured during initialization!");
-			e.printStackTrace();
+			ret.addFatalError("Exception Occured during initialization. See project log for more information.");
+			getProjectUtil().log("Exception Occured during initialization", e);
 			return ret;
 		}
+	}
+	
+	@Override
+	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm){
+		RefactoringStatus ret=new RefactoringStatus();
+		NameCollissionDetector detector=new NameCollissionDetector();
+		if(factory4DefiningAst.hasModuleAnalyzerCreated()){
+			detector.newInterfaceNameWithLocalInterfaceName(factory4DefiningAst.getComponentAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
+		}else if(factory4DefiningAst.hasConfigurationAnalyzerCreated()){
+			detector.handleCollisions4NewInterfaceNameWithConfigurationLocalName(factory4DefiningAst.getConfigurationAnalyzer(),declaringFile, info.getOldName(), info.getNewName(), ret);
+		}
+		return ret;
 	}
 	
 	@Override
@@ -197,9 +197,10 @@ public class Processor extends RenameProcessor {
 		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
 		
 		try {
-			addChanges(files2Identifiers, ret, pm);
+			addChanges("alias",files2Identifiers, ret, pm);
 		} catch (Exception e){
-			ret.add(new NullChange("Exception Occured!"));
+			ret.add(new NullChange("Exception Occured! See project log for more information."));
+			getProjectUtil().log("Exception Occured during change creation.", e);
 		}
 		return ret;
 	}

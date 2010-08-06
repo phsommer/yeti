@@ -14,6 +14,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.FileStatusContext;
+import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
@@ -98,7 +99,8 @@ public class Processor extends RenameProcessor {
 			interfaceDefinitionAnalyzer=factory4definingInterface.getInterfaceAnalyzer();
 		}
 		catch(Exception e){
-			initializationStatus.addFatalError("Exception occured!");
+			initializationStatus.addFatalError("Exception occured during initialization! See project log for more information.");
+			getProjectUtil().log("Exception during initialization.", e);
 		}
 		return initializationStatus;
 	}
@@ -161,13 +163,12 @@ public class Processor extends RenameProcessor {
 			}
 			
 		} catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			DebugUtil.printOutput();
+			ret.add(new NullChange("Exception during change creation. See project log for more information."));
+			getProjectUtil().log("Exception during change creation.", e);
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * Creates a new list which just includes references, which must be renamed.
 	 * I.E. the interface part of a function call has not to be renamed, but it references the function too.
