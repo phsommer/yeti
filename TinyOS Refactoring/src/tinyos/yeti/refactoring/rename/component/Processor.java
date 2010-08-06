@@ -130,7 +130,7 @@ public class Processor extends RenameProcessor {
 		newFileName=projectUtil.appendFileExtension(info.getNewName());
 		NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
 		detector.handleCollisions4NewFileName(newFileName,declaringIdentifier,declaringFile,getProjectUtil(),status,pm);
-		try {
+		try {	//Handle Collisions in affected configurations.
 			for(IFile file:affectedIdentifiers.keySet()){
 				if(!declaringFile.equals(file)){	//The component itself cannot reference itself.
 					AstAnalyzerFactory factory=new AstAnalyzerFactory(file,projectUtil,pm);
