@@ -61,7 +61,7 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 				for(FieldInfo fieldInfo:fieldInfos){
 					if(fieldInfo.getKind()!=FieldKind.INCLUDED_DECLARATION){	//Included Declarations don't have to be changed.
 						RangeDescription description=fieldInfo.getField().getRange();
-						Identifier id=(Identifier)astPositioning.getASTLeafAtAstPos(description.getLeft());
+						Identifier id=(Identifier)astPositioning.getASTLeafAtPreprocessedPos(description.getLeft());
 						identifiers.add(id);
 					}
 				}

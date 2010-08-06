@@ -72,17 +72,33 @@ public class ASTPositioning {
 		reader=ast.getReader();
 	}
 	
+
+
 	/**
-	 * Method returns the AST-Leaf that relates to the Position specified in pos in the not preprocessed input file. 
-	 * @param pos Position in the original Input File
-	 * @return The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
+	 * Finds an AST leave at a Preprocessed Pos
+	 * TODO: Is that really necessary to have twice, almost the same Method?
 	 */
-	private  ASTNode getASTLeafAtPos(int pos){
+	public  ASTNode getASTLeafAtPreprocessedPos(int pos){
+		ASTNode root = ast.getRoot();
+		boolean foundChild=true;
+		while(root.getChildrenCount() > 0 && foundChild){
+			foundChild=false;
+			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
+				ASTNode child = root.getChild(i);
+				
+				// It happend to us that we got null values
+				if(child!=null){
+					if(child.getRange().getRight() >= pos){
+						foundChild=true;
+						root=root.getChild(i);
+					}
+				}
+			}	
+		}
 		
-		ASTNode node = getDeepestAstNodeAtPos(pos);
-		  
-		if(node.getChildrenCount() == 0){
-			return node;
+		// Cause it's only checked if end(child) >= pos the start has to be checked too.  
+		if(foundChild && pos >= root.getRange().getLeft()){
+			return root;
 		} else {
 			// Happens for example if the Cursor is at a blank position
 			return null;
@@ -114,32 +130,18 @@ public class ASTPositioning {
 		
 		return root;
 	}
-
+	
 	/**
-	 * Finds an AST leave at a Preprocessed Pos
-	 * TODO: Is that really necessary to have twice, almost the same Method?
+	 * Method returns the AST-Leaf that relates to the Position specified in pos in the not preprocessed input file. 
+	 * @param pos Position in the original Input File
+	 * @return The AST Leaf that covers this Position, or null if the Position is not covered by a leaf.
 	 */
-	public  ASTNode getASTLeafAtAstPos(int pos){
-		ASTNode root = ast.getRoot();
-		boolean foundChild=true;
-		while(root.getChildrenCount() > 0 && foundChild){
-			foundChild=false;
-			for(int i=0; i < root.getChildrenCount()&& !foundChild; i++){
-				ASTNode child = root.getChild(i);
-				
-				// It happend to us that we got null values
-				if(child!=null){
-					if(child.getRange().getRight() >= pos){
-						foundChild=true;
-						root=root.getChild(i);
-					}
-				}
-			}	
-		}
+	private  ASTNode getASTLeafAtPos(int pos){
 		
-		// Cause it's only checked if end(child) >= pos the start has to be checked too.  
-		if(foundChild && pos >= root.getRange().getLeft()){
-			return root;
+		ASTNode node = getDeepestAstNodeAtPos(pos);
+		  
+		if(node.getChildrenCount() == 0){
+			return node;
 		} else {
 			// Happens for example if the Cursor is at a blank position
 			return null;
