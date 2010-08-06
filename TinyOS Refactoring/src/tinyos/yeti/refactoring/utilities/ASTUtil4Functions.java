@@ -6,13 +6,12 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.CallExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCName;
-import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
+import tinyos.yeti.refactoring.selection.NescFunctionSelectionIdentifier;
 
 public class ASTUtil4Functions {
 	
@@ -32,7 +31,22 @@ public class ASTUtil4Functions {
 		DeclaratorName.class,
 		FunctionDeclarator.class,
 		InitDeclarator.class
-		
+	};
+	
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] functionDeclarationPointerReturntypeAncestorSequence=new Class[]{
+		DeclaratorName.class,
+		FunctionDeclarator.class,
+		PointerDeclarator.class,
+		InitDeclarator.class
+	};
+	
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] functionDefinitionPointerReturntypeAncestorSequence=new Class[]{
+		DeclaratorName.class,
+		FunctionDeclarator.class,
+		PointerDeclarator.class,
+		FunctionDefinition.class
 	};
 	
 	@SuppressWarnings("unchecked")
@@ -76,12 +90,26 @@ public class ASTUtil4Functions {
 	}
 	
 	/**
+	 * Same as isFunctionDeclaration but for pointer returntype.
+	 */
+	public boolean isFunctionDeclarationPointerReturntype(Identifier identifier){
+		return astUtil.checkAncestorSequence(identifier,functionDeclarationPointerReturntypeAncestorSequence);
+	}
+	
+	/**
 	 * Tests if the given identifier is the name of the function, in a function definition.
 	 * @param identifier The identifier which is in question.
 	 * @return true if the given identifier is the name of the function, in a function definition. False otherwise.
 	 */
 	public boolean isFunctionDefinition(Identifier identifier){
 		return astUtil.checkAncestorSequence(identifier,functionDefinitionAncestorSequence);
+	}
+	
+	/**
+	 * Same as isFunctionDefinition but for pointer returntype.
+	 */
+	public boolean isFunctionDefinitionPointerReturntype(Identifier identifier){
+		return astUtil.checkAncestorSequence(identifier,functionDefinitionPointerReturntypeAncestorSequence);
 	}
 	
 	/**
@@ -105,6 +133,10 @@ public class ASTUtil4Functions {
 			return FunctionPart.DEFINITION;
 		}else if(isFunctionCall(identifier)){
 			return FunctionPart.CALL;
+		}else if(isFunctionDeclarationPointerReturntype(identifier)){
+				return FunctionPart.DECLARATION;
+		}else if(isFunctionDefinitionPointerReturntype(identifier)){
+			return FunctionPart.DEFINITION;
 		}
 		return FunctionPart.NO_FUNCTION_PART;
 	}
@@ -115,6 +147,10 @@ public class ASTUtil4Functions {
 	 * @return True if the given identifier is the name of a function. False otherwise and especially if the given identifier is NULL. 
 	 */
 	public boolean isGlobalFunction(Identifier identifier){
+		NescFunctionSelectionIdentifier selection=new NescFunctionSelectionIdentifier(identifier);
+		if(selection.isNescFunction(identifier)){
+			return false;
+		}
 		if(identifier==null){
 			return false;
 		}
