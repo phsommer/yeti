@@ -156,11 +156,14 @@ public class ProjectUtil {
 	/**
 	 * Checks if the given file is a project file, which means if it is a file defined in this project.
 	 * @param file
-	 * @return
-	 * @throws MissingNatureException
+	 * @return	true if it is a project file, false if it is not or an exception occured.
 	 */
-	public boolean isProjectFile(IFile file) throws MissingNatureException{
-		return getIParseFile4IFile(file).isProjectFile();
+	public boolean isProjectFile(IFile file){
+		try {
+			return getIParseFile4IFile(file).isProjectFile();
+		} catch (MissingNatureException e){
+			return false;
+		}
 	}
 	
 	/**
