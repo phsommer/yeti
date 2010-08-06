@@ -3,11 +3,8 @@ package tinyos.yeti.refactoring.rename.nesc.function;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -17,13 +14,11 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.FileStatusContext;
-import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.ep.NesC12AST;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
@@ -31,9 +26,7 @@ import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.selection.InterfaceSelectionIdentifier;
 import tinyos.yeti.refactoring.selection.NescFunctionSelectionIdentifier;
-import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
@@ -159,15 +152,11 @@ public class Processor extends RenameProcessor {
 			Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 			InitDeclarator declarator=getAstUtil().getParentForName(definingIdentifier, InitDeclarator.class);
 			paths.add(declarator.resolveField().getPath());
-//			paths.add(definingInterfaceDeclaration.getPath());
 			for(IFile file:getAllFiles()){
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=filterFunctionReferences(identifiers);
 				if(identifiers.size()>0){
-//					identifiers=figureOutWishedFunctionNamesFromInterfaceReferences(selectedIdentifier.getName(),identifiers);
-//					if(identifiers.size()>0){
-						addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("nesc function", file), ret);
-//					}
+					addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("nesc function", file), ret);
 				}
 			}
 			
@@ -201,43 +190,6 @@ public class Processor extends RenameProcessor {
 			}
 		}
 		return wantedReferences;
-	}
-
-	/**
-	 * Tries to find for every identifier in identifiers, which are expected to be references to an interface definition,
-	 * the associated function identifier.
-	 * Throws away identifiers, which are not part of a function definition in a NesC module or function name identifiers which do not match functionName. 
-	 * @param functionName
-	 * @param identifiers	This identifiers are supposed to be in the same AST.
-	 * @return
-	 */
-	private List<Identifier> figureOutWishedFunctionNamesFromInterfaceReferences(String functionName, List<Identifier> identifiers) {
-		if(identifiers.size()==0){
-			return Collections.emptyList();
-		}
-		AstAnalyzerFactory analyzerFactory=new AstAnalyzerFactory(identifiers.get(0));
-		if(!analyzerFactory.hasModuleAnalyzerCreated()){
-			return Collections.emptyList();
-		}
-		Set<Identifier> differentInterfaceIntstances=new HashSet<Identifier>();	//We add for every interface instance just one name. 
-		for(Identifier interfaceRef:identifiers){								//Every interface instance in a module does at most once implement a function of a specific interface. Therefore we need to check every local name just once.
-			InterfaceSelectionIdentifier selectionIdentifier=new InterfaceSelectionIdentifier(interfaceRef,analyzerFactory);
-			if(selectionIdentifier.isInterfaceImplementation()){	//We add just references which are interface names in a function implementation. This references are local names for the interface, which means they can be aliases as well instead of the real interface name.
-				differentInterfaceIntstances.add(interfaceRef);	
-			}
-		}
-		List<Identifier> functionNames=new LinkedList<Identifier>();
-		for(Identifier interfaceRef:differentInterfaceIntstances){
-			ModuleAstAnalyzer analyzer=analyzerFactory.getModuleAnalyzer();
-			Map<Identifier,Collection<Identifier>> interface2Functions=analyzer.getLocalInterfaceName2AssociatedFunctionNames();
-			Collection<Identifier> functions=interface2Functions.get(interfaceRef);
-			ASTUtil astUtil=new ASTUtil();
-			Identifier candidate=astUtil.getIdentifierWithEqualName(functionName,functions);
-			if(candidate!=null){
-				functionNames.add(candidate);
-			}
-		}
-		return functionNames;
 	}
 
 }
