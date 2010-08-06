@@ -15,7 +15,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
  */
 public  class FieldInfoSet{
 	private String fieldIdentifier;
-	Map<IFile, Collection<FieldInfo>> files2FieldInfos;
+	private Map<IFile, Collection<FieldInfo>> files2FieldInfos;
 	
 
 	public FieldInfoSet(String fieldIdentifier,Map<IFile, Collection<FieldInfo>> files2FieldInfos) {
@@ -23,14 +23,26 @@ public  class FieldInfoSet{
 		this.files2FieldInfos=files2FieldInfos;
 	}
 
+	/**
+	 * Returns the name of the field to which this set contains information.
+	 * @return
+	 */
 	public String getFieldIdentifier() {
 		return fieldIdentifier;
 	}
 
+	/**
+	 * Returns a map which maps to each file the field infos, for the fields which are occurrences of this field name.
+	 * @return
+	 */
 	public Map<IFile, Collection<FieldInfo>> getFiles2FieldInfos() {
 		return files2FieldInfos;
 	}
 	
+	/**
+	 * Returns all fieldInfos for the fields which are occurrences of this field name, independent of the file in which they occur.
+	 * @return
+	 */
 	public Collection<FieldInfo> getAllFieldInfos(){
 		Collection<FieldInfo> resultInfos=new LinkedList<FieldInfo>();
 		for(IFile file:files2FieldInfos.keySet()){
@@ -40,6 +52,10 @@ public  class FieldInfoSet{
 		return resultInfos;
 	}
 	
+	/**
+	 * Returns all paths which are associated with a field of this set.
+	 * @return
+	 */
 	public Collection<IASTModelPath> getAllKnownPaths(){
 		Collection<IASTModelPath> resultPaths=new LinkedList<IASTModelPath>();
 		for(FieldInfo fieldInfo:getAllFieldInfos()){
@@ -51,6 +67,10 @@ public  class FieldInfoSet{
 		return resultPaths;
 	}
 	
+	/**
+	 * Returns all paths which are associated with a field of this set and the given file.
+	 * @return
+	 */
 	public Collection<IASTModelPath> getKnownPathsForFile(IFile file){
 		Collection<IASTModelPath> resultPaths=new LinkedList<IASTModelPath>();
 		for(FieldInfo fieldInfo:files2FieldInfos.get(file)){
@@ -60,6 +80,14 @@ public  class FieldInfoSet{
 			}
 		}
 		return resultPaths;
+	}
+	
+	/**
+	 * Checks if there are any fields in this set.
+	 * @return
+	 */
+	public boolean isEmpty(){
+		return files2FieldInfos.size()==0;
 	}
 	
 }
