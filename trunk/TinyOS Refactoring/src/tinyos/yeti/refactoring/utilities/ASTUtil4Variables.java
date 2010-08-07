@@ -106,8 +106,7 @@ public class ASTUtil4Variables {
 		
 		ParameterTypeList ptl = null;
 		try {
-			FunctionDefinition fd = (FunctionDefinition) astUtil
-					.getParentForName(variable, FunctionDefinition.class);
+			FunctionDefinition fd = (FunctionDefinition) astUtil.getParentForName(variable, FunctionDefinition.class);
 			if (fd == null) {
 				return false;
 			}
