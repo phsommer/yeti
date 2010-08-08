@@ -22,13 +22,13 @@ import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.NescFunctionSelectionIdentifier;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
@@ -148,7 +148,7 @@ public class Processor extends RenameProcessor {
 			List<Identifier> identifiers=new LinkedList<Identifier>();
 			identifiers.add(definingIdentifier);
 			NesC12AST ast=getAst(declaringFile,pm);
-			addMultiTextEdit(identifiers, ast, declaringFile, createTextChangeName("nesc function", declaringFile), ret);
+			addMultiTextEdit(identifiers, ast, declaringFile, createTextChangeName(declaringFile), ret);
 			
 			//Add Changes for function name identifiers in function definitions.
 			Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
@@ -158,7 +158,7 @@ public class Processor extends RenameProcessor {
 				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 				identifiers=filterFunctionReferences(identifiers);
 				if(identifiers.size()>0){
-					addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName("nesc function", file), ret);
+					addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName(file), ret);
 				}
 			}
 			
@@ -193,4 +193,8 @@ public class Processor extends RenameProcessor {
 		return wantedReferences;
 	}
 
+	@Override
+	public String getProcessorName() {
+		return Refactoring.RENAME_NESC_FUNCTION.getEntityName();
+	}
 }

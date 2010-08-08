@@ -19,6 +19,7 @@ public class RefactoringInfo {
 	private NesCEditor editor;
 	private ITextSelection selection;
 	private ASTPositioning astPositioning;
+	private ProjectUtil projectUtil;
 	
 	public RefactoringInfo(NesCEditor editor, String inputPageName, String inputWizardName) {
 		this.editor = editor;
@@ -84,7 +85,10 @@ public class RefactoringInfo {
 	}
 	
 	public ProjectUtil getProjectUtil(){
-		return new ProjectUtil(getEditor());
+		if(projectUtil==null){
+			projectUtil=new ProjectUtil(getEditor());
+		}
+		return projectUtil;
 	}
 
 }

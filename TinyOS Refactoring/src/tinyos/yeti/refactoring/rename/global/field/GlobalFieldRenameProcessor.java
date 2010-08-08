@@ -1,7 +1,6 @@
 package tinyos.yeti.refactoring.rename.global.field;
 
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,7 +18,6 @@ import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import tinyos.yeti.ep.parser.IASTModelPath;
-import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.preprocessor.RangeDescription;
@@ -33,7 +31,7 @@ import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class GlobalFieldRenameProcessor extends RenameProcessor {
-
+	
 	private RenameInfo info;
 	
 	private GlobalFieldFinder finder;
@@ -134,24 +132,52 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 		//Check if there is a global field like a function or a variable which already has the new name.
 		if(!set.isEmpty()){
 			ret.addError("You intended to rename the global field "+info.getOldName()+" to "+info.getNewName()+". There exists allready a global field with this name.");
+			
+			//Print information about the fields leading to the collision  
 			Map<IFile,Collection<FieldInfo>> file2FieldInfos=set.getFiles2FieldInfos();
-			Region sameNameRegion= new Region(0,0);
+			Region region;
 			ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
+			int length=info.getNewName().length();
 			for(IFile file:file2FieldInfos.keySet()){
-				//TODO vielleicht kann man die identifier anzeigen, die den Konflikt verursachen, leider funktioniert das mitdem positioning aber nicht richtig. Preprocesse <-> nicht preprocessed problem.
-				if(projectUtil.isProjectFile(file)){
-					try {
-						NesC12AST ast=getAst(file, pm);
+				try {
+					ASTPositioning positioning=new ASTPositioning(getAst(file, pm));
+					if(projectUtil.isProjectFile(file)){
 						for(FieldInfo info:file2FieldInfos.get(file)){
 							if(info.getKind()!=FieldKind.INCLUDED_DECLARATION){
-								ret.addError("The field generating the collission appears in the file: "+file.getName(),new FileStatusContext(file, sameNameRegion));
+								int offset=positioning.start(getIdentifier4FieldInfo(info, positioning));
+								region=new Region(offset, length);
+								ret.addError("Declaration of field leading to the collission appears in the file: "+file.getName(),new FileStatusContext(file, region));
+
 							}
 						}
-					} catch (Exception e){
-						ret.addError("The field generating the collission appears in the file: "+file.getName());
+					}else{
+						ret.addError("Declaration of field leading to the collission appears out of project range in the file: "+file.getName());
 					}
-				}else{
-					ret.addError("The field generating the collission appears out of project range in the file: "+file.getName());
+				} catch (Exception e){
+					ret.addError("Declaration of field leading to the collission appears in the file: "+file.getName());
+				}
+			}
+			
+			//Print information about the fields to be renamed
+			file2FieldInfos=fieldInfoSet4SelectedField.getFiles2FieldInfos();
+			length=info.getOldName().length();
+			for(IFile file:file2FieldInfos.keySet()){
+				try {
+					ASTPositioning positioning=new ASTPositioning(getAst(file, pm));
+					if(projectUtil.isProjectFile(file)){
+						for(FieldInfo info:file2FieldInfos.get(file)){
+							if(info.getKind()!=FieldKind.INCLUDED_DECLARATION){
+								int offset=positioning.start(getIdentifier4FieldInfo(info, positioning));
+								region=new Region(offset, length);
+								ret.addError("Declaration of field to be renamed appears in the file: "+file.getName(),new FileStatusContext(file, region));
+
+							}
+						}
+					}else{
+						ret.addError("Declaration of field to be renamed appears out of project range in the file: "+file.getName());
+					}
+				} catch (Exception e){
+					ret.addError("Declaration of field to be renamed appears in the file: "+file.getName());
 				}
 			}
 		}
@@ -161,14 +187,19 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		CompositeChange ret = new CompositeChange("Rename Field "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = createNewCompositeChange();
 		try {
-			super.addChanges("global field", affectedIdentifiers, ret, pm);
+			super.addChanges(affectedIdentifiers, ret, pm);
 		} catch (Exception e){
 			ret.add(new NullChange("Failed to create change. See project log for more information."));
 			getProjectUtil().log("Failed to create change", e);
 		}
 		return ret;
+	}
+
+	@Override
+	public String getProcessorName() {
+		return "global field";
 	}
 
 

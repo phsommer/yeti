@@ -22,6 +22,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
@@ -30,7 +31,7 @@ import tinyos.yeti.refactoring.selection.ComponentSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
-
+	
 	private IDeclaration componentDefinition;
 	private IFile declaringFile;
 	private Identifier declaringIdentifier;
@@ -103,6 +104,11 @@ public class Processor extends RenameProcessor {
 	}
 
 	@Override
+	public String getProcessorName() {
+		return Refactoring.RENAME_COMPONENT.getEntityName();
+	}
+	
+	@Override
 	public RefactoringStatus initializeRefactoring(IProgressMonitor pm){
 		RefactoringStatus ret = new RefactoringStatus();
 		ProjectUtil projectUtil=getProjectUtil();
@@ -149,18 +155,17 @@ public class Processor extends RenameProcessor {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
-		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = createNewCompositeChange();
 		try {
-			addChanges("component",affectedIdentifiers, ret, pm);
+			addChanges(affectedIdentifiers, ret, pm);
 			//Adds the change for renaming the file which contains the definition.
 			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), newFileName);
 			ret.add(resourceChange);
 			
 		} catch (Exception e){
-			ret.add(new NullChange("Exception Occured! See project log for more information."));
+			ret.add(new NullChange("Exception Occured during change creation! See project log for more information."));
 			getProjectUtil().log("Exception Occured during change creation.", e);
 		}
 		return ret;
 	}
-
 }

@@ -22,6 +22,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
@@ -29,7 +30,6 @@ import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -69,7 +69,6 @@ public class Processor extends RenameProcessor {
 			String configurationName=configurationAnalyzer.getEntityName();
 			if(!configurationName.equals(associatedLocalComponentNameIdentifier.getName())){ //If the interface belongs to these configuration then it is for sure not associated to the alias defining component
 				Identifier associatedGlobalComponentNameIdentifier=localComponentName2GlobalComponentName.get(associatedLocalComponentNameIdentifier);	//We have to resolve aliases.
-				DebugUtil.immediatePrint("associatedGlobalComponentNameIdentifier "+associatedGlobalComponentNameIdentifier.getName());
 				if(sourceComponentName.equals(associatedGlobalComponentNameIdentifier.getName())){
 					realReferences.add(candidate);
 				}
@@ -144,6 +143,11 @@ public class Processor extends RenameProcessor {
 	}
 	
 	@Override
+	public String getProcessorName() {
+		return Refactoring.RENAME_INTERFACE_ALIAS.getEntityName();
+	}
+	
+	@Override
 	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
 		RefactoringStatus ret=new RefactoringStatus();
 		Identifier selectedIdentifier=getSelectedIdentifier();
@@ -194,10 +198,10 @@ public class Processor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 
-		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = createNewCompositeChange();
 		
 		try {
-			addChanges("alias",files2Identifiers, ret, pm);
+			addChanges(files2Identifiers, ret, pm);
 		} catch (Exception e){
 			ret.add(new NullChange("Exception Occured! See project log for more information."));
 			getProjectUtil().log("Exception Occured during change creation.", e);
