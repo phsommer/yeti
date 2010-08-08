@@ -13,6 +13,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
@@ -31,6 +32,11 @@ public class Processor extends RenameProcessor {
 	public Processor(RenameInfo info) {
 		super(info);
 		this.info = info;
+	}
+	
+	@Override
+	public String getProcessorName() {
+		return Refactoring.RENAME_COMPONENT_ALIAS.getEntityName();
 	}
 	
 	@Override
@@ -54,7 +60,7 @@ public class Processor extends RenameProcessor {
 		ConfigurationAstAnalyzer configurationAnalyzer=factory4Selection.getConfigurationAnalyzer();
 		Collection<Identifier> identifiers2Change=configurationAnalyzer.getComponentAliasIdentifiersWithName(selectionIdentifier.getSelection().getName());
 		NesC12AST ast=info.getAst();
-		addMultiTextEdit(identifiers2Change, ast, editedFile, createTextChangeName("alias", editedFile), ret);
+		addMultiTextEdit(identifiers2Change, ast, editedFile, createTextChangeName(editedFile), ret);
 	}
 
 	
@@ -71,7 +77,7 @@ public class Processor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 
-		CompositeChange ret = new CompositeChange("Rename alias "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = createNewCompositeChange();
 		createConfigurationImplementationLocalChange(ret);
 		return ret;
 	}

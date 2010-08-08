@@ -1,6 +1,5 @@
 package tinyos.yeti.refactoring.rename;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -8,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
@@ -23,18 +22,12 @@ import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
-import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.ep.IParseFile;
-import tinyos.yeti.ep.parser.IASTModel;
-import tinyos.yeti.ep.parser.IASTModelNode;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IFileRegion;
-import tinyos.yeti.ep.parser.INesCParser;
 import tinyos.yeti.ep.parser.reference.IASTReference;
 import tinyos.yeti.model.ProjectModel;
 import tinyos.yeti.nature.MissingNatureException;
-import tinyos.yeti.nesc.FileMultiReader;
-import tinyos.yeti.nesc12.Parser;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -43,11 +36,33 @@ import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
+/**
+ * This class is intended to be subclassed to introduce a new rename refactoring.
+ * There is a little framework implemented in this class:
+ * 
+ * 1.The first function of a sublcass to be called is initializeRefactoring.
+ * 	Here a subclass can gather all its information, to be sure, the refacoring is even possible or even has an effect.
+ * 	Experience shows, that this is actually the function which gathers all Identifier AstNodes, which are affected by the renaming.
+ * 	Errors in this function normally lead to adding an FatalError message to the returned RefactoringStatus, since the refactoring
+ * 	will not be able to do any reasonable thing.
+ * 
+ * 2.The second function of a sublclass to be called is checkConditionsAfterNameSetting.
+ * 	This function is called after the user entered a new name for the entity to be renamed.
+ * 	In this function a sub class can check if the new name is reasonable choice.
+ * 	This is the place were you should check, if renaming would lead to name collisions.
+ * 	Errors in this place are often not reported back as FatalError but just as Error instead.
+ * 	If the report is just error, then the user still has the choice to  proceed, the refactoring just informs, that proceeding
+ * 	will change the semantics of the source, or will even lead to compile errors. 
+ * 
+ * 3.The function createChange is called.
+ * 	Here the subclass can build the actual Change Object.
+ * 
+ * If you override the method  checkInitialConditions or checkFinalConditions the above life cycle is no more guaranteed.
+ */
 public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 	
 	private RenameInfo info;
 
-	private ProjectUtil projectUtil;
 	private ASTUtil astUtil;
 	
 	private boolean refactoringInitialized=false;
@@ -57,39 +72,34 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		super();
 		this.info = info;
 	}
-
+	
+	//Adapter implementation too release subclasses from doing this themself.
 	@Override
-	public boolean isApplicable() throws CoreException {
-		return (info.getAstPositioning() != null);
+	public Object[] getElements() {
+		return new Object[] {};
+	}
+	
+	//Adapter implementation
+	@Override
+	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,SharableParticipants sharedParticipants) 
+	throws CoreException {
+		return new RefactoringParticipant[] {};
 	}
 	
 	@Override
-	public Object[] getElements() {
-		// TODO Auto-generated method stub
-		return new Object[] {};
+	public boolean isApplicable() throws CoreException {
+		//If there is no AstPositioning, the plugin may not be fully loaded by now.
+		return (info.getAstPositioning() != null);
 	}
 
 	@Override
 	public String getIdentifier() {
 		return getClass().getCanonicalName();
 	}
-
-	@Override
-	public String getProcessorName() {
-		return info.getInputPageName();
-	}
-
-	@Override
-	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,SharableParticipants sharedParticipants) 
-	throws CoreException {
-		// TODO Auto-generated method stub
-		return new RefactoringParticipant[] {};
-	}
 	
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 	throws CoreException, OperationCanceledException {
-//		clearStatus();
 		RefactoringStatus ret = new RefactoringStatus();
 		if (!isApplicable()) {
 			ret.addFatalError("The Refactoring is not Applicalbe");
@@ -124,6 +134,13 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return ret;
 	}
 	
+	@Override
+	abstract public String getProcessorName();
+	
+	
+	
+	//The following three methods force every subclass to implement the given lifecycle shema.
+	
 	/**
 	 * This method is the first to be called for the whole refactoring.
 	 * It is made sure, that it is only once called by the lifecycle.
@@ -131,9 +148,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @param pm
 	 * @return
 	 */
-	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
-		return new RefactoringStatus();
-	}
+	abstract protected RefactoringStatus initializeRefactoring(IProgressMonitor pm);
 	
 	
 	/**
@@ -142,10 +157,15 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @param pm
 	 * @return
 	 */
-	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm) {
-		return new RefactoringStatus(); 
-	}
+	abstract protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm);
+	
+	@Override
+	abstract public Change createChange(IProgressMonitor pm) throws CoreException ,OperationCanceledException;
 
+	
+	
+	//The remaining methods are for common use between several refactoring processors.
+	
 	/**
 	 * 
 	 * @return	The Currently Selected Identifier, null if not an Identifier is Selected.
@@ -155,40 +175,8 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return info.getAstPositioning().getASTLeafAtPos(selection.getOffset(),selection.getLength(),Identifier.class);
 	}
 	
-	/**
-	 * Parses a given File and returns the Parser.
-	 */
-	protected Parser getParser(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
-		return getProjectUtil().getParser(iFile, monitor);
-	}
-	
 	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor) throws IOException, MissingNatureException{
 		return info.getProjectUtil().getAst(iFile, monitor);
-	}
-	
-	/**
-	 * Returns the Ast for the given IFile and loads the given IASTModel for it.
-	 * @param iFile
-	 * @param monitor
-	 * @return
-	 * @throws IOException
-	 * @throws MissingNatureException
-	 */
-	protected NesC12AST getAst(IFile iFile, IProgressMonitor monitor, IASTModel model)
-			throws IOException, MissingNatureException {
-		// Create Parser for File to construct an AST
-		IProject project = info.getEditor().getProject();
-		ProjectModel projectModel = TinyOSPlugin.getDefault().getProjectTOS(project).getModel();
-
-		File file = iFile.getLocation().toFile();
-		IParseFile parseFile = projectModel.parseFile(file);
-
-		INesCParser parser = projectModel.newParser(parseFile, null, monitor);
-		parser.setCreateAST(true);
-		parser.setASTModel(model);
-		parser.parse(new FileMultiReader(file), monitor);
-
-		return (NesC12AST) parser.getAST();
 	}
 
 	/**
@@ -197,10 +185,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @throws MissingNatureException
 	 */
 	protected ProjectUtil getProjectUtil() {
-		if(projectUtil==null){
-			projectUtil=new ProjectUtil(info.getEditor());
-		}
-		return projectUtil;
+		return info.getProjectUtil();
 	}
 	
 	/**
@@ -250,52 +235,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	}
 	
 	/**
-	 * Returns all references which are found in the file.
-	 * @param file
-	 * @param monitor
-	 * @return
-	 * @throws MissingNatureException
-	 */
-	protected IASTReference[] getReferences(IParseFile file, IProgressMonitor monitor) throws MissingNatureException{
-		ProjectModel model=getModel();
-		return model.getReferences(file, monitor);
-	}
-	
-	/**
-	 * The logical path of a "physical" path is the source where i.e. a declaration was found by the preprocessor.
-	 * @param fPath
-	 * @param monitor
-	 * @return
-	 * @throws MissingNatureException
-	 */
-	protected IASTModelPath getLogicalPath(IASTModelPath fPath,IProgressMonitor monitor) throws MissingNatureException{
-		ProjectModel model=getModel();
-		IASTModelNode node=model.getNode(fPath, monitor);
-		if(node==null){
-			return null;
-		}
-		return node.getLogicalPath();
-	}
-	
-	/**
-	 * Compares to IFileRegions
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	protected boolean equalsIFileRegion(IFileRegion a,IFileRegion b){
-		if(!a.getParseFile().equals(b.getParseFile()))
-			return false;
-		if(a.getLength()!=b.getLength())
-			return false;
-		if(a.getLine()!=b.getLine())
-			return false;
-		if(a.getOffset()!=b.getOffset())
-			return false;
-		return true;
-	}
-	
-	/**
 	 * Returns all Project Files.
 	 * @param parseFile
 	 * @return
@@ -323,66 +262,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		NesC12AST ast = info.getProjectUtil().getAst(targetFile,monitor);
 		ASTPositioning astUtil = new ASTPositioning(ast);
 		return astUtil.getASTLeafAtPos(targetRegion.getOffset(),targetRegion.getLength(),Identifier.class);
-	}
-	
-	/**
-	 * Looks for the Identifier of a given area.
-	 * @param path
-	 * @param monitor
-	 * @return
-	 * @throws MissingNatureException
-	 * @throws CoreException
-	 * @throws IOException
-	 */
-	protected Identifier getIdentifierForArea(int left,int right,NesC12AST ast,IProgressMonitor monitor) {
-		ASTPositioning astUtil=new ASTPositioning(ast);
-		return astUtil.getASTLeafAtPos(left,right-left,Identifier.class);
-	}
-	
-	/**
-	 * Tries to find the real Logical path of an reference, not just an intermediate node.
-	 * @param path
-	 * @param monitor
-	 * @return
-	 * @throws MissingNatureException
-	 */
-	protected IASTModelPath eagerResolveLogicalPath(IASTModelPath path,IProgressMonitor monitor) 
-	throws MissingNatureException{
-		ProjectModel model=getModel();
-		IASTModelPath oldPath=null;
-		while(!path.equals(oldPath)){
-			oldPath=path;
-			IASTModelNode node=model.getNode(oldPath, monitor);
-			if(node==null){
-				return path;
-			}
-			path=node.getLogicalPath();
-		}
-		return path;
-	}
-	
-	/**
-	 * Checks if the target of the given path is inside the project.
-	 * @param targetPath
-	 * @return
-	 */
-	private boolean isPathTargetInsideProject(IASTModelPath targetPath){
-		return getProjectUtil().isProjectFile(targetPath.getParseFile());
-	}
-	
-	/**
-	 * Adds just paths to the returned collection, which have a target file inside the project.
-	 * @param paths
-	 * @return
-	 */
-	protected Collection<IASTModelPath> filterOutNonProjectPaths(Collection<IASTModelPath> paths){
-		Collection<IASTModelPath> validPaths=new LinkedList<IASTModelPath>();
-		for(IASTModelPath path:paths){
-			if(isPathTargetInsideProject(path)){
-				validPaths.add(path);
-			}
-		}
-		return validPaths;
 	}
 	
 	/**
@@ -477,20 +356,10 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @throws IOException
 	 * @throws MissingNatureException
 	 */
-	public void addChanges(String entityName,Map<IFile, Collection<Identifier>> files2Identifiers, CompositeChange ret, IProgressMonitor pm) throws IOException, MissingNatureException {
+	public void addChanges(Map<IFile, Collection<Identifier>> files2Identifiers, CompositeChange ret, IProgressMonitor pm) throws IOException, MissingNatureException {
 		for(IFile file:files2Identifiers.keySet()){
-			addMultiTextEdit(files2Identifiers.get(file), getAst(file, pm), file, createTextChangeName(entityName, file), ret);
+			addMultiTextEdit(files2Identifiers.get(file), getAst(file, pm), file, createTextChangeName(file), ret);
 		}
-	}
-	
-	/**
-	 * Creates a title for a text change.
-	 * @param entityName The name of the entity we are renaming. I.e. global field or interface.
-	 * @param file
-	 * @return
-	 */
-	protected String createTextChangeName(String entityName,IFile file){
-		return "Replacing "+entityName+" name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
 	}
 	
 	/**
@@ -507,4 +376,24 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		}
 		return result;
 	}	
+	
+	/**
+	 * Creates a new CompositeChange.
+	 * The main purpose for this method is to have a single place, where the composite change title is created.
+	 * @param file
+	 * @return
+	 */
+	protected CompositeChange createNewCompositeChange(){
+		return new CompositeChange("Rename "+getProcessorName()+ info.getOldName() + " to " + info.getNewName());
+	}
+	
+	/**
+	 * Creates a title for a text change.
+	 * @param entityName The name of the entity we are renaming. I.e. global field or interface.
+	 * @param file
+	 * @return
+	 */
+	protected String createTextChangeName(IFile file){
+		return "Replacing "+getProcessorName()+" name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+	}
 }

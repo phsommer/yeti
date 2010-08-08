@@ -23,6 +23,7 @@ import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
@@ -32,7 +33,7 @@ import tinyos.yeti.refactoring.selection.InterfaceSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
-
+	
 	boolean selectionisInterfaceAliasInNesCComponentWiring=false;
 	private tinyos.yeti.refactoring.rename.alias.interfaces.Processor aliasProcessor;
 	
@@ -144,6 +145,11 @@ public class Processor extends RenameProcessor {
 	}
 
 	@Override
+	public String getProcessorName() {
+		return Refactoring.RENAME_INTERFACE.getEntityName();
+	}
+	
+	@Override
 	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
 		RefactoringStatus ret=new RefactoringStatus();
 		try {
@@ -214,11 +220,11 @@ public class Processor extends RenameProcessor {
 		if(selectionisInterfaceAliasInNesCComponentWiring){	
 			return aliasProcessor.createChange(pm);
 		}
-		CompositeChange ret = new CompositeChange("Rename Interface "+ info.getOldName() + " to " + info.getNewName());
+		CompositeChange ret = createNewCompositeChange();
 		try {
 			
 			//Add changes for affected identifiers
-			addChanges("interface", affectedIdentifiers, ret, pm);
+			addChanges(affectedIdentifiers, ret, pm);
 			//Adds the change for renaming the file which contains the definition.
 			RenameResourceChange resourceChange=new RenameResourceChange(declaringFile.getFullPath(), newFileName);
 			ret.add(resourceChange);

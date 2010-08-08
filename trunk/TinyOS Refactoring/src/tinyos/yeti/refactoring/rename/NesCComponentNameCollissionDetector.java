@@ -9,11 +9,16 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import tinyos.yeti.nesc12.ep.NesC12AST;
+import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class NesCComponentNameCollissionDetector {
@@ -48,6 +53,39 @@ public class NesCComponentNameCollissionDetector {
 		} catch (Exception e) {
 			ret.addError("Exception Occured during check if file name already exists. See error log for more information.");
 			projectUtil.log("Exception Occured during check if file name already exists.",e);
+		}
+	}
+	
+	/**
+	 *  Adds for every Identifier, which has the name newName, an error to the ret with appropriate context information.
+	 *  Where every Identifier means the identifiers, which are a child of or the scope node itself.
+	 *  If there is no such identifier, this method has no effect and returns a still ok RefacactoringStatus.
+	 *  We can consider cases, where this errors actually do not lead to a change in meaning of a program but just to shadowing of names.
+	 *  Addidtionally an context information error is added to the ret about the declaring identifier.
+	 * @param newName
+	 * @param scope
+	 * @param ret
+	 */
+	public void handleCollisions4Scope(String newName,Identifier declaringIdentifier,ASTNode scope,IFile containingFile,NesC12AST ast,RefactoringStatus ret){
+		String oldName=declaringIdentifier.getName();
+		//Check if there already exists an identifier with the new name.
+		ASTPositioning positioning=new ASTPositioning(ast);
+		ASTUtil4Variables astUtil4Variables=new ASTUtil4Variables(astUtil);
+		Collection<Identifier> identifiers=astUtil4Variables.getIncludedIdentifiers(scope,newName,null);
+		if(identifiers.size()>0){
+			//Add Information for collisions to refactoring status
+			int offset=positioning.start(declaringIdentifier);
+			int length=oldName.length();
+			Region region= new Region(offset,length);
+			ret.addError("You intended to rename the identifier "+oldName+" to "+newName,new FileStatusContext(containingFile, region));
+			length=newName.length();
+			for(Identifier id:identifiers){
+				offset=positioning.start(id);
+				region= new Region(offset,length);
+				ret.addError("Possible collision with this identifier: "+id.getName(),new FileStatusContext(containingFile, region));
+				DebugUtil.immediatePrint("offset: "+offset+"\t\t"+"length: "+length);
+				DebugUtil.immediatePrint("offset: "+positioning.start(id));
+			}
 		}
 	}
 	

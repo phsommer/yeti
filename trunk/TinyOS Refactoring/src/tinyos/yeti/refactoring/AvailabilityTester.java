@@ -11,35 +11,21 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class AvailabilityTester extends PropertyTester {
-
-	private enum Properies {
-		renameLocalVariable, 
-		renameGlobalVariable, 
-		renameImplementationLocalVariable,
-		renameLocalFunction, 
-		renameGlobalFunction,
-		renameInterface,
-		renameComponent,
-		renameComponentAlias,
-		renameInterfaceAlias,
-		renameNescFunction,
-		extractFunction,
-		NoRefactoringAvailable
-	};
-	private Map<Properies, IRefactoringAvailabilityTester> testerMap = new HashMap<Properies,IRefactoringAvailabilityTester>(); 
+	
+	private Map<Refactoring, IRefactoringAvailabilityTester> testerMap = new HashMap<Refactoring,IRefactoringAvailabilityTester>(); 
 	
 	public AvailabilityTester() {
-		testerMap.put(Properies.renameLocalVariable, new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester());
-		testerMap.put(Properies.renameGlobalVariable, new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester());
-		testerMap.put(Properies.renameImplementationLocalVariable, new tinyos.yeti.refactoring.rename.implementation.variable.AvailabilityTester());
-		testerMap.put(Properies.renameLocalFunction, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
-		testerMap.put(Properies.renameGlobalFunction, new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester());
-		testerMap.put(Properies.renameInterface, new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester());
-		testerMap.put(Properies.renameComponent, new tinyos.yeti.refactoring.rename.component.AvailabilityTester());
-		testerMap.put(Properies.renameComponentAlias, new tinyos.yeti.refactoring.rename.alias.component.AvailabilityTester());
-		testerMap.put(Properies.renameInterfaceAlias, new tinyos.yeti.refactoring.rename.alias.interfaces.AvailabilityTester());
-		testerMap.put(Properies.renameNescFunction, new tinyos.yeti.refactoring.rename.nesc.function.AvailabilityTester());
-		testerMap.put(Properies.extractFunction,new tinyos.yeti.refactoring.extractFunction.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_LOCAL_VARIABLE, new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_GLOBAL_VARIABLE, new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester());
+		testerMap.put(Refactoring.RENAME_IMPLEMENTATION_LOCAL_VARIABLE, new tinyos.yeti.refactoring.rename.implementation.variable.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_LOCAL_FUNCTION, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_GLOBAL_FUNCTION, new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester());
+		testerMap.put(Refactoring.RENAME_INTERFACE, new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_COMPONENT, new tinyos.yeti.refactoring.rename.component.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_COMPONENT_ALIAS, new tinyos.yeti.refactoring.rename.alias.component.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_INTERFACE_ALIAS, new tinyos.yeti.refactoring.rename.alias.interfaces.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_NESC_FUNCTION, new tinyos.yeti.refactoring.rename.nesc.function.AvailabilityTester());
+		testerMap.put(Refactoring.EXTRACT_FUNCTION,new tinyos.yeti.refactoring.extractFunction.AvailabilityTester());
 	}
 
 	@Override
@@ -54,11 +40,12 @@ public class AvailabilityTester extends PropertyTester {
 		ITextSelection selection = (ITextSelection) receiver;
 		
 		//If there is no refactoring available show the dummy refactoring in the menu.
-		if(property.equals(Properies.NoRefactoringAvailable.toString())){
+		if(property.equals(Refactoring.NO_REFACTORING_AVAILABLE.toString())){
 			return !isRefactoringAvailable(selection);
 		}
 		
-		IRefactoringAvailabilityTester tester = testerMap.get(Properies.valueOf(property));
+		Refactoring refactoring=Refactoring.getRefactoring4Property(property);
+		IRefactoringAvailabilityTester tester = testerMap.get(refactoring);
 		if(tester == null){
 			System.err.println("No Tester Available");
 			return false;

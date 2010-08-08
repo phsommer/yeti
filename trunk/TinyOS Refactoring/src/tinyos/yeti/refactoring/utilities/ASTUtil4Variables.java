@@ -252,7 +252,7 @@ public class ASTUtil4Variables {
 	 * @param root ASTNode which child's are checked for being Identifier with name indentifierName 
 	 * @param identifierName Name of the Identifier you are looking for
 	 * @param stopClass 
-	 * @return A list with all occurrences of Identifiers below the root parameter in the AST
+	 * @return A collection with all occurrences of Identifiers below the root in the AST
 	 */
 	public <T> Collection<Identifier> getIncludedIdentifiers(ASTNode root, String identifierName,Class<T> stopClass){
 		LinkedList<Identifier> ret = new LinkedList<Identifier>();
@@ -304,7 +304,6 @@ public class ASTUtil4Variables {
 		String name=identifier.getName();
 		ASTNode child=identifier;
 		CompoundStatement parent=null;
-		Collection<Identifier> identifiers=null;
 		boolean extendedToFunctionBorder=false;
 		boolean foundDeclaration=false;
 		//Search for the declaration in the current and upper CompountStatements, add all found Identifiers.
@@ -316,22 +315,34 @@ public class ASTUtil4Variables {
 			if(parent.getParent() instanceof FunctionDefinition){
 				extendedToFunctionBorder=true;
 			}
-			//Get Identifiers in Compound with same Name
-			identifiers=getIncludedIdentifiers(parent, name,CompoundStatement.class);
 
 			//Check if the declaration is in the actual compound statement. If so, this is a local variable
-			if(getDeclaratorName(identifiers)!=null){
-				foundDeclaration=true;
-			}
-			else{
-				if(extendedToFunctionBorder&&!foundDeclaration){	//This is not a local variable
-					return null;
-				} 
-			}
+			foundDeclaration=getLocalVariableDeclarationIfInside(name,parent)!=null;
+			if(!foundDeclaration&&extendedToFunctionBorder){	//This is not a local variable
+				return null;
+			} 
 			//Maybe the declaration of the variable is in an CompountStatement outside the actual one but inside the FunctionDefinition-->Do another round
 			child=parent;
 		}
 		return parent;
+	}
+	
+	/**
+	 * Returns the identifier which is the declaration of the local variable with the given variableName, if there is such a declaration in the given parent.
+	 * @param variableName
+	 * @param parent
+	 * @return
+	 */
+	public Identifier getLocalVariableDeclarationIfInside(String variableName,CompoundStatement parent){
+		//Get Identifiers in Compound with same Name
+		Collection<Identifier> identifiers=getIncludedIdentifiers(parent, variableName,CompoundStatement.class);
+
+		//Check if the declaration is in the actual compound statement. If so, this is a local variable
+		DeclaratorName decName= getDeclaratorName(identifiers);
+		if(decName==null){
+			return null;
+		}
+		return decName.getName();
 	}
 	
 	/**

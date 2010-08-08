@@ -41,8 +41,7 @@ public class NesCAstAnalyzer extends AstAnalyzer {
 	}
 	
 	/**
-	 * Tries to collect all NesC function identifiers out of a lost of declarations.
-	 * Especially treated is the case in which the function has a pointer as return value;
+	 * Collects all NesC function identifiers out of a collection of declarations.
 	 * @param declarations
 	 * @return
 	 */
@@ -59,7 +58,7 @@ public class NesCAstAnalyzer extends AstAnalyzer {
 		for(InitDeclarator declarator:initDeclarators){
 			ASTNode child=declarator.getField(InitDeclarator.DECLARATOR);
 			if(child!=null){
-				if(child instanceof PointerDeclarator){
+				if(child instanceof PointerDeclarator){	//Functions which return a pointer have an additional layer in between.
 					child=((PointerDeclarator)child).getField(PointerDeclarator.DECLARATOR);
 				}
 				declarators.add((FunctionDeclarator)child);

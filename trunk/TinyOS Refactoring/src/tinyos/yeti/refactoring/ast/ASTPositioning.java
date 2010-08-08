@@ -6,18 +6,12 @@ import java.io.InputStreamReader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchWindow;
 
-import tinyos.yeti.editors.MultiPageNesCEditor;
-import tinyos.yeti.editors.NesCEditor;
-import tinyos.yeti.ep.parser.INesCAST;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.preprocessor.PreprocessorReader;
-import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
@@ -25,34 +19,34 @@ public class ASTPositioning {
 	private NesC12AST ast;
 	private PreprocessorReader reader;
 	
-	/**
-	 * Finds the editor by itself. Attention, this Constructor works only if the Editor has the Focus. 
-	 * As soon as an other Window opens, this is no longer the case.
-	 * @throws NullPointerException If the AST is not yet initialized.
-	 * @throws IllegalStateException If the found AST or Editor is not of the expected type.
-	 */
-	public ASTPositioning(){
-		IWorkbenchWindow w=	RefactoringPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
-		IEditorPart editorPart = w.getActivePage().getActiveEditor();
-		
-		NesCEditor editor = null;
-		if(editorPart instanceof NesCEditor){
-			editor = (NesCEditor)editorPart;
-		} else if (editorPart instanceof MultiPageNesCEditor) {
-			editor = ((MultiPageNesCEditor) editorPart).getNesCEditor();
-		} else {
-			throw new IllegalStateException("Found editor was not a NesCEditor but a " + editorPart.getClass().getCanonicalName());
-		}
-		INesCAST ast = editor.getAST();
-		if(ast instanceof NesC12AST){
-			init((NesC12AST) ast);
-		} else if(ast == null){
-			throw new NullPointerException("The AST must not be NULL");
-		} else {
-			(new Exception()).printStackTrace();
-			throw new IllegalStateException("The AST of the Editor has to be a NesC12AST but was "+ ast.getClass().getCanonicalName());
-		}
-	}
+//	/**
+//	 * Finds the editor by itself. Attention, this Constructor works only if the Editor has the Focus. 
+//	 * As soon as an other Window opens, this is no longer the case.
+//	 * @throws NullPointerException If the AST is not yet initialized.
+//	 * @throws IllegalStateException If the found AST or Editor is not of the expected type.
+//	 */
+//	public ASTPositioning(){
+//		IWorkbenchWindow w=	RefactoringPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+//		IEditorPart editorPart = w.getActivePage().getActiveEditor();
+//		
+//		NesCEditor editor = null;
+//		if(editorPart instanceof NesCEditor){
+//			editor = (NesCEditor)editorPart;
+//		} else if (editorPart instanceof MultiPageNesCEditor) {
+//			editor = ((MultiPageNesCEditor) editorPart).getNesCEditor();
+//		} else {
+//			throw new IllegalStateException("Found editor was not a NesCEditor but a " + editorPart.getClass().getCanonicalName());
+//		}
+//		INesCAST ast = editor.getAST();
+//		if(ast instanceof NesC12AST){
+//			init((NesC12AST) ast);
+//		} else if(ast == null){
+//			throw new NullPointerException("The AST must not be NULL");
+//		} else {
+//			(new Exception()).printStackTrace();
+//			throw new IllegalStateException("The AST of the Editor has to be a NesC12AST but was "+ ast.getClass().getCanonicalName());
+//		}
+//	}
 	
 	/**
 	 * 
