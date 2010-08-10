@@ -78,7 +78,7 @@ public class Processor extends RenameProcessor {
 			NesC12AST ast=getAst(definingFile,pm);
 			NesCExternalDefinitionList scope=getAstUtil().getModuleImplementationNodeIfInside(definingIdentifier);
 			NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
-			detector.handleCollisions4Scope(info.getNewName(),definingIdentifier, scope, definingFile, ast, ret);
+			detector.handleCollisions4Scope(info.getOldName(),info.getNewName(),definingIdentifier,definingFile,ast, scope, definingFile, ast, ret);
 		} catch (Exception e){
 			ret.addFatalError(("Exception occured during conditions checking. See project log for more information."));
 			getProjectUtil().log("Exception occured during conditions checking.",e);

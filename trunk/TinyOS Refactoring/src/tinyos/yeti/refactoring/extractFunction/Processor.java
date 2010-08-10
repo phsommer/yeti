@@ -179,7 +179,7 @@ public class Processor extends RefactoringProcessor {
 		Filter<Identifier> filter = new Filter<Identifier>() {
 			@Override
 			public boolean test(Identifier toTest) {
-				return varUtil.isLocalVariable(toTest)
+				return varUtil.isLocalVariableOrFunctionParameter(toTest)
 						&& namesToCheck.contains(toTest.getName());
 			}
 		};
@@ -234,7 +234,7 @@ public class Processor extends RefactoringProcessor {
 		Filter<Identifier> filter = new Filter<Identifier>() {
 			@Override
 			public boolean test(Identifier id) {
-				return varUtil.isLocalVariable(id) && isModifing(id);
+				return varUtil.isLocalVariableOrFunctionParameter(id) && isModifing(id);
 			}
 		};
 
@@ -518,7 +518,7 @@ public class Processor extends RefactoringProcessor {
 
 					@Override
 					public boolean test(Identifier toTest) {
-						return (new ASTUtil4Variables()).isLocalVariable(toTest);
+						return (new ASTUtil4Variables()).isLocalVariableOrFunctionParameter(toTest);
 					}
 				});
 				if(!getNames(ids).contains(var)){
@@ -722,7 +722,7 @@ public class Processor extends RefactoringProcessor {
 		Filter<Identifier> filter = new Filter<Identifier>() {
 			@Override
 			public boolean test(Identifier toTest) {
-				return varUtil.isLocalVariable(toTest);
+				return varUtil.isLocalVariableOrFunctionParameter(toTest);
 			}
 		};
 

@@ -236,7 +236,7 @@ public class ASTUtil4Functions {
 	/**
 	 * Pulls the identifier out of a declaration, if this declaration declares a function.
 	 * @param definition
-	 * @return	The identifier of the functionDeclaration, null if the given declaration doesnt contain a function declaration.
+	 * @return	The identifier of the functionDeclaration, null if the given declaration doesn't contain a function declaration.
 	 */
 	public Identifier getIdentifierOfFunctionDeclaration(Declaration declaration){
 		return (Identifier)astUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);

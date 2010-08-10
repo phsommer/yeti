@@ -5,7 +5,11 @@ public enum Refactoring {
 	RENAME_LOCAL_VARIABLE(
 			"renameLocalVariable",
 			"local variable"),
-			
+
+	RENAME_FUNCTION_PARAMETER(
+			"renameFunctionParameter",
+			"function parameter"),
+
 	RENAME_GLOBAL_VARIABLE(
 			"renameGlobalVariable",
 			"global variable"),

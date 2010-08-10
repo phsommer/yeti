@@ -16,6 +16,7 @@ public class AvailabilityTester extends PropertyTester {
 	
 	public AvailabilityTester() {
 		testerMap.put(Refactoring.RENAME_LOCAL_VARIABLE, new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester());
+		testerMap.put(Refactoring.RENAME_FUNCTION_PARAMETER, new tinyos.yeti.refactoring.rename.local.functionparameter.AvailabilityTester());
 		testerMap.put(Refactoring.RENAME_GLOBAL_VARIABLE, new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester());
 		testerMap.put(Refactoring.RENAME_IMPLEMENTATION_LOCAL_VARIABLE, new tinyos.yeti.refactoring.rename.implementation.variable.AvailabilityTester());
 		testerMap.put(Refactoring.RENAME_LOCAL_FUNCTION, new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester());
@@ -40,14 +41,14 @@ public class AvailabilityTester extends PropertyTester {
 		ITextSelection selection = (ITextSelection) receiver;
 		
 		//If there is no refactoring available show the dummy refactoring in the menu.
-		if(property.equals(Refactoring.NO_REFACTORING_AVAILABLE.toString())){
+		if(property.equals(Refactoring.NO_REFACTORING_AVAILABLE.getPropertyName())){
 			return !isRefactoringAvailable(selection);
 		}
 		
 		Refactoring refactoring=Refactoring.getRefactoring4Property(property);
 		IRefactoringAvailabilityTester tester = testerMap.get(refactoring);
 		if(tester == null){
-			System.err.println("No Tester Available");
+			System.err.println("No Tester Available for property: "+property);
 			return false;
 		}
 		

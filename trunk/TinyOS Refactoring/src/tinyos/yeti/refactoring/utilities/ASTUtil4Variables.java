@@ -87,41 +87,36 @@ public class ASTUtil4Variables {
 	 * @return
 	 */
 	public boolean isGlobalVariable(Identifier identifier){
-		if(isLocalVariable(identifier)||isImplementationLocalVariable(identifier)){
+		if(isLocalVariableOrFunctionParameter(identifier)||isImplementationLocalVariable(identifier)){
 			return false;
 		}
 		return isVariableDeclaration(identifier)||isVariableUsage(identifier);
 	}
 	
 	/**
-	 * Checks if this identifier is part of a local variable, which means a variable inside a function.
-	 * @param identifier
-	 * @return
+	 * Returns the identifier with equal name parameterName which represents a parameter in a function declaration, if the given ASTNode is a child of the FunctionDefinition node.
+	 * @param reference
+	 * @return	null if the given ASTNode is not in a function definition or there is no parameter with the name parameterName. 
 	 */
-	public boolean isLocalVariable(Identifier variable){
-		CompoundStatement declaringCompound=findDeclaringCompoundStatement(variable);
-		if(declaringCompound!=null){
-			return true;
-		}
-		
+	public Identifier getFunctionParameterIfInside(String parameterName,ASTNode child){
 		ParameterTypeList ptl = null;
 		try {
-			FunctionDefinition fd = (FunctionDefinition) astUtil.getParentForName(variable, FunctionDefinition.class);
+			FunctionDefinition fd = astUtil.getParentForName(child, FunctionDefinition.class);
 			if (fd == null) {
-				return false;
+				return null;
 			}
 
 			FunctionDeclarator fdec = (FunctionDeclarator) fd.getDeclarator();
 			if (fdec == null) {
-				return false;
+				return null;
 			}
 
 			ptl = (ParameterTypeList) fdec.getParameters();
 			if (ptl == null) {
-				return false;
+				return null;
 			}
 		} catch (ClassCastException e) {
-			return false;
+			return null;
 		}
 		
 		Queue<ASTNode> q = new LinkedList<ASTNode>();
@@ -129,14 +124,44 @@ public class ASTUtil4Variables {
 		while(!q.isEmpty()){
 			ASTNode node = q.poll();
 			if(node instanceof Identifier){
-				if(((Identifier) node).getName().equals(variable.getName())){
-					return true;
+				Identifier id=(Identifier) node;
+				if(id.getName().equals(parameterName)){
+					return id;
 				} 
 			}else {
 				q.addAll(astUtil.getChilds(node));
 			}
 		}
+		return null;
+	}
+	
+	/**
+	 * Returns true if the given identifier is a fucntion parameter or a reference to a function parameter with the same name.
+	 * @param reference
+	 * @return	null if the given identifier node is not in a function definition or there is no parameter with an equal name. 
+	 */
+	public boolean isFunctionParameter(Identifier identifier){
+		if(isLocalVariable(identifier)){	//Ensures, that there is no local declaration with the same name as the parameter, between the given identifier and the parmater declarations..
+			return false;
+		}
+		return getFunctionParameterIfInside(identifier.getName(), identifier)!=null;
+	}
+	
+	/**
+	 * Checks if this identifier is part of a local variable, which means a variable inside a function.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isLocalVariable(Identifier identifier){
+		CompoundStatement declaringCompound=findDeclaringCompoundStatement(identifier);
+		if(declaringCompound!=null){
+			return true;
+		}
 		return false;
+	}
+	
+	public boolean isLocalVariableOrFunctionParameter(Identifier identifier){
+		return isLocalVariable(identifier)||isFunctionParameter(identifier);
 	}
 	
 	/**
