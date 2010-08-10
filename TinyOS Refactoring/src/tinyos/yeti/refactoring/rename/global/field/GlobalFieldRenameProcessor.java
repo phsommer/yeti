@@ -20,7 +20,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
@@ -49,17 +48,6 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 		this.info = info;
 	}
 
-	/**
-	 * Returns the associated identifier to a field.
-	 * @param info
-	 * @param positioning
-	 * @return
-	 */
-	private Identifier getIdentifier4FieldInfo(FieldInfo info,ASTPositioning positioning){
-		RangeDescription description=info.getField().getRange();
-		return (Identifier)positioning.getASTLeafAtPreprocessedPos(description.getLeft());
-	}
-	
 	/**
 	 * Gathers all identifiers which are affected by renaming this field.
 	 * @param ret

@@ -2,11 +2,16 @@ package tinyos.yeti.refactoring.utilities;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclarationSpecifierList;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterDeclaration;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterTypeList;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PrimitiveSpecifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.TypedefName;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
@@ -18,7 +23,7 @@ public class ASTUtil4Functions {
 	private ASTUtil astUtil;
 	
 	public ASTUtil4Functions(){
-		astUtil=new ASTUtil();
+		this(new ASTUtil());
 	}
 	
 	public ASTUtil4Functions(ASTUtil astUtil) {
@@ -234,6 +239,19 @@ public class ASTUtil4Functions {
 	}
 	
 	/**
+	 * Returns the associated function name identifier of a FunctionDeclarator.
+	 * @param functionDeclarator
+	 * @return
+	 */
+	public Identifier getIdentifierOfFunctionDeclaration(FunctionDeclarator functionDeclarator) {
+		DeclaratorName decName=(DeclaratorName)functionDeclarator.getField(FunctionDeclarator.DECLARATOR);
+		if(decName==null){
+			return null;
+		}
+		return decName.getName();
+	}
+	
+	/**
 	 * Pulls the identifier out of a declaration, if this declaration declares a function.
 	 * @param definition
 	 * @return	The identifier of the functionDeclaration, null if the given declaration doesn't contain a function declaration.
@@ -242,18 +260,161 @@ public class ASTUtil4Functions {
 		return (Identifier)astUtil.checkSuccessorSequence(declaration, declarationIdentifierSuccessorSequence);
 	}
 	
-	
 	/**
 	 * Returns the FunctionDefinition of which the given identifier is part.
 	 * @param id
 	 * @return The ancestor FunctionDefinition. Null if this id is not part of a FunctionDefinition.
 	 */
 	public FunctionDefinition identifierToFunctionDefinition(Identifier id){
-		if(!astUtil.checkAncestorSequence(id, functionDefinitionAncestorSequence)){
+		FunctionDefinition definition=astUtil.getParentForName(id, FunctionDefinition.class);
+		if(definition==null){
 			return null;
 		}
-		return (FunctionDefinition)id.getParent().getParent().getParent();
+		Identifier definitionIdentifier=getIdentifierOfFunctionDefinition(definition);
+		if(id==definitionIdentifier){
+			return definition;
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the identifier of the parameter with the given index, null if there is no parameter with the given index.
+	 * @param index
+	 * @param declarator
+	 * @return
+	 */
+	public Identifier getIdentifierOfParameterWithIndex(int index,FunctionDeclarator declarator){
+		ParameterDeclaration paramDeclaration=getParameterDeclarationWithIndex(index, declarator);
+		if(paramDeclaration==null){
+			return null;
+		}
+		return getParameterName(paramDeclaration);
+
+	}
+	
+	/**
+	 * Returns the type identifier of the parameter with the given index, null if there is no parameter with the given index.
+	 * @param index
+	 * @param declarator
+	 * @return
+	 */
+	public String getTypeNameOfParameterWithIndex(int index,FunctionDeclarator declarator){
+		ParameterDeclaration paramDeclaration=getParameterDeclarationWithIndex(index, declarator);
+		if(paramDeclaration==null){
+			return null;
+		}
+		DeclarationSpecifierList specifiers=(DeclarationSpecifierList)paramDeclaration.getField(ParameterDeclaration.SPECIFIERS);
+		if(specifiers==null){
+			return null;
+		}
+		TypedefName typedefName=astUtil.getFirstChildOfType(specifiers, TypedefName.class);
+		if(typedefName!=null){
+			Identifier id= (Identifier)typedefName.getField(TypedefName.NAME);
+			if(id!=null){
+				return id.getName();
+			}
+		}
+		PrimitiveSpecifier primitiveSpecifier=astUtil.getFirstChildOfType(specifiers, PrimitiveSpecifier.class);
+		if(primitiveSpecifier!=null){
+			return primitiveSpecifier.getType().name();
+		}
+		return null;
+	}
+	
+	/**
+	 * Pulls out the name identifier of the given ParameterDeclaration.
+	 * Is needed since PointerDeclarators may sit between the ParameterDeclaration and the DeclaratorName.
+	 * @param declaration
+	 * @return
+	 */
+	public Identifier getParameterName(ParameterDeclaration declaration){
+		DeclaratorName declaratorName=null;
+		ASTNode node=declaration.getField(ParameterDeclaration.DECLARATOR);
+		if(node instanceof DeclaratorName){
+			declaratorName=(DeclaratorName)node;
+		}else if(node instanceof PointerDeclarator){
+			PointerDeclarator pointerDeclarator=(PointerDeclarator)node;
+			declaratorName=(DeclaratorName)pointerDeclarator.getField(PointerDeclarator.DECLARATOR);
+		}
+		if(declaratorName!=null){
+			return (Identifier)declaratorName.getField(DeclaratorName.NAME);
+		}
 		
+		return null;
+	} 
+	
+	/**
+	 * Returns the ParameterDeclaration with the given name, null if there is no ParameterDeclaration with this index.
+	 * @param index
+	 * @param declarator
+	 * @return
+	 */
+	public ParameterDeclaration getParameterDeclarationWithIndex(int index,FunctionDeclarator declarator){
+		ParameterTypeList parameterList=(ParameterTypeList)declarator.getField(FunctionDeclarator.PARAMETERS);
+		if(parameterList==null){
+			return null;
+		}
+		parameterList.getTypedChild(index);
+		return parameterList.getTypedChild(index);
+	}
+	
+	/**
+	 * Returns the index of the ParameterDeclaration with the given name, null if there is no ParameterDeclaration with this name.
+	 * @param name
+	 * @param declarator
+	 * @return
+	 */
+	public Integer getIndexOfParameterWithName(String name,FunctionDeclarator declarator){
+		ParameterTypeList parameterList=(ParameterTypeList)declarator.getField(FunctionDeclarator.PARAMETERS);
+		if(parameterList==null){
+			return null;
+		}
+		for(int i=0;i<parameterList.getChildrenCount();++i){
+			ParameterDeclaration declaration=parameterList.getTypedChild(i);
+			if(declaration!=null){
+				Identifier identifier=getParameterName(declaration);
+				if(identifier!=null){
+					if(name.equals(identifier.getName())){
+						return i;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the associated FunctionDeclarator for a FunctionDefinition.
+	 * @param definition
+	 * @return
+	 */
+	public FunctionDeclarator getFunctionDeclarator(FunctionDefinition definition){
+		ASTNode node=definition.getField(FunctionDefinition.DECLARATOR);
+		if(node instanceof FunctionDeclarator){
+			return (FunctionDeclarator)node;
+		}else if(node instanceof PointerDeclarator){
+			PointerDeclarator pointerDeclarator=(PointerDeclarator)node;
+			node=pointerDeclarator.getField(PointerDeclarator.DECLARATOR);
+			if(node instanceof FunctionDeclarator){
+				return (FunctionDeclarator)node;
+			}
+		}
+		return null;
+	} 
+	
+	/**
+	 * Checks if the given declarator contains the given identifier in its parameter list.
+	 * @param identifier
+	 * @param declarator
+	 * @return
+	 */
+	public boolean isInFunctionDeclaratorParameterList(Identifier identifier,FunctionDeclarator declarator){
+		Integer index=getIndexOfParameterWithName(identifier.getName(), declarator);
+		if(index==null){
+			return false;
+		}
+		Identifier declarationIdentifier=getIdentifierOfParameterWithIndex(index, declarator);
+		return declarationIdentifier==identifier;
 	}
 	
 	public static enum FunctionPart {
@@ -261,5 +422,5 @@ public class ASTUtil4Functions {
 		DEFINITION,
 		CALL,
 		NO_FUNCTION_PART
-}
+	}
 }

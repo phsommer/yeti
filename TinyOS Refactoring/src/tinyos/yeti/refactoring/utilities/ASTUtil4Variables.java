@@ -27,14 +27,16 @@ import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 public class ASTUtil4Variables {
 	
 	private ASTUtil astUtil;
+	private ASTUtil4Functions astUtil4Functions;
 	
 	public ASTUtil4Variables(){
-		astUtil=new ASTUtil();
+		this(new ASTUtil());
 	}
 	
 	public ASTUtil4Variables(ASTUtil astUtil) {
 		super();
 		this.astUtil = astUtil;
+		this.astUtil4Functions=new ASTUtil4Functions(astUtil);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -94,72 +96,20 @@ public class ASTUtil4Variables {
 	}
 	
 	/**
-	 * Returns the identifier with equal name parameterName which represents a parameter in a function declaration, if the given ASTNode is a child of the FunctionDefinition node.
-	 * @param reference
-	 * @return	null if the given ASTNode is not in a function definition or there is no parameter with the name parameterName. 
-	 */
-	public Identifier getFunctionParameterIfInside(String parameterName,ASTNode child){
-		ParameterTypeList ptl = null;
-		try {
-			FunctionDefinition fd = astUtil.getParentForName(child, FunctionDefinition.class);
-			if (fd == null) {
-				return null;
-			}
-
-			FunctionDeclarator fdec = (FunctionDeclarator) fd.getDeclarator();
-			if (fdec == null) {
-				return null;
-			}
-
-			ptl = (ParameterTypeList) fdec.getParameters();
-			if (ptl == null) {
-				return null;
-			}
-		} catch (ClassCastException e) {
-			return null;
-		}
-		
-		Queue<ASTNode> q = new LinkedList<ASTNode>();
-		q.add(ptl);
-		while(!q.isEmpty()){
-			ASTNode node = q.poll();
-			if(node instanceof Identifier){
-				Identifier id=(Identifier) node;
-				if(id.getName().equals(parameterName)){
-					return id;
-				} 
-			}else {
-				q.addAll(astUtil.getChilds(node));
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns true if the given identifier is a fucntion parameter or a reference to a function parameter with the same name.
-	 * @param reference
-	 * @return	null if the given identifier node is not in a function definition or there is no parameter with an equal name. 
-	 */
-	public boolean isFunctionParameter(Identifier identifier){
-		if(isLocalVariable(identifier)){	//Ensures, that there is no local declaration with the same name as the parameter, between the given identifier and the parmater declarations..
-			return false;
-		}
-		return getFunctionParameterIfInside(identifier.getName(), identifier)!=null;
-	}
-	
-	/**
 	 * Checks if this identifier is part of a local variable, which means a variable inside a function.
 	 * @param identifier
 	 * @return
 	 */
 	public boolean isLocalVariable(Identifier identifier){
 		CompoundStatement declaringCompound=findDeclaringCompoundStatement(identifier);
-		if(declaringCompound!=null){
-			return true;
-		}
-		return false;
+		return declaringCompound!=null;
 	}
 	
+	/**
+	 * Checks if the given identifier is a local variable or a function parameter.
+	 * @param identifier
+	 * @return
+	 */
 	public boolean isLocalVariableOrFunctionParameter(Identifier identifier){
 		return isLocalVariable(identifier)||isFunctionParameter(identifier);
 	}
@@ -381,6 +331,69 @@ public class ASTUtil4Variables {
 		}
 		return (InitDeclarator)id.getParent().getParent();
 		
+	}
+	
+	/**
+	 * Checks if the given identifier is a identifier in a function parameter list of a function declaration.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isInFunctionDeclarationParameterList(Identifier identifier){
+		if(isInFunctionDefinitionParameterList(identifier)){	//Without this test the result was also true if it was a parameter of a functionDefinition.
+			return false;
+		}
+		FunctionDeclarator declarator=astUtil.getParentForName(identifier, FunctionDeclarator.class);
+		if(declarator==null){
+			return false;
+		}
+		return astUtil4Functions.isInFunctionDeclaratorParameterList(identifier, declarator);
+	}
+	
+	/**
+	 * Checks if the given identifier is a identifier in a function parameter list of a function definition.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isInFunctionDefinitionParameterList(Identifier identifier){
+		FunctionDefinition definition=astUtil.getParentForName(identifier, FunctionDefinition.class);
+		if(definition==null){
+			return false;
+		}
+		FunctionDeclarator declarator=astUtil4Functions.getFunctionDeclarator(definition);
+		if(declarator==null){
+			return false;
+		}
+		return astUtil4Functions.isInFunctionDeclaratorParameterList(identifier, declarator);
+	}
+	
+	/**
+	 * Checks if the given identifier is a identifier in the body of a function definition which references a function parameter.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isFunctionParameterInFunctionBody(Identifier identifier){
+		if(isLocalVariable(identifier)){
+			return false;
+		}
+		FunctionDefinition definition=astUtil.getParentForName(identifier, FunctionDefinition.class);
+		if(definition==null){
+			return false;
+		}
+		FunctionDeclarator declarator=astUtil4Functions.getFunctionDeclarator(definition);
+		Integer index=astUtil4Functions.getIndexOfParameterWithName(identifier.getName(), declarator);
+		DebugUtil.immediatePrint("isFunctionParameterInFunctionBody? "+(index!=null));
+		return index!=null;
+	}
+	
+	/**
+	 * Checks if the given identifier is a functionParameter.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isFunctionParameter(Identifier identifier){
+		return isInFunctionDeclarationParameterList(identifier)
+			||isInFunctionDefinitionParameterList(identifier)
+			||isFunctionParameterInFunctionBody(identifier);
 	}
 	
 	
