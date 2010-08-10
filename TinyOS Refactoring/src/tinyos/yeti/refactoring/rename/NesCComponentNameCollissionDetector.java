@@ -18,7 +18,6 @@ import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class NesCComponentNameCollissionDetector {
@@ -56,35 +55,48 @@ public class NesCComponentNameCollissionDetector {
 		}
 	}
 	
+
 	/**
-	 *  Adds for every Identifier, which has the name newName, an error to the ret with appropriate context information.
-	 *  Where every Identifier means the identifiers, which are a child of or the scope node itself.
+	 * 	 * Checks if the new name introduced to the given scope leads to fields in sub scopes which will do shadowing to the renamed field.
+	 * 	Adds for every Identifier, which has the name newName, an error to the ret with appropriate context information.
+	 *  Where every Identifier means the identifiers, which are a successor of the scope node or the scope node itself.
 	 *  If there is no such identifier, this method has no effect and returns a still ok RefacactoringStatus.
 	 *  We can consider cases, where this errors actually do not lead to a change in meaning of a program but just to shadowing of names.
 	 *  Addidtionally an context information error is added to the ret about the declaring identifier.
+	 *  
+	 * @param oldName
 	 * @param newName
+	 * @param declaringIdentifier	An identifier which should be renamed by this refactoring, and shall be shown to the user in case of a conflict. If it is null just the conflicting identifiers will be printed.
+	 * @param declaringAst	Is only used if the declaringIdentifier is not null. This ast has to include the declaring identifier.
 	 * @param scope
+	 * @param containingFile
+	 * @param containingAst
 	 * @param ret
 	 */
-	public void handleCollisions4Scope(String newName,Identifier declaringIdentifier,ASTNode scope,IFile containingFile,NesC12AST ast,RefactoringStatus ret){
-		String oldName=declaringIdentifier.getName();
+	public void handleCollisions4Scope(String oldName,String newName,Identifier declaringIdentifier,IFile declaringFile,NesC12AST declaringAst,ASTNode scope,IFile containingFile,NesC12AST containingAst,RefactoringStatus ret){
 		//Check if there already exists an identifier with the new name.
-		ASTPositioning positioning=new ASTPositioning(ast);
+		ASTPositioning positioning;
 		ASTUtil4Variables astUtil4Variables=new ASTUtil4Variables(astUtil);
 		Collection<Identifier> identifiers=astUtil4Variables.getIncludedIdentifiers(scope,newName,null);
 		if(identifiers.size()>0){
 			//Add Information for collisions to refactoring status
-			int offset=positioning.start(declaringIdentifier);
-			int length=oldName.length();
-			Region region= new Region(offset,length);
-			ret.addError("You intended to rename the identifier "+oldName+" to "+newName,new FileStatusContext(containingFile, region));
+			int offset;
+			int length;
+			Region region;
+			if(declaringIdentifier!=null){
+				positioning=new ASTPositioning(declaringAst);
+				offset=positioning.start(declaringIdentifier);
+//				offset=declaringIdentifier.getRange().getLeft();
+				length=oldName.length();
+				region= new Region(offset,length);
+				ret.addError("You intended to rename the identifier "+oldName+" to "+newName,new FileStatusContext(declaringFile, region));
+			}
 			length=newName.length();
+			positioning=new ASTPositioning(containingAst);
 			for(Identifier id:identifiers){
 				offset=positioning.start(id);
 				region= new Region(offset,length);
-				ret.addError("Possible collision with this identifier: "+id.getName(),new FileStatusContext(containingFile, region));
-				DebugUtil.immediatePrint("offset: "+offset+"\t\t"+"length: "+length);
-				DebugUtil.immediatePrint("offset: "+positioning.start(id));
+				ret.addError("Leads to shadowing with this identifier: "+id.getName(),new FileStatusContext(containingFile, region));
 			}
 		}
 	}

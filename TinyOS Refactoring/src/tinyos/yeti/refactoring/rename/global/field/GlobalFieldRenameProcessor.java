@@ -22,12 +22,14 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
+import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.rename.global.FieldKind;
 import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
+import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class GlobalFieldRenameProcessor extends RenameProcessor {
@@ -35,6 +37,8 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 	private RenameInfo info;
 	
 	private GlobalFieldFinder finder;
+	private IFile selectedFile;
+	private NesC12AST selectionAst;
 	private FieldInfoSet fieldInfoSet4SelectedField;
 	private Map<IFile, Collection<FieldInfo> > files2FieldInfos4SelectedField;
 	
@@ -122,21 +126,34 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 			return ret;
 		}
 		affectedIdentifiers=gatherAffectedIdentifiers(ret,pm);
+		selectedFile=ActionHandlerUtil.getInputFile(info.getEditor());
+		if(selectedFile==null){
+			ret.addFatalError("Couldnt find the file which contains the selection.");
+			return ret;
+		}
+		try {
+			selectionAst=getAst(selectedFile, pm);
+		} catch (Exception e){
+			ret.addFatalError("Couldnt find the AST which contains the selection.");
+		}
 		return ret;
 	}
 
 	@Override
 	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm) {
 		RefactoringStatus ret=new RefactoringStatus();
+		ProjectUtil projectUtil=getProjectUtil();
 		FieldInfoSet set=finder.getFieldInfoSetAbout(info.getNewName());
+		boolean globalFieldConflictOccured=false;
+		
 		//Check if there is a global field like a function or a variable which already has the new name.
 		if(!set.isEmpty()){
+			globalFieldConflictOccured=true;
 			ret.addError("You intended to rename the global field "+info.getOldName()+" to "+info.getNewName()+". There exists allready a global field with this name.");
 			
 			//Print information about the fields leading to the collision  
 			Map<IFile,Collection<FieldInfo>> file2FieldInfos=set.getFiles2FieldInfos();
 			Region region;
-			ProjectUtil projectUtil=new ProjectUtil(info.getEditor());
 			int length=info.getNewName().length();
 			for(IFile file:file2FieldInfos.keySet()){
 				try {
@@ -178,6 +195,23 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 					}
 				} catch (Exception e){
 					ret.addError("Declaration of field to be renamed appears in the file: "+file.getName());
+				}
+			}
+		}
+		
+		//Print information about occurrences of shadowing. Just print if there was not already a global field conflict.
+		if(!globalFieldConflictOccured){
+			NesCComponentNameCollissionDetector detector=new NesCComponentNameCollissionDetector();
+			for(IFile file:files2FieldInfos4SelectedField.keySet()){
+				try {
+					NesC12AST containingAst=getAst(file, pm);
+					if(projectUtil.isProjectFile(file)){
+						detector.handleCollisions4Scope(info.getOldName(),info.getNewName(), getSelectedIdentifier(),selectedFile,selectionAst, containingAst.getRoot(), file, containingAst, ret);
+					}
+				} catch (Exception e){
+					Region region=new Region(0, 0);
+					ret.addError("Wasnt able to check for occurrences of shadowing in file: "+file.getName(),new FileStatusContext(file, region));
+					
 				}
 			}
 		}

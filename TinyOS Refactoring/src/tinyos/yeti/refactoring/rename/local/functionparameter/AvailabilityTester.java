@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.local.variable;
+package tinyos.yeti.refactoring.rename.local.functionparameter;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameAvailabilityTester;
@@ -9,7 +9,7 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
 		ASTUtil4Variables astUtil4Variables=new ASTUtil4Variables();
-		return astUtil4Variables.isLocalVariable(selectedIdentifier);
+		return astUtil4Variables.isFunctionParameter(selectedIdentifier);
 	}
 	
 }
