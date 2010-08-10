@@ -34,8 +34,11 @@ import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
 public class TypedefName extends AbstractFixedASTNode implements TypeSpecifier{
+	
+    public static final String NAME = "name";
+    
     public TypedefName(){
-        super( "TypedefName", "name" );
+        super( "TypedefName", NAME );
     }
 
     public TypedefName( Identifier name ){
