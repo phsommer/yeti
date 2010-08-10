@@ -38,8 +38,11 @@ public class ParameterDeclaration extends AbstractFixedASTNode {
     /** whether to store fields or not */
     public static final Flag STORE_FIELDS = new Flag( "parameter declarations stores fields" );
     
+    public static final String SPECIFIERS = "specifiers";
+    public static final String DECLARATOR = "declarator";
+    
     public ParameterDeclaration(){
-        super( "ParameterDeclaration", "specifiers", "declarator" );
+        super( "ParameterDeclaration", SPECIFIERS, DECLARATOR );
     }
     public ParameterDeclaration( DeclarationSpecifierList specifiers, ASTNode declarator ){
         this();
