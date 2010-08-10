@@ -31,7 +31,9 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
+import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
@@ -395,5 +397,16 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected String createTextChangeName(IFile file){
 		return "Replacing "+getProcessorName()+" name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+	}
+
+	/**
+	 * Returns the associated identifier to a field.
+	 * @param info
+	 * @param positioning
+	 * @return
+	 */
+	protected Identifier getIdentifier4FieldInfo(FieldInfo info, ASTPositioning positioning) {
+		RangeDescription description=info.getField().getRange();
+		return (Identifier)positioning.getASTLeafAtPreprocessedPos(description.getLeft());
 	}
 }
