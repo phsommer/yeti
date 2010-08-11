@@ -2,7 +2,8 @@ package tinyos.yeti.refactoring.selection;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
+import tinyos.yeti.refactoring.ast.CAstAnalyzer;
+import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
@@ -12,7 +13,8 @@ public class SelectionIdentifier {
 
 	protected Identifier identifier;
 	protected AstAnalyzerFactory factory4Selection;
-	protected ComponentAstAnalyser componentAnalyzer;
+	protected CAstAnalyzer cAnalyzer;
+	protected ComponentAstAnalyzer componentAnalyzer;
 	protected ConfigurationAstAnalyzer configurationAnalyzer;
 	protected ModuleAstAnalyzer moduleAnalyzer;
 	protected InterfaceAstAnalyzer interfaceAnalyzer;
@@ -36,6 +38,9 @@ public class SelectionIdentifier {
 	protected SelectionIdentifier(Identifier identifier,AstAnalyzerFactory analyzerFactory){
 		this.identifier=identifier;
 		this.factory4Selection=analyzerFactory;
+		if(analyzerFactory.hasCAnalyzerCreated()){
+			cAnalyzer=analyzerFactory.getCAnalyzer();
+		}
 		if(analyzerFactory.hasComponentAnalyzerCreated()){
 			componentAnalyzer=analyzerFactory.getComponentAnalyzer();
 		}

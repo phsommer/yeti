@@ -35,7 +35,6 @@ import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -195,7 +194,6 @@ public class Processor extends RenameProcessor {
 		FunctionDeclarator functionDeclarator=getFunctionDeclarator();
 		oldName=info.getOldName();
 		toRenameIndex=astUtil4Functions.getIndexOfParameterWithName(oldName, functionDeclarator);
-		DebugUtil.immediatePrint(""+toRenameIndex);
 		if(toRenameIndex==null){
 			ret.addFatalError("Couldn't locate parameter in parameter list.");
 		}
@@ -214,11 +212,6 @@ public class Processor extends RenameProcessor {
 		}catch(Exception e){
 			ret.addFatalError(("Exception occured during refactoring initialization. See project log for more information."));
 			getProjectUtil().log("Exception occured during refactoring initialization.",e);
-		}
-		
-		for(IFile file:file2definitions.keySet()){
-			DebugUtil.immediatePrint("definition file: "+file.getName());
-			DebugUtil.immediatePrint(""+astUtil4Functions.getIdentifierOfFunctionDefinition(file2definitions.get(file)));
 		}
 		
 		return ret;

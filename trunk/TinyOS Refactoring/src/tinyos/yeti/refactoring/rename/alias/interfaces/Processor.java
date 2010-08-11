@@ -24,7 +24,7 @@ import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
+import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
@@ -105,7 +105,7 @@ public class Processor extends RenameProcessor {
 	private Map<IFile,Collection<Identifier>> collectIdentifiersToChange(IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
 
 		String aliasName=getSelectedIdentifier().getName();
-		ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
+		ComponentAstAnalyzer componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
 
 		//Get the Identifier in the defining component which stands for the alias in the alias definition.
 		Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(aliasName);
