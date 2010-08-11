@@ -35,7 +35,6 @@ import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 /**
@@ -289,8 +288,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 				if (tartgetPaths.contains(candidatePath)) {
 					matchingSources.add(ref);
 				}
-			}else{
-				DebugUtil.immediatePrint("Null path in: "+file.getName());
 			}
 		}
 		

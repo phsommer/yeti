@@ -18,7 +18,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.AccessList;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 
-public class ModuleAstAnalyzer extends ComponentAstAnalyser {
+public class ModuleAstAnalyzer extends ComponentAstAnalyzer {
 
 	private NesCExternalDefinitionList implementation;
 	private Collection<FunctionDefinition> functionDefinitionsInImplementation;

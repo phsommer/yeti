@@ -13,14 +13,12 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 
-public class NesCAstAnalyzer extends AstAnalyzer {
+public class NesCAstAnalyzer extends CAstAnalyzer {
 	
-	protected TranslationUnit root;
 	protected Identifier entityIdentifier;
 	
 	public NesCAstAnalyzer(TranslationUnit root, Identifier entityIdentifier) {
-		super();
-		this.root = root;
+		super(root);
 		this.entityIdentifier = entityIdentifier;
 	}
 	

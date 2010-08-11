@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
+import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class AliasSelectionIdentifier extends SelectionIdentifier{
@@ -160,7 +160,7 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 			if(!factory4DefiningAst.hasComponentAnalyzerCreated()){
 				return null;
 			}
-			ComponentAstAnalyser componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
+			ComponentAstAnalyzer componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
 			Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName());
 			if(aliasDefinition==null){
 				return null;

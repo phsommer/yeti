@@ -76,6 +76,15 @@ public class ASTUtil4Functions {
 	};
 	
 	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] functionDefinitionIdentifierSuccessorSequenceWithPointer=new Class[]{
+		FunctionDefinition.class,
+		PointerDeclarator.class,
+		FunctionDeclarator.class,
+		DeclaratorName.class,
+		Identifier.class
+	};
+	
+	@SuppressWarnings("unchecked")
 	private static final Class<? extends ASTNode>[] declarationIdentifierSuccessorSequence=new Class[]{
 		Declaration.class,
 		InitDeclaratorList.class,
@@ -235,7 +244,11 @@ public class ASTUtil4Functions {
 	 * @return	
 	 */
 	public Identifier getIdentifierOfFunctionDefinition(FunctionDefinition definition){
-		return (Identifier)astUtil.checkSuccessorSequence(definition, functionDefinitionIdentifierSuccessorSequence);
+		Identifier defId=(Identifier)astUtil.checkSuccessorSequence(definition, functionDefinitionIdentifierSuccessorSequence);
+		if(defId==null){
+			defId=(Identifier)astUtil.checkSuccessorSequence(definition, functionDefinitionIdentifierSuccessorSequenceWithPointer);
+		}
+		return defId;
 	}
 	
 	/**

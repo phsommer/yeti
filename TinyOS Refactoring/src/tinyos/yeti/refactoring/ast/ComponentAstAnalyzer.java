@@ -15,7 +15,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedInterface;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedInterfaceList;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 
-public class ComponentAstAnalyser extends NesCAstAnalyzer {
+public class ComponentAstAnalyzer extends NesCAstAnalyzer {
 	
 	protected AccessList specification;
 	
@@ -25,7 +25,7 @@ public class ComponentAstAnalyser extends NesCAstAnalyzer {
 	private Map<Identifier,Identifier> alias2AliasedInterface;
 	private Map<Identifier,Identifier> interfaceLocalName2InterfaceGlobalName;
 	
-	public ComponentAstAnalyser(TranslationUnit root,Identifier componentIdentifier, AccessList specification) {
+	public ComponentAstAnalyzer(TranslationUnit root,Identifier componentIdentifier, AccessList specification) {
 		super(root,componentIdentifier);
 		this.specification = specification;
 	}

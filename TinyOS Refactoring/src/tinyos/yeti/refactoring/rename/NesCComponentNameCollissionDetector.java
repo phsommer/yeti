@@ -14,7 +14,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.ast.ComponentAstAnalyser;
+import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
@@ -190,7 +190,7 @@ public class NesCComponentNameCollissionDetector {
 	 * If the newName doesnt exist the {@link RefactoringStatus} is not modified.
 	 * If the oldName doesnt exist this method doesnt have any effect.
 	 */
-	public void newInterfaceNameWithLocalInterfaceName(ComponentAstAnalyser componentAnalyzer, IFile representedFile, String oldName, String newName,RefactoringStatus ret){
+	public void newInterfaceNameWithLocalInterfaceName(ComponentAstAnalyzer componentAnalyzer, IFile representedFile, String oldName, String newName,RefactoringStatus ret){
 		Identifier toRename=existsLocalInterfaceName(componentAnalyzer, oldName);
 		if(toRename==null){
 			return;
@@ -204,7 +204,7 @@ public class NesCComponentNameCollissionDetector {
 	 * If the newName doesnt exist the {@link RefactoringStatus} is not modified.
 	 * If the oldName doesnt exist this method doesnt have any effect.
 	 */
-	public void newNameWithLocalInterfaceName(ComponentAstAnalyser componentAnalyzer, IFile representedFile, Identifier toRename, String newName,RefactoringStatus ret){
+	public void newNameWithLocalInterfaceName(ComponentAstAnalyzer componentAnalyzer, IFile representedFile, Identifier toRename, String newName,RefactoringStatus ret){
 		if(toRename==null){
 			return;
 		}
@@ -234,7 +234,7 @@ public class NesCComponentNameCollissionDetector {
 	 * @param oldName
 	 * @return
 	 */
-	private Identifier existsLocalInterfaceName(ComponentAstAnalyser analyzer,String name){
+	private Identifier existsLocalInterfaceName(ComponentAstAnalyzer analyzer,String name){
 		Set<Identifier> localInterfaceNames=analyzer.getInterfaceLocalName2InterfaceGlobalName().keySet();
 		return astUtil.getIdentifierWithEqualName(name, localInterfaceNames);
 	}

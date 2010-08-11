@@ -16,7 +16,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Endpoint;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
 
-public class ConfigurationAstAnalyzer extends ComponentAstAnalyser {
+public class ConfigurationAstAnalyzer extends ComponentAstAnalyzer {
 
 	private ConfigurationDeclarationList implementation;
 	private Collection<RefComponent> components;
