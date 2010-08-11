@@ -133,9 +133,9 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	}
 	
 	/**
-	 * Checks if the given identifier is an Alias for a interface in a NesC component wiring in the implementation of a NesC Configuration implementation.
+	 * Checks if the given identifier is an Alias for a interface in a NesC component wiring in the implementation of a NesC Configuration.
 	 * But: Instead of returning a boolean value, this method returns a AstAnalyzer factory which is initialized for the component ast, which defines the interface alias in its specification.
-	 * Returns null, if the identifier is no interface alias in a NesC component wiring or if the defining component is out of project range. 
+	 * Returns null, if the identifier is no interface alias in a NesC component wiring or if the defining component is out of project range, or if the selection is a alias defined in this configuration itself. 
 	 * @param identifier
 	 * @return
 	 */
