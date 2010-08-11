@@ -138,6 +138,7 @@ public class Processor extends RenameProcessor {
 				ret.addFatalError(message);
 				return false;
 			}
+			return true;
 		}
 		declaringFile=getIFile4ParseFile(interfaceDeclaration.getParseFile());
 		declaringIdentifier=getIdentifierForPath(interfaceDeclaration.getPath(), pm);
