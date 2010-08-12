@@ -84,18 +84,6 @@ public class ASTUtil4Variables {
 	}
 	
 	/**
-	 * Checks if this identifier is part of a global variable.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isGlobalVariable(Identifier identifier){
-		if(isLocalVariableOrFunctionParameter(identifier)||isImplementationLocalVariable(identifier)){
-			return false;
-		}
-		return isVariableDeclaration(identifier)||isVariableUsage(identifier);
-	}
-	
-	/**
 	 * Checks if this identifier is part of a local variable, which means a variable inside a function.
 	 * @param identifier
 	 * @return
@@ -112,15 +100,6 @@ public class ASTUtil4Variables {
 	 */
 	public boolean isLocalVariableOrFunctionParameter(Identifier identifier){
 		return isLocalVariable(identifier)||isFunctionParameter(identifier);
-	}
-	
-	/**
-	 * Checks if this identifier is part of a implementation variable, which means a variable with nesc implementation scope.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isImplementationLocalVariable(Identifier identifier){
-		return null!=getImplementationLocalVariableDeclarationIdentifier(identifier);
 	}
 	
 	/**
