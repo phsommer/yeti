@@ -12,10 +12,16 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArithmeticExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.AssignmentExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.PostfixExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.PrefixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.ExpressionStatement;
 
 public class ASTUtil4Variables {
 	
@@ -58,7 +64,7 @@ public class ASTUtil4Variables {
 	}
 	
 	/**
-	 * Checks if this identifier is part of a variable reference.
+	 * Checks if this identifier is part of a variable reference in a function body.
 	 * @param identifier
 	 * @return
 	 */
@@ -67,16 +73,14 @@ public class ASTUtil4Variables {
 		if(!(parent instanceof IdentifierExpression)){
 			return false;
 		}
-		return true;
-		//TODO if this really not is needed delete it.
-//		parent=parent.getParent();
-//		return
-//			parent instanceof AssignmentExpression
-//			||parent instanceof ArgumentExpressionList
-//			||parent instanceof ArithmeticExpression
-//			||parent instanceof PrefixExpression
-//			||parent instanceof PostfixExpression
-//			||parent instanceof ExpressionStatement;
+		parent=parent.getParent();
+		return
+			parent instanceof AssignmentExpression
+			||parent instanceof ArgumentExpressionList
+			||parent instanceof ArithmeticExpression
+			||parent instanceof PrefixExpression
+			||parent instanceof PostfixExpression
+			||parent instanceof ExpressionStatement;
 	}
 	
 	/**

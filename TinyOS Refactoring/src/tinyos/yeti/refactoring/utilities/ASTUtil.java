@@ -184,21 +184,6 @@ public class ASTUtil {
 	}
 	
 	/**
-	 * Checks if the fieldName of the childToCheck in the given parent equals the expectedName
-	 * @param parent
-	 * @param childToCheck
-	 * @param expectedName
-	 * @return
-	 */
-	public boolean checkFieldName(AbstractFixedASTNode parent,ASTNode childToCheck,String expectedName){
-		if(expectedName==null||parent==null){
-			return false;
-		}
-		String fieldName=parent.getFieldName(childToCheck);
-		return expectedName.equals(fieldName);
-	}
-	
-	/**
 	 * Returns the root of the ast which this node includes;
 	 * @param node
 	 * @return

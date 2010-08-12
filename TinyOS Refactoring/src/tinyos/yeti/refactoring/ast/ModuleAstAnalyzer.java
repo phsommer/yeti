@@ -6,12 +6,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import tinyos.yeti.nesc12.parser.ast.nodes.AbstractFixedASTNode;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclarationSpecifierList;
+import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.NesCNameDeclarator;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.StorageClass;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.TranslationUnit;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -21,16 +18,32 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 public class ModuleAstAnalyzer extends ComponentAstAnalyzer {
 
 	private NesCExternalDefinitionList implementation;
+	
 	private Collection<FunctionDefinition> functionDefinitionsInImplementation;
 	private Collection<NesCNameDeclarator> nesCFunctionDeclarationNames;
 	private Collection<Identifier> nesCFunctionImplementationInterfaceIdentifiers;
 	private Collection<Identifier> nesCFunctionImplementationFunctionIdentifiers;
 	private Map<Identifier,Collection<Identifier>> localInterfaceName2AssociatedFunctionNames;
+	
+	private Collection<Identifier> implementationLocalVariableDeclarationNames;
+	private Collection<Identifier> implementationLocalFunctionDeclarationNames;
+	private Collection<Identifier> implementationLocalFunctionDefinitionNames;
 
 	public ModuleAstAnalyzer(TranslationUnit root,Identifier componentIdentifier, AccessList specification,NesCExternalDefinitionList implementation) {
 		super(root, componentIdentifier, specification);
 		this.implementation = implementation;
 	}
+	
+	/**
+	 * Collects global function and variable declaration names.
+	 * 
+	 */
+	private void collectImplementationLocalDeclarationNames(){
+		implementationLocalFunctionDeclarationNames=new LinkedList<Identifier>();
+		implementationLocalVariableDeclarationNames=new LinkedList<Identifier>();
+		collectDeclarationNamesInScope(implementation, implementationLocalFunctionDeclarationNames, implementationLocalVariableDeclarationNames);
+	}
+	
 	
 	/**
 	 * Collects all FunctionDefinitions in the implementation scope of a NesC module.
@@ -51,20 +64,14 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyzer {
 	public Collection<NesCNameDeclarator> getNesCFunctionDeclarationNames(){
 		if(nesCFunctionDeclarationNames==null){
 			nesCFunctionDeclarationNames=new LinkedList<NesCNameDeclarator>();
-			for(FunctionDefinition functionDefinition:getFunctionDefinitionsInImplementation()){
-				if(isNesCFunction(functionDefinition)){
-					AbstractFixedASTNode declarator=(AbstractFixedASTNode)functionDefinition.getField(FunctionDefinition.DECLARATOR);
-					FunctionDeclarator functionDeclarator;
-					if(declarator instanceof PointerDeclarator){
-						functionDeclarator=(FunctionDeclarator)declarator.getField(PointerDeclarator.DECLARATOR);
-					}else{
-						functionDeclarator=(FunctionDeclarator)declarator;
-					}
-					if(functionDeclarator!=null){
-						NesCNameDeclarator nescDeclarator=(NesCNameDeclarator)functionDeclarator.getField(FunctionDeclarator.DECLARATOR);
-						if(nescDeclarator!=null){
-							nesCFunctionDeclarationNames.add(nescDeclarator);
-						}
+			Collection<FunctionDefinition> definitions=getFunctionDefinitionsInImplementation();
+			Collection<FunctionDeclarator> declarators=unpackFunctionDefinitionsToFunctionDeclarator(definitions);
+			for(FunctionDeclarator declarator:declarators){
+				ASTNode node =declarator.getField(FunctionDeclarator.DECLARATOR);
+				if(node instanceof NesCNameDeclarator){
+					NesCNameDeclarator nescDeclarator=(NesCNameDeclarator)declarator.getField(FunctionDeclarator.DECLARATOR);
+					if(nescDeclarator!=null){
+						nesCFunctionDeclarationNames.add(nescDeclarator);
 					}
 				}
 			}
@@ -141,18 +148,39 @@ public class ModuleAstAnalyzer extends ComponentAstAnalyzer {
 	}
 	
 	/**
-	 * Checks if the FunctionDefinition is the definition of a NesC function like a command or event and not just a pure C function.
-	 * @param definition
+	 * Returns all name identifiers of implementation local variables.
 	 * @return
 	 */
-	private boolean isNesCFunction(FunctionDefinition definition){
-		DeclarationSpecifierList list=(DeclarationSpecifierList)definition.getField(FunctionDefinition.SPECIFIERS);
-		if(list==null){
-			return false;
+	public Collection<Identifier> getImplementationLocalVariableDeclarationNames(){
+		if(implementationLocalVariableDeclarationNames==null){
+			collectImplementationLocalDeclarationNames();
 		}
-		Collection<StorageClass> storageClasses=astUtil.getChildsOfType(list, StorageClass.class);
-		return storageClasses.size()==1;	//If this was a pure C function there was no storage class.
-
+		return implementationLocalVariableDeclarationNames;
 	}
+	
+	/**
+	 * Returns all name identifiers of implementation local function declarations.
+	 * @return
+	 */
+	public Collection<Identifier> getImplementationLocalFunctionDeclarationNames(){
+		if(implementationLocalFunctionDeclarationNames==null){
+			collectImplementationLocalDeclarationNames();
+		}
+		return implementationLocalFunctionDeclarationNames;
+	}
+	
+	/**
+	 * Returns all implementation local function definition names.
+	 * @return
+	 */
+	public Collection<Identifier> getImplementationLocalFunctionDefinitionNames(){
+		if(implementationLocalFunctionDefinitionNames==null){
+			implementationLocalFunctionDefinitionNames=new LinkedList<Identifier>();
+			collectFunctionDefinitionNamesInScope(implementation, implementationLocalFunctionDefinitionNames);
+		}
+		return implementationLocalFunctionDefinitionNames;
+	}
+	
+	
 
 }

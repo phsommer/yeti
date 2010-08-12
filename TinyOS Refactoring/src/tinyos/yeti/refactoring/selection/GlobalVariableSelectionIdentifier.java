@@ -45,20 +45,16 @@ public class GlobalVariableSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isGlobalVariableReference(){
-		DebugUtil.immediatePrint("factory4Selection:");
 		if(!factory4Selection.hasNesCAnalyzerCreated()){
 			return false;
 		}
-		DebugUtil.immediatePrint("cAnalyzer:");
 		if(!cAnalyzer.getGlobalVariableDeclarationNames().contains(identifier)){
 			return false;
 		}
-		DebugUtil.immediatePrint("compoundStatement:");
 		CompoundStatement compoundStatement=astUtil4Variables.findDeclaringCompoundStatement(identifier);
 		if(compoundStatement!=null){	//In this case this is a local variable.
 			return false;
 		}
-		DebugUtil.immediatePrint("astUtil4Variables:");
 		return astUtil4Variables.isVariableUsage(identifier);
 	}
 }
