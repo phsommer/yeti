@@ -24,6 +24,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.Refactoring;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
+import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
@@ -31,6 +32,7 @@ import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.rename.global.FieldKind;
 import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
+import tinyos.yeti.refactoring.selection.FunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
@@ -198,13 +200,16 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("Couldn't locate parameter in parameter list.");
 		}
 		Identifier functionIdentifier=astUtil4Functions.getIdentifierOfFunctionDeclaration(functionDeclarator);
-
 		try{
-			if(astUtil4Functions.isGlobalFunction(functionIdentifier)){
+			AstAnalyzerFactory factory4FunctionIdentifier=new AstAnalyzerFactory(functionIdentifier);
+			FunctionSelectionIdentifier globalFunctionSelectionIdentifier=new FunctionSelectionIdentifier(functionIdentifier,factory4FunctionIdentifier);
+			if(globalFunctionSelectionIdentifier.isGlobalFunction()){
 				findAffectedDeclarationsAndDefinitionsIfGlobal(pm, ret,functionIdentifier);
 			}
-			else if(astUtil4Functions.isLocalFunction(functionIdentifier)){
-				findAffectedDeclarationsAndDefinitionsIfLocal(ret,functionIdentifier);
+			else{
+				if(globalFunctionSelectionIdentifier.isImplementationLocalFunction()){
+					findAffectedDeclarationsAndDefinitionsIfLocal(ret,functionIdentifier);
+				}
 			}
 			collectAffectedIdentifiersInFunctionDeclarations();
 			collectAffectedIdentifiers4FunctionDefinitions();

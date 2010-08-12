@@ -13,10 +13,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PrimitiveSpecifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.TypedefName;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.selection.NescFunctionSelectionIdentifier;
 
 public class ASTUtil4Functions {
 	
@@ -30,42 +27,6 @@ public class ASTUtil4Functions {
 		super();
 		this.astUtil = astUtil;
 	}
-	
-	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] functionDeclarationAncestorSequence=new Class[]{
-		DeclaratorName.class,
-		FunctionDeclarator.class,
-		InitDeclarator.class
-	};
-	
-	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] functionDeclarationPointerReturntypeAncestorSequence=new Class[]{
-		DeclaratorName.class,
-		FunctionDeclarator.class,
-		PointerDeclarator.class,
-		InitDeclarator.class
-	};
-	
-	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] functionDefinitionPointerReturntypeAncestorSequence=new Class[]{
-		DeclaratorName.class,
-		FunctionDeclarator.class,
-		PointerDeclarator.class,
-		FunctionDefinition.class
-	};
-	
-	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] functionDefinitionAncestorSequence=new Class[]{
-		DeclaratorName.class,
-		FunctionDeclarator.class,
-		FunctionDefinition.class
-	};
-	
-	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] functionCallAncestorSequence=new Class[]{
-		IdentifierExpression.class,
-		FunctionCall.class
-	};
 	
 	@SuppressWarnings("unchecked")
 	private static final Class<? extends ASTNode>[] functionDefinitionIdentifierSuccessorSequence=new Class[]{
@@ -93,100 +54,6 @@ public class ASTUtil4Functions {
 		DeclaratorName.class,
 		Identifier.class
 	};
-	
-	/**
-	 * Tests if the given identifier is the name of the function, in a function declaration.
-	 * @param identifier The identifier which is in question.
-	 * @return true if the given identifier is the name of the function, in a function declaration. False otherwise.
-	 */
-	public boolean isFunctionDeclaration(Identifier identifier){
-		return astUtil.checkAncestorSequence(identifier,functionDeclarationAncestorSequence);
-	}
-	
-	/**
-	 * Same as isFunctionDeclaration but for pointer returntype.
-	 */
-	public boolean isFunctionDeclarationPointerReturntype(Identifier identifier){
-		return astUtil.checkAncestorSequence(identifier,functionDeclarationPointerReturntypeAncestorSequence);
-	}
-	
-	/**
-	 * Tests if the given identifier is the name of the function, in a function definition.
-	 * @param identifier The identifier which is in question.
-	 * @return true if the given identifier is the name of the function, in a function definition. False otherwise.
-	 */
-	public boolean isFunctionDefinition(Identifier identifier){
-		return astUtil.checkAncestorSequence(identifier,functionDefinitionAncestorSequence);
-	}
-	
-	/**
-	 * Same as isFunctionDefinition but for pointer returntype.
-	 */
-	public boolean isFunctionDefinitionPointerReturntype(Identifier identifier){
-		return astUtil.checkAncestorSequence(identifier,functionDefinitionPointerReturntypeAncestorSequence);
-	}
-	
-	/**
-	 * Tests if the given identifier is the name of the function, in a function call.
-	 * @param identifier The identifier which is in question.
-	 * @return true if the given identifier is the name of the function, in a function call. False otherwise.
-	 */
-	public boolean isFunctionCall(Identifier identifier){
-		return astUtil.checkAncestorSequence(identifier,functionCallAncestorSequence);	
-	}
-	
-	/**
-	 * Evaluates the FunctionPartType of which this Identifier relates. 
-	 * @param identifier
-	 * @return
-	 */
-	public FunctionPart identifyFunctionPart(Identifier identifier){
-		if(isFunctionDeclaration(identifier)){
-			return FunctionPart.DECLARATION;
-		}else if(isFunctionDefinition(identifier)){
-			return FunctionPart.DEFINITION;
-		}else if(isFunctionCall(identifier)){
-			return FunctionPart.CALL;
-		}else if(isFunctionDeclarationPointerReturntype(identifier)){
-				return FunctionPart.DECLARATION;
-		}else if(isFunctionDefinitionPointerReturntype(identifier)){
-			return FunctionPart.DEFINITION;
-		}
-		return FunctionPart.NO_FUNCTION_PART;
-	}
-	
-	/**
-	 * Tests if the given identifier is the name of a global function.
-	 * @param identifier The identifier which is in question.
-	 * @return True if the given identifier is the name of a function. False otherwise and especially if the given identifier is NULL. 
-	 */
-	public boolean isGlobalFunction(Identifier identifier){
-		NescFunctionSelectionIdentifier selection=new NescFunctionSelectionIdentifier(identifier);
-		if(selection.isNescFunction(identifier)){
-			return false;
-		}
-		if(identifier==null){
-			return false;
-		}
-		if(isLocalFunction(identifier)){
-			return false;
-		}
-		
-		return 	identifyFunctionPart(identifier)!=FunctionPart.NO_FUNCTION_PART;
-	}
-	
-	
-	/**
-	 * Checks if the given Identifier is part of a local function definiton.
-	 * This is done by checking if the identifier is in an implementation scope, 
-	 * and if so, if there is a function definition in this scope for the name of
-	 * the given identifier.
-	 * @param identifier
-	 * @return True if this identifier is part of a local function inside an implementation scope.
-	 */
-	public boolean isLocalFunction(Identifier identifier){
-		return getLocalFunctionDefinitionIdentifier(identifier)!=null;
-	}
 	
 	/**
 	 * Returns the identifier which is part of the local function definition, if the 
@@ -428,12 +295,5 @@ public class ASTUtil4Functions {
 		}
 		Identifier declarationIdentifier=getIdentifierOfParameterWithIndex(index, declarator);
 		return declarationIdentifier==identifier;
-	}
-	
-	public static enum FunctionPart {
-		DECLARATION,
-		DEFINITION,
-		CALL,
-		NO_FUNCTION_PART
 	}
 }
