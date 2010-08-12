@@ -8,7 +8,6 @@ import java.util.List;
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
-import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
@@ -22,11 +21,11 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.ExpressionStatement;
+import tinyos.yeti.refactoring.selection.FunctionParameterSelectionIdentifier;
 
 public class ASTUtil4Variables {
 	
 	private ASTUtil astUtil;
-	private ASTUtil4Functions astUtil4Functions;
 	
 	public ASTUtil4Variables(){
 		this(new ASTUtil());
@@ -35,7 +34,6 @@ public class ASTUtil4Variables {
 	public ASTUtil4Variables(ASTUtil astUtil) {
 		super();
 		this.astUtil = astUtil;
-		this.astUtil4Functions=new ASTUtil4Functions(astUtil);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -74,8 +72,7 @@ public class ASTUtil4Variables {
 			return false;
 		}
 		parent=parent.getParent();
-		return
-			parent instanceof AssignmentExpression
+		return parent instanceof AssignmentExpression
 			||parent instanceof ArgumentExpressionList
 			||parent instanceof ArithmeticExpression
 			||parent instanceof PrefixExpression
@@ -99,7 +96,8 @@ public class ASTUtil4Variables {
 	 * @return
 	 */
 	public boolean isLocalVariableOrFunctionParameter(Identifier identifier){
-		return isLocalVariable(identifier)||isFunctionParameter(identifier);
+		FunctionParameterSelectionIdentifier selectionIdentifier=new FunctionParameterSelectionIdentifier(identifier);
+		return isLocalVariable(identifier)||selectionIdentifier.isFunctionParameter();
 	}
 	
 	/**
@@ -311,68 +309,4 @@ public class ASTUtil4Variables {
 		return (InitDeclarator)id.getParent().getParent();
 		
 	}
-	
-	/**
-	 * Checks if the given identifier is a identifier in a function parameter list of a function declaration.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isInFunctionDeclarationParameterList(Identifier identifier){
-		if(isInFunctionDefinitionParameterList(identifier)){	//Without this test the result was also true if it was a parameter of a functionDefinition.
-			return false;
-		}
-		FunctionDeclarator declarator=astUtil.getParentForName(identifier, FunctionDeclarator.class);
-		if(declarator==null){
-			return false;
-		}
-		return astUtil4Functions.isInFunctionDeclaratorParameterList(identifier, declarator);
-	}
-	
-	/**
-	 * Checks if the given identifier is a identifier in a function parameter list of a function definition.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isInFunctionDefinitionParameterList(Identifier identifier){
-		FunctionDefinition definition=astUtil.getParentForName(identifier, FunctionDefinition.class);
-		if(definition==null){
-			return false;
-		}
-		FunctionDeclarator declarator=astUtil4Functions.getFunctionDeclarator(definition);
-		if(declarator==null){
-			return false;
-		}
-		return astUtil4Functions.isInFunctionDeclaratorParameterList(identifier, declarator);
-	}
-	
-	/**
-	 * Checks if the given identifier is a identifier in the body of a function definition which references a function parameter.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isFunctionParameterInFunctionBody(Identifier identifier){
-		if(isLocalVariable(identifier)){
-			return false;
-		}
-		FunctionDefinition definition=astUtil.getParentForName(identifier, FunctionDefinition.class);
-		if(definition==null){
-			return false;
-		}
-		FunctionDeclarator declarator=astUtil4Functions.getFunctionDeclarator(definition);
-		Integer index=astUtil4Functions.getIndexOfParameterWithName(identifier.getName(), declarator);
-		return index!=null;
-	}
-	
-	/**
-	 * Checks if the given identifier is a functionParameter.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isFunctionParameter(Identifier identifier){
-		return isInFunctionDeclarationParameterList(identifier)
-			||isInFunctionDefinitionParameterList(identifier)
-			||isFunctionParameterInFunctionBody(identifier);
-	}
-	
-	
 }
