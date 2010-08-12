@@ -51,16 +51,16 @@ public class Processor extends RenameProcessor {
 	 * @return
 	 */
 	private String getInterfaceDefinitionName(){
-		if(selectionIdentifier.isFunctionDeclaration()){
+		if(selectionIdentifier.isNesCFunctionDeclaration()){
 			InterfaceAstAnalyzer analyzer=factory4Selection.getInterfaceAnalyzer();
 			return analyzer.getEntityIdentifier().getName();
 		}
-		else if(selectionIdentifier.isFunctionDefinition()){
+		else if(selectionIdentifier.isNesCFunctionDefinition()){
 			ModuleAstAnalyzer analyzer=factory4Selection.getModuleAnalyzer();
 			Identifier localInterfaceName=analyzer.getAssociatedInterfaceName4FunctionIdentifier(selectionIdentifier.getSelection());
 			return analyzer.getInterfaceLocalName2InterfaceGlobalName().get(localInterfaceName).getName();
 		}
-		else if(selectionIdentifier.isFunctionCall()){
+		else if(selectionIdentifier.isNesCFunctionCallFunctionPart()){
 			Identifier associatedInterface=selectionIdentifier.getAssociatedInterface2FunctionCall();
 			String localInterfaceName=associatedInterface.getName();
 			ModuleAstAnalyzer analyzer=factory4Selection.getModuleAnalyzer();
@@ -186,7 +186,7 @@ public class Processor extends RenameProcessor {
 		List<Identifier> wantedReferences=new LinkedList<Identifier>();
 		for(Identifier id:identifiers){
 			NescFunctionSelectionIdentifier selectionIdentifier=new NescFunctionSelectionIdentifier(id,analyzerFactory);
-			if(selectionIdentifier.isFunctionDefinition()||selectionIdentifier.isFunctionCall()){
+			if(selectionIdentifier.isNesCFunctionDefinition()||selectionIdentifier.isNesCFunctionCallFunctionPart()){
 				wantedReferences.add(id);
 			}
 		}

@@ -11,8 +11,10 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.CallExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCName;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.refactoring.selection.FunctionParameterSelectionIdentifier;
 
@@ -43,8 +45,6 @@ public class ASTUtil4Variables {
 		DeclaratorName.class,
 		Identifier.class
 	};
-	
-
 	
 	/**
 	 * Checks if this identifier is part of a local variable, which means a variable inside a function.

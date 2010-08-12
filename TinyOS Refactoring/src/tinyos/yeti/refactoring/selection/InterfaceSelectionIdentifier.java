@@ -2,9 +2,12 @@ package tinyos.yeti.refactoring.selection;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 
 public class InterfaceSelectionIdentifier extends SelectionIdentifier{
-
+	
+	private ASTUtil4Functions astUtil4Functions=new ASTUtil4Functions(astUtil);
+	
 	/**
 	 * @see SelectionIdentifier
 	 * @param identifier
@@ -31,9 +34,10 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 		return isInterfaceDeclaration()
 			||isInterfaceDefinition()
 			||isInterfaceImplementationAndNoAlias()
-			||isComponentWiringInterfacePart();
+			||isComponentWiringInterfacePart()
+			||isInterfacePartInNesCFunctionCallAndNoAlias();
 	}
-	
+
 	/**
 	 * Checks if the given identifier is part of an interface definition,
 	 * which is the interface identifier in the file which defines the interface.
@@ -82,6 +86,19 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 		}
 		AliasSelectionIdentifier aliasSelection=new AliasSelectionIdentifier(identifier,factory4Selection);
 		return !aliasSelection.isInterfaceAliasInNescFunction();
+	}
+	
+	/**
+	 * Checks if the given identifier is the interface part of a nesc function call.
+	 * And that the identifier is really the name of a interface and not an local defined alias.
+	 * @return
+	 */
+	public boolean isInterfacePartInNesCFunctionCallAndNoAlias() {
+		if(!astUtil4Functions.isInterfacePartInNesCFunctionCall(identifier)){
+			return false;
+		}
+		AliasSelectionIdentifier aliasSelection=new AliasSelectionIdentifier(identifier,factory4Selection);
+		return !aliasSelection.isInterfaceAliasInNescFunctionCall();
 	}
 	
 	/**
