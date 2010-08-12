@@ -11,16 +11,9 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArithmeticExpression;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.AssignmentExpression;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.PostfixExpression;
-import tinyos.yeti.nesc12.parser.ast.nodes.expression.PrefixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
-import tinyos.yeti.nesc12.parser.ast.nodes.statement.ExpressionStatement;
 import tinyos.yeti.refactoring.selection.FunctionParameterSelectionIdentifier;
 
 public class ASTUtil4Variables {
@@ -51,34 +44,7 @@ public class ASTUtil4Variables {
 		Identifier.class
 	};
 	
-	
-	/**
-	 * Checks if this identifier is part of a variable declaration.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isVariableDeclaration(Identifier identifier){
-		return astUtil.checkAncestorSequence(identifier, variableDeclarationAncestorSequence);
-	}
-	
-	/**
-	 * Checks if this identifier is part of a variable reference in a function body.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isVariableUsage(Identifier identifier){
-		ASTNode parent=identifier.getParent();
-		if(!(parent instanceof IdentifierExpression)){
-			return false;
-		}
-		parent=parent.getParent();
-		return parent instanceof AssignmentExpression
-			||parent instanceof ArgumentExpressionList
-			||parent instanceof ArithmeticExpression
-			||parent instanceof PrefixExpression
-			||parent instanceof PostfixExpression
-			||parent instanceof ExpressionStatement;
-	}
+
 	
 	/**
 	 * Checks if this identifier is part of a local variable, which means a variable inside a function.

@@ -1,7 +1,14 @@
 package tinyos.yeti.refactoring.selection;
 
+import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArithmeticExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.AssignmentExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.PostfixExpression;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.PrefixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.ExpressionStatement;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 
@@ -15,6 +22,25 @@ public class VariableSelectionIdentifier extends SelectionIdentifier{
 
 	public VariableSelectionIdentifier(Identifier identifier,AstAnalyzerFactory analyzerFactory) {
 		super(identifier, analyzerFactory);
+	}
+	
+	/**
+	 * Checks if this identifier is part of a variable reference in a function body.
+	 * @param identifier
+	 * @return
+	 */
+	private boolean isVariableUsage(Identifier identifier){
+		ASTNode parent=identifier.getParent();
+		if(!(parent instanceof IdentifierExpression)){
+			return false;
+		}
+		parent=parent.getParent();
+		return parent instanceof AssignmentExpression
+			||parent instanceof ArgumentExpressionList
+			||parent instanceof ArithmeticExpression
+			||parent instanceof PrefixExpression
+			||parent instanceof PostfixExpression
+			||parent instanceof ExpressionStatement;
 	}
 	
 	/**
@@ -50,11 +76,10 @@ public class VariableSelectionIdentifier extends SelectionIdentifier{
 		if(!cAnalyzer.getGlobalVariableDeclarationNames().contains(identifier)){
 			return false;
 		}
-		CompoundStatement compoundStatement=astUtil4Variables.findDeclaringCompoundStatement(identifier);
-		if(compoundStatement!=null){	//In this case this is a local variable.
+		if(astUtil4Variables.isLocalVariable(identifier)){
 			return false;
 		}
-		return astUtil4Variables.isVariableUsage(identifier);
+		return isVariableUsage(identifier);
 	}
 	
 	
@@ -77,7 +102,7 @@ public class VariableSelectionIdentifier extends SelectionIdentifier{
 	 * @return
 	 */
 	public boolean isImplementationLocalVariableUsage(){
-		if(!astUtil4Variables.isVariableUsage(identifier)){
+		if(!isVariableUsage(identifier)){
 			return false;
 		}
 		if(astUtil4Variables.isLocalVariable(identifier)){
