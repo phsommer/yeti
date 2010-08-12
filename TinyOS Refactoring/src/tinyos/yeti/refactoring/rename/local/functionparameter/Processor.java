@@ -32,7 +32,6 @@ import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.rename.global.FieldKind;
 import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
-import tinyos.yeti.refactoring.selection.FunctionParameterSelectionIdentifier;
 import tinyos.yeti.refactoring.selection.FunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;

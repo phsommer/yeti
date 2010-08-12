@@ -19,7 +19,7 @@ import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.selection.AliasSelectionIdentifier;
+import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
 
 public class Processor extends RenameProcessor {
 	

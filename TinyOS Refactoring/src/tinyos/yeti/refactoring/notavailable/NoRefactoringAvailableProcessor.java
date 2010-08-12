@@ -24,7 +24,6 @@ public class NoRefactoringAvailableProcessor extends RenameProcessor {
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus ret = new RefactoringStatus();
-		System.err.println("DO IT");
 		ret.addFatalError("There is really no refactoring available!!!");
 		return ret;
 	}

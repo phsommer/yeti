@@ -28,7 +28,6 @@ import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 import tinyos.yeti.refactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.rename.RenameProcessor;
-import tinyos.yeti.refactoring.selection.NescFunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
