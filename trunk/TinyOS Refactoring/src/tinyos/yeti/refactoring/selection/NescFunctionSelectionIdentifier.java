@@ -10,11 +10,10 @@ import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 	
 	@SuppressWarnings("unchecked")
-	private static final Class<? extends ASTNode>[] nesCfunctionCallAncestorSequence=new Class[]{
+	private static final Class<? extends ASTNode>[] nesCfunctionCallFunctionPartAncestorSequence=new Class[]{
 		ParameterizedIdentifier.class,
 		NesCName.class,
 		CallExpression.class
-		
 	};
 	
 	public NescFunctionSelectionIdentifier(Identifier identifier) {
@@ -32,9 +31,9 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 	 * @return
 	 */
 	public boolean isNescFunction(Identifier identifier){
-		return isFunctionDeclaration()
-			||isFunctionDefinition()
-			||isFunctionCall();
+		return isNesCFunctionDeclaration()
+			||isNesCFunctionDefinition()
+			||isNesCFunctionCallFunctionPart();
 	}
 
 
@@ -42,7 +41,7 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 	 * Checks if the given identifier is the name identifier of a nesc function declaration in a nesc interface ast.
 	 * @return
 	 */
-	public boolean isFunctionDeclaration(){
+	public boolean isNesCFunctionDeclaration(){
 		if(!factory4Selection.hasInterfaceAnalyzerCreated()){
 			return false;
 		}
@@ -53,7 +52,7 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 	 * Checks if the given identifier is the name identifier of a nesc function definition of a interface implementation in a nesc module ast.
 	 * @return
 	 */
-	public boolean isFunctionDefinition(){
+	public boolean isNesCFunctionDefinition(){
 		if(!factory4Selection.hasModuleAnalyzerCreated()){
 			return false;
 		}
@@ -64,8 +63,8 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 	 * Checks if the given identifier is the name identifier of a nesc function call.
 	 * @return
 	 */
-	public boolean isFunctionCall() {
-		return astUtil.checkAncestorSequence(identifier, nesCfunctionCallAncestorSequence);
+	public boolean isNesCFunctionCallFunctionPart() {
+		return astUtil.checkAncestorSequence(identifier, nesCfunctionCallFunctionPartAncestorSequence);
 	}
 
 	/**
@@ -74,7 +73,7 @@ public class NescFunctionSelectionIdentifier extends SelectionIdentifier {
 	 * @return
 	 */
 	public Identifier getAssociatedInterface2FunctionCall(){
-		if(!isFunctionCall()){
+		if(!isNesCFunctionCallFunctionPart()){
 			return null;
 		}
 		NesCName nesCName=astUtil.getParentForName(identifier, NesCName.class);

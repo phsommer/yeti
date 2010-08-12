@@ -13,7 +13,9 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PrimitiveSpecifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.TypedefName;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
+import tinyos.yeti.nesc12.parser.ast.nodes.expression.CallExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCName;
 
 public class ASTUtil4Functions {
 	
@@ -53,6 +55,12 @@ public class ASTUtil4Functions {
 		FunctionDeclarator.class,
 		DeclaratorName.class,
 		Identifier.class
+	};
+	
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends ASTNode>[] nesCfunctionCallInterfacePartAncestorSequence=new Class[]{
+		NesCName.class,
+		CallExpression.class
 	};
 	
 	/**
@@ -295,5 +303,14 @@ public class ASTUtil4Functions {
 		}
 		Identifier declarationIdentifier=getIdentifierOfParameterWithIndex(index, declarator);
 		return declarationIdentifier==identifier;
+	}
+	
+	/**
+	 * Checks if the given identifier is the interface part of a nesc function call.
+	 * Note, the identifier has not to be the interface name of a global interfac but can also be an alias.
+	 * @return
+	 */
+	public boolean isInterfacePartInNesCFunctionCall(Identifier identifier) {
+		return astUtil.checkAncestorSequence(identifier, nesCfunctionCallInterfacePartAncestorSequence);
 	}
 }

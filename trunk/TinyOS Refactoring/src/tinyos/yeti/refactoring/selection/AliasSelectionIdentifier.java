@@ -9,10 +9,12 @@ import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
+import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class AliasSelectionIdentifier extends SelectionIdentifier{
 	
+	private ASTUtil4Functions astUtil4Functions=new ASTUtil4Functions(astUtil);
 	
 	/**
 	 * @see SelectionIdentifier(Identifier identifier)
@@ -59,7 +61,8 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 */
 	public boolean isInterfaceAlias(){
 		return isInterfaceAliasingInSpecification()
-		||isInterfaceAliasInNescFunction();
+		||isInterfaceAliasInNescFunction()
+		||isInterfaceAliasInNescFunctionCall();
 	}
 	
 	/**
@@ -130,6 +133,20 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	 */
 	public boolean isInterfaceAliasInNescComponentWiring(ProjectUtil util, IProgressMonitor monitor){
 		return getDefinitionOfInterfaceAliasInNescComponentWiring(util, monitor)!=null;
+	}
+	
+	/**
+	 * Checks if the given identifier is an alias for a interface in a NesC function call.
+	 * @return
+	 */
+	public boolean isInterfaceAliasInNescFunctionCall() {
+		if(!astUtil4Functions.isInterfacePartInNesCFunctionCall(identifier)){
+			return false;
+		}
+		if(!factory4Selection.hasModuleAnalyzerCreated()){
+			return false;
+		}
+		return moduleAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName())!=null;
 	}
 	
 	/**
