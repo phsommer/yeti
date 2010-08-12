@@ -38,30 +38,14 @@ public class CAstAnalyzer extends AstAnalyzer {
 	}
 	
 	/**
-	 * Returns the name identifier of the given FunctionDeclarator.
-	 * Returns null if the given node is no FunctionDeclarator or if there is no name identifier. 
-	 * @param declarator
+	 * Searches the declaration for its specific Declaration name field. 
+	 * For a function declaration it will add a FunctionDeclarator to the returned Collection, for a variable declaration a DeclaratorName.
+	 * Especially removes PointerDeclarations which encapsulate the specific declaration. 
+	 * @param declarations
 	 * @return
 	 */
-	private Identifier getNameIdentifierOfFunctionDeclarator(FunctionDeclarator declarator){
-		FunctionDeclarator functionDec=(FunctionDeclarator)declarator;
-		if(functionDec!=null){
-			DeclaratorName decName=(DeclaratorName)functionDec.getField(FunctionDeclarator.DECLARATOR);
-			if(decName!=null){
-				return (Identifier)decName.getField(DeclaratorName.NAME);
-			}	
-		}
-		return null;
-	}
-	
-	/**
-	 * Collects function and variable declaration names in the given scope and adds them to the given specific Collection.
-	 * @param scope
-	 * @param functionDeclarations
-	 * @param variableDeclarations
-	 */
-	protected void collectDeclarationNamesInScope(ASTNode scope,Collection<Identifier> functionDeclarations,Collection<Identifier> variableDeclarations){
-		Collection<Declaration> declarations=astUtil.getChildsOfType(root, Declaration.class);
+	protected Collection<ASTNode> unpackDeclarationsToSpecificDeclarations(Collection<Declaration> declarations){
+		Collection<ASTNode> specificDeclarations=new LinkedList<ASTNode>();
 		for(Declaration declaration:declarations){
 			InitDeclaratorList list=(InitDeclaratorList)declaration.getField(Declaration.INIT_LIST);
 			if(list!=null){
@@ -72,19 +56,61 @@ public class CAstAnalyzer extends AstAnalyzer {
 						if(node instanceof PointerDeclarator){
 							node=((PointerDeclarator)node).getField(PointerDeclarator.DECLARATOR);
 						}
-						if(node instanceof FunctionDeclarator){
-							Identifier name=getNameIdentifierOfFunctionDeclarator((FunctionDeclarator)node);
-							if(name!=null){
-								functionDeclarations.add(name);
-							}
-						}else if(node instanceof DeclaratorName){
-							DeclaratorName decName=(DeclaratorName)node;
-							Identifier name=(Identifier)decName.getField(DeclaratorName.NAME);
-							if(name!=null){
-								variableDeclarations.add(name);
-							}
-						}
+						specificDeclarations.add(node);
 					}
+				}
+			}
+		}
+		return specificDeclarations;
+	}
+	
+	/**
+	 * Searches the FunctionDefinition for its specific Declaration name field. 
+	 * It will add a FunctionDeclarator to the returned Collection for every definition..
+	 * Especially removes PointerDeclarations which encapsulate the specific declaration. 
+	 * @param declarations
+	 * @return
+	 */
+	protected Collection<FunctionDeclarator> unpackFunctionDefinitionsToFunctionDeclarator(Collection<FunctionDefinition> definitions){
+		Collection<FunctionDeclarator> declarators=new LinkedList<FunctionDeclarator>();
+		for(FunctionDefinition definition:definitions){
+			ASTNode node=definition.getField(FunctionDefinition.DECLARATOR);
+			if(node instanceof PointerDeclarator){
+				node=((PointerDeclarator)node).getField(PointerDeclarator.DECLARATOR);
+			}
+			if(node instanceof FunctionDeclarator){
+				FunctionDeclarator funcDeclarator=(FunctionDeclarator)node;
+				declarators.add(funcDeclarator);
+			}
+		}
+		return declarators;
+	}
+	
+	/**
+	 * Collects function and variable declaration names in the given scope and adds them to the given specific Collection.
+	 * @param scope
+	 * @param functionDeclarations
+	 * @param variableDeclarations
+	 */
+	protected void collectDeclarationNamesInScope(ASTNode scope,Collection<Identifier> functionDeclarations,Collection<Identifier> variableDeclarations){
+		Collection<Declaration> declarations=astUtil.getChildsOfType(scope, Declaration.class);
+		Collection<ASTNode> specificDeclarations=unpackDeclarationsToSpecificDeclarations(declarations);
+		for(ASTNode node:specificDeclarations){
+			if(node instanceof FunctionDeclarator){
+				FunctionDeclarator funcDeclarator=(FunctionDeclarator)node;
+				node=funcDeclarator.getField(FunctionDeclarator.DECLARATOR);
+				if(node instanceof DeclaratorName){
+					DeclaratorName decName=(DeclaratorName)node;
+					Identifier name= (Identifier)decName.getField(DeclaratorName.NAME);
+					if(name!=null){
+						functionDeclarations.add(name);
+					}
+				}
+			}else if(node instanceof DeclaratorName){
+				DeclaratorName decName=(DeclaratorName)node;
+				Identifier name=(Identifier)decName.getField(DeclaratorName.NAME);
+				if(name!=null){
+					variableDeclarations.add(name);
 				}
 			}
 		}
@@ -98,19 +124,17 @@ public class CAstAnalyzer extends AstAnalyzer {
 	 * @param variableDeclarations
 	 */
 	protected void collectFunctionDefinitionNamesInScope(ASTNode scope,Collection<Identifier> functionDefinitions){
-		Collection<FunctionDefinition> definitions=astUtil.getChildsOfType(root, FunctionDefinition.class);
-		for(FunctionDefinition definition:definitions){
-			ASTNode node=definition.getField(FunctionDefinition.DECLARATOR);
-			if(node instanceof PointerDeclarator){
-				node=((PointerDeclarator)node).getField(PointerDeclarator.DECLARATOR);
-			}
-			if(node instanceof FunctionDeclarator){
-				Identifier name=getNameIdentifierOfFunctionDeclarator((FunctionDeclarator)node);
+		Collection<FunctionDefinition> definitions=astUtil.getChildsOfType(scope, FunctionDefinition.class);
+		Collection<FunctionDeclarator> declarators=unpackFunctionDefinitionsToFunctionDeclarator(definitions);
+		for(FunctionDeclarator declarator:declarators){
+			ASTNode node=declarator.getField(FunctionDeclarator.DECLARATOR);
+			if(node instanceof DeclaratorName){
+				DeclaratorName decName=(DeclaratorName)node;
+				Identifier name= (Identifier)decName.getField(DeclaratorName.NAME);
 				if(name!=null){
 					functionDefinitions.add(name);
 				}
 			}
-
 		}
 
 	}
@@ -139,7 +163,7 @@ public class CAstAnalyzer extends AstAnalyzer {
 	}
 	
 	/**
-	 * Returns all global FunctionDefinitions.
+	 * Returns all global function definition names.
 	 * @return
 	 */
 	public Collection<Identifier> getGlobalFunctionDefinitionNames(){
