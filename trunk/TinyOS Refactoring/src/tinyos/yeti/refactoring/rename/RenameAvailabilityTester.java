@@ -8,7 +8,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
-public abstract class RenameAvailabilityTester implements tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester {
+public abstract class RenameAvailabilityTester implements tinyos.yeti.refactoring.IRefactoringAvailabilityTester {
 
 	@Override
 	public boolean test(ITextSelection receiver) {

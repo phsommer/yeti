@@ -1,79 +1,104 @@
 package tinyos.yeti.refactoring;
 
+
 public enum Refactoring {
 	
 	RENAME_LOCAL_VARIABLE(
 			"renameLocalVariable",
-			"local variable"),
+			"local variable",
+			new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester()),
 
 	RENAME_FUNCTION_PARAMETER(
 			"renameFunctionParameter",
-			"function parameter"),
+			"function parameter",
+			new tinyos.yeti.refactoring.rename.local.functionparameter.AvailabilityTester()),
 
 	RENAME_GLOBAL_VARIABLE(
 			"renameGlobalVariable",
-			"global variable"),
+			"global variable",
+			new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester()),
 			
 	RENAME_IMPLEMENTATION_LOCAL_VARIABLE(
 			"renameImplementationLocalVariable",
-			"implementation local variable"),
+			"implementation local variable",
+			new tinyos.yeti.refactoring.rename.implementation.variable.AvailabilityTester()),
 			
 	RENAME_LOCAL_FUNCTION(
 			"renameLocalFunction",
-			"local function"),
+			"local function",
+			new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester()),
 			
 	RENAME_GLOBAL_FUNCTION(
 			"renameGlobalFunction",
-			"global function"),
+			"global function",
+			new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester()),
 			
 	RENAME_INTERFACE(
 			"renameInterface",
-			"interface"),
+			"interface",
+			new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester()),
 			
 	RENAME_COMPONENT(
 			"renameComponent",
-			"component"),
+			"component",
+			new tinyos.yeti.refactoring.rename.component.AvailabilityTester()),
 			
 	RENAME_COMPONENT_ALIAS(
 			"renameComponentAlias",
-			"component alias"),
+			"component alias",
+			new tinyos.yeti.refactoring.rename.alias.component.AvailabilityTester()),
 			
 	RENAME_INTERFACE_ALIAS(
 			"renameInterfaceAlias",
-			"interface alias"),
+			"interface alias",
+			new tinyos.yeti.refactoring.rename.alias.interfaces.AvailabilityTester()),
 			
 	RENAME_NESC_FUNCTION(
 			"renameNescFunction",
-			"nesc function"),
+			"nesc function",
+			new tinyos.yeti.refactoring.rename.nesc.function.AvailabilityTester()),
 			
 	EXTRACT_FUNCTION(
 			"extractFunction",
-			"function"),
+			"function",
+			new tinyos.yeti.refactoring.extractFunction.AvailabilityTester()),
 			
 	NO_REFACTORING_AVAILABLE(
 			"NoRefactoringAvailable",
-			"none");
+			"none",
+			new tinyos.yeti.refactoring.notavailable.AvailabilityTester());
 	
-	/**
-	 * The name which is used in the plugin xml for the property
-	 */
+
 	private String propertyName;
-	
-	/**
-	 * The entity which is edited with this refactoring. Is used for user output.
-	 */
 	private String entityName;
-	private Refactoring(String propertyName,String entityName ){
+	private IRefactoringAvailabilityTester tester;
+	
+	private Refactoring(String propertyName,String entityName,IRefactoringAvailabilityTester tester){
 		this.propertyName=propertyName;
 		this.entityName=entityName;
+		this.tester=tester;
 	}
 	
+	/**
+	 * The name which is used in the plugin.xml for the property
+	 */
 	public String getPropertyName() {
 		return propertyName;
 	}
 	
+	/**
+	 * The entity which is edited with this refactoring. Is used for user output.
+	 */
 	public String getEntityName() {
 		return entityName;
+	}
+	
+	/**
+	 * The tester for testing, if this refactoring is available.
+	 * @return
+	 */
+	public IRefactoringAvailabilityTester getTester(){
+		return tester;
 	}
 	
 	/**

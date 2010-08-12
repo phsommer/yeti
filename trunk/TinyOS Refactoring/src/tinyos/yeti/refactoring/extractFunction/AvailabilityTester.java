@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.text.ITextSelection;
 
 import tinyos.yeti.editors.NesCEditor;
-import tinyos.yeti.refactoring.AvailabilityTester.IRefactoringAvailabilityTester;
+import tinyos.yeti.refactoring.IRefactoringAvailabilityTester;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
 public class AvailabilityTester implements IRefactoringAvailabilityTester{
