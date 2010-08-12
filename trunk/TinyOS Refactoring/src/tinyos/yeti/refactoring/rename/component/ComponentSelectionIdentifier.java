@@ -1,9 +1,11 @@
-package tinyos.yeti.refactoring.selection;
+package tinyos.yeti.refactoring.rename.component;
 
 import java.util.Collection;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.rename.SelectionIdentifier;
+import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
 
 public class ComponentSelectionIdentifier extends SelectionIdentifier {
 

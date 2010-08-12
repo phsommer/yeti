@@ -1,7 +1,9 @@
-package tinyos.yeti.refactoring.selection;
+package tinyos.yeti.refactoring.rename.global.interfaces;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
+import tinyos.yeti.refactoring.rename.SelectionIdentifier;
+import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 
 public class InterfaceSelectionIdentifier extends SelectionIdentifier{
