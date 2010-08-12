@@ -32,6 +32,7 @@ import tinyos.yeti.refactoring.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.rename.global.FieldKind;
 import tinyos.yeti.refactoring.rename.global.GlobalFieldFinder;
+import tinyos.yeti.refactoring.selection.FunctionParameterSelectionIdentifier;
 import tinyos.yeti.refactoring.selection.FunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
@@ -180,7 +181,8 @@ public class Processor extends RenameProcessor {
 	private FunctionDeclarator getFunctionDeclarator(){
 		Identifier selecedIdentifier = getSelectedIdentifier();
 		FunctionDeclarator declarator=null;
-		if(astUtil4Variables.isInFunctionDeclarationParameterList(selecedIdentifier)||astUtil4Variables.isInFunctionDefinitionParameterList(selecedIdentifier)){
+		FunctionParameterSelectionIdentifier selectionIdentifier=new FunctionParameterSelectionIdentifier(selecedIdentifier);
+		if(selectionIdentifier.isInFunctionDeclarationParameterList()||selectionIdentifier.isInFunctionDefinitionParameterList()){
 			declarator=astUtil.getParentForName(selecedIdentifier, FunctionDeclarator.class);
 		}else{	//We have to be in the function body.
 			FunctionDefinition definition=astUtil.getParentForName(selecedIdentifier, FunctionDefinition.class);
