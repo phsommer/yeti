@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.alias.component;
+package tinyos.yeti.refactoring.entities.component.alias.rename;
 
 
 import java.util.Collection;
