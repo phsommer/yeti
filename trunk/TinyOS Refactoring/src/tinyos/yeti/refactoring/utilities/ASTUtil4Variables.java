@@ -14,7 +14,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
-import tinyos.yeti.refactoring.entities.functionparameter.rename.FunctionParameterSelectionIdentifier;
+import tinyos.yeti.refactoring.entities.functionparameter.rename.c.FunctionParameterSelectionIdentifier;
 
 public class ASTUtil4Variables {
 	

@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.entities.functionparameter.rename;
+package tinyos.yeti.refactoring.entities.functionparameter.rename.c;
 
 import java.io.IOException;
 import java.util.Collection;
