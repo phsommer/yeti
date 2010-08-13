@@ -28,7 +28,6 @@ import tinyos.yeti.refactoring.abstractrefactoring.rename.NesCComponentNameColli
 import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
@@ -62,7 +61,7 @@ public class Processor extends RenameProcessor {
 	 * @return true if the selection is actually an interface alias
 	 */
 	private void handleCaseInterfaceAliasInNesCComponentWiring(Identifier selectedIdentifier,IProgressMonitor monitor){
-		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
+		InterfaceSelectionIdentifier selectionIdentifier=new InterfaceSelectionIdentifier(selectedIdentifier);
 		if(!selectionIdentifier.isInterfaceAliasInNescComponentWiring(getProjectUtil(),monitor)){
 			return;
 		}
