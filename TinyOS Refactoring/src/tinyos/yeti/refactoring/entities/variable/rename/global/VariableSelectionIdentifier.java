@@ -9,8 +9,8 @@ import tinyos.yeti.nesc12.parser.ast.nodes.expression.PostfixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.PrefixExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.ExpressionStatement;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 
 public class VariableSelectionIdentifier extends SelectionIdentifier{

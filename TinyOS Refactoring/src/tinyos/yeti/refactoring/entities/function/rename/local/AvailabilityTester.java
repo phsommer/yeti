@@ -1,8 +1,8 @@
 package tinyos.yeti.refactoring.entities.function.rename.local;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameAvailabilityTester;
 import tinyos.yeti.refactoring.entities.function.rename.global.FunctionSelectionIdentifier;
-import tinyos.yeti.refactoring.rename.RenameAvailabilityTester;
 
 public class AvailabilityTester extends RenameAvailabilityTester{
 

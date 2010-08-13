@@ -21,9 +21,9 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.refactoring.Refactoring;
-import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
-import tinyos.yeti.refactoring.rename.RenameInfo;
-import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.NesCComponentNameCollissionDetector;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 
 public class Processor extends RenameProcessor {

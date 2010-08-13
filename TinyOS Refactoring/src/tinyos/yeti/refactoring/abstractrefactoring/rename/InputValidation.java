@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename;
+package tinyos.yeti.refactoring.abstractrefactoring.rename;
 
 /**
  * This class can be used to validate the user input for a new c name.

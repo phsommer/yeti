@@ -23,11 +23,11 @@ import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.Refactoring;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.InterfaceAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
-import tinyos.yeti.refactoring.rename.RenameInfo;
-import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {

@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename;
+package tinyos.yeti.refactoring.abstractrefactoring.rename;
 
 import java.util.Collection;
 import java.util.Set;

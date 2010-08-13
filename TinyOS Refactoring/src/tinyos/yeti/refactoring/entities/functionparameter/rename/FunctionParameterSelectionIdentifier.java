@@ -3,8 +3,8 @@ package tinyos.yeti.refactoring.entities.functionparameter.rename;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 

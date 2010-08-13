@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename;
+package tinyos.yeti.refactoring.abstractrefactoring.rename;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;

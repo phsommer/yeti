@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename;
+package tinyos.yeti.refactoring.abstractrefactoring.rename;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import tinyos.yeti.refactoring.rename.InputValidation.CNameDifference;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.InputValidation.CNameDifference;
 
 public class RenameInputPage extends UserInputWizardPage {
 
