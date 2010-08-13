@@ -141,7 +141,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.notavailable.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.notavailable.ActionHandler"
         	commandId="tinyos.yeti.refactoring.NoRefactoringAvailable">
 		</handler>
 	</extension>

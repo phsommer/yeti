@@ -66,7 +66,7 @@ public enum Refactoring {
 	NO_REFACTORING_AVAILABLE(
 			"NoRefactoringAvailable",
 			"none",
-			new tinyos.yeti.refactoring.notavailable.AvailabilityTester());
+			new tinyos.yeti.refactoring.entities.notavailable.AvailabilityTester());
 	
 
 	private String propertyName;
