@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.component;
+package tinyos.yeti.refactoring.entities.component.rename;
 
 
 import java.io.IOException;
