@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.alias.interfaces;
+package tinyos.yeti.refactoring.entities.interfaces.alias.rename;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameAvailabilityTester;

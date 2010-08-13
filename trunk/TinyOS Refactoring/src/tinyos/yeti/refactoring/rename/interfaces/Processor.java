@@ -34,7 +34,7 @@ import tinyos.yeti.refactoring.utilities.ProjectUtil;
 public class Processor extends RenameProcessor {
 	
 	boolean selectionisInterfaceAliasInNesCComponentWiring=false;
-	private tinyos.yeti.refactoring.rename.alias.interfaces.Processor aliasProcessor;
+	private tinyos.yeti.refactoring.entities.interfaces.alias.rename.Processor aliasProcessor;
 	
 	private IDeclaration interfaceDeclaration;
 	private IFile declaringFile;
@@ -67,7 +67,7 @@ public class Processor extends RenameProcessor {
 			return;
 		}
 		selectionisInterfaceAliasInNesCComponentWiring=true;
-		aliasProcessor=new tinyos.yeti.refactoring.rename.alias.interfaces.Processor(info);
+		aliasProcessor=new tinyos.yeti.refactoring.entities.interfaces.alias.rename.Processor(info);
 	}
 	
 	/**

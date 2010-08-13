@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.alias.interfaces;
+package tinyos.yeti.refactoring.entities.interfaces.alias.rename;
 
 import org.eclipse.core.commands.IHandler;
 
