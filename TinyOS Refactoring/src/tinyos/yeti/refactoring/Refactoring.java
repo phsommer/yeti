@@ -26,7 +26,7 @@ public enum Refactoring {
 	RENAME_LOCAL_FUNCTION(
 			"renameLocalFunction",
 			"local function",
-			new tinyos.yeti.refactoring.rename.function.local.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.function.rename.local.AvailabilityTester()),
 			
 	RENAME_GLOBAL_FUNCTION(
 			"renameGlobalFunction",
