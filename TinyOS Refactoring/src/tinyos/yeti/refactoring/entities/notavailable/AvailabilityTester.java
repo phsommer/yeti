@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.notavailable;
+package tinyos.yeti.refactoring.entities.notavailable;
 
 import org.eclipse.jface.text.ITextSelection;
 
