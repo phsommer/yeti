@@ -31,7 +31,7 @@ public enum Refactoring {
 	RENAME_GLOBAL_FUNCTION(
 			"renameGlobalFunction",
 			"global function",
-			new tinyos.yeti.refactoring.rename.function.global.GlobalFunctionAvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.function.rename.global.GlobalFunctionAvailabilityTester()),
 			
 	RENAME_INTERFACE(
 			"renameInterface",
