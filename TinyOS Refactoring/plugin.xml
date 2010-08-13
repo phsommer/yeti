@@ -116,7 +116,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.component.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.component.rename.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.component">
 		</handler>
 

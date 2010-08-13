@@ -41,7 +41,7 @@ public enum Refactoring {
 	RENAME_COMPONENT(
 			"renameComponent",
 			"component",
-			new tinyos.yeti.refactoring.rename.component.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.component.rename.AvailabilityTester()),
 			
 	RENAME_COMPONENT_ALIAS(
 			"renameComponentAlias",
