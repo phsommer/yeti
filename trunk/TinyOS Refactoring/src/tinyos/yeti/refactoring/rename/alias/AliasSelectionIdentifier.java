@@ -31,29 +31,6 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 	public AliasSelectionIdentifier(Identifier identifier,AstAnalyzerFactory analyzerFactory){
 		super(identifier,analyzerFactory);
 	}
-
-	/**
-	 * Checks if the given identifier is part of an AST node associated to an NesC alias like a component alias or a interface alias, which are introduces with the "as" keyword.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isAlias(){
-		if(!factory4Selection.hasComponentAnalyzerCreated()){
-			return false;
-		}
-		return isComponentAlias()
-			||isInterfaceAlias();
-	}
-	
-	/**
-	 * Checks if the given identifier is an Alias for a component in the implementation of a nesc configuration.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isComponentAlias(){
-		return isComponentAliasingInComponentsStatement()
-			||isComponentAliasingInComponentWiring();
-	}
 	
 	/**
 	 * Checks if the given identifier is an Alias for an interface in the given component.
@@ -64,37 +41,6 @@ public class AliasSelectionIdentifier extends SelectionIdentifier{
 		return isInterfaceAliasingInSpecification()
 		||isInterfaceAliasInNescFunction()
 		||isInterfaceAliasInNescFunctionCall();
-	}
-	
-	/**
-	 * Checks if the given identifier is the identifier of a NesC component alias in a NesC "components" statement in a implementation of a NesC configuration.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isComponentAliasingInComponentsStatement(){
-		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
-			return false;
-		}
-		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
-		return componentAliases.contains(identifier);
-	}
-	
-	/**
-	 * Checks if the given identifier is the identifier of a NesC component alias in a NesC component wiring in a implementation of a NesC configuration.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isComponentAliasingInComponentWiring(){
-		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
-			return false;
-		}
-		Collection<Identifier> componentWirings=configurationAnalyzer.getWiringComponentPartIdentifiers();
-		if(!astUtil.containsIdentifierInstance(identifier,componentWirings)){
-			return false;
-		}
-		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
-		return componentAliases.contains(identifier);
-
 	}
 	
 	/**
