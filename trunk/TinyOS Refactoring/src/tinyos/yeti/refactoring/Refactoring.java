@@ -61,7 +61,7 @@ public enum Refactoring {
 	EXTRACT_FUNCTION(
 			"extractFunction",
 			"function",
-			new tinyos.yeti.refactoring.extractFunction.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.function.extract.AvailabilityTester()),
 			
 	NO_REFACTORING_AVAILABLE(
 			"NoRefactoringAvailable",

@@ -136,7 +136,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.extractFunction.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.function.extract.ActionHandler"
         	commandId="tinyos.yeti.refactoring.extractFunction">
 		</handler>
 		
