@@ -51,7 +51,7 @@ public enum Refactoring {
 	RENAME_INTERFACE_ALIAS(
 			"renameInterfaceAlias",
 			"interface alias",
-			new tinyos.yeti.refactoring.rename.alias.interfaces.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.interfaces.alias.rename.AvailabilityTester()),
 			
 	RENAME_NESC_FUNCTION(
 			"renameNescFunction",
