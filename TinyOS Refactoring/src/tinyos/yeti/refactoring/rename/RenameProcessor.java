@@ -33,7 +33,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
-import tinyos.yeti.refactoring.rename.global.FieldInfo;
+import tinyos.yeti.refactoring.rename.field.global.FieldInfo;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
