@@ -5,7 +5,6 @@ import java.util.Collection;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.abstractrefactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
 
 public class ComponentSelectionIdentifier extends SelectionIdentifier {
 
@@ -66,8 +65,48 @@ public class ComponentSelectionIdentifier extends SelectionIdentifier {
 		if(!astUtil.containsIdentifierInstance(identifier,identifiers)){
 			return false;
 		}
-		AliasSelectionIdentifier selectionIdentifier=new AliasSelectionIdentifier(identifier,factory4Selection);
-		return !selectionIdentifier.isComponentAlias();
+		return !isComponentAlias();
+	}
+	
+	/**
+	 * Checks if the given identifier is an Alias for a component in the implementation of a nesc configuration.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isComponentAlias(){
+		return isComponentAliasingInComponentsStatement()
+			||isComponentAliasingInComponentWiring();
+	}
+	
+	/**
+	 * Checks if the given identifier is the identifier of a NesC component alias in a NesC "components" statement in a implementation of a NesC configuration.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isComponentAliasingInComponentsStatement(){
+		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
+			return false;
+		}
+		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
+		return componentAliases.contains(identifier);
+	}
+	
+	/**
+	 * Checks if the given identifier is the identifier of a NesC component alias in a NesC component wiring in a implementation of a NesC configuration.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isComponentAliasingInComponentWiring(){
+		if(!factory4Selection.hasConfigurationAnalyzerCreated()){
+			return false;
+		}
+		Collection<Identifier> componentWirings=configurationAnalyzer.getWiringComponentPartIdentifiers();
+		if(!astUtil.containsIdentifierInstance(identifier,componentWirings)){
+			return false;
+		}
+		Collection<Identifier> componentAliases=configurationAnalyzer.getComponentAliasIdentifiers();
+		return componentAliases.contains(identifier);
+
 	}
 	
 	

@@ -131,7 +131,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.function.nesc.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.function.rename.nesc.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.nesc.function">
 		</handler>
 		
