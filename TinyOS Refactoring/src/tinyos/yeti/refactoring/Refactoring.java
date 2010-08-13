@@ -36,7 +36,7 @@ public enum Refactoring {
 	RENAME_INTERFACE(
 			"renameInterface",
 			"interface",
-			new tinyos.yeti.refactoring.rename.interfaces.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.interfaces.rename.AvailabilityTester()),
 			
 	RENAME_COMPONENT(
 			"renameComponent",
