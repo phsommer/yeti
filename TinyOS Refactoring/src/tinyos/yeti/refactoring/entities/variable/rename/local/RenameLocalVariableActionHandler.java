@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.variable.local;
+package tinyos.yeti.refactoring.entities.variable.rename.local;
 
 import org.eclipse.core.commands.IHandler;
 

@@ -80,7 +80,7 @@
 	<!-- The Real Implementations of the Refactorings -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-        	class="tinyos.yeti.refactoring.rename.variable.local.RenameLocalVariableActionHandler"
+        	class="tinyos.yeti.refactoring.entities.variable.rename.local.RenameLocalVariableActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.local.variable">
      	</handler>
      	
