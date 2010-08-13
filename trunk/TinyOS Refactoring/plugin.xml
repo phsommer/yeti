@@ -111,7 +111,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.interfaces.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.interfaces.rename.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.global.interfaces">
 		</handler>
 		
