@@ -19,14 +19,14 @@ import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
+import tinyos.yeti.refactoring.entities.interfaces.rename.InterfaceSelectionIdentifier;
 
 public class Processor extends RenameProcessor {
 	
 	private RenameInfo info;
 	
 	private AstAnalyzerFactory factory4Selection;
-	private AliasSelectionIdentifier selectionIdentifier;
+	private InterfaceSelectionIdentifier selectionIdentifier;
 	private IFile editedFile;
 	
 	public Processor(RenameInfo info) {
@@ -68,7 +68,7 @@ public class Processor extends RenameProcessor {
 	protected RefactoringStatus initializeRefactoring(IProgressMonitor pm){
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
-		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier);
+		selectionIdentifier=new InterfaceSelectionIdentifier(selectedIdentifier);
 		editedFile=(IFile)info.getEditor().getResource();
 		return new RefactoringStatus();
 	}

@@ -29,14 +29,14 @@ import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
+import tinyos.yeti.refactoring.entities.interfaces.rename.InterfaceSelectionIdentifier;
 
 public class Processor extends RenameProcessor {
 	
 	private RenameInfo info;
 	
 	private AstAnalyzerFactory factory4Selection;
-	private AliasSelectionIdentifier selectionIdentifier;
+	private InterfaceSelectionIdentifier selectionIdentifier;
 	
 	private String sourceComponentName;
 	private AstAnalyzerFactory factory4DefiningAst;
@@ -152,7 +152,7 @@ public class Processor extends RenameProcessor {
 		RefactoringStatus ret=new RefactoringStatus();
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		factory4Selection=new AstAnalyzerFactory(selectedIdentifier);
-		selectionIdentifier=new AliasSelectionIdentifier(selectedIdentifier,factory4Selection);
+		selectionIdentifier=new InterfaceSelectionIdentifier(selectedIdentifier,factory4Selection);
 		try {
 			//Get the name of the component which defines the alias
 			sourceComponentName=getNameOFSourceComponent(pm);
