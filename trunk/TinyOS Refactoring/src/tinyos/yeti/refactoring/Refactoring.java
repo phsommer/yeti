@@ -11,7 +11,7 @@ public enum Refactoring {
 	RENAME_FUNCTION_PARAMETER(
 			"renameFunctionParameter",
 			"function parameter",
-			new tinyos.yeti.refactoring.rename.functionparameter.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.functionparameter.rename.AvailabilityTester()),
 
 	RENAME_GLOBAL_VARIABLE(
 			"renameGlobalVariable",
