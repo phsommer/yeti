@@ -90,7 +90,7 @@
      	</handler>
      
      	<handler
-        	class="tinyos.yeti.refactoring.rename.field.global.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.field.rename.global.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.global.variable">
 		</handler>
 		
@@ -101,7 +101,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.field.global.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.field.rename.global.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.global.function">
 		</handler>
 		

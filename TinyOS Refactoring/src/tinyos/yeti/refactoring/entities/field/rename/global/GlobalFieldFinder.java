@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.field.global;
+package tinyos.yeti.refactoring.entities.field.rename.global;
 
 import java.io.IOException;
 import java.util.Collection;
