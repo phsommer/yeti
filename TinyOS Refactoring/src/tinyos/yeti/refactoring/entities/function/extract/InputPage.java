@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.extractFunction;
+package tinyos.yeti.refactoring.entities.function.extract;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;

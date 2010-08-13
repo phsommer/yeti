@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.extractFunction;
+package tinyos.yeti.refactoring.entities.function.extract;
 
 import java.io.IOException;
 import java.util.Arrays;
