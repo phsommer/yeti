@@ -80,38 +80,38 @@
 	<!-- The Real Implementations of the Refactorings -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-        	class="tinyos.yeti.refactoring.rename.local.variable.RenameLocalVariableActionHandler"
+        	class="tinyos.yeti.refactoring.rename.variable.local.RenameLocalVariableActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.local.variable">
      	</handler>
      	
      	<handler
-        	class="tinyos.yeti.refactoring.rename.local.functionparameter.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.functionparameter.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.local.functionparameter">
      	</handler>
      
      	<handler
-        	class="tinyos.yeti.refactoring.rename.global.field.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.field.global.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.global.variable">
 		</handler>
 		
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.implementation.variable.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.variable.implementation.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.implementation.variable">
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.global.field.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.field.global.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.global.function">
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.local.function.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.function.local.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.local.function">
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.global.interfaces.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.interfaces.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.global.interfaces">
 		</handler>
 		
@@ -131,7 +131,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.nesc.function.ActionHandler"
+        	class="tinyos.yeti.refactoring.rename.function.nesc.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.nesc.function">
 		</handler>
 		

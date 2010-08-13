@@ -6,37 +6,37 @@ public enum Refactoring {
 	RENAME_LOCAL_VARIABLE(
 			"renameLocalVariable",
 			"local variable",
-			new tinyos.yeti.refactoring.rename.local.variable.AvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.variable.local.AvailabilityTester()),
 
 	RENAME_FUNCTION_PARAMETER(
 			"renameFunctionParameter",
 			"function parameter",
-			new tinyos.yeti.refactoring.rename.local.functionparameter.AvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.functionparameter.AvailabilityTester()),
 
 	RENAME_GLOBAL_VARIABLE(
 			"renameGlobalVariable",
 			"global variable",
-			new tinyos.yeti.refactoring.rename.global.field.GlobalVariableAvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.variable.global.GlobalVariableAvailabilityTester()),
 			
 	RENAME_IMPLEMENTATION_LOCAL_VARIABLE(
 			"renameImplementationLocalVariable",
 			"implementation local variable",
-			new tinyos.yeti.refactoring.rename.implementation.variable.AvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.variable.implementation.AvailabilityTester()),
 			
 	RENAME_LOCAL_FUNCTION(
 			"renameLocalFunction",
 			"local function",
-			new tinyos.yeti.refactoring.rename.local.function.AvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.function.local.AvailabilityTester()),
 			
 	RENAME_GLOBAL_FUNCTION(
 			"renameGlobalFunction",
 			"global function",
-			new tinyos.yeti.refactoring.rename.global.field.GlobalFunctionAvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.function.global.GlobalFunctionAvailabilityTester()),
 			
 	RENAME_INTERFACE(
 			"renameInterface",
 			"interface",
-			new tinyos.yeti.refactoring.rename.global.interfaces.AvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.interfaces.AvailabilityTester()),
 			
 	RENAME_COMPONENT(
 			"renameComponent",
@@ -56,7 +56,7 @@ public enum Refactoring {
 	RENAME_NESC_FUNCTION(
 			"renameNescFunction",
 			"nesc function",
-			new tinyos.yeti.refactoring.rename.nesc.function.AvailabilityTester()),
+			new tinyos.yeti.refactoring.rename.function.nesc.AvailabilityTester()),
 			
 	EXTRACT_FUNCTION(
 			"extractFunction",
