@@ -6,7 +6,7 @@ public enum Refactoring {
 	RENAME_LOCAL_VARIABLE(
 			"renameLocalVariable",
 			"local variable",
-			new tinyos.yeti.refactoring.rename.variable.local.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.variable.rename.local.AvailabilityTester()),
 
 	RENAME_FUNCTION_PARAMETER(
 			"renameFunctionParameter",

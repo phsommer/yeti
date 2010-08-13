@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.variable.local;
+package tinyos.yeti.refactoring.entities.variable.rename.local;
 
 import java.util.Collection;
 import java.util.HashMap;
