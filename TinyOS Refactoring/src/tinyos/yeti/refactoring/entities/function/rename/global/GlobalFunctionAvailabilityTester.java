@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.function.global;
+package tinyos.yeti.refactoring.entities.function.rename.global;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.rename.RenameAvailabilityTester;
