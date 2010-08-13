@@ -20,10 +20,10 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import tinyos.yeti.ep.parser.IASTModelPath;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.NesCComponentNameCollissionDetector;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
-import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
-import tinyos.yeti.refactoring.rename.RenameInfo;
-import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 

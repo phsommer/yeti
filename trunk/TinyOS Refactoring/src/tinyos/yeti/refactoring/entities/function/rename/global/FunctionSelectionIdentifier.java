@@ -6,8 +6,8 @@ import tinyos.yeti.nesc12.parser.ast.nodes.expression.FunctionCall;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.IdentifierExpression;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
-import tinyos.yeti.refactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 
 public class FunctionSelectionIdentifier extends SelectionIdentifier {

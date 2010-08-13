@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename;
+package tinyos.yeti.refactoring.abstractrefactoring.rename;
 
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.refactoring.RefactoringInfo;

@@ -7,9 +7,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
-import tinyos.yeti.refactoring.rename.SelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 

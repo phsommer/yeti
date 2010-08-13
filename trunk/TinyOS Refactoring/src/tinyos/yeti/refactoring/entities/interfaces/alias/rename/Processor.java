@@ -23,12 +23,12 @@ import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.Refactoring;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.NesCComponentNameCollissionDetector;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.rename.NesCComponentNameCollissionDetector;
-import tinyos.yeti.refactoring.rename.RenameInfo;
-import tinyos.yeti.refactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.rename.alias.AliasSelectionIdentifier;
 
 public class Processor extends RenameProcessor {

@@ -2,9 +2,9 @@ package tinyos.yeti.refactoring.entities.function.rename.local;
 
 import org.eclipse.core.commands.IHandler;
 
-import tinyos.yeti.refactoring.rename.RenameActionHandler;
-import tinyos.yeti.refactoring.rename.RenameInfo;
-import tinyos.yeti.refactoring.rename.RenameProcessor;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameActionHandler;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 
 public class ActionHandler extends RenameActionHandler implements IHandler{
 

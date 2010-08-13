@@ -1,7 +1,7 @@
 package tinyos.yeti.refactoring.entities.variable.rename.global;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
-import tinyos.yeti.refactoring.rename.RenameAvailabilityTester;
+import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameAvailabilityTester;
 
 public class GlobalVariableAvailabilityTester extends RenameAvailabilityTester{
 
