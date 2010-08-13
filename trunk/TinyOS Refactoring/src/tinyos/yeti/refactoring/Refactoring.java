@@ -56,7 +56,7 @@ public enum Refactoring {
 	RENAME_NESC_FUNCTION(
 			"renameNescFunction",
 			"nesc function",
-			new tinyos.yeti.refactoring.rename.function.nesc.AvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.function.rename.nesc.AvailabilityTester()),
 			
 	EXTRACT_FUNCTION(
 			"extractFunction",

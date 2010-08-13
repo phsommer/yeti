@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.function.nesc;
+package tinyos.yeti.refactoring.entities.function.rename.nesc;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.CallExpression;
