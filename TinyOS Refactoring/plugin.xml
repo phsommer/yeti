@@ -106,7 +106,7 @@
 		</handler>
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.function.local.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.function.rename.local.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.local.function">
 		</handler>
 		
