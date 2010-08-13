@@ -96,7 +96,7 @@
 		
 		
 		<handler
-        	class="tinyos.yeti.refactoring.rename.variable.implementation.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.variable.rename.implementation.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.implementation.variable">
 		</handler>
 		
