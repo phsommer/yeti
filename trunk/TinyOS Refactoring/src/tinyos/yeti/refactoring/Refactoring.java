@@ -16,7 +16,7 @@ public enum Refactoring {
 	RENAME_GLOBAL_VARIABLE(
 			"renameGlobalVariable",
 			"global variable",
-			new tinyos.yeti.refactoring.rename.variable.global.GlobalVariableAvailabilityTester()),
+			new tinyos.yeti.refactoring.entities.variable.rename.global.GlobalVariableAvailabilityTester()),
 			
 	RENAME_IMPLEMENTATION_LOCAL_VARIABLE(
 			"renameImplementationLocalVariable",

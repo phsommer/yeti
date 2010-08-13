@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.rename.variable.global;
+package tinyos.yeti.refactoring.entities.variable.rename.global;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.expression.ArgumentExpressionList;
