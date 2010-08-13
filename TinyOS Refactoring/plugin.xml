@@ -85,7 +85,7 @@
      	</handler>
      	
      	<handler
-        	class="tinyos.yeti.refactoring.entities.functionparameter.rename.ActionHandler"
+        	class="tinyos.yeti.refactoring.entities.functionparameter.rename.c.ActionHandler"
         	commandId="tinyos.yeti.refactoring.rename.local.functionparameter">
      	</handler>
      
