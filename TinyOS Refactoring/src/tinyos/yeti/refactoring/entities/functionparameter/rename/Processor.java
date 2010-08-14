@@ -37,7 +37,7 @@ import tinyos.yeti.refactoring.entities.field.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.entities.field.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.entities.field.rename.global.FieldKind;
 import tinyos.yeti.refactoring.entities.field.rename.global.GlobalFieldFinder;
-import tinyos.yeti.refactoring.entities.function.rename.global.FunctionSelectionIdentifier;
+import tinyos.yeti.refactoring.entities.function.rename.FunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.entities.function.rename.nesc.NescFunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
