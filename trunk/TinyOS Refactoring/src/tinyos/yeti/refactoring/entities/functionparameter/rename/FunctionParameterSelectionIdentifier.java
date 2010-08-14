@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.entities.functionparameter.rename.c;
+package tinyos.yeti.refactoring.entities.functionparameter.rename;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
