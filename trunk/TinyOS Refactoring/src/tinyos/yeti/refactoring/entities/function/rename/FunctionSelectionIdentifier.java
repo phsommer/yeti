@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.entities.function.rename.global;
+package tinyos.yeti.refactoring.entities.function.rename;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
