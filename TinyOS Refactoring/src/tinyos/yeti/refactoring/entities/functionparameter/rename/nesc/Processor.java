@@ -1,4 +1,4 @@
-package tinyos.yeti.refactoring.entities.functionparameter.rename.c;
+package tinyos.yeti.refactoring.entities.functionparameter.rename.nesc;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,6 +33,7 @@ import tinyos.yeti.refactoring.entities.field.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.entities.field.rename.global.FieldKind;
 import tinyos.yeti.refactoring.entities.field.rename.global.GlobalFieldFinder;
 import tinyos.yeti.refactoring.entities.function.rename.global.FunctionSelectionIdentifier;
+import tinyos.yeti.refactoring.entities.functionparameter.rename.c.FunctionParameterSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
@@ -183,7 +184,7 @@ public class Processor extends RenameProcessor {
 		FunctionParameterSelectionIdentifier selectionIdentifier=new FunctionParameterSelectionIdentifier(selecedIdentifier);
 		if(selectionIdentifier.isInCFunctionDeclarationParameterList()||selectionIdentifier.isInCFunctionDefinitionParameterList()){
 			declarator=astUtil.getParentForName(selecedIdentifier, FunctionDeclarator.class);
-		}else if(selectionIdentifier.isCFunctionParameterInFunctionBody()){
+		}else{	//We have to be in the function body.
 			FunctionDefinition definition=astUtil.getParentForName(selecedIdentifier, FunctionDefinition.class);
 			declarator=astUtil4Functions.getFunctionDeclarator(definition);
 		}

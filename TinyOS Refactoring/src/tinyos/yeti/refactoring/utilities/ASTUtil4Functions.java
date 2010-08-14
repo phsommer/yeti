@@ -7,6 +7,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.DeclaratorName;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclaratorList;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.NesCNameDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterTypeList;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
