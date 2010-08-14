@@ -77,7 +77,7 @@ public class VariableSelectionIdentifier extends SelectionIdentifier{
 		if(!cAnalyzer.getGlobalVariableDeclarationNames().contains(identifier)){
 			return false;
 		}
-		if(astUtil4Variables.isLocalVariable(identifier)){
+		if(astUtil4Variables.isLocalVariableOrFunctionParameter(identifier)){
 			return false;
 		}
 		return isVariableUsage(identifier);
@@ -106,7 +106,7 @@ public class VariableSelectionIdentifier extends SelectionIdentifier{
 		if(!isVariableUsage(identifier)){
 			return false;
 		}
-		if(astUtil4Variables.isLocalVariable(identifier)){
+		if(astUtil4Variables.isLocalVariableOrFunctionParameter(identifier)){
 			return false;
 		}
 		if(!factory4Selection.hasModuleAnalyzerCreated()){
