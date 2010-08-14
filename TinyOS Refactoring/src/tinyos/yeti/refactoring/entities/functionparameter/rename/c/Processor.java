@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -17,9 +18,13 @@ import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import tinyos.yeti.ep.parser.IASTModelPath;
+import tinyos.yeti.ep.parser.IDeclaration;
 import tinyos.yeti.nature.MissingNatureException;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.FunctionDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.InitDeclarator;
+import tinyos.yeti.nesc12.parser.ast.nodes.declaration.NesCNameDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.refactoring.Refactoring;
@@ -33,10 +38,12 @@ import tinyos.yeti.refactoring.entities.field.rename.global.FieldInfoSet;
 import tinyos.yeti.refactoring.entities.field.rename.global.FieldKind;
 import tinyos.yeti.refactoring.entities.field.rename.global.GlobalFieldFinder;
 import tinyos.yeti.refactoring.entities.function.rename.global.FunctionSelectionIdentifier;
+import tinyos.yeti.refactoring.entities.function.rename.nesc.NescFunctionSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -47,7 +54,9 @@ public class Processor extends RenameProcessor {
 	private Map<IFile,FunctionDefinition> file2definitions=new HashMap<IFile,FunctionDefinition>();
 	private Map<IFile,FunctionDeclarator> file2declarations=new HashMap<IFile,FunctionDeclarator>();
 	
-	Map<IFile,Collection<Identifier>> file2affectedIdentifiers=new HashMap<IFile,Collection<Identifier>>();
+	private Map<IFile,Collection<Identifier>> file2affectedIdentifiers=new HashMap<IFile,Collection<Identifier>>();
+	
+	private AstAnalyzerFactory factory4FunctionIdentifier;
 	
 	private String oldName;
 	private Integer toRenameIndex;
@@ -77,6 +86,70 @@ public class Processor extends RenameProcessor {
 		if(localDeclarationId!=null){
 			file2declarations.put(containingFile, astUtil.getParentForName(localDeclarationId,FunctionDeclarator.class));
 		}
+	}
+	
+	
+	/**
+	 * Looks for the method definition in the defining interface and for the declarations in the modules, which implement the interface.
+	 * @param ret
+	 * @param functionIdentifier
+	 * @param pm
+	 * @throws CoreException
+	 * @throws MissingNatureException
+	 * @throws IOException
+	 */
+	private void fincAffecetdDeclarationsAndDefinitionsIfNesC(RefactoringStatus ret, Identifier functionIdentifier, IProgressMonitor pm) throws CoreException, MissingNatureException, IOException {
+		Identifier interfaceReference;
+		NescFunctionSelectionIdentifier selectionIdentifier=new NescFunctionSelectionIdentifier(functionIdentifier);
+		if(selectionIdentifier.isNesCFunctionDeclaration()){
+			interfaceReference=factory4FunctionIdentifier.getInterfaceAnalyzer().getEntityIdentifier();
+		}else{
+			Identifier interfaceReferenceLocalName=(Identifier)((NesCNameDeclarator)functionIdentifier.getParent()).getField(NesCNameDeclarator.INTERFACE);
+			interfaceReference=factory4FunctionIdentifier.getComponentAnalyzer().getInterfaceLocalName2InterfaceGlobalName().get(interfaceReferenceLocalName);
+		}
+		DebugUtil.immediatePrint("interface ref: "+interfaceReference.getName());
+		IDeclaration interfaceDeclaration = getProjectUtil().getInterfaceDefinition(interfaceReference.getName());
+		if(interfaceDeclaration==null){
+			ret.addFatalError("Did not find an Interface Definition, for selection!");
+			return;
+		}
+		IFile declaringFile=getIFile4ParseFile(interfaceDeclaration.getParseFile());
+		if(!getProjectUtil().isProjectFile(declaringFile)){
+			ret.addFatalError("Interface definition is out of project range!");
+			return;
+		}
+		Identifier affectedInterface =getIdentifierForPath(interfaceDeclaration.getPath(), pm);
+		AstAnalyzerFactory factory4DefiningInterface=new AstAnalyzerFactory(affectedInterface);
+		if(!factory4DefiningInterface.hasInterfaceAnalyzerCreated()){
+			ret.addFatalError("Something seems to be wrong with the defining interface: "+affectedInterface);
+			return;
+		}
+		Identifier functionDefiningIdentifier=getAstUtil().getIdentifierWithEqualName(functionIdentifier.getName(),factory4DefiningInterface.getInterfaceAnalyzer().getNesCFunctionIdentifiers());
+		file2declarations.put(declaringFile, astUtil.getParentForName(functionDefiningIdentifier,FunctionDeclarator.class));
+		List<Identifier> identifiers=new LinkedList<Identifier>();
+		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
+		InitDeclarator declarator=getAstUtil().getParentForName(functionDefiningIdentifier, InitDeclarator.class);
+		paths.add(declarator.resolveField().getPath());
+		for(IFile file:getAllFiles()){
+			DebugUtil.immediatePrint("File: "+file.getName());
+			identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+			if(identifiers.size()>0){
+				throwAwayDifferentNames(identifiers, functionDefiningIdentifier.getName());
+				if(identifiers.size()>0){
+					Identifier oneOfThem=identifiers.iterator().next();
+					AstAnalyzerFactory factory=new AstAnalyzerFactory(oneOfThem);
+					if(factory.hasModuleAnalyzerCreated()){
+						for(Identifier id:identifiers){
+							NescFunctionSelectionIdentifier nescFunctionSelectionIdentifier=new NescFunctionSelectionIdentifier(id);
+							if(nescFunctionSelectionIdentifier.isNesCFunctionDefinition()){
+								file2definitions.put(file, astUtil.getParentForName(id,FunctionDefinition.class));
+							}
+						}
+					}
+				}
+			}
+		}
+		
 	}
 
 	/**
@@ -181,14 +254,13 @@ public class Processor extends RenameProcessor {
 		Identifier selecedIdentifier = getSelectedIdentifier();
 		FunctionDeclarator declarator=null;
 		FunctionParameterSelectionIdentifier selectionIdentifier=new FunctionParameterSelectionIdentifier(selecedIdentifier);
-		if(selectionIdentifier.isInCFunctionDeclarationParameterList()||selectionIdentifier.isInCFunctionDefinitionParameterList()){
-			declarator=astUtil.getParentForName(selecedIdentifier, FunctionDeclarator.class);
-		}else if(selectionIdentifier.isCFunctionParameterInFunctionBody()){
+		if(selectionIdentifier.isCFunctionParameterInFunctionBody()||selectionIdentifier.isNesCFunctionParameterInFunctionBody()){
 			FunctionDefinition definition=astUtil.getParentForName(selecedIdentifier, FunctionDefinition.class);
 			declarator=astUtil4Functions.getFunctionDeclarator(definition);
+		}else{ //The selection has to be directly the parmater in the parameter list itself.
+			declarator=astUtil.getParentForName(selecedIdentifier, FunctionDeclarator.class);
 		}
 		return declarator;
-		
 	}
 
 	@Override
@@ -202,15 +274,15 @@ public class Processor extends RenameProcessor {
 		}
 		Identifier functionIdentifier=astUtil4Functions.getIdentifierOfFunctionDeclaration(functionDeclarator);
 		try{
-			AstAnalyzerFactory factory4FunctionIdentifier=new AstAnalyzerFactory(functionIdentifier);
+			factory4FunctionIdentifier=new AstAnalyzerFactory(functionIdentifier);
 			FunctionSelectionIdentifier globalFunctionSelectionIdentifier=new FunctionSelectionIdentifier(functionIdentifier,factory4FunctionIdentifier);
 			if(globalFunctionSelectionIdentifier.isGlobalFunction()){
 				findAffectedDeclarationsAndDefinitionsIfGlobal(pm, ret,functionIdentifier);
 			}
-			else{
-				if(globalFunctionSelectionIdentifier.isImplementationLocalFunction()){
-					findAffectedDeclarationsAndDefinitionsIfLocal(ret,functionIdentifier);
-				}
+			else if(globalFunctionSelectionIdentifier.isImplementationLocalFunction()){
+				findAffectedDeclarationsAndDefinitionsIfLocal(ret,functionIdentifier);
+			}else{	//It has to be a nesc function.
+				fincAffecetdDeclarationsAndDefinitionsIfNesC(ret,functionIdentifier,pm);
 			}
 			collectAffectedIdentifiersInFunctionDeclarations();
 			collectAffectedIdentifiers4FunctionDefinitions();
@@ -222,7 +294,7 @@ public class Processor extends RenameProcessor {
 		
 		return ret;
 	}
-	
+
 	@Override
 	protected RefactoringStatus checkConditionsAfterNameSetting(IProgressMonitor pm) {
 		RefactoringStatus ret=new RefactoringStatus();

@@ -133,11 +133,15 @@ public class ASTUtil4Functions {
 	 * @return
 	 */
 	public Identifier getIdentifierOfFunctionDeclaration(FunctionDeclarator functionDeclarator) {
-		DeclaratorName decName=(DeclaratorName)functionDeclarator.getField(FunctionDeclarator.DECLARATOR);
-		if(decName==null){
-			return null;
+		ASTNode node=functionDeclarator.getField(FunctionDeclarator.DECLARATOR);
+		if(node instanceof DeclaratorName){
+			DeclaratorName decName=(DeclaratorName)node;
+			return decName.getName();
+		}if(node instanceof NesCNameDeclarator){
+			NesCNameDeclarator decName=(NesCNameDeclarator)node;
+			return (Identifier)decName.getField(NesCNameDeclarator.FUNCTION_NAME);
 		}
-		return decName.getName();
+		return null;
 	}
 	
 	/**
