@@ -109,10 +109,6 @@ public class Processor extends RenameProcessor {
 	 * @throws OperationCanceledException
 	 */
 	public boolean findInterfaceDefinitionOrDecideAlias(RefactoringStatus ret,IProgressMonitor pm) throws CoreException, MissingNatureException, IOException{
-
-		if (!isApplicable()) {
-			ret.addFatalError("The Refactoring is no Accessable");
-		}
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		InterfaceSelectionIdentifier selectionIdentifier=new InterfaceSelectionIdentifier(selectedIdentifier);
 		if (!selectionIdentifier.isInterface()) {
