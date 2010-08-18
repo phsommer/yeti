@@ -68,6 +68,11 @@ public enum Refactoring {
 			"component alias",
 			new tinyos.yeti.refactoring.entities.component.alias.introduce.AvailabilityTester()),
 			
+	INTRODUCE_INTERFACE_ALIAS(
+			"introduceInterfaceAlias",
+			"interface alias",
+			new tinyos.yeti.refactoring.entities.interfaces.alias.introduce.AvailabilityTester()),
+			
 	NO_REFACTORING_AVAILABLE(
 			"NoRefactoringAvailable",
 			"none",

@@ -15,6 +15,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Connection;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.Endpoint;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.ParameterizedIdentifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.RefComponent;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class ConfigurationAstAnalyzer extends ComponentAstAnalyzer {
 
@@ -166,9 +167,12 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyzer {
 			}else if(componentPart!=null){	//In this case component part can be an interface or an component
 				Identifier candidate=(Identifier)componentPart.getField(ParameterizedIdentifier.IDENTIFIER);
 				if(candidate!=null){
+					DebugUtil.immediatePrint("Tie! for "+candidate.getName());
 					if(isComponentName(candidate)){
+						DebugUtil.immediatePrint("Component");
 						wiringComponentPartIdentifiers.add(candidate);
 					}else{	//If it is not a component name it has to be an interface name.
+						DebugUtil.immediatePrint("Interface");
 						wiringInterfacePartIdentifiers.add(candidate);
 					}
 				}
@@ -181,7 +185,7 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyzer {
 	 * @return
 	 */
 	private boolean isComponentName(Identifier componentIdentifier){
-		return getComponentLocalName2ComponentGlobalName().containsKey(componentIdentifier);
+		return getComponentLocalName2ComponentGlobalName().get(componentIdentifier)!=null;
 	}
 	
 	/**
@@ -240,33 +244,26 @@ public class ConfigurationAstAnalyzer extends ComponentAstAnalyzer {
 	 * @param selection
 	 */
 	public Identifier getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(Identifier interfaceIdentifier) {
-		Collection<Identifier> identifiers=getWiringInterfacePartIdentifiers();
-		//TODO replace with call to InterfaceSelectionIdentifier as soon as this class is created.
-		//Check if the given identifier is an interfaceIdentifier
-		boolean found=false;
-		for(Identifier identifier:identifiers){
-			if(identifier==interfaceIdentifier){
-				found=true;
-			}
-		}
-		if(!found){
-			return null;
-		}
+		DebugUtil.immediatePrint("getAssociatedComponentIdentifier4InterfaceIdentifierInWiring");
 		
 		//Try to get associated Component of the wiring
 		Endpoint endpoint=(Endpoint)astUtil.getParentForName(interfaceIdentifier, Endpoint.class);
 		if(endpoint==null){
+			DebugUtil.immediatePrint("\tendpoint");
 			return null;
 		}
 		ParameterizedIdentifier pI=(ParameterizedIdentifier)endpoint.getField(Endpoint.COMPONENT);
 		if(pI==null){
+			DebugUtil.immediatePrint("\tpI");
 			return null;
 		}
 		Identifier targetComponent=(Identifier)pI.getField(ParameterizedIdentifier.IDENTIFIER);
 		if(targetComponent!=interfaceIdentifier){	//If there is just one identifier involved in the wiring, the identifier is in the component field of the Endpoint. => If the target component == the given identifier then this must be a interface identifier
+			DebugUtil.immediatePrint("\t!=");
 			return targetComponent;
 		}
 		//If there is no component associated with the interface, it has to be an implicit reference to the this configuration itself.
+		DebugUtil.immediatePrint("\tgetEntityIdentifier");
 		return getEntityIdentifier();
 	}
 	
