@@ -1,7 +1,8 @@
-package tinyos.yeti.refactoring.entities.component.alias.rename;
+package tinyos.yeti.refactoring.entities.component.alias.introduce;
 
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -10,6 +11,9 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.TextChange;
+import org.eclipse.ltk.core.refactoring.TextFileChange;
+import org.eclipse.text.edits.MultiTextEdit;
 
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
@@ -19,14 +23,12 @@ import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.entities.interfaces.rename.InterfaceSelectionIdentifier;
 
 public class Processor extends RenameProcessor {
 	
 	private RenameInfo info;
 	
 	private AstAnalyzerFactory factory4Selection;
-	private InterfaceSelectionIdentifier selectionIdentifier;
 	private IFile editedFile;
 	
 	public Processor(RenameInfo info) {
@@ -36,7 +38,7 @@ public class Processor extends RenameProcessor {
 	
 	@Override
 	public String getProcessorName() {
-		return Refactoring.RENAME_COMPONENT_ALIAS.getEntityName();
+		return "introduce "+Refactoring.INTRODUCE_COMPONENT_ALIAS.getEntityName();
 	}
 	
 	/**
@@ -45,10 +47,21 @@ public class Processor extends RenameProcessor {
 	 * @param ret The CompositeChange where to add the changes.
 	 */
 	private void createConfigurationImplementationLocalChange(CompositeChange ret) {
-		ConfigurationAstAnalyzer configurationAnalyzer=factory4Selection.getConfigurationAnalyzer();
-		Collection<Identifier> identifiers2Change=configurationAnalyzer.getComponentAliasIdentifiersWithName(selectionIdentifier.getSelection().getName());
+		//Add change for new alias definition
+		TextChange textChange = new TextFileChange("component alias introduction",editedFile);
+		MultiTextEdit edit=new MultiTextEdit();
+		textChange.setEdit(edit);
+		ret.add(textChange);
 		NesC12AST ast=info.getAst();
-		addMultiTextEdit(identifiers2Change, ast, editedFile, createTextChangeName(editedFile), ret);
+		Collection<Identifier> definition=new LinkedList<Identifier>();
+		definition.add(getSelectedIdentifier());
+		addChanges4Identifiers(definition, info.getOldName()+" as "+info.getNewName(), edit, ast);
+		
+		//Add rename changes for component references.
+		ConfigurationAstAnalyzer configurationAnalyzer=factory4Selection.getConfigurationAnalyzer();
+		Collection<Identifier> identifiers2Change=configurationAnalyzer.getWiringComponentPartIdentifiers();
+		identifiers2Change=throwAwayDifferentNames(identifiers2Change, info.getOldName());
+		addChanges4Identifiers(identifiers2Change,info.getNewName(),edit,ast);
 	}
 
 	
@@ -61,7 +74,6 @@ public class Processor extends RenameProcessor {
 			ret.addFatalError("Selection isnt accurate!");
 			return ret;
 		}
-		selectionIdentifier=new InterfaceSelectionIdentifier(selectedIdentifier,factory4Selection);
 		editedFile=(IFile)info.getEditor().getResource();
 		return ret;
 	}
@@ -78,7 +90,7 @@ public class Processor extends RenameProcessor {
 	public Change createChange(IProgressMonitor pm) 
 	throws CoreException,OperationCanceledException {
 
-		CompositeChange ret = createNewCompositeChange();
+		CompositeChange ret = new CompositeChange("Introducing component alias \""+info.getNewName()+"\" for component \""+info.getOldName()+"\".");
 		createConfigurationImplementationLocalChange(ret);
 		return ret;
 	}

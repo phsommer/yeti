@@ -63,6 +63,11 @@ public enum Refactoring {
 			"function",
 			new tinyos.yeti.refactoring.entities.function.extract.AvailabilityTester()),
 			
+	INTRODUCE_COMPONENT_ALIAS(
+			"introduceComponentAlias",
+			"component alias",
+			new tinyos.yeti.refactoring.entities.component.alias.introduce.AvailabilityTester()),
+			
 	NO_REFACTORING_AVAILABLE(
 			"NoRefactoringAvailable",
 			"none",
