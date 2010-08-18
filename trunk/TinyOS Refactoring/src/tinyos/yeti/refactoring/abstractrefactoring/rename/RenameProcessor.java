@@ -366,7 +366,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * This is needed since aliases in event/command definitions and so on and the real entity names often reference the original entity.
 	 * @param identifiers
 	 */
-	protected List<Identifier> throwAwayDifferentNames(List<Identifier> identifiers,String wishedName) {
+	protected List<Identifier> throwAwayDifferentNames(Collection<Identifier> identifiers,String wishedName) {
 		List<Identifier> result=new LinkedList<Identifier>();
 		for(Identifier identifier:identifiers){
 			if(wishedName.equals(identifier.getName())){
@@ -383,7 +383,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @return
 	 */
 	protected CompositeChange createNewCompositeChange(){
-		return new CompositeChange("Rename "+getProcessorName()+ info.getOldName() + " to " + info.getNewName());
+		return new CompositeChange("Rename "+getProcessorName()+" \""+info.getOldName() + "\" to \"" + info.getNewName()+"\".");
 	}
 	
 	/**
@@ -393,7 +393,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @return
 	 */
 	protected String createTextChangeName(IFile file){
-		return "Replacing "+getProcessorName()+" name " + info.getOldName()+ " with " + info.getNewName() + " in Document " + file;
+		return "Replacing "+getProcessorName()+" name \"" + info.getOldName()+ "\" with \"" + info.getNewName() + "\" in Document \"" + file+"\".";
 	}
 
 	/**
