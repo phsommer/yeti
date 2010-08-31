@@ -69,6 +69,15 @@ public class Info extends RefactoringInfo{
 		return new LinkedList<Statement>(ret);
 	}
 	
+	public boolean isVaidSelection(){
+		try{
+			getStatementsToExtract();
+		}catch (IllegalStateException e) {
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Give the Position just before the fist selected Statement.
 	 */
