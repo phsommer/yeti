@@ -1,5 +1,6 @@
 package tinyos.yeti.refactoring.entities.function.extract;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class Info extends RefactoringInfo{
 		LinkedList<Statement> ret = new LinkedList<Statement>();
 
 		CompoundStatement compSt = getAstPositioning().getDeepedstSuperCompoundSuperstatement(begin);
+		if(compSt == null){
+			return Collections.emptyList();
+		}
 
 		for (int i = 0; i < compSt.getChildrenCount()
 				&& util.end(compSt.getChild(i)) <= end; i++) {
