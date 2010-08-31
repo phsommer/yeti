@@ -154,10 +154,12 @@ public class Processor extends RenameProcessor {
 			InitDeclarator declarator=getAstUtil().getParentForName(definingIdentifier, InitDeclarator.class);
 			paths.add(declarator.resolveField().getPath());
 			for(IFile file:getAllFiles()){
-				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
-				identifiers=filterFunctionReferences(identifiers);
-				if(identifiers.size()>0){
-					addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName(file), ret);
+				if(!file.equals(declaringFile)){
+					identifiers=getReferencingIdentifiersInFileForTargetPathsUseHoleRange(file, paths, pm);
+					identifiers=filterFunctionReferences(identifiers);
+					if(identifiers.size()>0){
+						addMultiTextEdit(identifiers, getAst(file, pm), file, createTextChangeName(file), ret);
+					}
 				}
 			}
 			

@@ -30,7 +30,6 @@ import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.entities.interfaces.rename.InterfaceSelectionIdentifier;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
@@ -216,10 +215,6 @@ public class Processor extends RenameProcessor {
 		CompositeChange ret = createNewCompositeChange();
 		
 		try {
-			for(IFile file:files2Identifiers.keySet()){
-				DebugUtil.immediatePrint("file "+file.getName());
-				DebugUtil.immediatePrint("identifiers: "+files2Identifiers.get(file).size());
-			}
 			addChanges(files2Identifiers, ret, pm);
 		} catch (Exception e){
 			ret.add(new NullChange("Exception Occured! See project log for more information."));

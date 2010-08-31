@@ -35,7 +35,6 @@ import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.entities.field.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 /**
@@ -280,8 +279,6 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 */
 	protected List<Identifier> getReferencingIdentifiersInFileForTargetPaths(IFile file,Collection<IASTModelPath> tartgetPaths, IProgressMonitor monitor)
 	throws MissingNatureException, IOException, CoreException {
-		DebugUtil.immediatePrint("File "+file.getName());
-		DebugUtil.immediatePrint("Path: "+tartgetPaths.iterator().next().toString());
 		//Gather all sources which reference this paths
 		IASTModelPath candidatePath;
 		IASTReference[] referenceArray = getReferences(file,monitor);
@@ -289,13 +286,11 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		for (IASTReference ref : referenceArray) {
 			candidatePath=ref.getTarget();
 			if(candidatePath!=null){
-				DebugUtil.immediatePrint("\t"+candidatePath.toString());
 				if (tartgetPaths.contains(candidatePath)) {
 					matchingSources.add(ref);
 				}
 			}
 		}
-		DebugUtil.immediatePrint("\tmatchingSources "+matchingSources.size());
 		//Find Identifiers which are part of the given Source.
 		IFileRegion region;
 		ASTPositioning positioning=new ASTPositioning(info.getProjectUtil().getAst(file,monitor));
@@ -308,7 +303,7 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 				identifiers.add(identifier);
 			}
 		}
-		return identifiers;
+		return removeDublicateInstances(identifiers);
 	}
 	
 	/** 
@@ -341,12 +336,32 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
 			ASTNode node=positioning.getDeepestAstNodeOverRange(region.getOffset(),region.getLength());
+			//TODO REMOVE
+//			DebugUtil.immediatePrint("\tnode: "+node.getClass().getName());
+//			DebugUtil.immediatePrint("\tregion: "+"\tLine:"+region.getLine()+"\tOffset:"+region.getOffset()+"\tLength:"+region.getLength());
 			ASTNode root=getAst(file, monitor).getRoot();
 			if(node!=root){	//If we have gotten the root node, then the range is probably out of the source file, i.e. in a include statement.
 				identifiers.addAll(getAstUtil().getAllNodesOfType(node, Identifier.class));
 			}
 		}
-		return identifiers;
+		
+		return removeDublicateInstances(identifiers);
+	}
+	/**
+	 * Sometimes Identifiers get included multiple times, since they are part of multiple references, in the Collection.
+	 * Returns a list which includes every appearing identifier instance of the given set only once.
+	 * @param identifiers
+	 * @return
+	 */
+	private List<Identifier> removeDublicateInstances(Collection<Identifier> identifiers){
+		ASTUtil astUtil=getAstUtil();
+		List<Identifier> nonDublicates=new LinkedList<Identifier>();
+		for(Identifier identifier:identifiers){
+			if(!astUtil.containsIdentifierInstance(identifier, nonDublicates)){
+				nonDublicates.add(identifier);
+			}
+		}
+		return nonDublicates;
 	}
 	
 	/**
