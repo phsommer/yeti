@@ -581,13 +581,15 @@ public class Processor extends RefactoringProcessor {
 		func.append(info.getFunctionName());
 		func.append("(");
 		LinkedList<String> params = new LinkedList<String>();
+		
 		for (String var : outputParameter) {
-			params.add(getVariableType(var) + " *" + var);
+			params.add(getParameterDeclaration(var,true));
 		}
 
 		for (String var : inputParameter) {
-			params.add(getVariableType(var) + " " + var);
+			params.add(getParameterDeclaration(var,false));
 		}
+		
 		func.append(StringUtil.joinString(params, ", "));
 		func.append(")\n{"+getNewLine());
 		func.append(getFunctionBody(outputParameter, inputParameter));
@@ -684,8 +686,9 @@ public class Processor extends RefactoringProcessor {
 		return ret;
 	}
 
-	private String getVariableType(String var) throws CoreException,
+	private String getParameterDeclaration(String var,boolean outputParameter) throws CoreException,
 			MissingNatureException, IOException {
+		StringBuffer ret = new StringBuffer();
 		VariableDeclaration dec = findDeclaration(var, info.getStatementsToExtract()
 				.iterator().next());
 		if (dec == null) {
@@ -693,7 +696,14 @@ public class Processor extends RefactoringProcessor {
 					RefactoringPlugin.PLUGIN_ID,
 					"Could not determine the Type of Variable " + var));
 		}
-		return dec.getType();
+		ret.append(dec.getType());
+		ret.append(" ");
+		if(outputParameter){
+			ret.append("*");
+		}
+		ret.append(dec.getPointerName(var));
+		
+		return ret.toString();
 	}
 
 	/**
