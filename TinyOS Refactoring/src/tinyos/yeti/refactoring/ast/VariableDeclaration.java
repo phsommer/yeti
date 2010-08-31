@@ -1,6 +1,7 @@
-package tinyos.yeti.refactoring.entities.function.extract;
+package tinyos.yeti.refactoring.ast;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.declaration.ParameterDeclaration;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Pointer;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.PointerDeclarator;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
+import tinyos.yeti.refactoring.RefactoringInfo;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.StringUtil;
 
@@ -28,15 +30,15 @@ import tinyos.yeti.refactoring.utilities.StringUtil;
 public class VariableDeclaration {
 	ParameterDeclaration pd = null;
 	Declaration d = null;
-	Info info;
+	RefactoringInfo info;
 	ASTUtil astUtil = new ASTUtil();
 
-	public VariableDeclaration(ParameterDeclaration pd, Info info) {
+	public VariableDeclaration(ParameterDeclaration pd, RefactoringInfo info) {
 		this.pd = pd;
 		this.info = info;
 	}
 
-	public VariableDeclaration(Declaration d, Info info) {
+	public VariableDeclaration(Declaration d, RefactoringInfo info) {
 		this.d = d;
 		this.info = info;
 	}
@@ -234,7 +236,7 @@ public class VariableDeclaration {
 	 * @throws IllegalArgumentException
 	 *             if the AST node is not a Variable declaration
 	 */
-	public static VariableDeclaration factory(ASTNode node, Info info) {
+	public static VariableDeclaration factory(ASTNode node, RefactoringInfo info) {
 		if (isDeclarationP(node)) {
 			return new VariableDeclaration((Declaration) node, info);
 		} else if (isParameterDeclaration(node)) {
@@ -243,5 +245,16 @@ public class VariableDeclaration {
 			throw new IllegalArgumentException(
 					"VariableDeclaration Object can only be created using ASTNodes that declare a Variable.");
 		}
+	}
+	
+	public static <T extends Collection<? extends ASTNode>> Set<VariableDeclaration> getTopLevelDeclarations(T statements, RefactoringInfo info) {
+		Set<VariableDeclaration> declarations = new HashSet<VariableDeclaration>();
+		for (ASTNode s : statements) {
+			if (VariableDeclaration.isDeclaration(s)) {
+				VariableDeclaration dec = VariableDeclaration.factory(s, info);
+				declarations.add(dec);
+			}
+		}
+		return declarations;
 	}
 }
