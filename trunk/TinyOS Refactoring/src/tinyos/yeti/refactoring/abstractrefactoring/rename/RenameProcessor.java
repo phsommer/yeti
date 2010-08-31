@@ -35,6 +35,7 @@ import tinyos.yeti.preprocessor.RangeDescription;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.entities.field.rename.global.FieldInfo;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
 import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 /**
@@ -265,8 +266,10 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		return astUtil.getASTLeafAtPos(targetRegion.getOffset(),targetRegion.getLength(),Identifier.class);
 	}
 	
+	
 	/**
 	 * Returns the identifiers which are part of a reference which points to one of the given paths.
+	 * Use this function if you know, that a source of a reference only contains a single identifier.
 	 * @param file	The file in which we are looking for referencing sources.
 	 * @param tartgetPaths	 The paths for which we search referencing sources. If a paths target is not inside the project it will not be used to search for references.
 	 * @param monitor
@@ -276,6 +279,46 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 	 * @throws CoreException 
 	 */
 	protected List<Identifier> getReferencingIdentifiersInFileForTargetPaths(IFile file,Collection<IASTModelPath> tartgetPaths, IProgressMonitor monitor)
+	throws MissingNatureException, IOException, CoreException {
+		DebugUtil.immediatePrint("File "+file.getName());
+		DebugUtil.immediatePrint("Path: "+tartgetPaths.iterator().next().toString());
+		//Gather all sources which reference this paths
+		IASTModelPath candidatePath;
+		IASTReference[] referenceArray = getReferences(file,monitor);
+		List<IASTReference> matchingSources=new LinkedList<IASTReference>();
+		for (IASTReference ref : referenceArray) {
+			candidatePath=ref.getTarget();
+			if(candidatePath!=null){
+				DebugUtil.immediatePrint("\t"+candidatePath.toString());
+				if (tartgetPaths.contains(candidatePath)) {
+					matchingSources.add(ref);
+				}
+			}
+		}
+		DebugUtil.immediatePrint("\tmatchingSources "+matchingSources.size());
+		//Find Identifiers which are part of the given Source.
+		IFileRegion region;
+		ASTPositioning positioning=new ASTPositioning(info.getProjectUtil().getAst(file,monitor));
+		List<Identifier> identifiers=new LinkedList<Identifier>();
+		for(IASTReference reference:matchingSources){
+			region=reference.getSource();
+			ASTNode node=positioning.getASTLeafAtPos(region.getOffset(),region.getLength());
+			Identifier identifier=(Identifier)node;
+			if(identifier!=null){	
+				identifiers.add(identifier);
+			}
+		}
+		return identifiers;
+	}
+	
+	/** 
+	 * Same as getReferencingIdentifiersInFileForTargetPaths but fore the sources of the reference, to get its identifier the hole source range is used instead of just the start value.
+	 * This means that there can actually be added more than one identifier per reference. I.E. an interface reference can also contain an interface alias besides the interface name itself.
+	 * Therefore you have to filter out the Identifiers you really are interested in after calling this method.
+	 * This is needed because there exist reference sources, which actually include much more than just one identifier and so the identifier we are looking for, is not clearly defined.
+	 * I.E. a interface reference in a component specification is a source which can include the interface identifier itself and an interface alias.
+	 */
+	protected List<Identifier> getReferencingIdentifiersInFileForTargetPathsUseHoleRange(IFile file,Collection<IASTModelPath> tartgetPaths, IProgressMonitor monitor)
 	throws MissingNatureException, IOException, CoreException {
 		
 		//Gather all sources which reference this path
@@ -297,10 +340,10 @@ public abstract class RenameProcessor extends org.eclipse.ltk.core.refactoring.p
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		for(IASTReference reference:matchingSources){
 			region=reference.getSource();
-			ASTNode node=positioning.getASTLeafAtPos(region.getOffset(),region.getLength());
-			Identifier identifier=(Identifier)node;
-			if(identifier!=null){	
-				identifiers.add(identifier);
+			ASTNode node=positioning.getDeepestAstNodeOverRange(region.getOffset(),region.getLength());
+			ASTNode root=getAst(file, monitor).getRoot();
+			if(node!=root){	//If we have gotten the root node, then the range is probably out of the source file, i.e. in a include statement.
+				identifiers.addAll(getAstUtil().getAllNodesOfType(node, Identifier.class));
 			}
 		}
 		return identifiers;

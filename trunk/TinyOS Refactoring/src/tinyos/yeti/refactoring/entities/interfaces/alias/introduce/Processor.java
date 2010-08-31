@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +32,8 @@ import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameInfo;
 import tinyos.yeti.refactoring.abstractrefactoring.rename.RenameProcessor;
 import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
-import tinyos.yeti.refactoring.ast.ModuleAstAnalyzer;
 import tinyos.yeti.refactoring.entities.interfaces.rename.InterfaceSelectionIdentifier;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -125,12 +122,9 @@ public class Processor extends RenameProcessor {
 						ConfigurationAstAnalyzer configurationAnalyzer=factory.getConfigurationAnalyzer(); 
 						identifiers=configurationAnalyzer.getWiringInterfacePartIdentifiers();
 						Identifier component=configurationAnalyzer.getEntityIdentifier();
-						DebugUtil.immediatePrint("identifiers: "+identifiers.size());
 						for(Identifier id:identifiers){
 							if(id.getName().equals(interfaceName)){
-								DebugUtil.immediatePrint("same Name: ");
 								if(component==configurationAnalyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(id)){
-									DebugUtil.immediatePrint("same Instance: ");
 									identifiers2Change.add(id);
 								}
 							}

@@ -105,6 +105,17 @@ public class ASTPositioning {
 	 * @return The AST Node spaning over the Position. If no vaild Position is given, the Root node is returned.
 	 */
 	public ASTNode getDeepestAstNodeAtPos(int pos){
+		return getDeepestAstNodeOverRange(pos,0);
+	}
+	
+	/**
+	 * Retruns the deepest AST node which spans over the given range. 
+	 * @param pos
+	 * @return The AST Node spaning over the range. If no valid Position is given, the Root node is returned.
+	 */
+	public ASTNode getDeepestAstNodeOverRange(int offset,int length){
+		int start=offset;
+		int end=start+length;
 		ASTNode root = ast.getRoot();
 		boolean foundChild=true;
 		while(root.getChildrenCount() > 0 && foundChild){
@@ -114,7 +125,7 @@ public class ASTPositioning {
 				
 				// It happened to us that we got null values
 				if(child!=null){
-					if(end(child) >= pos && start(child) <= pos){
+					if(end(child) >= end && start(child) <= start){
 						foundChild=true;
 						root=root.getChild(i);
 					}

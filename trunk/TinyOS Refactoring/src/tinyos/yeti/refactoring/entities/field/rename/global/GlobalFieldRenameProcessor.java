@@ -72,6 +72,14 @@ public class GlobalFieldRenameProcessor extends RenameProcessor {
 				Collection<Identifier> referencesOfFile=getReferencingIdentifiersInFileForTargetPaths(file,paths,pm);
 				identifiers.addAll(referencesOfFile);
 				if(identifiers.size()>0){
+//					AstAnalyzerFactory factory=new AstAnalyzerFactory(identifiers.iterator().next());
+//					List<Identifier> toRename=new LinkedList<Identifier>();
+//					for(Identifier identifier:identifiers){
+//						GlobalFieldSelectionIdentifier selection=new GlobalFieldSelectionIdentifier(identifier,factory);
+//						if(selection.isGlobalField()){
+//							toRename.add(identifier);
+//						}
+//					}
 					file2Identifiers.put(file, identifiers);
 				}
 			}

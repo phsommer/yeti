@@ -130,7 +130,6 @@ public class RenameInputPage extends UserInputWizardPage {
 			String newName=newNameTextField.getText();
 	        if(foundButtons){
 	        	boolean validInput=validation.isCName(newName);
-	        	System.err.println("valid? "+validInput);
 	        	okButton.setEnabled(validInput);
 	        	previewButton.setEnabled(validInput);
 	        	if(validInput){

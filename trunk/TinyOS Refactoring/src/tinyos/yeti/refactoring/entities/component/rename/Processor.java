@@ -56,7 +56,7 @@ public class Processor extends RenameProcessor {
 	private boolean findComponentDefinition(RefactoringStatus ret) throws CoreException,MissingNatureException {
 		Identifier selectedIdentifier=getSelectedIdentifier();
 		ComponentSelectionIdentifier selectionIdentifier=new ComponentSelectionIdentifier(selectedIdentifier);
-		if (!selectionIdentifier.isComponent(selectedIdentifier)) {
+		if (!selectionIdentifier.isComponent()) {
 			ret.addFatalError("No Component selected.");
 			return false;
 		}
@@ -93,10 +93,18 @@ public class Processor extends RenameProcessor {
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		paths.add(componentDefinition.getPath());
 		for(IFile file:getAllFiles()){
-			identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+			identifiers=getReferencingIdentifiersInFileForTargetPathsUseHoleRange(file, paths, pm);
 			identifiers=throwAwayDifferentNames(identifiers,declaringIdentifier.getName());
 			if(identifiers.size()>0){
-				files2Identifiers.put(file,identifiers);
+				AstAnalyzerFactory factory=new AstAnalyzerFactory(identifiers.get(0));
+				List<Identifier> toRename=new LinkedList<Identifier>();
+				for(Identifier identifier:identifiers){
+					ComponentSelectionIdentifier selection=new ComponentSelectionIdentifier(identifier,factory);
+					if(selection.isComponent()){
+						toRename.add(identifier);
+					}
+				}
+				files2Identifiers.put(file,toRename);
 			}
 		}
 		return files2Identifiers;

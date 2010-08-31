@@ -162,15 +162,6 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 	}
 	
 	/**
-	 * Checks if the given identifier is an Alias for a interface in a NesC component wiring in the implementation of a NesC Configuration implementation.
-	 * @param identifier
-	 * @return
-	 */
-	public boolean isInterfaceAliasInNescComponentWiring(ProjectUtil util, IProgressMonitor monitor){
-		return getDefinitionOfInterfaceAliasInNescComponentWiring(util, monitor)!=null;
-	}
-	
-	/**
 	 * Checks if the given identifier is an alias for a interface in a NesC function call.
 	 * @return
 	 */
@@ -182,6 +173,15 @@ public class InterfaceSelectionIdentifier extends SelectionIdentifier{
 			return false;
 		}
 		return moduleAnalyzer.getAliasIdentifier4InterfaceAliasName(identifier.getName())!=null;
+	}
+	
+	/**
+	 * Checks if the given identifier is an Alias for a interface in a NesC component wiring in the implementation of a NesC Configuration implementation.
+	 * @param identifier
+	 * @return
+	 */
+	public boolean isInterfaceAliasInNescComponentWiring(ProjectUtil util, IProgressMonitor monitor){
+		return getDefinitionOfInterfaceAliasInNescComponentWiring(util, monitor)!=null;
 	}
 	
 	/**
