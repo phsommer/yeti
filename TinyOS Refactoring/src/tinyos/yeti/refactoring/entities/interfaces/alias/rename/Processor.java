@@ -124,9 +124,6 @@ public class Processor extends RenameProcessor {
 		String aliasName=getSelectedIdentifier().getName();
 		ComponentAstAnalyzer componentAnalyzer=factory4DefiningAst.getComponentAnalyzer();
 
-		//Get the Identifier in the defining component which stands for the alias in the alias definition.
-		Identifier aliasDefinition=componentAnalyzer.getAliasIdentifier4InterfaceAliasName(aliasName);
-		
 		//Get the interface definition of the interface which is aliased.
 		//Get all references to it and filter out the one which are aliases.
 		//For those add changes.
