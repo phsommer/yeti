@@ -76,11 +76,15 @@ public class Processor extends RefactoringProcessor {
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		int begin = info.getSelectionBegin();
-		int end = info.getSelectionEnd();
-		if (!isInSameCompoundStatement(begin, end)) {
-			status
-					.addFatalError("Begin and End of your Selection have to be within the same Block to allow the Extract Function Refactoring");
+		if (info.isVaidSelection()) {
+			int begin = info.getSelectionBegin();
+			int end = info.getSelectionEnd();
+			if (!isInSameCompoundStatement(begin, end)) {
+				status
+						.addFatalError("Begin and End of your Selection have to be within the same Block to allow the Extract Function Refactoring");
+			}
+		} else {
+			status.addFatalError("The selected Code is not extractable.");
 		}
 
 		return status;
@@ -119,10 +123,6 @@ public class Processor extends RefactoringProcessor {
 		return containingBegin != null && containingBegin.equals(containingEnd);
 	}
 
-
-
-	
-
 	/**
 	 * Returns a list of names of local Variables which get modified within the
 	 * Area to extract, but are also read afterwards. Each Variable in that
@@ -141,10 +141,13 @@ public class Processor extends RefactoringProcessor {
 		CompoundStatement cs = astPos
 				.getDeepedstSuperCompoundSuperstatement(info
 						.getSelectionBegin());
-		CompoundStatementAnalyzer csa = new CompoundStatementAnalyzer(cs,info);
-		Statement lastStatementToExtract = (new LinkedList<Statement>(info.getStatementsToExtract())).getLast();
-		Set<String> varibalesReadAfterAreaToExtract = csa.getReadLocalVariablesAfter(
-				Collections.unmodifiableSet(changedVariablesInAreaToExtract),lastStatementToExtract);
+		CompoundStatementAnalyzer csa = new CompoundStatementAnalyzer(cs, info);
+		Statement lastStatementToExtract = (new LinkedList<Statement>(info
+				.getStatementsToExtract())).getLast();
+		Set<String> varibalesReadAfterAreaToExtract = csa
+				.getReadLocalVariablesAfter(Collections
+						.unmodifiableSet(changedVariablesInAreaToExtract),
+						lastStatementToExtract);
 
 		// Return Variables that are modified in the area to extract, but also
 		// read afterwords
@@ -229,7 +232,8 @@ public class Processor extends RefactoringProcessor {
 			MissingNatureException, IOException {
 		StringBuffer ret = new StringBuffer();
 		Set<String> outputParameter = getOutputParameters();
-		Set<String> localyUnused = partToExtractAlalyzer.getInternalyUnusedDeclarations();
+		Set<String> localyUnused = partToExtractAlalyzer
+				.getInternalyUnusedDeclarations();
 		Set<String> potentialyExtractedDeclarations = new HashSet<String>();
 		potentialyExtractedDeclarations.addAll(outputParameter);
 		potentialyExtractedDeclarations.addAll(localyUnused);
@@ -246,7 +250,6 @@ public class Processor extends RefactoringProcessor {
 		}
 		return ret.toString();
 	}
-
 
 	private String getFunctionCall() {
 		StringBuffer ret = new StringBuffer();
@@ -341,7 +344,8 @@ public class Processor extends RefactoringProcessor {
 						.getVariableNames());
 				varNamesToKeep.removeAll(outputParameter);
 				varNamesToKeep.removeAll(inputParameter);
-				varNamesToKeep.removeAll(partToExtractAlalyzer.getInternalyUnusedDeclarations());
+				varNamesToKeep.removeAll(partToExtractAlalyzer
+						.getInternalyUnusedDeclarations());
 				funcBody.append(dec.getPartialDeclaration(varNamesToKeep));
 			} else {
 				funcBody.append(replaceOutputParameter(statement,
