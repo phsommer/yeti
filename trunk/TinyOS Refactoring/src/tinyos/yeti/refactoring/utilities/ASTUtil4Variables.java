@@ -2,8 +2,11 @@ package tinyos.yeti.refactoring.utilities;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 import tinyos.yeti.nesc12.parser.ast.nodes.ASTNode;
 import tinyos.yeti.nesc12.parser.ast.nodes.declaration.Declaration;
@@ -14,6 +17,11 @@ import tinyos.yeti.nesc12.parser.ast.nodes.definition.FunctionDefinition;
 import tinyos.yeti.nesc12.parser.ast.nodes.general.Identifier;
 import tinyos.yeti.nesc12.parser.ast.nodes.nesc.NesCExternalDefinitionList;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.ForStatement;
+import tinyos.yeti.nesc12.parser.ast.nodes.statement.Statement;
+import tinyos.yeti.refactoring.RefactoringInfo;
+import tinyos.yeti.refactoring.ast.CompoundStatementAnalyzer;
+import tinyos.yeti.refactoring.ast.VariableDeclaration;
 import tinyos.yeti.refactoring.entities.functionparameter.rename.FunctionParameterSelectionIdentifier;
 
 public class ASTUtil4Variables {
@@ -273,4 +281,83 @@ public class ASTUtil4Variables {
 		return (InitDeclarator)id.getParent().getParent();
 		
 	}
+	
+
+	
+	public Set<String> getNames(Set<Identifier> ids) {
+		Set<String> names = new HashSet<String>();
+		for (Identifier id : ids) {
+			names.add(id.getName());
+		}
+		return names;
+	}
+	
+	public Set<Identifier> exploreVariableNamespace(ASTNode node,
+			Filter<Identifier> test, RefactoringInfo info) {
+		return exploreVariableNamespace_sub(node, test, new HashSet<String>(),info);
+	}
+
+	public Set<Identifier> exploreVariableNamespace(
+			Collection<Statement> statements, Filter<Identifier> test, RefactoringInfo info) {
+
+		Set<Identifier> ret = new HashSet<Identifier>();
+
+		for (Statement statement : statements) {
+			ret.addAll(exploreVariableNamespace(statement, test, info));
+		}
+
+		return ret;
+	}
+
+	private Set<Identifier> exploreVariableNamespace_sub(ASTNode node,
+			Filter<Identifier> test, Set<String> shadowedVars,RefactoringInfo info) {
+		Queue<ASTNode> nodesToCheck = new LinkedList<ASTNode>();
+		nodesToCheck.add(node);
+		Set<Identifier> vars = new HashSet<Identifier>();
+		while (!nodesToCheck.isEmpty()) {
+			ASTNode child = nodesToCheck.poll();
+			if (child instanceof Identifier) {
+				Identifier id = (Identifier) child;
+				if (!shadowedVars.contains(id.getName()) && test.test(id)) {
+					vars.add(id);
+				}
+			} else if (child instanceof CompoundStatement
+					|| child instanceof ForStatement) {
+				// If Variable gets shadowed, it would be wrong to look for it.
+
+				Set<String> child_shadowedVars = new HashSet<String>();
+
+				if (child instanceof CompoundStatement) {
+					CompoundStatementAnalyzer child_cs = new CompoundStatementAnalyzer((CompoundStatement) child,info);
+					child_shadowedVars
+							.addAll(child_cs.getLocalyDefinedVariableNames());
+				}
+
+				if (child instanceof ForStatement) {
+					ForStatement child_for = (ForStatement) child;
+					LinkedList<ASTNode> childForContainer = new LinkedList<ASTNode>();
+					childForContainer.add(child_for.getInit());
+					Set<VariableDeclaration> vds = VariableDeclaration
+							.getTopLevelDeclarations(childForContainer, info);
+					for (VariableDeclaration vd : vds) {
+						child_shadowedVars.addAll(vd.getVariableNames());
+					}
+				}
+
+				child_shadowedVars.addAll(shadowedVars);
+				// if I would send the child_cs, it would result in a
+				// infinit loop
+				for (ASTNode c : astUtil.getChilds(child)) {
+					vars.addAll(exploreVariableNamespace_sub(c, test,
+							child_shadowedVars,info));
+				}
+			} else {
+				nodesToCheck.addAll(astUtil.getChilds(child));
+			}
+
+		}
+
+		return vars;
+	}
+
 }
