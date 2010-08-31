@@ -87,11 +87,20 @@ public class Processor extends RenameProcessor {
 		//Add Changes for referencing elements
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		paths.add(interfaceDeclaration.getPath());
+		ProjectUtil projectUtil=getProjectUtil();
 		for(IFile file:getAllFiles()){
-			identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+			identifiers=getReferencingIdentifiersInFileForTargetPathsUseHoleRange(file, paths, pm);
 			identifiers=throwAwayDifferentNames(identifiers,declaringIdentifier.getName());
 			if(identifiers.size()>0){
-				file2Identifiers.put(file,identifiers);
+				AstAnalyzerFactory factory=new AstAnalyzerFactory(identifiers.get(0));
+				List<Identifier> toRename=new LinkedList<Identifier>();
+				for(Identifier identifier:identifiers){
+					InterfaceSelectionIdentifier selection=new InterfaceSelectionIdentifier(identifier,factory);
+					if(selection.isInterface()&&!selection.isInterfaceAliasInNescComponentWiring(projectUtil,pm)){
+						toRename.add(identifier);
+					}
+				}
+				file2Identifiers.put(file,toRename);
 			}
 		}
 		return file2Identifiers;

@@ -30,6 +30,8 @@ import tinyos.yeti.refactoring.ast.AstAnalyzerFactory;
 import tinyos.yeti.refactoring.ast.ComponentAstAnalyzer;
 import tinyos.yeti.refactoring.ast.ConfigurationAstAnalyzer;
 import tinyos.yeti.refactoring.entities.interfaces.rename.InterfaceSelectionIdentifier;
+import tinyos.yeti.refactoring.utilities.DebugUtil;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -57,7 +59,8 @@ public class Processor extends RenameProcessor {
 	 * @param configurationAnalyzer
 	 * @return	Just identifiers which really are associated to the defining component.
 	 */
-	private List<Identifier> getIdentifiersReferencingComponent(List<Identifier> potentialReferences,ConfigurationAstAnalyzer configurationAnalyzer) {
+	private List<Identifier> getIdentifiersReferencingComponent(List<Identifier> potentialReferences,AstAnalyzerFactory factory) {
+		ConfigurationAstAnalyzer configurationAnalyzer=factory.getConfigurationAnalyzer();
 		Collection<String> referencedComponents=configurationAnalyzer.getNamesOfReferencedComponents();
 		if(!referencedComponents.contains(sourceComponentName)){
 			return Collections.emptyList();
@@ -66,11 +69,13 @@ public class Processor extends RenameProcessor {
 		List<Identifier> realReferences=new LinkedList<Identifier>();
 		for(Identifier candidate:potentialReferences){
 			Identifier associatedLocalComponentNameIdentifier=configurationAnalyzer.getAssociatedComponentIdentifier4InterfaceIdentifierInWiring(candidate);
-			String configurationName=configurationAnalyzer.getEntityName();
-			if(!configurationName.equals(associatedLocalComponentNameIdentifier.getName())){ //If the interface belongs to these configuration then it is for sure not associated to the alias defining component
-				Identifier associatedGlobalComponentNameIdentifier=localComponentName2GlobalComponentName.get(associatedLocalComponentNameIdentifier);	//We have to resolve aliases.
-				if(sourceComponentName.equals(associatedGlobalComponentNameIdentifier.getName())){
-					realReferences.add(candidate);
+			if(associatedLocalComponentNameIdentifier!=null){
+				String configurationName=configurationAnalyzer.getEntityName();
+				if(!configurationName.equals(associatedLocalComponentNameIdentifier.getName())){ //If the interface belongs to these configuration then it is for sure not associated to the alias defining component
+					Identifier associatedGlobalComponentNameIdentifier=localComponentName2GlobalComponentName.get(associatedLocalComponentNameIdentifier);	//We have to resolve aliases.
+					if(sourceComponentName.equals(associatedGlobalComponentNameIdentifier.getName())){
+						realReferences.add(candidate);
+					}
 				}
 			}
 		}
@@ -92,6 +97,18 @@ public class Processor extends RenameProcessor {
 			
 		}
 		return null;
+	}
+	
+	private List<Identifier> throwAwayNonAliases(Collection<Identifier> identifiers,AstAnalyzerFactory factory,IProgressMonitor pm){
+		ProjectUtil projectUtil=getProjectUtil();
+		List<Identifier> realAliases=new LinkedList<Identifier>();
+		for(Identifier identifier:identifiers){
+			InterfaceSelectionIdentifier selectionIdentifier=new InterfaceSelectionIdentifier(identifier,factory);
+			if(selectionIdentifier.isInterfaceAlias()||selectionIdentifier.isInterfaceAliasInNescComponentWiring(projectUtil, pm)){
+				realAliases.add(identifier);
+			}
+		}
+		return realAliases;
 	}
 
 	/**
@@ -122,9 +139,10 @@ public class Processor extends RenameProcessor {
 		for(IFile file:getAllFiles()){
 			
 			if(file.equals(declaringFile)){	//Add change for alias definition. This is the only NesC Component, which can be a module, which can have references to the interface definition, which belongs to the given alias.
-				identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
+				identifiers=getReferencingIdentifiersInFileForTargetPathsUseHoleRange(file, paths, pm);
 				identifiers=throwAwayDifferentNames(identifiers,aliasName);
-				identifiers.add(aliasDefinition);
+				AstAnalyzerFactory factory=new AstAnalyzerFactory(file,getProjectUtil(),pm);
+				identifiers=throwAwayNonAliases(identifiers, factory, pm);
 				files2Identifiers.put(file,identifiers);
 			}
 			else {	//All other references which are aliases to the interface in the given component have to be in a NesC Configuration
@@ -133,7 +151,7 @@ public class Processor extends RenameProcessor {
 				if(identifiers.size()>0){
 					AstAnalyzerFactory factory=new AstAnalyzerFactory(file,getProjectUtil(),pm);
 					if(factory.hasConfigurationAnalyzerCreated()){
-						identifiers=getIdentifiersReferencingComponent(identifiers,factory.getConfigurationAnalyzer());
+						identifiers=getIdentifiersReferencingComponent(identifiers,factory);
 						files2Identifiers.put(file,identifiers);
 					}
 				}
@@ -201,6 +219,10 @@ public class Processor extends RenameProcessor {
 		CompositeChange ret = createNewCompositeChange();
 		
 		try {
+			for(IFile file:files2Identifiers.keySet()){
+				DebugUtil.immediatePrint("file "+file.getName());
+				DebugUtil.immediatePrint("identifiers: "+files2Identifiers.get(file).size());
+			}
 			addChanges(files2Identifiers, ret, pm);
 		} catch (Exception e){
 			ret.add(new NullChange("Exception Occured! See project log for more information."));

@@ -43,7 +43,6 @@ import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Functions;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
-import tinyos.yeti.refactoring.utilities.DebugUtil;
 
 public class Processor extends RenameProcessor {
 	
@@ -107,7 +106,6 @@ public class Processor extends RenameProcessor {
 			Identifier interfaceReferenceLocalName=(Identifier)((NesCNameDeclarator)functionIdentifier.getParent()).getField(NesCNameDeclarator.INTERFACE);
 			interfaceReference=factory4FunctionIdentifier.getComponentAnalyzer().getInterfaceLocalName2InterfaceGlobalName().get(interfaceReferenceLocalName);
 		}
-		DebugUtil.immediatePrint("interface ref: "+interfaceReference.getName());
 		IDeclaration interfaceDeclaration = getProjectUtil().getInterfaceDefinition(interfaceReference.getName());
 		if(interfaceDeclaration==null){
 			ret.addFatalError("Did not find an Interface Definition, for selection!");
@@ -129,9 +127,9 @@ public class Processor extends RenameProcessor {
 		List<Identifier> identifiers=new LinkedList<Identifier>();
 		Collection<IASTModelPath> paths=new LinkedList<IASTModelPath>();
 		InitDeclarator declarator=getAstUtil().getParentForName(functionDefiningIdentifier, InitDeclarator.class);
-		paths.add(declarator.resolveField().getPath());
+		IASTModelPath declaringPath=declarator.resolveField().getPath();
+		paths.add(declaringPath);
 		for(IFile file:getAllFiles()){
-			DebugUtil.immediatePrint("File: "+file.getName());
 			identifiers=getReferencingIdentifiersInFileForTargetPaths(file, paths, pm);
 			if(identifiers.size()>0){
 				throwAwayDifferentNames(identifiers, functionDefiningIdentifier.getName());

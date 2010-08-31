@@ -21,7 +21,7 @@ public class ComponentSelectionIdentifier extends SelectionIdentifier {
 	 * @param identifier
 	 * @return
 	 */
-	public boolean isComponent(Identifier identifier){
+	public boolean isComponent(){
 		return isComponentDefinition()
 			||isComponentDeclaration()
 			||isComponentWiringComponentPartNotAliased();

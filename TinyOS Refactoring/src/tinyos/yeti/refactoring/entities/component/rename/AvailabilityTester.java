@@ -8,7 +8,7 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
 		ComponentSelectionIdentifier selectionIdentifier=new ComponentSelectionIdentifier(selectedIdentifier);
-		return selectionIdentifier.isComponent(selectedIdentifier);
+		return selectionIdentifier.isComponent();
 	}
 	
 
