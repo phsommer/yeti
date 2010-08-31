@@ -265,7 +265,7 @@ public class ASTUtil {
 	}
 	
 	/**
-	 * Returns the first identifier of the collection whichs name mathces the given name.
+	 * Returns the first identifier of the collection whichs name matches the given name.
 	 * Returns null if there was no identifier with the given name.
 	 */
 	public Identifier getIdentifierWithEqualName(String name, Collection<Identifier> identifiers) {
