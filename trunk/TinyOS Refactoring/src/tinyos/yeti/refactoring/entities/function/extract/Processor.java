@@ -119,69 +119,9 @@ public class Processor extends RefactoringProcessor {
 		return containingBegin != null && containingBegin.equals(containingEnd);
 	}
 
-	private Set<String> getReadLocalVariablesAfterArea2Extract(
-			Set<String> namesToCheck, CompoundStatement cs) {
-		// Which names to check are defined in this cs => only occurrences of
-		// those within cs after end are interesting
-		namesToCheck = new HashSet<String>(namesToCheck);
-		CompoundStatementAnalyzer csa = new CompoundStatementAnalyzer(cs, info);
-		Set<String> localyDefined = csa.getLocalyDefinedVariableNames();
-		Set<String> ret = getLocalyReadAfterEnd(cs, namesToCheck);
-		namesToCheck.removeAll(localyDefined);
-		namesToCheck.remove(ret);
 
-		if (!csa.isHighestLocalScope() && namesToCheck.size() > 0) {
-			ret.addAll(getReadLocalVariablesAfterArea2Extract(namesToCheck,
-					(CompoundStatement) astUtil.getParentForName(cs,
-							CompoundStatement.class)));
-		}
 
-		return ret;
-	}
-
-	private Set<String> getLocalyReadAfterEnd(CompoundStatement cs,
-			final Set<String> namesToCheck) {
-
-		CompoundStatementAnalyzer csa = new CompoundStatementAnalyzer(cs, info);
-		Collection<Statement> childs = new LinkedList<Statement>();
-		for (ASTNode c : astUtil.getChilds(cs)) {
-			// Childs of CompoundStatement are always Statements
-			childs.add((Statement) c);
-		}
-
-		// For Loops, commands before the selection might be executed after the
-		// selection was executed.
-		// Thats why we also look at commands before the Selection.
-		// if it's not a loop, the commands before and in the Selection get
-		// deleted.
-		if (!csa.isLoop()) {
-			LinkedList<ASTNode> toDel = new LinkedList<ASTNode>();
-			for (ASTNode child : childs) {
-				if (astPos.start(child) < info.getSelectionEnd()) {
-					toDel.add(child);
-				}
-			}
-			childs.removeAll(toDel);
-		}
-
-		// Find all identifiers. If they are local Variables and contain in the
-		// namesToCheck,
-		// Then they occure after the execution of the Area to Extract.
-		LinkedList<Statement> nodesToCheck = new LinkedList<Statement>();
-		nodesToCheck.addAll(childs);
-		// Set<String> readVars = new HashSet<String>();
-		Filter<Identifier> filter = new Filter<Identifier>() {
-			@Override
-			public boolean test(Identifier toTest) {
-				return varUtil.isLocalVariableOrFunctionParameter(toTest)
-						&& namesToCheck.contains(toTest.getName());
-			}
-		};
-
-		Set<Identifier> ids = varUtil.exploreVariableNamespace(nodesToCheck,
-				filter, info);
-		return varUtil.getNames(ids);
-	}
+	
 
 	/**
 	 * Returns a list of names of local Variables which get modified within the
@@ -201,9 +141,10 @@ public class Processor extends RefactoringProcessor {
 		CompoundStatement cs = astPos
 				.getDeepedstSuperCompoundSuperstatement(info
 						.getSelectionBegin());
-		Set<String> varibalesReadAfterAreaToExtract = getReadLocalVariablesAfterArea2Extract(
-				Collections.unmodifiableSet(changedVariablesInAreaToExtract),
-				cs);
+		CompoundStatementAnalyzer csa = new CompoundStatementAnalyzer(cs,info);
+		Statement lastStatementToExtract = (new LinkedList<Statement>(info.getStatementsToExtract())).getLast();
+		Set<String> varibalesReadAfterAreaToExtract = csa.getReadLocalVariablesAfter(
+				Collections.unmodifiableSet(changedVariablesInAreaToExtract),lastStatementToExtract);
 
 		// Return Variables that are modified in the area to extract, but also
 		// read afterwords
