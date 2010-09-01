@@ -11,18 +11,27 @@ public class AvailabilityTester extends PropertyTester {
 
 	@Override
 	public boolean test(Object receiver, String property, Object[] args,Object expectedValue) {
+		// We don't want the Refactoring Menu to come and go, so the "No Refactoring Available" will always stay
+		boolean isNotAvailableEntry = property.equals(Refactoring.NO_REFACTORING_AVAILABLE.getPropertyName());
+		
 		if(!isPluginReady()){
-			return false;
+			return isNotAvailableEntry;
 		}
 		
 		if(!(receiver instanceof ITextSelection)){
-			System.err.println("Falscher receiver Typ");
-			return false;
+			System.err.println("Wrong receiver Typ");
+			return isNotAvailableEntry;
 		}
 		ITextSelection selection = (ITextSelection) receiver;
 		
+		// The Update does'nt work when no selection is done.
+		// Thats way we force the User to do a real selection
+		if(selection.getLength() == 0){
+			return isNotAvailableEntry;
+		}
+		
 		//If there is no refactoring available show the dummy refactoring in the menu.
-		if(property.equals(Refactoring.NO_REFACTORING_AVAILABLE.getPropertyName())){
+		if(isNotAvailableEntry){
 			return !isRefactoringAvailable(selection);
 		}
 		
