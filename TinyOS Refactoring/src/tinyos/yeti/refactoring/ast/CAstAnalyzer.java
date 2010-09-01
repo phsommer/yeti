@@ -47,7 +47,7 @@ public class CAstAnalyzer extends AstAnalyzer {
 	protected Collection<ASTNode> unpackDeclarationsToSpecificDeclarations(Collection<Declaration> declarations){
 		Collection<ASTNode> specificDeclarations=new LinkedList<ASTNode>();
 		for(Declaration declaration:declarations){
-			InitDeclaratorList list=(InitDeclaratorList)declaration.getField(Declaration.INIT_LIST);
+			InitDeclaratorList list=declaration.getInitlist();
 			if(list!=null){
 				InitDeclarator initDec=astUtil.getFirstChildOfType(list, InitDeclarator.class);
 				if(initDec!=null){
