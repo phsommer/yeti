@@ -10,6 +10,7 @@ import tinyos.yeti.nesc12.parser.ast.nodes.statement.CompoundStatement;
 import tinyos.yeti.nesc12.parser.ast.nodes.statement.Statement;
 import tinyos.yeti.refactoring.RefactoringInfo;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
+import tinyos.yeti.refactoring.ast.StatementListAnalyzer;
 
 public class Info extends RefactoringInfo{
 
@@ -67,6 +68,10 @@ public class Info extends RefactoringInfo{
 		
 		this.statementsToExtract = ret;
 		return new LinkedList<Statement>(ret);
+	}
+	
+	public StatementListAnalyzer getStatementsToExtractAnalyzer(){
+		return new StatementListAnalyzer(getStatementsToExtract(), this);
 	}
 	
 	public boolean isVaidSelection(){

@@ -39,7 +39,6 @@ import tinyos.yeti.nesc12.parser.ast.nodes.statement.Statement;
 import tinyos.yeti.refactoring.RefactoringPlugin;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.ast.CompoundStatementAnalyzer;
-import tinyos.yeti.refactoring.ast.StatementListAnalyzer;
 import tinyos.yeti.refactoring.ast.VariableDeclaration;
 import tinyos.yeti.refactoring.utilities.ASTUtil;
 import tinyos.yeti.refactoring.utilities.ASTUtil4Variables;
@@ -53,15 +52,13 @@ public class Processor extends RefactoringProcessor {
 	private ASTUtil astUtil;
 	private ASTUtil4Variables varUtil;
 	private ASTPositioning astPos;
-	private StatementListAnalyzer partToExtractAlalyzer;
+
 
 	public Processor(Info info) {
 		this.info = info;
 		this.astUtil = new ASTUtil();
 		this.varUtil = new ASTUtil4Variables(astUtil);
 		this.astPos = new ASTPositioning(info.getAst());
-		partToExtractAlalyzer = new StatementListAnalyzer(info
-				.getStatementsToExtract(), info);
 	}
 
 	@Override
@@ -134,7 +131,7 @@ public class Processor extends RefactoringProcessor {
 	 */
 	private Set<String> getOutputParameters() {
 		// check the Area to extract for write operations on those variables
-		Set<String> changedVariablesInAreaToExtract = partToExtractAlalyzer
+		Set<String> changedVariablesInAreaToExtract = info.getStatementsToExtractAnalyzer()
 				.getPotentionalyChangedLocalVariables();
 
 		// Get all Identifiers used after the Area to extract.
@@ -232,13 +229,12 @@ public class Processor extends RefactoringProcessor {
 			MissingNatureException, IOException {
 		StringBuffer ret = new StringBuffer();
 		Set<String> outputParameter = getOutputParameters();
-		Set<String> localyUnused = partToExtractAlalyzer
+		Set<String> localyUnused = info.getStatementsToExtractAnalyzer()
 				.getInternalyUnusedDeclarations();
 		Set<String> potentialyExtractedDeclarations = new HashSet<String>();
 		potentialyExtractedDeclarations.addAll(outputParameter);
 		potentialyExtractedDeclarations.addAll(localyUnused);
-		Collection<VariableDeclaration> variableDeclarations = partToExtractAlalyzer
-				.getTopLevelDeclarations();
+		Collection<VariableDeclaration> variableDeclarations = info.getStatementsToExtractAnalyzer().getTopLevelDeclarations();
 		for (VariableDeclaration dec : variableDeclarations) {
 			String partialDeclaration = dec
 					.getPartialDeclaration(potentialyExtractedDeclarations);
@@ -344,7 +340,7 @@ public class Processor extends RefactoringProcessor {
 						.getVariableNames());
 				varNamesToKeep.removeAll(outputParameter);
 				varNamesToKeep.removeAll(inputParameter);
-				varNamesToKeep.removeAll(partToExtractAlalyzer
+				varNamesToKeep.removeAll(info.getStatementsToExtractAnalyzer()
 						.getInternalyUnusedDeclarations());
 				funcBody.append(dec.getPartialDeclaration(varNamesToKeep));
 			} else {
@@ -492,9 +488,9 @@ public class Processor extends RefactoringProcessor {
 
 		Set<String> ret = varUtil.getNames(varUtil.exploreVariableNamespace(
 				selectedStatements, filter, info));
-		ret.removeAll(partToExtractAlalyzer.getTopLevelDeclarations());
+		ret.removeAll(info.getStatementsToExtractAnalyzer().getTopLevelDeclarations());
 		ret.removeAll(getOutputParameters());
-		ret.removeAll(partToExtractAlalyzer.getInternalyUnusedDeclarations());
+		ret.removeAll(info.getStatementsToExtractAnalyzer().getInternalyUnusedDeclarations());
 		return ret;
 	}
 
