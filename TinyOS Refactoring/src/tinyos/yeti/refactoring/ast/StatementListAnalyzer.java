@@ -117,9 +117,6 @@ public class StatementListAnalyzer extends AstAnalyzer {
 		// TODO seems to have problems with brakes
 		PostfixExpression pfe = (PostfixExpression) astUtil.getParentForName(
 				id, PostfixExpression.class);
-		System.out.println("Postfix Operator info: "+(hasChildOfType(pfe.getExpression(),
-						IdentifierExpression.class)?"idExp,":"")+ ((!hasChildOfType(pfe.getExpression(), UnaryOperator.class))?"noUnary,":"")+
-				 (isChildOf(pfe.getExpression(), id)?"isId":""));
 		if (pfe != null
 				&& hasChildOfType(pfe.getExpression(),
 						IdentifierExpression.class)
