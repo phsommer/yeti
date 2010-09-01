@@ -42,18 +42,19 @@ public class Info extends RefactoringInfo{
 		}
 		int begin = getOrigSelectionBegin();
 		int end = getOrigSelectionEnd();
-		ASTPositioning util = getAstPositioning();
+		ASTPositioning astPos = getAstPositioning();
 		LinkedList<Statement> ret = new LinkedList<Statement>();
 
-		CompoundStatement compSt = getAstPositioning().getDeepedstSuperCompoundSuperstatement(begin);
+		CompoundStatement compSt = astPos.getDeepedstSuperCompoundSuperstatement(begin);
 		if(compSt == null){
 			return Collections.emptyList();
 		}
 
 		for (int i = 0; i < compSt.getChildrenCount()
-				&& util.end(compSt.getChild(i)) <= end; i++) {
+				&& astPos.start(compSt.getChild(i)) < end; i++) {
 			ASTNode statement = compSt.getChild(i);
-			if (util.start(statement) >= begin) {
+			// If just a small part of the Statement is selected, the whole statement gets extracted.
+			if (astPos.end(statement) > begin) {
 				if (!(statement instanceof Statement)) {
 					throw new RuntimeException(
 							"Found a non Statement as Child of a Compound Statement. It was a "
