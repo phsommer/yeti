@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TinyOS_Refactoring
-Bundle-SymbolicName: TinyOS_Refactoring;singleton:=true
+Bundle-SymbolicName: tinyos.yeti.refactoring;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: tinyos.yeti.refactoring.RefactoringPlugin
 Require-Bundle: org.eclipse.ui,
