@@ -163,22 +163,37 @@
 		<handler
         	class="tinyos.yeti.refactoring.entities.notavailable.ActionHandler"
         	commandId="tinyos.yeti.refactoring.NoRefactoringAvailable">
+        	<enabledWhen>
+        		<not>
+        			<iterate ifEmpty="true">
+        				<test property="tinyos.yeti.refactoring.isAvailable.NoRefactoringAvailable" />
+        			</iterate>
+        		</not>
+        	</enabledWhen>
 		</handler>
 	</extension>
 
 	<!-- Shortcuts for the Refaactorings (Optional) -->
 	<extension
 		point="org.eclipse.ui.bindings">
-		<key
-			commandId="tinyos.yeti.refactoring.rename.local.variable"
-			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-			sequence="M1+M2+9"/>
-           	<!-- The M Keys in the sequence are Platform independent keys.
+		<!--
+           		One could also add a Shortcut, by adding the following Attribute
+           		to the <key>-Tag,
+           		for example: sequence="M1+M2+9"
+           		 
+           		The M Keys in the sequence are Platform independent keys.
 				On PCs they are mapped to:
                 M1 = Ctrl
                 M2 = Shift
                 M3 = Alt
-			-->
+                
+                The upper example would the the shortcut: Ctrl+Shift+9
+			
+		<key
+			commandId="tinyos.yeti.refactoring.rename.local.variable"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration" 
+			sequence="M1+M2+9" />
+        -->   	
 	</extension>
 
 	<!-- Menu Entrys (Main Menu & Popup Menu) -->
