@@ -16,10 +16,24 @@
 \begin{abstract}
 \end{abstract}
 
-\chapter{What is refactoring}
+\part{What is refactoring}
+\chapter{Definition of refactoring}
+Wikipedia gives us the following definition for code refactoring:
+``Code refactoring is the process of changing a computer program's source code without modifying its external functional behavior in order to improve some of the nonfunctional attributes of the software. 
+Advantages include improved code readability  and reduced complexity to improve the maintainability of the source code, as well as a more expressive internal architecture or object model to improve extensibility.''
+Since this document is about a refactoring facility for NesC, we are of course actually always referring to code refactoring, when we talk about refactoring.
 
-\chapter{Eclipse Plugins}
-\section{General Infos about writeing Plugins}
+\chapter{Why do we need refactoring}
+Reusability and maintainability are two terms, which are known to everybody, who ever heard something about software engineering. 
+A refactoring facility is a means for supporting those properties. I.e. if you want to reuse an existing function in a program in a second place,
+you might suddenly realise, that the name of the function actually not really matches its purpose and you consequently want to rename it to a more appropriate name.
+If you have a function rename refactoring at hand at this point, you simply have to select the refactoring, type in the name, press enter and you are done. 
+Without such a tool you had to replace the function name by hand at every position in the program, where it appears, possibly in different files.
+This example is also good for the cast, that refactoring supports maintainability, because a readable program is also a maintainable program. 
+And if the names of the different entities in a program match their purpose, the program is for sure more readable, then if they don't.
+
+\part{Eclipse Plugins}
+\chapter{General Infos about writeing Plugins}
 Eclipse is famous for it's plugin architecture. Everything in Eclipse is a Plugin. A Plugin is a JAR-File or a Folder in the plugins-Directory of the eclipse program folder.
 To be a plugin it takes at least three Files.
 \begin{itemize}
@@ -28,7 +42,7 @@ To be a plugin it takes at least three Files.
   \item plugin.class
 \end{itemize}
 
-\subsection{META-INF/MANIFEST.MF}
+\section{META-INF/MANIFEST.MF}
 The Manifest file is the first File that is read by Eclipse while loding the Plugin. It conatins all the Informations about what requirements 
 are needed to load the Plugin and how it can be loaded. I will now explain the most important entrys in the Manifest file.
 
@@ -65,14 +79,50 @@ th Bundle-Name is an Internaly used name for the OSGi Framework.
  \end{description}
 
 
-\section{Language Toolkit for Processor Based Refactoring}
+\chapter{Language Toolkit for Processor Based Refactoring}
 For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. 
 
-\section{Menu's with conditional visibility}
+\chapter{Menu's with conditional visibility}
 
 3x new method:
 getInternalyUnusedDeclarations
 isModifying(Identifier) checks if the Identifier is modified in the Codeblock
 getPotentionalyChangedVariables
+
+\part{The Refactoring Plugin Software}
+\chapter{From Plugin XML to Java Code}
+\section{How to decide the availability of a refactoring}
+After we have introduced the appropriate lines of XML in the {\it plugin.xml} for a specific refactoring, the plugin is now able to ask the question: ``Is the current selection appropriate for this refactoring?''
+But the software is not yet capable to answer this question. That is where the {\it Refactoring} enum and the {\it RefactoringAvailabilityTester} come in.
+
+\subsection{The {\it Refactoring} enum}
+The {\it Refactoring} enum defines for each refactoring, which is defined in the {\it plugin.xml}, its corresponding counterpart in java code as an enum constant.
+Every such enum constant has three fields:
+   \begin{enumerate}
+     \item {\it propertyName} of type {\it String}
+     \item {\it entityName} of type {\it String}
+     \item {\it tester}  of type {\it IRefactoringAvailabilityTester}
+   \end{enumerate}
+The {\it propertyName} string must match exactly the string, which is given in the {\it plugin.xml} as property name for the refactoring. 
+It is later on used, to direct the question, if a selection is appropriate for a specific refactoring, to the right answer.\\
+The {\it entityName} string is used only to output information to the user. It is intended to designate the entity, which is modified by the refactoring. I.e. the entity name could be ``function'', if the refactoring is about renaming a function, or ``alias``, if the refactoring introduces a new alias.\\
+The {\it tester} field contains for each refactoring an instance of type {\it IRefactoringAvailabilityTester}. This instance is the one which will finally answer the question, if the refactoring is available for the current selection.
+
+\subsection{The {\it RefactoringAvailabilityTester} class}
+The {\it RefactoringAvailabilityTester} is the class, which is designated in the {\it plugin.xml} as the property tester. This means that for every refactoring, which is defined in the {\it plugin.xml},
+eclipse will ask an instance of this class, if the refactoring is available for the current selection. Eclipse does so by calling the function {\it test} of {\it RefactoringAvailabilityTester}. 
+The declaration of this function is actually inherited from the abstract supertype {\it PropertyTester}, which is a class defined by Eclipse.\\
+The {\it test} function has a return value of type {\it boolean} and four parameters:
+   \begin{enumerate}
+     \item {\it receiver} of type {\it Object}
+     \item {\it property} of type {\it String}
+     \item {\it args}  of type {\it Object[]}, we do not make use of this parameter.
+     \item {\it expectedValue}  of type {\it Object}, we do not make use of this parameter.
+   \end{enumerate}
+The {\it receiver} parameter must be an instance of type {\it ITextSelection}, since the property tester is configured like that in the {\it plugin.xml}. This instance contains information about the range of the current selection.\\
+The second parameter of the {\it test} function is of type {\it String} and is named {\it property}. During a call this will be one of the strings, which we have defined in the {\it plugin.xml}, for a specific refactoring.\\
+The {\it test} function now first checks if the plugin is even fully loaded at this point. If we would not do this check, it could be that not all information are available in a refactoring processor, which are assumed to be always available. This would lead to unexpected behaviour.
+If this check fails the function just returns false, which means  
+
 
 \end{document}          
