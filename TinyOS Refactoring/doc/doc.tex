@@ -159,7 +159,50 @@ If we now have the {\it Refactoring} enum constant for a given {\it property} st
 This function will return true, if this refactoring is available and false otherwise. This return value is also the appropriate return value for our {\it test} function of the {\it RefactoringAvailabilityTester}.
 
 \subsection{The {\it IRefactoringAvailabilityTester} interface}
-Each refactoring has 
+Each refactoring has an instance of type {\it IRefactoringAvailabilityTester} assigned to it. This assignment is done in the {\it Refactoring} enum. This interface has a single function {\it test}, with a return value of type {\it boolean}, and a single parameter {\it selection} of type {\it ITextSelection}.
+The purpose of the function is to decide, if the current selection is a selection, which is appropriate for the specific refactoring to be executed. If it is, the function will return true and false otherwise.\\
+To find this decision, the refactoring can make use of the class {\it ActionHandlerUtil} to gain access to further information, i.e. to get the selected editor, or the selected file.
+
+\section{How to execute a specific refactoring}
+At this point Eclipse knows, which refactorings are available for the current selection. Now the refactoring has to be executed, if the user clicks on the corresponding button in the refactoring top menu, or the popup menu of Eclipse.
+Behind this buttons sits an implementation of the {\it AbstractHandler} abstract class. This class is defined by Eclipse. For each refactoring such an implementation has to be defined in the {\it plugin.xml}. Thats how a refactoring is mapped to its execution.
+
+\subsection{The {\it AbstractHandler} abstract class}
+This class is defined by eclipse as an abstract class. For our implementations there is only the function {\it execute} of interest. This function is declared abstract in the {\it AbstractHandler} class and therefore has to be implemented in its subtypes.\\
+This function is actually the place, where the Language Toolkit for Processor Based Refactoring goes into action. Here will the wizard be initialized, which leads the user through a specific refactoring. This includes also initializing the appropriate subtype implementation of the {\it RefactoringProcessor} class, which is defined as part of the Eclipse ltk library. 
+This implementation will finally execute the real work, which is the actual surplus of the refactoring.
+
+\chapter{Abstract refactorings}
+\section{What we mean by abstract refactoring}
+Refactorings have the pecularity, that they can be grouped into classes, which appear to the user to be similar. In our case the only such group we really have defined is the renaming of program identifiers. All but the {\it extract function} refactoring are actually implemented as subtypes of the elements in the {\it abstractrefactoring.rename} package.
+But we could also imagine other groups, i.e. in java there exist the group of generators, which generate some code for you or there are refactorings which allows you to push up code in a supertype or pull it down in a subtype.\\
+The similiarities of the elements of such a group have a direct impact on the needed infrastructure, which is needed to execute such a refactoring. I.e. the user has the same input to do, and the same steps to follow.\\
+The subpackages of the package {\it abstractrefactorings} right in the root package of the plugin, are intended to hold classes, which define the infrastructure for a specific group . This classes gather the code, which is reused for every element of a specific group. The direct consequence is writting less code, and especially introducing less errors, when creating new refactorings. Also in the sense of extensibility this package structure makes for sure sense.\\
+Because nearly all of our refactorings are about renaming, we take a closer look on the associated classes in the {\it abstractrefactoring.rename} package.
+
+\section{The {\it abstractrefactoring.rename} classes}
+\subsection{The {\it RenameAvailabilityTester} abstract class}
+Bevore a user is allowed to execute a rename refactoring, eclipse has to force him, to select a program identifier. Namely the identifier which has to be renamed.
+The {\it RenameAvailabilityTester} implements the {\it IRefactoringAvailabilityTester} interface, which we already talked about in the last chapter.
+Therefore it overrides the interface' {\it test} function. In this function it tries to get an identifier out of the given user selection. If this is not possible, the function will just return false, which means that the associated refactoring is not available for the selection.
+Otherwise it calls its own abstract function {\it isSelectionAppropriate} which will solve the question, if the refactoring is available, in a subtype. This function has an argument of type {\it Identifier}, which is actually an AST element, which will be the currently selected identifier, during a call. 
+This takes the burden of the subclasses, to find the identifier by themselves.
+Such an implementation then normally solves the question in about four lines of code, by means of an instance of type {\it SelectionIdentifier}. 
+
+\subsection{The {\it SelectionIdentifier} class}
+Identifiers of an entity, which is to be renamed, appear mostly in different places for different purposes. I.e. a function identifier can be in a function definition, function declaration or a function call. 
+A subtype of {\it SelectionIdentifier} is intended to identify the purpose, which a given identifier has.
+This enables a {\it SelectionIdentifier} to identify the entity of a selected identifier and therefore, if a refactoring is available for the given selection. The information about the kind of entity of an identifier can  be found in the AST. 
+This is the reason why the {\it SelectionIdentifier} class facilitates the {\it AstAnalyzerFactory} and its associated classes. About these classes will we talk in a later chapter.
+
+\subsection{The {\it RenameActionHandler} class}
+The {\it RenameActionHandler} class plugs together the classes, which are needed to set up the refactoring wizard. These are the {\it RenameInfo}, {\it RenameInputPage} and the {\it RenameProcessor} classes.
+It takes all the work from its subclasses, such that they just have to provide their specific {\it RenameProcessor} instance.
+
+\subsection{The {\it RenameInputPage} class}
+This class is especially interesting, since it uses the {\it InputValidation} class to avoid renaming of identifiers to non C names.
+
+\subsection{The {\it RenameProcessor} class}
 
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
 \renewcommand{\nomname}{Glossary}
