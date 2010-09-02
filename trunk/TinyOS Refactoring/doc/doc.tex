@@ -2,15 +2,16 @@
 \usepackage[utf8x]{inputenc}
 
 % Code-Listings
-\usepackage{listings} 
-\lstset{numbers=left, numberstyle=\tiny, numbersep=5pt} 
+\usepackage{listings,color} 
+\lstset{numbers=left, numberstyle=\tiny, numbersep=5pt,basicstyle=\footnotesize,breaklines=true} 
 \lstset{language=Java}
 
 % Glossary
 \usepackage{nomencl}
 \makenomenclature
 
-
+% Grafics
+\usepackage{graphicx}
 
 % Title Page
 \title{Refactoring Extenstion for the Yeti NesC Eclipse Plugin}
@@ -91,11 +92,47 @@ The bundle manifest version defined by OSGi Release 4 or, more specifically, by 
  \item[Bundle-RequiredExecutionEnvironment] Defines a lower bound for the Version of the JVM that is allowed to be used.
  \end{description}
 
+\section{plugin.xml}
+The {\it plugin.xml} file was once reponsable for all the things that are now configured in the {\it MANIFEST.MF} File. If you search the Internet you will have problems to find what you want cause of that. Today the {\it plugin.xml} is responsable for offering and using Extention Points. I will not talk about how to offer an Extenstion point, cause for this Project it wasnt necessary.
+
+\subsection{Using Extenstion Point (making Extenstions)}
+When you want to use an Extenstion Point, you have to add the Plugin which defines the Extenstion Point to you Require-Bundle list in the {\it MANIFEST.MF}. Mostly you will have found the Extenstion Point you want to use by Google and often you don't know what Plugin is offering that Extention Point. The only advice I can give you is to use Google again or grep throu the plugins Directory of Eclipse. We did not find a way in which one could easely find the right Plugin.
+
+When the right Plugins are included, one can use the Extenstion Points by adding a \verb!<extension>! Tag.
+\begin{lstlisting}[language=XML,caption=Use Extenstion Point ({\it plugin.xml})]{plugin.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+ 	<extension 
+	    point="org.eclipse.core.expressions.propertyTesters">
+   		<propertyTester ... />
+ 	</extension>
+</plugin>
+\end{lstlisting}
+
+The \verb!<extenstion>! Tag has only one Important Attribute. It is the Extenstion Point you want to use. In this case of our Example we use the Extenstion Point \verb!propertyTesters! form the Plugin \verb!org.eclipse.core.expressions!.
+
+The Tags between \verb!<extension>! and \verb!</extension>! are informations for the Extention Point. What Tags need to be there can be read in the XML-Schema File in the \verb!org.eclipse.core.expressions! Plugin Jar. I won't go into detail here, but the plugin.xml of the Plugin that provides the Extention Point defines where in the Jar the Schema File is. Eclipse can show the Schema File by clicking on \verb!Show extension point description! in the \verb!Extention!-Tab of the {\it plugin.xml} editor.
+
+Important is to understand how Eclipse calls your Code. First you find the Extenstion Point you want to extend. Then you wirte your XML Code to extend it. For some Extenstion Points a Class, implementing an Interface has to be passed as Attribute. If so the Extenstion Point Loads your Class and executes a Method of that Inferface.
+
 
 \chapter{Language Toolkit for Processor Based Refactoring}
 For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. 
 
+
 \chapter{Menu's with conditional visibility}
+In our Plugin the Use Case is always the same. The User selects some code, the User selects a refactoring, the User executes the Refactoring. To achieve that we need to have Menus where the user can select the Refactoring he wants to Execute.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{menuStructure.png}
+\end{figure}
+
+
+\subsection{org.eclipse.ui.*}
+A lot of Extension Points are Provided by the org.eclipse.ui Plugin. We will use some of them to introduce our 
+
+\subsection{org.eclipse.core.expressions.propertyTesters}
 
 3x new method:
 getInternalyUnusedDeclarations
