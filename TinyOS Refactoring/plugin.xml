@@ -655,7 +655,7 @@
      		type="org.eclipse.jface.text.ITextSelection"
      		namespace="tinyos.yeti.refactoring.isAvailable"
      		properties="renameLocalVariable, renameFunctionParameter, renameGlobalVariable, renameImplementationLocalVariable, renameLocalFunction, renameGlobalFunction, renameInterface, renameComponent, renameComponentAlias, renameInterfaceAlias, renameNescFunction, extractFunction, introduceComponentAlias, introduceInterfaceAlias, NoRefactoringAvailable"
-     		class="tinyos.yeti.refactoring.AvailabilityTester" />
+     		class="tinyos.yeti.refactoring.RefactoringsAvailabilityTester" />
  	</extension>
 
 </plugin>
