@@ -90,6 +90,22 @@ isModifying(Identifier) checks if the Identifier is modified in the Codeblock
 getPotentionalyChangedVariables
 
 \part{The Refactoring Plugin Software}
+\chapter{The general refactoring life cycle}
+From a user perspective the general refactoring life cycle looks like this:
+   \begin{enumerate}
+     \item The user selects a new text range in his nesc editor.
+     \item Eclipse instantiates a {\it RefactoringAvailabilityTester} which is a subtype of {\it PropertyTester} defined by eclipse.
+     \item Eclipse checks all refactorings defined in the {\it plugin.xml} against the property tester, and memorises which of them are available. 
+     \item Eclipse shows the available refactorings in the top menu bar, as well as in the popup menu.
+     \item The user selects a refactoring, which he wants to execute.
+     \item Eclipse will execute the appropriate action handler.
+     \item The user probably has to do some input.
+     \item Eclipse finishes the refactoring.
+   \end{enumerate}
+This life cycle can be divided in two main parts. The first part is the evaluation of the available refactorings and the second part is the actual execution of a specific refactoring. 
+This partitioning has two major advantages. First it allows a better user experience, since he sees only the refactorings, which are really executable for the current selection. 
+Second, the execution of a refactoring no more has to care about, if the refactoring is even available.
+
 \chapter{From Plugin XML to Java Code}
 \section{How to decide the availability of a refactoring}
 After we have introduced the appropriate lines of XML in the {\it plugin.xml} for a specific refactoring, the plugin is now able to ask the question: ``Is the current selection appropriate for this refactoring?''
@@ -111,6 +127,7 @@ The {\it tester} field contains for each refactoring an instance of type {\it IR
 \subsection{The {\it RefactoringAvailabilityTester} class}
 The {\it RefactoringAvailabilityTester} is the class, which is designated in the {\it plugin.xml} as the property tester. This means that for every refactoring, which is defined in the {\it plugin.xml},
 eclipse will ask an instance of this class, if the refactoring is available for the current selection. Eclipse does so by calling the function {\it test} of {\it RefactoringAvailabilityTester}. 
+Everytime the user changes the selection in the editor, one such call is executed for every defined refactoring.
 The declaration of this function is actually inherited from the abstract supertype {\it PropertyTester}, which is a class defined by Eclipse.\\
 The {\it test} function has a return value of type {\it boolean} and four parameters:
    \begin{enumerate}
@@ -122,7 +139,13 @@ The {\it test} function has a return value of type {\it boolean} and four parame
 The {\it receiver} parameter must be an instance of type {\it ITextSelection}, since the property tester is configured like that in the {\it plugin.xml}. This instance contains information about the range of the current selection.\\
 The second parameter of the {\it test} function is of type {\it String} and is named {\it property}. During a call this will be one of the strings, which we have defined in the {\it plugin.xml}, for a specific refactoring.\\
 The {\it test} function now first checks if the plugin is even fully loaded at this point. If we would not do this check, it could be that not all information are available in a refactoring processor, which are assumed to be always available. This would lead to unexpected behaviour.
-If this check fails the function just returns false, which means  
+If this check fails the function just returns false, which means  that there will be no refactoring available.\\
+If the plugin is fully loaded, we come now to the point where the real matching from XML to java code happens. The {\it test} function looks for the {Refactoring} enum constant, whichs {\it propertyName} string matches the {\it property} string passed as an argument.
+If there is no such enum constant, then either the programmer forgot to define the corresponding enum constant, for a refactoring defined in the {\it plugin.xml}, or the {\it propertyName} and the {\it property} strings are not equal, i.e. if there is a typo in one of them.\\
+If we now have the {\it Refactoring} enum constant for a given {\it property} string, then we can read out its {\it tester} field. This gives us an instance of type {\it IRefactoringAvailabilityTester} and we can execute a call to the function {\it test} of this instance.
+This function will return true, if this refactoring is available and false otherwise. This return value is also the appropriate return value for our {\it test} function of the {\it RefactoringAvailabilityTester}.
 
+\subsection{The {\it IRefactoringAvailabilityTester} interface}
+Each refactoring has 
 
 \end{document}          
