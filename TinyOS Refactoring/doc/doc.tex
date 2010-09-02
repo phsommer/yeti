@@ -1,8 +1,15 @@
 \documentclass[a4paper,10pt]{report}
 \usepackage[utf8x]{inputenc}
+
+% Code-Listings
 \usepackage{listings} 
 \lstset{numbers=left, numberstyle=\tiny, numbersep=5pt} 
-\lstset{language=Java} 
+\lstset{language=Java}
+
+% Glossary
+\usepackage{nomencl}
+\makenomenclature
+
 
 
 % Title Page
@@ -34,7 +41,7 @@ And if the names of the different entities in a program match their purpose, the
 
 \part{Eclipse Plugins}
 \chapter{General Infos about writeing Plugins}
-Eclipse is famous for it's plugin architecture. Everything in Eclipse is a Plugin. A Plugin is a JAR-File or a Folder in the plugins-Directory of the eclipse program folder.
+Eclipse is famous for it's plugin architecture. Everything in Eclipse is a Plugin. An Eclipse Plugin is a JAR-File or a Folder in the plugins-Directory of the eclipse program folder.
 To be a plugin it takes at least three Files.
 \begin{itemize}
   \item META-INF/MANIFEST.MF
@@ -51,7 +58,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TinyOS_Refactoring
 Bundle-SymbolicName: tinyos.yeti.refactoring;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Bundle-Activator: tinyos.yeti.refactoring.RefactoringPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -70,12 +77,18 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 \end{lstlisting}
 
-The first two lines define that this is a Manifest for a OSGi Bundle. OSGi is used by Eclipse for organizing it's Plugins.
-th Bundle-Name is an Internaly used name for the OSGi Framework. 
 
 \begin{description}
- \item[Bundle-Activator] This is the Path of the Class which is used to start the whole Plugin. The class must extend org.eclipse.core.runtime.Plugin. 
- \item[Require-Bundle]
+ \item[Manifest-Version] This line shows that a manifest's entries take the form of "header: value" pairs. The name of a header is separated from its value by a colon. (from http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html access 2.9.2010)
+ \item[Bundle-ManifestVersion] Manifest header identifying the bundle manifest version. A bundle manifest may express the version of the syntax in which it is written by specifying a bundle manifest version. Bundles exploiting OSGi Release 4, or later, syntax must specify a bundle manifest version. 
+The bundle manifest version defined by OSGi Release 4 or, more specifically, by version 1.3 of the OSGi Core Specification is "2". (from Eclipse Help Version: 3.5.2)
+ \item[Bundle-Name] A human readable meaningful Name for the Plugin you write.
+ \item[Bundle-SymbolicName] A unique String identifyer for you Pulugin. Mostly the Path of your package structure is used. The \verb!singelton:=true! makes the OSGi Framework only load your Plugin once. It has to be set in every Eclipse Plugin. It is only necessary cause Eclipse uses OSGi which is not only used for Eclipse.
+ \item[Bundle-Version] Defines the Version of the Plugin. When the Plugin is used by an other Plugin , it can specify the Verserion in the Required-Bundle Parmeter. A Verstion is composed of 3 positive natural numbers and a String seperated by ``.'' sign. Two Versions are equal if the Numbers are Equal. The String in the end might be used to specify different Versions with the absolute same Interface (for example different Compailers). The Nummbers from left to right are called: Major.Minor.Mirco.
+ \item[Bundle-Activator] This is the Path of the Class which is used to start the whole Plugin. The class must extend \verb!org.eclipse.core.runtime.Plugin!. 
+ \item[Require-Bundle] When you write you plugin you will use the Functionality of other Plugins. To do that you have to specify here which plugins you use. Eclipse will refuse to load your plugin if the Plugins you require are not avialable. In addition you can specify the version of the plugin you need to be available. If you don't specify anything else Eclipse will assume to have an compatible Version as long as there is one having the same Major-Number. In case of you have to be more picky, you can also add a \verb!match! parameter with \verb!perfect! for Major, Minor and Micro Number have to match, or \verb!equivalent! for Major and Minor Number have to match.
+ \item[Bundle-ActivationPolicy] The only parameter you can add here is \verb!lazy! which tells OSGi to wait with loading the Plugin until it is used.
+ \item[Bundle-RequiredExecutionEnvironment] Defines a lower bound for the Version of the JVM that is allowed to be used.
  \end{description}
 
 
@@ -147,5 +160,9 @@ This function will return true, if this refactoring is available and false other
 
 \subsection{The {\it IRefactoringAvailabilityTester} interface}
 Each refactoring has 
+
+\nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
+\renewcommand{\nomname}{Glossary}
+\printnomenclature
 
 \end{document}          
