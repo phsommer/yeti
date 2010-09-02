@@ -7,7 +7,7 @@ import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
-public class AvailabilityTester extends PropertyTester {
+public class RefactoringsAvailabilityTester extends PropertyTester {
 
 	@Override
 	public boolean test(Object receiver, String property, Object[] args,Object expectedValue) {
