@@ -3,7 +3,6 @@ package tinyos.yeti.refactoring.abstractrefactoring.rename;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.participants.RenameRefactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
@@ -15,7 +14,7 @@ import tinyos.yeti.refactoring.DefaultRefactoringWizard;
 import tinyos.yeti.refactoring.ast.ASTPositioning;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
 
-public abstract class RenameActionHandler extends AbstractHandler implements IHandler{
+public abstract class RenameActionHandler extends AbstractHandler{
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
