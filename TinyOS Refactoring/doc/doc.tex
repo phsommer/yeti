@@ -12,7 +12,7 @@
 
 % Grafics
 \usepackage{graphicx}
-
+\usepackage[dvipdfm]{geometry}
 % Title Page
 \title{Refactoring Extenstion for the Yeti NesC Eclipse Plugin}
 \author{Noah Heusser, Max Urech}
@@ -308,6 +308,41 @@ If we report just an {\it Error} message, then the user still has the choice to 
 will change the semantics of the source, or will even lead to compile errors. But since the user possibly wants such a change in semantics by intention, it was false to not allow proceeding.\\
 The {\it createChange} function is the last function, which will be called by the {\it RenameProcessor} framework. It is the place where a subtype finally can create a subtype of {\it Change} class, from the Eclipse ltk library.
 This object then should include all changes, which are necessary for the refactoring, to fullfil its task.
+
+\chapter{Harnessing the AST}
+The Yeti NesC parser generates an AST. This AST includes all information about the NesC source code on a per file base. Big parts of our program build upon analyzing this AST's, in order to find information about the program, which is to be refactored.
+In early phases of the development, we used a lot of static code, to gather information out of the AST. This lead to a more imperative then object oriented design, with high coupling. Since this is an unpopular attribute for good software, we descded to refactor our refactoring plugin. 
+The result was the birth of the so called {\it AstAnalyzer} classes.
+
+\section{The {\it AstAnalyzer} classes}
+This classes are intended to wrap AST's of a whole file, or at least parts of an AST. The interaction with an {\it AstAnalyzer} is more of the kind:"Give me all objects which have the property...'. I.e. you can ask a {\it CAstAnalyzer} to give you all global C functions, which appear in its AST.\\
+Without the analyzers the interaction is more like:"I have an AST node, is this AST node of type A, and if so, is it a child of type B...''. This means that in the whole program appeared code fragments, which included actually knowledge dedicated to the AST. This is pretty much the opposite of coherence and encapsulation.
+
+\subsection{The {\it AstAnalyzerFactory} class}
+Basically we can distinguish the types of AST's included in a source file. I.e. has a AST of a NesC interface a different structure, then the one of a NesC module.
+The {\it AstAnalyzerFactory} class takes an {\it ASTNode} or a source file and generates the appropriate {\it AstAnalyzer} type.\\
+We than can ask the {\it AstAnalyzerFactory} which type it has created and can then read the associated type out of the factory.
+
+\subsection{{\it AstAnalyzer} types}
+For the {\it AstAnalyzer} which represent a AST of a whole file, we have defined an hierarchy of types. It is shown in the graphic
+\ref{AstAnalyzersTypeHierarchy} on page \pageref{AstAnalyzersTypeHierarchy}. Depending on the analyzer type we can get specific information.
+
+\begin{figure}[h]
+\centering
+\includegraphics[height=.35\textheight]{AstAnalyzerTypesHierarchy.png}
+\caption{Type hierarchy for AstAnalyzers, whichs AST's represent a whole file.}
+\label{AstAnalyzersTypeHierarchy}
+
+\end{figure}
+
+\section{Auxiliary AST classes}
+As we already mentioned, our first approach was more kind of an imperative one. Because of time issues we were not able to totally get rid of the old design. Thats the reason why there exist still two classes, which are in the oldschool style.
+   \begin{enumerate}
+     \item {\it ASTUtil4Functions} class includes a lot of functions related to the AST structure of functions.
+     \item {\it ASTUtil4Variables} class includes a lot of functions related to the AST structure of variables.
+   \end{enumerate}
+If we had have some more time, we probably had designed something like a {\it FunctionAstAnalyzer} class. This class than had replaced the other two, which had been more likely a good object oriented design.\\
+The last class dedicated to the AST, is the {\it ASTUtil} class. It includes a lot of convenience functions, which are useful everywhere, where we interact with the AST.
 
 
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
