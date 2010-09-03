@@ -24,6 +24,8 @@
 \begin{abstract}
 \end{abstract}
 
+\tableofcontents
+
 \part{What is refactoring}
 \chapter{Definition of refactoring}
 Wikipedia gives us the following definition for code refactoring:
@@ -132,12 +134,12 @@ In the picture the necessary components for a Menu with conditional visibility a
 \includegraphics[width=\textwidth]{menuStructure.png}
 \end{figure}
 
-\subsection{Create a Menu entry}
+\section{Create a Menu entry}
 Eclipse knows about a hundred ways to create a new Menu Entry. Almost none of them make it necessary to write Java, but all of them have different possibilitys. 
 Douring our Project we were not able to understand what ways outdated or what the todays state of the art way is. After testing three ways which did not fit our needs,
 we chose the one I will explain now. 
 
-\subsubsection{Add a new Submenu}
+\subsection{Add a new Submenu}
 We want our Refactoring functionality to be available in two Menus. In the Main Menu of the Eclipse window and the Context menu which appears when one rightclicks on
 a selection. To do that we used the \verb!org.eclipse.ui.menus! Extension Point. In this Extenstion Point every menu can be identified by a URI. The URI of the Main Menu is:
 \verb!menu:org.eclipse.ui.main.menu! and to define it's Position we add \verb!?after=additions! to the URI. This adds the Menu just after the menus of the additions group, 
@@ -160,7 +162,7 @@ Later when we add Commands to that Submenu we have to refer to that id.
 To add the Submenu also to the Context menu we add the same XML Block again, but use the URI \verb!popup:org.eclipse.ui.popup.any! and give it the Id \verb!tinyos.yeti.RefactoringPopup!.
 
 If you would now start Eclipse with that new Menu, you wouldnt see anything. The Submenus are only displayed if the Submenu has entrys.
-\subsubsection{Add a Command to the Submenu}
+\subsection{Add a Command to the Submenu}
 Adding a Command (an Entry which triggers an Action) is also added by the Tag \verb!<menuContribution>! but this time not with the Child-Tag \verb!<menu>! but \verb!<command>!.
 In the UML Diagramm I called it \verb!MenuContributionCommand!. For now we don't look at the \verb!visibleWhen!, it will be explanied later.
 
@@ -180,7 +182,7 @@ In XML it looks like this:
 \end{lstlisting}
 You can see that the \verb!menuContribution! goes this time to \verb!tinyos.yeti.RefactoringMenu! which we defined in the last section.
 
-\subsubsection{Createing a Command}
+\subsection{Createing a Command}
 This is now the Command that is called Command in the UML Diagramm. It is not in the Extenstion Point \verb!org.eclipse.ui.menus! but in the Extenstion Point \verb!org.eclipse.ui.commands!. 
 The \verb!<command>! Tag has three attributes. An \verb!id! which is a unique Identifiere. The \verb!categoryId! which groups the the \verb!<command>!'s to Categroies.
 We never used the Categories so we just introduced one and gave all our commands this Category. We hoped that it would be possible to fill a Submenu with a Category of Commands.
@@ -200,7 +202,7 @@ In XML it looks like this:
 
 One can ask now, where does Eclipse know from what Method it has to invoke to call that command. Well it does not. To know that, we have to define a \verb!handel!.
 
-\subsubsection{Intoducing a Handler for a Command}
+\subsection{Intoducing a Handler for a Command}
 A handler is connects a Command in the XML File to a Java Class which implement the Interface \verb!org.eclipse.core.commands.IHandler!. The Extenstion Point
 \verb!org.eclipse.ui.handlers! helps doing that job. It is very simple. Just the Class and the \verb!commandId!.
 \begin{lstlisting}[language=XML,caption=Connecting a Command to a Handler ({\it plugin.xml})]{plugin.xml}
@@ -210,7 +212,7 @@ A handler is connects a Command in the XML File to a Java Class which implement 
 </extention>
 \end{lstlisting}
 
-\subsubsection{Bindings}
+\subsection{Bindings}
 We did not yet speak about Bindings. They allow you to introduce Shortcuts for your Commands. We did it first, but removed it later again.
 I think the following Code explains itself:
 \begin{lstlisting}[language=XML,caption=Introduce Shortcuts ({\it plugin.xml})]{plugin.xml}
@@ -218,7 +220,7 @@ I think the following Code explains itself:
                 <!--
                         One could also add a Shortcut, by adding the following Attribute
                         to the <key>-Tag,
-                        for example: sequence="M1+M2+9"
+                        for example: sequence="M1+M2+r"
 
                         The M Keys in the sequence are Platform independent keys.
                                 On PCs they are mapped to:
