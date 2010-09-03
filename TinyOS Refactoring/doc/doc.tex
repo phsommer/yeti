@@ -193,7 +193,6 @@ In XML it looks like this:
 <extension point="org.eclipse.ui.commands">
   <category id="tinyos.yeti.refactoring"
             name="Refactoring" />
-
   <command id="tinyos.yeti.refactoring.rename.local.variable"
            categoryId="tinyos.yeti.refactoring"
            name="Rename Local Variable"/>
@@ -238,9 +237,9 @@ I think the following Code explains itself:
 
 
 
-
-\part{The Refactoring Plugin Software}
-\chapter{The general refactoring life cycle}
+\part{The Refactoring Plugin}
+\chapter{About our plugin}
+\section{The general refactoring life cycle}
 From a user perspective the general refactoring life cycle looks like this:
    \begin{enumerate}
      \item The user selects a new text range in his nesc editor.
@@ -255,6 +254,9 @@ From a user perspective the general refactoring life cycle looks like this:
 This life cycle can be divided in two main parts. The first part is the evaluation of the available refactorings and the second part is the actual execution of a specific refactoring. 
 This partitioning has two major advantages. First it allows a better user experience, since he sees only the refactorings, which are really executable for the current selection. 
 Second, the execution of a refactoring no more has to care about, if the refactoring is even available.
+
+\section{Package structure}
+
 
 \chapter{From Plugin XML to Java Code}
 \section{How to decide the availability of a refactoring}
@@ -391,7 +393,9 @@ For the {\it AstAnalyzer} which represent a AST of a whole file, we have defined
 
 \end{figure}
 
-\section{Auxiliary AST classes}
+\section{Utility classes}
+
+\subsection{Auxiliary AST classes}
 As we already mentioned, our first approach was more kind of an imperative one. Because of time issues we were not able to totally get rid of the old design. Thats the reason why there exist still two classes, which are in the oldschool style.
    \begin{enumerate}
      \item {\it ASTUtil4Functions} class includes a lot of functions related to the AST structure of functions.
@@ -400,7 +404,62 @@ As we already mentioned, our first approach was more kind of an imperative one. 
 If we had have some more time, we probably had designed something like a {\it FunctionAstAnalyzer} class. This class than had replaced the other two, which had been more likely a good object oriented design.\\
 The last class dedicated to the AST, is the {\it ASTUtil} class. It includes a lot of convenience functions, which are useful everywhere, where we interact with the AST.
 
+\subsection{Project wide classes}
+There is a number of further utility classes int the {\it utility} package.\\
+The most important one is the {\it ProjectUtil} class. Refactorings which not only affect the file from which they were triggered, have to get access to other affected files.
+Therefore the {\it ProjectUtil} class provides exactly the right functions. I.e. you can find a NesC Module by giving its name, or you can search for references to a specific {IASTModelPath} in a certain file.
+A file is always the first step to get to its AST.\\
+The {ProjectUtil} also includes functions for logging messages to the project log and some other stuff, which is related to the whole project.\\
+Another interesting class is the {\it ParserCache} class. As its name says, it tries to cache Parsers, so that not every file has to be parsed again and again, even if it was not modified, since it was parsed the last time. In our implementation the parser cache is only in use, if you obtain your parser from the {\it ProjectUtil} class. 
 
+\chapter{Concrete refactorings}
+\section{Implemented refactorings}
+One of the main parts of our work was of course the implementation of concrete refactorings. We have implemented the ones, which we thought were the most useful:
+   \begin{enumerate}
+     \item Renaming of local variables
+     \item Renaming of function parameters
+     \item Renaming of variables in the implementation scope of a NesC Module
+     \item Renaming of global variables
+     \item Renaming of C functions in the implementation scope of a NesC Module 
+     \item Renaming of global C functions
+     \item Renaming of NesC functions, like events and commands
+     \item Renaming of NesC interfaces
+     \item Renaming of NesC Components, like modules and configurations
+     \item Renaming of NesC component aliases
+     \item Renaming of NesC interface aliases
+     \item Introducing of NesC component aliases
+     \item Introducing of NesC interface aliases
+     \item Extracting of code parts to new C functions
+   \end{enumerate}
+As we can see, most of the refactorings are related to renaming something. In fact even the introducing of aliases is realised as a rename refactoring. This is the reason why we took a closer look at the classes in the {\it abstractrefactoring.rename} package. 
+The refactorings, which use the infrastructure, given in this package, the implementation reduces to implementing not more then four classes:
+   \begin{enumerate}
+     \item A {\it ActionHandler} class as subtype of {\it RenameActionHanlder}
+     \item A {\it AvailabilityTester} class as subtype of {\it RenameAvailabilityTester}
+     \item A {\it SelectionIdentifier} class as subtype of {\it SelectionIdentifier}
+     \item A {\it Processor} class as subtype of {\it RenameProcessor}
+   \end{enumerate}
+It is even simpler, since the {\it AvailabilityTester} and the {\it ActionHandler} classes are kind of connector classes to the {\it SelectionIdentifier} and {\it RenameProcessor}, respectively. This means that they have about three lines of code and do not much more than instantiating the other class.\\
+The only refactoring, which we have implemented, which does not rely on the rename infrastructure, is the refactoring for extracting code parts to new C functions. This is besides the complexity of it a second reason, why it has much more code.
+
+\section{What else could be done}
+If we had more time, there were of course a lot, which we could have done too. Everybody who can write code knows, that there is always something, which could be done nicer or more efficient. In short, there is always something, which you can refactor.
+I.e. as we already mentioned, it was nice to get rid of the {\it AstUtil4Functions} and {\it AstUtil4Variables} classes and instead implement something like a {\it FunctionAstAnalyzer} class, to reach a nicer, more object oriented design style.\\
+With more time we also could have implemented some more refactorings, i.e.:
+    \begin{enumerate}
+     \item Renaming of global C typedefs
+     \item Renaming of C typedefs in the implementation scope of a NesC Module
+     \item Renaming of C enums, as well in the global as in the implementation scope
+     \item Renaming of C enum constants
+     \item Renaming of C structs, as well in global as in the implementation scope
+     \item Renaming of NesC tasks
+     \item Renaming of C preprocessor macros
+     \item More sophisticated extract function refactoring, which allows user to select in and out parameters
+     \item Magic number refactoring, which converts magic numbers to constants
+   \end{enumerate}
+And we are sure, there are a lot more of possibilities.
+
+\nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
 \renewcommand{\nomname}{Glossary}
 \printnomenclature
