@@ -141,7 +141,7 @@ we chose the one I will explain now.
 We want our Refactoring functionality to be available in two Menus. In the Main Menu of the Eclipse window and the Context menu which appears when one rightclicks on
 a selection. To do that we used the \verb!org.eclipse.ui.menus! Extension Point. In this Extenstion Point every menu can be identified by a URI. The URI of the Main Menu is:
 \verb!menu:org.eclipse.ui.main.menu! and to define it's Position we add \verb!?after=additions! to the URI. This adds the Menu just after the menus of the additions group, 
-which is the core Functionality of the Eclipse IDE.
+which is the core Functionality of the Eclipse IDE. In the UML this \verb!<menu>! Tag is the \verb!MenuContributionMenu! Class.
 
 In XML Code it looks like this:
 \begin{lstlisting}[language=XML,caption=Create Menu Folder ({\it plugin.xml})]{plugin.xml}
@@ -168,7 +168,7 @@ The \verb!<command>! Tag has three attributes. \verb!lable! is the String the us
 id of the Command that shell be executed when the user clicks on this entry. Createing that command will be explaind in the next Section.
 
 In XML it looks like this:
-\begin{lstlisting}[language=XML,caption=Create Menu Folder ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Adding a Command to Menu ({\it plugin.xml})]{plugin.xml}
 <extension id="add.item" point="org.eclipse.ui.menus">
   <menuContribution
        locationURI= "menu:tinyos.yeti.RefactoringMenu?after=additions">
@@ -181,6 +181,60 @@ In XML it looks like this:
 You can see that the \verb!menuContribution! goes this time to \verb!tinyos.yeti.RefactoringMenu! which we defined in the last section.
 
 \subsubsection{Createing a Command}
+This is now the Command that is called Command in the UML Diagramm. It is not in the Extenstion Point \verb!org.eclipse.ui.menus! but in the Extenstion Point \verb!org.eclipse.ui.commands!. 
+The \verb!<command>! Tag has three attributes. An \verb!id! which is a unique Identifiere. The \verb!categoryId! which groups the the \verb!<command>!'s to Categroies.
+We never used the Categories so we just introduced one and gave all our commands this Category. We hoped that it would be possible to fill a Submenu with a Category of Commands.
+But we didn't find a way to do that. The third Parameter is a \verb!name!. We never used it eather, we usualy took the label in the Menu also as name of the Command.
+
+In XML it looks like this:
+\begin{lstlisting}[language=XML,caption=Createing a Command ({\it plugin.xml})]{plugin.xml}
+<extension point="org.eclipse.ui.commands">
+  <category id="tinyos.yeti.refactoring"
+            name="Refactoring" />
+
+  <command id="tinyos.yeti.refactoring.rename.local.variable"
+           categoryId="tinyos.yeti.refactoring"
+           name="Rename Local Variable"/>
+</extension>
+\end{lstlisting}
+
+One can ask now, where does Eclipse know from what Method it has to invoke to call that command. Well it does not. To know that, we have to define a \verb!handel!.
+
+\subsubsection{Intoducing a Handler for a Command}
+A handler is connects a Command in the XML File to a Java Class which implement the Interface \verb!org.eclipse.core.commands.IHandler!. The Extenstion Point
+\verb!org.eclipse.ui.handlers! helps doing that job. It is very simple. Just the Class and the \verb!commandId!.
+\begin{lstlisting}[language=XML,caption=Connecting a Command to a Handler ({\it plugin.xml})]{plugin.xml}
+<extension point="org.eclipse.ui.handlers">
+   <handler class="tinyos.yeti.refactoring.entities.variable.rename.local.RenameLocalVariableActionHandler"
+            commandId="tinyos.yeti.refactoring.rename.local.variable" />
+</extention>
+\end{lstlisting}
+
+\subsubsection{Bindings}
+We did not yet speak about Bindings. They allow you to introduce Shortcuts for your Commands. We did it first, but removed it later again.
+I think the following Code explains itself:
+\begin{lstlisting}[language=XML,caption=Introduce Shortcuts ({\it plugin.xml})]{plugin.xml}
+<extension point="org.eclipse.ui.bindings">
+                <!--
+                        One could also add a Shortcut, by adding the following Attribute
+                        to the <key>-Tag,
+                        for example: sequence="M1+M2+9"
+
+                        The M Keys in the sequence are Platform independent keys.
+                                On PCs they are mapped to:
+                M1 = Ctrl
+                M2 = Shift
+                M3 = Alt
+
+                The upper example would the the shortcut: Ctrl+Shift+r
+		-->
+                <key commandId="tinyos.yeti.refactoring.rename.local.variable"
+                     schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+                     sequence="M1+M2+r" />
+</extenstion>
+\end{lstlisting}
+
+
 
 
 \part{The Refactoring Plugin Software}
