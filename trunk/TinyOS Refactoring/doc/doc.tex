@@ -235,7 +235,63 @@ I think the following Code explains itself:
 </extenstion>
 \end{lstlisting}
 
+\section{Add conditional visibility}
+Up to now all our menu entrys will allways be available no metter whether the User did a valid selection or not. But in the beginning of this Chapter we desided to show only 
+those Refactorings that are executable for the momentary selection.
+\subsection{Property Tester}
+To do that we use the Extenstion Point \verb!org.eclipse.core.expressions.propertyTesters!. It allows to define a \verb!propertyTester! with a list of Propertys. In our
+case we defined one \verb!propertyTester! called \verb!tinyos.yeti.refactoring.AvailabilityTester! which has one property for each Refactoring.
 
+In XML:
+\begin{lstlisting}[language=XML,caption=Property Tester ({\it plugin.xml})]{plugin.xml}
+<extension point="org.eclipse.core.expressions.propertyTesters">
+  <propertyTester id="tinyos.yeti.refactoring.AvailabilityTester"
+                  type="org.eclipse.jface.text.ITextSelection"
+                  namespace="tinyos.yeti.refactoring.isAvailable"
+                  properties="renameLocalVariable, ..."
+                  class="tinyos.yeti.refactoring.AvailabilityTester" />
+</extension>
+\end{lstlisting}
+
+One can see that is has a \verb!class! Parameter. This is a Java Class that extends \verb!org.eclipse.core.expressions.PropertyTester!. It has only one abstract Method:
+\begin{lstlisting}[caption=extends PropertyTester]{PropertyTester.java}
+public class AvailabilityTester extends PropertyTester {
+
+  public boolean test(Object receiver, String property, Object[] args,Object expectedValue) {
+    
+  }
+}
+\end{lstlisting}
+One can see that there is a String \verb!property!. It is exactly the String that is defined in the \verb!property! Attribute of the \verb!propertyTester! Tag.
+This way we wrote for each Refactoring a Test wether it is available or not.
+
+\subsection{Visibility Condition}
+
+
+\begin{lstlisting}[language=XML,caption=Visibility Condition ({\it plugin.xml})]{plugin.xml}
+<extension id="add.item"
+           point="org.eclipse.ui.menus">
+  <menuContribution locationURI= "menu:tinyos.yeti.RefactoringMenu?after=additions">
+    <command commandId="tinyos.yeti.refactoring.rename.local.variable"
+             id= "RenameLocalVariable"
+             label= "Rename Local Variable">
+      <visibleWhen checkEnabled="false">
+        <iterate ifEmpty="false">
+          <!-- The forcePluginActivation-Parameter is absolutly necessary. 
+               Otherwise the Property gets never checkt -->
+          <test property="tinyos.yeti.refactoring.isAvailable.renameLocalVariable"
+                forcePluginActivation="true" />
+        </iterate>
+      </visibleWhen>
+    </command>
+  </menuContribution>
+</extenstion>
+\end{lstlisting}
+In the MenuContributionCommand we add a \verb!visibleWhen! Tag. The \verb!checkEnabled="false"! disables the check whether the Command is available or not. 
+It is a Functionality provided by the Handler Class. Technicaly it would work whith just writing \verb!checkEnabled="true"! and Implementing the functionality in 
+the ActionHandler. But as the name isEnabled sais, it is not the Idea of this Function. Thatsway we prefered doing it with the Property.
+
+The \verb!visibleWhen! is necessary cause it seems to be a collection that we get there. If it is not there it wont work.
 
 \part{The Refactoring Plugin}
 \chapter{About our plugin}
