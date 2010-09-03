@@ -123,21 +123,65 @@ For our refactoring Plugin we used the Processor based refactoring, offered by t
 
 \chapter{Menu's with conditional visibility}
 In our Plugin the Use Case is always the same. The User selects some code, the User selects a refactoring, the User executes the Refactoring. To achieve that we need to have Menus where the user can select the Refactoring he wants to Execute.
+But this is not enogh, our Plugin supports a lot of Refactorings. If the User has to find the Refactoring he wants to use in a list of all possible Refactorings, it will take him a lot of time.
+To make it easy for the User we want to list only those Refactorings that are actually possible for his momentary Selection. This means we need conditional visibility.
+
+In the picture the necessary components for a Menu with conditional visibility are shown. Dooring the following sections I will explain every component in the Picture.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{menuStructure.png}
 \end{figure}
 
+\subsection{Create a Menu entry}
+Eclipse knows about a hundred ways to create a new Menu Entry. Almost none of them make it necessary to write Java, but all of them have different possibilitys. 
+Douring our Project we were not able to understand what ways outdated or what the todays state of the art way is. After testing three ways which did not fit our needs,
+we chose the one I will explain now. 
 
-\subsection{org.eclipse.ui.*}
-A lot of Extension Points are Provided by the org.eclipse.ui Plugin. We will use some of them to introduce our 
+\subsubsection{Add a new Submenu}
+We want our Refactoring functionality to be available in two Menus. In the Main Menu of the Eclipse window and the Context menu which appears when one rightclicks on
+a selection. To do that we used the \verb!org.eclipse.ui.menus! Extension Point. In this Extenstion Point every menu can be identified by a URI. The URI of the Main Menu is:
+\verb!menu:org.eclipse.ui.main.menu! and to define it's Position we add \verb!?after=additions! to the URI. This adds the Menu just after the menus of the additions group, 
+which is the core Functionality of the Eclipse IDE.
 
-\subsection{org.eclipse.core.expressions.propertyTesters}
+In XML Code it looks like this:
+\begin{lstlisting}[language=XML,caption=Create Menu Folder ({\it plugin.xml})]{plugin.xml}
+<extension id="add.item" point="org.eclipse.ui.menus">
+  <-- Entrys in the Top Menu -->
+  <menuContribution
+     locationURI= "menu:org.eclipse.ui.main.menu?after=additions">
+    <menu id="tinyos.yeti.RefactoringMenu"
+          label="Refactoring" />
+  </menuContribution>
+</extenstion>
+\end{lstlisting}
+Important is to see that we use the Tag \verb!<menu>! which means that we add a submenu and that the id of the new Submenu is \verb!tinyos.yeti.RefactoringMenu!. 
+Later when we add Commands to that Submenu we have to refer to that id.
 
-3x new method:
-getInternalyUnusedDeclarations
-isModifying(Identifier) checks if the Identifier is modified in the Codeblock
-getPotentionalyChangedVariables
+To add the Submenu also to the Context menu we add the same XML Block again, but use the URI \verb!popup:org.eclipse.ui.popup.any! and give it the Id \verb!tinyos.yeti.RefactoringPopup!.
+
+If you would now start Eclipse with that new Menu, you wouldnt see anything. The Submenus are only displayed if the Submenu has entrys.
+\subsubsection{Add a Command to the Submenu}
+Adding a Command (an Entry which triggers an Action) is also added by the Tag \verb!<menuContribution>! but this time not with the Child-Tag \verb!<menu>! but \verb!<command>!.
+In the UML Diagramm I called it \verb!MenuContributionCommand!. For now we don't look at the \verb!visibleWhen!, it will be explanied later.
+
+The \verb!<command>! Tag has three attributes. \verb!lable! is the String the user will see in the Menu. \verb!id! is just a unique identifyer and \verb!commandId! is the 
+id of the Command that shell be executed when the user clicks on this entry. Createing that command will be explaind in the next Section.
+
+In XML it looks like this:
+\begin{lstlisting}[language=XML,caption=Create Menu Folder ({\it plugin.xml})]{plugin.xml}
+<extension id="add.item" point="org.eclipse.ui.menus">
+  <menuContribution
+       locationURI= "menu:tinyos.yeti.RefactoringMenu?after=additions">
+    <command commandId="tinyos.yeti.refactoring.rename.local.variable"
+             id= "RenameLocalVariable"
+             label= "Rename Local Variable" />
+  </menuContribution>
+</extension>
+\end{lstlisting}
+You can see that the \verb!menuContribution! goes this time to \verb!tinyos.yeti.RefactoringMenu! which we defined in the last section.
+
+\subsubsection{Createing a Command}
+
 
 \part{The Refactoring Plugin Software}
 \chapter{The general refactoring life cycle}
