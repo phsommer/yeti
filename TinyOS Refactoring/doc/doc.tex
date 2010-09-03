@@ -312,6 +312,19 @@ This partitioning has two major advantages. First it allows a better user experi
 Second, the execution of a refactoring no more has to care about, if the refactoring is even available.
 
 \section{Package structure}
+The root package of the plugin is {\it tinyos.yeti.refactoring}. It contains the {\it RefactoringPlugin} class, which is required for an Eclipse plugin, as well as the classes we gone talk about in the chapter "From plugin XML to java code".\\
+The root package contains four subpackages:
+   \begin{enumerate}
+     \item The {\it abstractrefactorings} package
+     \item The {\it ast} package
+     \item The {\it utilities} package
+     \item The {\it entities} package
+   \end{enumerate}
+The {\it abstractrefactorings} package contains infrastructure classes, used to implement concrete refactorings. We take a closer look at this classes in the "Abstract refactorings" chapter.\\
+The {\it ast} and {\it utilities} packages include classes, which are used to interact with the AST and the project, in which we are doing refactoring. The contents of this packages are explained in the chapter "Harnessing the AST".\\
+The {\it entities} package is actually the root package for all concrete refactoring implementations. By entity we mean an object which can be modified by a refactoring. I.e. the entity of a rename or extract function refactoring is a function. The entity of a rename or introduce interface alias is an interface alias.
+Therefore the next level of packages in the {\it entities} package will designate a entity, and the package in such a specific package will designate a concrete refactoring. This means that you will find the concrete implementation of the rename interface alias refactoring implementation in the subpackage {\it entities.interfaces.alias.rename}.
+About concrete refactorings we will talk in the chapter "Concrete refactorings".
 
 
 \chapter{From Plugin XML to Java Code}
