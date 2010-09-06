@@ -121,6 +121,16 @@ Important is to understand how Eclipse calls your Code. First you find the Exten
 
 \chapter{Language Toolkit for Processor Based Refactoring}
 For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{classDiagrammProcessorBasedRefactoring.png}
+\end{figure}
+
 
 
 \chapter{Menu's with conditional visibility}
@@ -236,7 +246,7 @@ I think the following Code explains itself:
 \end{lstlisting}
 
 \section{Add conditional visibility}
-Up to now all our menu entrys will allways be available no metter whether the User did a valid selection or not. But in the beginning of this Chapter we desided to show only 
+Up to now all our menu entrys will allways be available no matter whether the User did a valid selection or not. But in the beginning of this Chapter we desided to show only 
 those Refactorings that are executable for the momentary selection.
 \subsection{Property Tester}
 To do that we use the Extenstion Point \verb!org.eclipse.core.expressions.propertyTesters!. It allows to define a \verb!propertyTester! with a list of Propertys. In our
