@@ -10,6 +10,16 @@
 \usepackage{nomencl}
 \makenomenclature
 
+% Allow Hyperlinks in the PDF
+\usepackage{hyperref}  
+\hypersetup{colorlinks=false,
+            pdftitle={Refactoring Extenstion for the Yeti NesC Eclipse Plugin},
+            pdfauthor={Noah Heusser, Max Urech},
+            pdfsubject={Documentation of the Refactoring Extenstion for the Yeti NesC Eclipse Plugin},
+            pdfkeywords={Refactoring, NesC, Yeti, TinyOS, Eclipse, LTK, Language Toolkit, ETH},
+            pdfborder={0 0 0}
+} 
+
 % Grafics
 \usepackage{graphicx}
 \usepackage[dvipdfm]{geometry}
@@ -120,11 +130,41 @@ Important is to understand how Eclipse calls your Code. First you find the Exten
 
 
 \chapter{Language Toolkit for Processor Based Refactoring}
-For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. 
+For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. I will explain now how such a refactoring works.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
 \end{figure}
+In the class diagramm the most important Classes are shown. While writing Refactorings you won't have to care about the Classes \verb!RefactoringWizardOpenOperation!, \verb!Refactoring! and \verb!ProcessorBasedRefactoring!. This 
+classes can be used as they are. All the other Classes need to be extended.
+\begin{description}
+ \item[RefactoringWizard] When the User starts a Refactoring he is asked for additional Informations. This Form is painted by the \verb!RefactoringWizard! class.
+The Connection to the Info class is necessary to store the Informations the user typed into the Form. 
+ \item[RefactoringInfo] The \verb!RefactoringInfo! class is not a Class of the LTK Framework, we introduced it to allow communication between the \verb!RefactoringProcessor! and the \verb!RefactoringWizard!. 
+The idea to do it that way is from the Article \href{http://www.eclipse.org/articles/Article-LTK/ltk.html}. When writing Refactorings for our Project, you can extend the 
+RefactoringInfo class. It supports already some Util functionality.
+ \item[RefactoringProcessor] This Class does the actual Refactoring. 
+\begin{description}
+ \item[isApplicable()] This method checks if the Refactoring can be used. It can be used to enable or disable Menu entrys. Douring my work with the Refactoring Processor, this 
+method got never called by the Framework. It can easely be implemented by calling \verb!checkInitialConditions()!.
+\begin{lstlisting}[caption=Generic isApplicable Implementation]{PropertyTester.java}
+public boolean isApplicable() throws CoreException {
+  return checkInitialConditions(new NullProgressMonitor()).
+           hasFatalError();
+}
+\end{lstlisting}
+\item[identifyer] Is a unique Identifier for the Processor.
+\item[name] A human readable Name for what the Refactoring does.
+\item[checkInitialConditions] Checks whether the Refactoring is applicable before the User gives any informations about how the Refactoring should happen. Mostly we checked
+here if the User did a valid selection. Cause of the conditionaly visibility we used, it was used to descide whether a Refectoring is offered or not.
+The Return value is a Status. If the Refactoring can not be executed, the status must contain fatal Errors. Otherwise the Refactoring is ment to be executable.
+\item[checkFinalConditions] Checks whether the Informations the User gave to configure the Refactoring are valid. 
+\item[createChange] This is the Method where the Magic happens. All the changes of your Refactoring are made within this Method. The return value is a \verb!Change!. A \verb!Change!
+discribes what you want to change in your Refactoring. You don't execute the change yourself, this is done by the Framework. LTK offers a lot of Implementations of the Change
+class. 
+\end{description}
+
+ \end{description}
 
 \begin{figure}[h]
 \centering
