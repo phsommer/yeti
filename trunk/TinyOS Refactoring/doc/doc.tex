@@ -142,6 +142,7 @@ Important is to understand how Eclipse calls your Code. First you find the Exten
 
 
 \chapter{Language Toolkit for Processor Based Refactoring}
+\label{languageToolkitForProcessorBasedRefactoring}
 For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. I will explain now how such a refactoring works.
 \section{Important Classes}
 
@@ -221,8 +222,8 @@ will be shown again. If thay are OK, the \verb!createChange()! method of the \ve
 
 If the User accepts the Changes, they get applied and the Refactoring is finished. Douring the whole Process, LTK makes shure that the User has \verb!back! and \verb!cancel! Buttons.
 
-
 \chapter{Menu's with conditional visibility}
+\label{menuWithConditionalVisibility}
 In our Plugin the Use Case is always the same. The User selects some code, the User selects a refactoring, the User executes the Refactoring. To achieve that we need to have Menus where the user can select the Refactoring he wants to Execute.
 But this is not enogh, our Plugin supports a lot of Refactorings. If the User has to find the Refactoring he wants to use in a list of all possible Refactorings, it will take him a lot of time.
 To make it easy for the User we want to list only those Refactorings that are actually possible for his momentary Selection. This means we need conditional visibility.
@@ -426,7 +427,8 @@ Therefore the next level of packages in the {\it entities} package will designat
 About concrete refactorings we will talk in the chapter "Concrete refactorings".
 
 
-\chapter{From Plugin XML to Java Code}
+\chapter{From plugin XML to Java code}
+\label{fromPluginXMLToJavaCode}
 \section{How to decide the availability of a refactoring}
 After we have introduced the appropriate lines of XML in the {\it plugin.xml} for a specific refactoring, the plugin is now able to ask the question: ``Is the current selection appropriate for this refactoring?''
 But the software is not yet capable to answer this question. That is where the {\it Refactoring} enum and the {\it RefactoringAvailabilityTester} come in.
@@ -480,6 +482,7 @@ This function is actually the place, where the Language Toolkit for Processor Ba
 This implementation will finally execute the real work, which is the actual surplus of the refactoring.
 
 \chapter{Abstract refactorings}
+\label{abstractRefactorings}
 \section{What we mean by abstract refactoring}
 Refactorings have the pecularity, that they can be grouped into classes, which appear to the user to be similar. In our case the only such group we really have defined is the renaming of program identifiers. All but the {\it extract function} refactoring are actually implemented as subtypes of the elements in the {\it abstractrefactoring.rename} package.
 But we could also imagine other groups, i.e. in java there exist the group of generators, which generate some code for you or there are refactorings which allows you to push up code in a supertype or pull it down in a subtype.\\
@@ -489,7 +492,7 @@ Because nearly all of our refactorings are about renaming, we take a closer look
 
 \section{The {\it abstractrefactoring.rename} classes}
 \subsection{The {\it RenameAvailabilityTester} abstract class}
-Bevore a user is allowed to execute a rename refactoring, eclipse has to force him, to select a program identifier. Namely the identifier which has to be renamed.
+Before a user is allowed to execute a rename refactoring, eclipse has to force him, to select a program identifier. Namely the identifier which has to be renamed.
 The {\it RenameAvailabilityTester} implements the {\it IRefactoringAvailabilityTester} interface, which we already talked about in the last chapter.
 Therefore it overrides the interface' {\it test} function. In this function it tries to get an identifier out of the given user selection. If this is not possible, the function will just return false, which means that the associated refactoring is not available for the selection.
 Otherwise it calls its own abstract function {\it isSelectionAppropriate} which will solve the question, if the refactoring is available, in a subtype. This function has an argument of type {\it Identifier}, which is actually an AST element, which will be the currently selected identifier, during a call. 
@@ -536,8 +539,9 @@ The {\it createChange} function is the last function, which will be called by th
 This object then should include all changes, which are necessary for the refactoring, to fullfil its task.
 
 \chapter{Harnessing the AST}
-The Yeti NesC parser generates an AST. This AST includes all information about the NesC source code on a per file base. Big parts of our program build upon analyzing this AST's, in order to find information about the program, which is to be refactored.
-In early phases of the development, we used a lot of static code, to gather information out of the AST. This lead to a more imperative then object oriented design, with high coupling. Since this is an unpopular attribute for good software, we descded to refactor our refactoring plugin. 
+\label{harnessingTheAST}
+The Yeti NesC parser generates an AST. This AST includes all information about the NesC source code on a per file base. Big parts of our program build upon analyzing these ASTs, in order to find information about the program, which is to be refactored.
+In early phases of the development, we used a lot of static code, to gather information out of the AST. This lead to a more imperative then object oriented design, with high coupling. Since this is an unpopular attribute for good software, we decided to refactor our refactoring plugin. 
 The result was the birth of the so called {\it AstAnalyzer} classes.
 
 \section{The {\it AstAnalyzer} classes}
@@ -571,7 +575,9 @@ As we already mentioned, our first approach was more kind of an imperative one. 
      \item {\it ASTUtil4Variables} class includes a lot of functions related to the AST structure of variables.
    \end{enumerate}
 If we had have some more time, we probably had designed something like a {\it FunctionAstAnalyzer} class. This class than had replaced the other two, which had been more likely a good object oriented design.\\
-The last class dedicated to the AST, is the {\it ASTUtil} class. It includes a lot of convenience functions, which are useful everywhere, where we interact with the AST.
+A very useful class dedicated to the AST, is the {\it ASTUtil} class. It includes a lot of convenience functions, which are useful everywhere, where we interact with the AST.\\
+Last but everything else then least we have to mention the {\it AstPositioning} class. This class's main task is to find the appropriate AST element for a given character position in a source file.
+This task is complicated by the fact, that the position may come from a preprocessed file. The correct functioning of the class is especially mission critical for deciding the user selection.
 
 \subsection{Project wide classes}
 There is a number of further utility classes int the {\it utility} package.\\
@@ -628,7 +634,47 @@ With more time we also could have implemented some more refactorings, i.e.:
    \end{enumerate}
 And we are sure, there are a lot more of possibilities.
 
-\section{How to implement a new Refactoring}
+\section{How to implement a new refactoring}
+If you intend to implement a new refactoring, this section should give you an overview, which steps you have to follow, and where in this document you can find more information to a specific topic.
+
+\subsection{Enable your refactoring}
+First you have to add new, appropriate elements in the {\it plugin.xml} for your refactoring. The fastest way to do this is to copy and paste existing elements, and adapt their content. You have to add the following elements:
+   \begin{enumerate}
+    \item A {\it command} element in the {\it commands extension} element, important is the {\it id} attribute, since it is referenced in all other elements
+    \item A {\it handler} element in the {\it handlers extension} element, important is the {\it class} attribute, which references the handler implementation
+    \item A {\it command} element in the {\it menu menuContribution} element under the menus {\it extension} element, important is the {\it label} attribute, which is the name shown to the user and the {\it property} attribute, since it identifies the refactoring in the property tester
+    \item A {\it command} element in the {\it popup menuContribution} element under the menus {\it extension} element, important is the {\it label} attribute, which is the name shown to the user and the {\it property} attribute, since it identifies the refactoring in the property tester
+   \end{enumerate}
+Finally you have to add the {\it property} string, which you have specified in the {\it command} elements, which you added to the {\it menuContribution} elements, to the {\it properties} attribute in the {\it propertyTester extensinon} element.\\
+This is all you have to do with the {\it plugin.xml}, in order to introduce your new refactoring.
+If this information is not enough for you, maybe you find some answers in chapter \ref{menuWithConditionalVisibility} on page \pageref{menuWithConditionalVisibility}.
+
+Now you have to create a subtype of {\it IRefactoringAvailabilityTester}. It has to test, if the user selection is appropriate for your refactoring.
+The last step in order to enable your new refactoring, is to define a new enum constant in the {\it Refactoring} enum.
+Make sure that its {\it propertyName} field matches the {\it property} name you chose in the {\it plugin.xml} and set your new {\it IRefactoringAvailabilityTester} as its {\it tester} field.\\
+If you have done all these steps, you should now see your refactoring in the Eclipse user interface, if the user selection matches your definitions.
+If you need more information about these two steps, consult chapter \ref{fromPluginXMLToJavaCode} on page \pageref{fromPluginXMLToJavaCode}.
+
+\subsection{Make your refactoring do its work}
+You should now be able to select your refactoring in the Eclipse user interface. To make the selection do your refactoring, you have to do the following steps.
+First you have to implement a subtype of the Eclipse {\it AbstractHandler} class.
+Make sure that the class name matches the one given in the {\it plugin.xml} in the {\it handler} element.
+This class is responsible for initiating your refactoring. You should do this by facilitating the language toolkit for processor based refactoring.
+This means that you have to create subtypes of the following classes: refactoring wizard, give it an input page for user input, and a refactoring processor.
+   \begin{enumerate}
+    \item {\it DefaultRefactoringWizard} class of us, responsible for consolidating the following classes
+    \item {\it RefactoringInfo} class of us, carries information needed by the refactoring and the wizard itself
+    \item {\it UserInputWizardPage} of Eclipse, the window, where the user can do its input
+    \item {\it RefactoringPorcessor} of Eclipse, the place where the changes actually are generated
+   \end{enumerate}
+To find out more about this classes, read chapter \ref{languageToolkitForProcessorBasedRefactoring} on page \pageref{languageToolkitForProcessorBasedRefactoring}.
+If you implemented and wired them correctly, your refactoring should now be able to do its work.\\
+If you intend to write a rename refactoring, you can extend the classes from the {\it abstractrefactoring.rename} package.
+If you do so, your only real concern is to write a subtype of the {\it RenameProcessor} class.
+In this case you should take a look at chapter \ref{abstractRefactorings} on page \pageref{abstractRefactorings}.\\
+For writing a processor you should consider to reuse the classes explained in chapter \ref{harnessingTheAST} on page \pageref{harnessingTheAST}.\\
+If all this information is not enough, you can read the source code, which is still the most accurate Documentation.
+
 
 
 \nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
