@@ -131,6 +131,7 @@ Important is to understand how Eclipse calls your Code. First you find the Exten
 
 \chapter{Language Toolkit for Processor Based Refactoring}
 For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. I will explain now how such a refactoring works.
+\section{Important Classes}
 
 \begin{figure}[h]
 \centering
@@ -165,15 +166,28 @@ The Return value is a Status. If the Refactoring can not be executed, the status
 discribes what you want to change in your Refactoring. You don't execute the change yourself, this is done by the Framework. LTK offers a lot of Implementations of the Change
 class. 
 \end{description}
+\end{description}
+
+\section{The Change Classes}
+The LTK offers the Change Class. By createing Change Classes in stead of doing the Changes yourself you allow LTK to provied ``change priview functionality'' and ``undo redo''.
+LTK offers a lot of Changes for Moving, Renameing and so fonth. I just talk about the most important ones.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{changeClassDiagramm.png}
 \end{figure}
-
+\begin{description}
+ \item[CompositeChange] Most Refactoings change more than one thing. Thatsway you will use this Change in almost every Refactoring.
+ \item[NullChange] A Change that does nothing. It allows you to avoid null-Values within your Code.
+ \item[DocumentChange] Changes a TextFile which is opend in the Editor. It allows you to change code that has not yet been saved. We wanted to use this, but got 
+Exceptions cause Threads tryed to access Data that are not allowed to access. In the Internet I found People having the same Problem, but no solution. The Problem seems
+to occure only in the newest Version of Eclipse. Maybe it is solved when you read that. If so, use this Change for Files that are opend, and not \verb!TextFileChange!.
+ \item[TextFileChange] We used the \verb!TextFileChage! to do all our TextChanges. It works, but the User is forced to save all Files before he can start doing 
+Refactoring. 
 \end{description}
 
 
 
+\section{Refactoring Operation Sequence}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
