@@ -131,10 +131,12 @@ Important is to understand how Eclipse calls your Code. First you find the Exten
 
 \chapter{Language Toolkit for Processor Based Refactoring}
 For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. I will explain now how such a refactoring works.
+
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
+\includegraphics[width=\textwidth]{classDiagrammProcessorBasedRefactoring.png}
 \end{figure}
+
 In the class diagramm the most important Classes are shown. While writing Refactorings you won't have to care about the Classes \verb!RefactoringWizardOpenOperation!, \verb!Refactoring! and \verb!ProcessorBasedRefactoring!. This 
 classes can be used as they are. All the other Classes need to be extended.
 \begin{description}
@@ -163,15 +165,19 @@ The Return value is a Status. If the Refactoring can not be executed, the status
 discribes what you want to change in your Refactoring. You don't execute the change yourself, this is done by the Framework. LTK offers a lot of Implementations of the Change
 class. 
 \end{description}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{changeClassDiagramm.png}
+\end{figure}
 
- \end{description}
+\end{description}
+
+
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{classDiagrammProcessorBasedRefactoring.png}
+\includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
 \end{figure}
-
-
 
 \chapter{Menu's with conditional visibility}
 In our Plugin the Use Case is always the same. The User selects some code, the User selects a refactoring, the User executes the Refactoring. To achieve that we need to have Menus where the user can select the Refactoring he wants to Execute.
