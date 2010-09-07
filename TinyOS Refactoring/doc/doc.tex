@@ -550,13 +550,14 @@ The {\it AstAnalyzerFactory} class takes an {\it ASTNode} or a source file and g
 We than can ask the {\it AstAnalyzerFactory} which type it has created and can then read the associated type out of the factory.
 
 \subsection{{\it AstAnalyzer} types}
-For the {\it AstAnalyzer} which represent a AST of a whole file, we have defined an hierarchy of types. It is shown in the graphic
-\ref{AstAnalyzersTypeHierarchy} on page \pageref{AstAnalyzersTypeHierarchy}. Depending on the analyzer type we can get specific information.
+For the {\it AstAnalyzers}, which represent a AST of a whole file, we have defined an hierarchy of types. It is shown in the graphic
+\ref{AstAnalyzersTypeHierarchy} on page \pageref{AstAnalyzersTypeHierarchy}. Depending on the analyzer type we can get specific information. 
+I.e. a {\it ModuleAstAnalyzer} will provide information about the Nesc code, which its module implementaion contains, while a {\it ConfigurationAstAnalyzer} holds data about the NesC wirings, which its configuration implementation includes.
 
 \begin{figure}[h]
 \centering
 \includegraphics[height=.35\textheight]{AstAnalyzerTypesHierarchy.png}
-\caption{Type hierarchy for AstAnalyzers, whichs AST's represent a whole file.}
+\caption{ASTs, which represent a whole NesC source file, are abstracted by the {\it AstAnalyzer} type hierarchy.}
 \label{AstAnalyzersTypeHierarchy}
 
 \end{figure}
@@ -626,6 +627,9 @@ With more time we also could have implemented some more refactorings, i.e.:
      \item Magic number refactoring, which converts magic numbers to constants
    \end{enumerate}
 And we are sure, there are a lot more of possibilities.
+
+\section{How to implement a new Refactoring}
+
 
 \nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
