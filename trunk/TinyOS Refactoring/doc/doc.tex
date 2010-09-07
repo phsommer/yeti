@@ -107,7 +107,7 @@ The bundle manifest version defined by OSGi Release 4 or, more specifically, by 
 \section{plugin.xml}
 The {\it plugin.xml} file was once reponsable for all the things that are now configured in the {\it MANIFEST.MF} File. If you search the Internet you will have problems to find what you want cause of that. Today the {\it plugin.xml} is responsable for offering and using Extention Points. I will not talk about how to offer an Extenstion point, cause for this Project it wasnt necessary.
 
-\subsection{Using Extenstion Point (making Extenstions)}
+\subsection{Using Extenstion Points (making Extenstions)}
 When you want to use an Extenstion Point, you have to add the Plugin which defines the Extenstion Point to you Require-Bundle list in the {\it MANIFEST.MF}. Mostly you will have found the Extenstion Point you want to use by Google and often you don't know what Plugin is offering that Extention Point. The only advice I can give you is to use Google again or grep throu the plugins Directory of Eclipse. We did not find a way in which one could easely find the right Plugin.
 
 When the right Plugins are included, one can use the Extenstion Points by adding a \verb!<extension>! Tag.
@@ -188,10 +188,27 @@ Refactoring.
 
 
 \section{Refactoring Operation Sequence}
+Now you know all the Classes. I will no outline what happen when a Refactoring takes place. 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
 \end{figure}
+First, (not in the Picture) the User starts a Refactoring by clicking on a menu entry. The \verb!ActionHandler! gets called and initializes all necessary classes.
+You can see that the \verb!RefactoringWizard! and the \verb!RefactoringProcessor! bouth get a link to the \verb!Info! Object. If you are working with the Selection, 
+the Selection to the \verb!Info! Object in the ActionHandler, later it is hard, cause you are in the wrong thread.
+
+Then the \verb!ActionHandler! calls the \verb!run()! Method of the \verb!RefactoringWizardOpenOperation!. I have to say that the Calls which are done by the
+\verb!RefactoringWizardOpenOperation! are not realy done by the \verb!RefactoringWizardOpenOperation! Class. But it would become very complex to explain how it realy works.
+The effect you see when your methods are called is as in the Picture.
+
+The \verb!RefactoringWizardOpenOperation! checks if the initialConditions are OK. If not it would show the Status Error Message to the User and terminate. If there
+are no Fatal Errors, the \verb!RefactoringWizard! is called to draw the form and save the necessary Informations of the Users to the \verb!Info! Object.
+
+Now, the final Conditions an be checked by the \verb!RefactoringProcessor!. If they are not OK, the Status Errors will be shown to the User and the \verb!RefactoringWizard!
+will be shown again. If thay are OK, the \verb!createChange()! method of the \verb!RefactoringProcesser! gets called. A Priview of the Changes is shown to the User.
+
+If the User accepts the Changes, they get applied and the Refactoring is finished. Douring the whole Process, LTK makes shure that the User has \verb!back! and \verb!cancel! Buttons.
+
 
 \chapter{Menu's with conditional visibility}
 In our Plugin the Use Case is always the same. The User selects some code, the User selects a refactoring, the User executes the Refactoring. To achieve that we need to have Menus where the user can select the Refactoring he wants to Execute.
