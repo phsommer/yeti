@@ -401,17 +401,28 @@ This is achieved by automating low level, time consuming tasks.
 From a user perspective the general refactoring life cycle looks like this:
    \begin{enumerate}
      \item The user selects a new text range in his nesc editor.
-     \item Eclipse instantiates a {\it RefactoringAvailabilityTester} which is a subtype of {\it PropertyTester} defined by eclipse.
+     \item Eclipse instantiates a {\it RefactoringAvailabilityTester} class, which is a subtype of the {\it PropertyTester} class, which is defined by Eclipse.
      \item Eclipse checks all refactorings defined in the {\it plugin.xml} against the property tester, and memorises which of them are available. 
      \item Eclipse shows the available refactorings in the top menu bar, as well as in the popup menu.
      \item The user selects a refactoring, which he wants to execute.
      \item Eclipse will execute the appropriate action handler.
      \item The user probably has to do some input.
+     \item Eclipse shows the changes to be done in a preview window.
+     \item The user confirms or denies the changes.
      \item Eclipse finishes the refactoring.
    \end{enumerate}
 This life cycle can be divided in two main parts. The first part is the evaluation of the available refactorings and the second part is the actual execution of a specific refactoring. 
 This partitioning has two major advantages. First it allows a better user experience, since he sees only the refactorings, which are really executable for the current selection. 
-Second, the execution of a refactoring does not have to care, if the refactoring is applicable.
+Second, the execution of a refactoring does not have to care, if the refactoring is applicable.\\
+In the graphic on page \pageref{UserInputSequence} you can see the steps the user has to take in order to execute a refactoring.
+
+\newpage
+\begin{figure}[h]
+\centering
+\includegraphics[height=0.98\textheight]{userInputSequence.png}
+\caption{A standard user interaction with the refactoring plugin.}
+\label{UserInputSequence}
+\end{figure}
 
 \section{Package structure}
 The root package of the plugin is {\it tinyos.yeti.refactoring}. It contains the {\it RefactoringPlugin} class, which is required for an Eclipse plugin, as well as the classes we gone talk about in the chapter "From plugin XML to java code".\\
@@ -442,6 +453,7 @@ An overview of the relations described in this chapter is given in the graphic o
 \caption{The {\it RefactoringAvailabilityTester} class and its context}
 \label{AvailabilityTesterContext}
 \end{figure}
+
 \subsection{The {\it Refactoring} enum}
 The {\it Refactoring} enum defines for each refactoring, which is defined in the {\it plugin.xml}, its corresponding counterpart in java code as an enum constant.
 Every such enum constant has three fields:
@@ -469,8 +481,9 @@ The {\it test} function has a return value of type {\it boolean} and four parame
    \end{enumerate}
 The {\it receiver} parameter must be an instance of type {\it ITextSelection}, since the property tester is configured like that in the {\it plugin.xml}. This instance contains information about the range of the current selection.\\
 The second parameter of the {\it test} function is of type {\it String} and is named {\it property}. During a call this will be one of the strings, which we have defined in the {\it plugin.xml}, for a specific refactoring.\\
-The {\it test} function now first checks if the plugin is even fully loaded at this point. If we would not do this check, it could be that not all information are available in a refactoring processor, which are assumed to be always available. This would lead to unexpected behaviour.
-If this check fails the function just returns false, which means  that there will be no refactoring available.\\
+The {\it test} function now first checks if the plugin is even fully loaded at this point. If we would not do this check, it could be that not all information are available in a refactoring processor, which are assumed to be always available. This would lead to nondeterministic behaviour.
+If this check fails the function just returns false, which means  that there will be no refactoring available. Furthermore there is a check, if all source files are saved. If there are modified ones, the function returns true only for the {\it NotSaved} property. 
+If this is the case, the user can save all modified files with a click on a button under the refactoring menu. \\
 If the plugin is fully loaded, we come now to the point where the real matching from XML to java code happens. The {\it test} function looks for the {Refactoring} enum constant, whichs {\it propertyName} string matches the {\it property} string passed as an argument.
 If there is no such enum constant, then either the programmer forgot to define the corresponding enum constant, for a refactoring defined in the {\it plugin.xml}, or the {\it propertyName} and the {\it property} strings are not equal, i.e. if there is a typo in one of them.\\
 If we now have the {\it Refactoring} enum constant for a given {\it property} string, then we can read out its {\it tester} field. This gives us an instance of type {\it IRefactoringAvailabilityTester} and we can execute a call to the function {\it test} of this instance.
