@@ -433,8 +433,15 @@ About concrete refactorings we will talk in the chapter "Concrete refactorings".
 \label{fromPluginXMLToJavaCode}
 \section{How to decide the availability of a refactoring}
 After we have introduced the appropriate lines of XML in the {\it plugin.xml} for a specific refactoring, the plugin is now able to ask the question: ``Is the current selection appropriate for this refactoring?''
-But the software is not yet capable to answer this question. That is where the {\it Refactoring} enum and the {\it RefactoringAvailabilityTester} come in.
+But the software is not yet capable to answer this question. That is where the {\it Refactoring} enum and the {\it RefactoringAvailabilityTester} come in. 
+An overview of the relations described in this chapter is given in the graphic on page \pageref{AvailabilityTesterContext}.
 
+\begin{figure}[h]
+\centering
+\includegraphics[height=.5\textheight]{AvailabilityTesterContext.png}
+\caption{The {\it RefactoringAvailabilityTester} class and its context}
+\label{AvailabilityTesterContext}
+\end{figure}
 \subsection{The {\it Refactoring} enum}
 The {\it Refactoring} enum defines for each refactoring, which is defined in the {\it plugin.xml}, its corresponding counterpart in java code as an enum constant.
 Every such enum constant has three fields:
@@ -472,7 +479,8 @@ This function will return true, if this refactoring is available and false other
 \subsection{The {\it IRefactoringAvailabilityTester} interface}
 Each refactoring has an instance of type {\it IRefactoringAvailabilityTester} assigned to it. This assignment is done in the {\it Refactoring} enum. This interface has a single function {\it test}, with a return value of type {\it boolean}, and a single parameter {\it selection} of type {\it ITextSelection}.
 The purpose of the function is to decide, if the current selection is a selection, which is appropriate for the specific refactoring to be executed. If it is, the function will return true and false otherwise.\\
-To find this decision, the refactoring can make use of the class {\it ActionHandlerUtil} to gain access to further information, i.e. to get the selected editor, or the selected file.
+To find this decision, the refactoring can make use of the class {\it ActionHandlerUtil} to gain access to further information, i.e. to get the selected editor, or the selected file.\\
+
 
 \section{How to execute a specific refactoring}
 At this point Eclipse knows, which refactorings are available for the current selection. Now the refactoring has to be executed, if the user clicks on the corresponding button in the refactoring top menu, or the popup menu of Eclipse.
@@ -565,7 +573,6 @@ I.e. a {\it ModuleAstAnalyzer} will provide information about the Nesc code, whi
 \includegraphics[height=.35\textheight]{AstAnalyzerTypesHierarchy.png}
 \caption{ASTs, which represent a whole NesC source file, are abstracted by the {\it AstAnalyzer} type hierarchy.}
 \label{AstAnalyzersTypeHierarchy}
-
 \end{figure}
 
 \section{Utility classes}
