@@ -1,7 +1,7 @@
 \documentclass[a4paper,10pt]{report}
 \usepackage[utf8x]{inputenc}
 
-% Code-Listings
+% Code Listings
 \usepackage{listings,color} 
 \lstset{numbers=left, numberstyle=\tiny, numbersep=5pt,basicstyle=\footnotesize,breaklines=true} 
 \lstset{language=Java}
@@ -13,9 +13,9 @@
 % Allow Hyperlinks in the PDF
 \usepackage{hyperref}  
 \hypersetup{colorlinks=false,
-            pdftitle={Refactoring Extenstion for the Yeti NesC Eclipse Plugin},
+            pdftitle={Refactoring extension for the Yeti NesC Eclipse plug-in},
             pdfauthor={Noah Heusser, Max Urech},
-            pdfsubject={Documentation of the Refactoring Extenstion for the Yeti NesC Eclipse Plugin},
+            pdfsubject={Documentation of the refactoring extenstion for the Yeti NesC Eclipse Plugin},
             pdfkeywords={Refactoring, NesC, Yeti, TinyOS, Eclipse, LTK, Language Toolkit, ETH},
             pdfborder={0 0 0}
 } 
@@ -25,7 +25,7 @@
 \usepackage[dvipdfm]{geometry}
 
 % Title Page
-%\title{Refactoring Extenstion for the Yeti NesC Eclipse Plugin}
+%\title{Refactoring extenstion for the Yeti NesC Eclipse plug-in}
 %\author{Noah Heusser, Max Urech}
 \begin{document}
 \begin{titlepage}
@@ -36,17 +36,15 @@
 
 
 \begin{abstract}
-In todays Software Development Processes agile development is the state of the art. Agile Processes lead to frequent code reorganisations or in one words ``Refactoring''.
-Refactoring can be a lot of boring and error-prone work if a Developer has to do it by hand. One can easy see that a Computer is mutch faster and far more reliable if
-it comes to finding all occures of a Variable name and change them to a new name.
+In today's software development processes agile development is the state of the art. Agile processes lead to frequent code reorganizations or in one words ``Refactoring''.
+Refactoring can be a lot of boring and error-prone work if a developer has to do it by hand. One can easy see that a computer is much faster and far more reliable if it comes to finding all occurs of a variable name and change them to a new name.
 
-A Refactoring Plugin like the one we wrote allows the Software Developer to concentrate on the Design of the Software and let the computer do the busy work. This Document
-discribes the used Frameworks and explains the Solution we developed.
+A refactoring plug-in like the one we wrote allows the software developer to concentrate on the design of the software and let the computer do the busy work. This document describes the used frameworks and explains the solution we developed.
 
-After all today we have a working Refactoing Plugin which allows to rename most Elements of the NesC language. We could also introduce some other Refactorings like 
-``Introduce Alias'' or ``Extract Function'', but in this area a work could still be done.
+After all today we have a working refactoring plug-in which allows to rename most elements of the NesC language. We could also introduce some other refactorings like 
+``Introduce Alias'' or ``Extract Function'', but in this area a lot of work could still be done.
 
-We hope you enjoy using our Software and also the reading of this Document. 
+We hope you enjoy using our software and also the reading of this document. 
 \end{abstract}
 
 \tableofcontents
@@ -67,10 +65,10 @@ Without such a tool you had to replace the function name by hand at every positi
 This example is also good for the cast, that refactoring supports maintainability, because a readable program is also a maintainable program. 
 And if the names of the different entities in a program match their purpose, the program is for sure more readable, then if they don't.
 
-\part{Eclipse Plugins}
-\chapter{General Infos about writeing Plugins}
-Eclipse is famous for it's plugin architecture. Everything in Eclipse is a Plugin. An Eclipse Plugin is a JAR-File or a Folder in the plugins-Directory of the eclipse program folder.
-To be a plugin it takes at least three Files.
+\part{Eclipse plug-ins}
+\chapter{General info about writing plug-ins}
+Eclipse is famous for its plug-in architecture. Everything in Eclipse is a plug-in. An Eclipse plug-in is a JAR-File or a folder in the plugins-Directory of the Eclipse program folder.
+To be a plug-in it takes at least three files.
 \begin{itemize}
   \item META-INF/MANIFEST.MF
   \item plugin.xml
@@ -78,8 +76,8 @@ To be a plugin it takes at least three Files.
 \end{itemize}
 
 \section{META-INF/MANIFEST.MF}
-The Manifest file is the first File that is read by Eclipse while loding the Plugin. It conatins all the Informations about what requirements 
-are needed to load the Plugin and how it can be loaded. I will now explain the most important entrys in the Manifest file.
+The Manifest file is the first file that is read by Eclipse while loading the plug-in. It contains all the information's about what requirements 
+are needed to load the plug-in and how it can be loaded. I will now explain the most important entry's in the Manifest file.
 
 \begin{lstlisting}[caption=MANIFEST]{META-INF/MANIFEST.MF}
 Manifest-Version: 1.0
@@ -107,26 +105,26 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
 
 \begin{description}
- \item[Manifest-Version] This line shows that a manifest's entries take the form of "header: value" pairs. The name of a header is separated from its value by a colon. (from http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html access 2.9.2010)
+ \item[Manifest-Version] This line shows that a manifest's entries take the form of "header: value" pairs. The name of a header is separated from its value by a colon. (from \href{ http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html}{ http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html} access 2.9.2010)
  \item[Bundle-ManifestVersion] Manifest header identifying the bundle manifest version. A bundle manifest may express the version of the syntax in which it is written by specifying a bundle manifest version. Bundles exploiting OSGi Release 4, or later, syntax must specify a bundle manifest version. 
-The bundle manifest version defined by OSGi Release 4 or, more specifically, by version 1.3 of the OSGi Core Specification is "2". (from Eclipse Help Version: 3.5.2)
- \item[Bundle-Name] A human readable meaningful Name for the Plugin you write.
- \item[Bundle-SymbolicName] A unique String identifyer for you Pulugin. Mostly the Path of your package structure is used. The \verb!singelton:=true! makes the OSGi Framework only load your Plugin once. It has to be set in every Eclipse Plugin. It is only necessary cause Eclipse uses OSGi which is not only used for Eclipse.
- \item[Bundle-Version] Defines the Version of the Plugin. When the Plugin is used by an other Plugin , it can specify the Verserion in the Required-Bundle Parmeter. A Verstion is composed of 3 positive natural numbers and a String seperated by ``.'' sign. Two Versions are equal if the Numbers are Equal. The String in the end might be used to specify different Versions with the absolute same Interface (for example different Compailers). The Nummbers from left to right are called: Major.Minor.Mirco.
- \item[Bundle-Activator] This is the Path of the Class which is used to start the whole Plugin. The class must extend \verb!org.eclipse.core.runtime.Plugin!. 
- \item[Require-Bundle] When you write you plugin you will use the Functionality of other Plugins. To do that you have to specify here which plugins you use. Eclipse will refuse to load your plugin if the Plugins you require are not avialable. In addition you can specify the version of the plugin you need to be available. If you don't specify anything else Eclipse will assume to have an compatible Version as long as there is one having the same Major-Number. In case of you have to be more picky, you can also add a \verb!match! parameter with \verb!perfect! for Major, Minor and Micro Number have to match, or \verb!equivalent! for Major and Minor Number have to match.
- \item[Bundle-ActivationPolicy] The only parameter you can add here is \verb!lazy! which tells OSGi to wait with loading the Plugin until it is used.
- \item[Bundle-RequiredExecutionEnvironment] Defines a lower bound for the Version of the JVM that is allowed to be used.
+The bundle manifest version defined by OSGi release 4 or, more specifically, by version 1.3 of the OSGi core specification is "2". (from Eclipse Help Version: 3.5.2)
+ \item[Bundle-Name] A human readable meaningful name for the plug-in you write.
+ \item[Bundle-SymbolicName] A unique string identifier for you plug-in. Mostly the path of your package structure is used. The {\it singelton:=true} makes the OSGi Framework only load your plug-in once. It has to be set in every Eclipse plug-in. It is only necessary because Eclipse uses OSGi which is not only used for Eclipse.
+ \item[Bundle-Version] Defines the Version of the plug-in. When the plug-in is used by an other plug-in, it can specify the version in the {\it Required-Bundle} parameter. A version is composed of 3 positive natural numbers and a string separated by ``.'' sign. Two versions are equal if the numbers are equal. The string in the end might be used to specify different versions with the absolute same interface (for example different compilers). The numbers from left to right are called: Major.Minor.Mirco.
+ \item[Bundle-Activator] This is the path of the class which is used to start the whole plug-in. The class must extend {\it org.eclipse.core.runtime.Plugin}. 
+ \item[Require-Bundle] When you write you plug-in you will use the Functionality of other plug-ins. To do that you have to specify here which plug-ins you use. Eclipse will refuse to load your plug-in if the plug-ins you require are not available. In addition you can specify the version of the plug-in you need to be available. If you don't specify anything else Eclipse will assume to have a compatible version as long as there is one having the same Major-Number. In case of you have to be pickier, you can also add a {\it match} parameter with {\it perfect} for Major, Minor and Micro number have to match, or {\it equivalent} for Major and Minor Number have to match.
+ \item[Bundle-ActivationPolicy] The only parameter you can add here is {\it lazy} which tells OSGi to wait with loading the plug-in until it is used.
+ \item[Bundle-RequiredExecutionEnvironment] Defines a lower bound for the version of the JVM that is allowed to be used.
  \end{description}
 
 \section{plugin.xml}
-The {\it plugin.xml} file was once reponsable for all the things that are now configured in the {\it MANIFEST.MF} File. If you search the Internet you will have problems to find what you want cause of that. Today the {\it plugin.xml} is responsable for offering and using Extention Points. I will not talk about how to offer an Extenstion point, cause for this Project it wasnt necessary.
+The {\it plugin.xml} file was once responsible for all the things that are now configured in the {\it MANIFEST.MF} file. If you search the Internet you will have problems to find what you are looking for cause of that. Today the {\it plugin.xml} is responsible for offering and using extension points. I will not talk about how to offer an extension point, cause for this project it wasn't used.
 
-\subsection{Using Extenstion Points (making Extenstions)}
-When you want to use an Extenstion Point, you have to add the Plugin which defines the Extenstion Point to you Require-Bundle list in the {\it MANIFEST.MF}. Mostly you will have found the Extenstion Point you want to use by Google and often you don't know what Plugin is offering that Extention Point. The only advice I can give you is to use Google again or grep throu the plugins Directory of Eclipse. We did not find a way in which one could easely find the right Plugin.
+\subsection{Using extension points (making extensions)}
+When you want to use an extension point, you have to add the plug-in which defines the extension point to you {\it Require-Bundle} list in the {\it MANIFEST.MF}. Mostly you will have found the extension point you want to use by Google and often you don't know what plug-in is offering that extension point. The only advice I can give you is to use Google again or grep throw the plug-ins directory of Eclipse. We did not find a way in which one could easily find the right plug-in.
 
-When the right Plugins are included, one can use the Extenstion Points by adding a \verb!<extension>! Tag.
-\begin{lstlisting}[language=XML,caption=Use Extenstion Point ({\it plugin.xml})]{plugin.xml}
+When the right plug-ins are included, one can use the extension points by adding a {\it $<$ extension$>$} tag.
+\begin{lstlisting}[language=XML,caption=Use extenstion point ({\it plugin.xml})]{plugin.xml}
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
@@ -137,119 +135,121 @@ When the right Plugins are included, one can use the Extenstion Points by adding
 </plugin>
 \end{lstlisting}
 
-The \verb!<extenstion>! Tag has only one Important Attribute. It is the Extenstion Point you want to use. In this case of our Example we use the Extenstion Point \verb!propertyTesters! form the Plugin \verb!org.eclipse.core.expressions!.
+The {\it $<$extenstion$>$} tag has only one important attribute. It is the extension point you want to use. In this case of our example we use the extension point {\it propertyTesters} offered by the plug-in {\it org.eclipse.core.expressions}.
 
-The Tags between \verb!<extension>! and \verb!</extension>! are informations for the Extention Point. What Tags need to be there can be read in the XML-Schema File in the \verb!org.eclipse.core.expressions! Plugin Jar. I won't go into detail here, but the plugin.xml of the Plugin that provides the Extention Point defines where in the Jar the Schema File is. Eclipse can show the Schema File by clicking on \verb!Show extension point description! in the \verb!Extention!-Tab of the {\it plugin.xml} editor.
+The tags between {\it $<$extension$>$} and {\it $<$/extension$>$} are information's for the extension point. What tags need to be there can be read in the XML-Schema file in the {\it org.eclipse.core.expressions} plug-in Jar. I won't go into detail here, but the {\it plugin.xml} of the plug-in that provides the extension point defines where in the Jar the Schema file is. Eclipse can show the Schema file by clicking on {\it Show extension point description} in the {\it Extention}-Tab of the {\it plugin.xml} editor.
 
-Important is to understand how Eclipse calls your Code. First you find the Extenstion Point you want to extend. Then you wirte your XML Code to extend it. For some Extenstion Points a Class, implementing an Interface has to be passed as Attribute. If so the Extenstion Point Loads your Class and executes a Method of that Inferface.
+Important is to understand how Eclipse calls your code. First you find the extension point you want to extend. Then you write your XML code to extend it. For some extension points a class, implementing an interface has to be passed as attribute. If so the extension point loads your class and executes a method of that interface.
 
 
-\chapter{Language Toolkit for Processor Based Refactoring}
+\chapter{Language Toolkit for processor based refactoring}
 \label{languageToolkitForProcessorBasedRefactoring}
-For our refactoring Plugin we used the Processor based refactoring, offered by the Language Toolkit of Eclipse. I will explain now how such a refactoring works.
-\section{Important Classes}
+For our refactoring plug-in we used the processor based refactoring, offered by the Language Toolkit of Eclipse. We will explain now how such a refactoring works.
+\section{Important classes}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{classDiagrammProcessorBasedRefactoring.png}
 \end{figure}
 
-In the class diagramm the most important Classes are shown. While writing Refactorings you won't have to care about the Classes \verb!RefactoringWizardOpenOperation!, \verb!Refactoring! and \verb!ProcessorBasedRefactoring!. This 
-classes can be used as they are. All the other Classes need to be extended.
+In the class diagram the most important classes are shown. While writing refactorings you won't have to care about the classes {\it RefactoringWizardOpenOperation}, {\it Refactoring} and {\it ProcessorBasedRefactoring}. This 
+classes can be used as they are. All the other classes need to be extended.
 \begin{description}
- \item[RefactoringWizard] When the User starts a Refactoring he is asked for additional Informations. This Form is painted by the \verb!RefactoringWizard! class.
-The Connection to the Info class is necessary to store the Informations the user typed into the Form. 
- \item[RefactoringInfo] The \verb!RefactoringInfo! class is not a Class of the LTK Framework, we introduced it to allow communication between the \verb!RefactoringProcessor! and the \verb!RefactoringWizard!. 
-The idea to do it that way is from the Article \href{http://www.eclipse.org/articles/Article-LTK/ltk.html}. When writing Refactorings for our Project, you can extend the 
-RefactoringInfo class. It supports already some Util functionality.
- \item[RefactoringProcessor] This Class does the actual Refactoring. 
+ \item[RefactoringWizard] When the user starts a refactoring he is asked for additional information's. This form is painted by the {\it RefactoringWizard} class.
+The connection to the Info class is necessary to store the information's the user typed into the form. 
+ \item[RefactoringInfo] The {\it RefactoringInfo} class is not a class of the LTK framework, we introduced it to allow communication between the {\it RefactoringProcessor} and the {\it RefactoringWizard}. 
+The idea to do it that way is from the Article \href{http://www.eclipse.org/articles/Article-LTK/ltk.html}{http://www.eclipse.org/articles/Article-LTK/ltk.html}. When writing Refactorings for our Project, you can extend the 
+{\it RefactoringInfo} class. It supports already some utility functionality.
+ \item[RefactoringProcessor] This class does the actual Refactoring. 
 \begin{description}
- \item[isApplicable()] This method checks if the Refactoring can be used. It can be used to enable or disable Menu entrys. Douring my work with the Refactoring Processor, this 
-method got never called by the Framework. It can easely be implemented by calling \verb!checkInitialConditions()!.
+ \item[isApplicable()] This method checks if the refactoring can be used. It can be used to enable or disable menu entry's. During my work with the refactoring processor, this 
+method got never called by the Framework. It can easily be implemented by calling {\it checkInitialConditions()}.
 \begin{lstlisting}[caption=Generic isApplicable Implementation]{PropertyTester.java}
 public boolean isApplicable() throws CoreException {
   return checkInitialConditions(new NullProgressMonitor()).
            hasFatalError();
 }
 \end{lstlisting}
-\item[identifyer] Is a unique Identifier for the Processor.
-\item[name] A human readable Name for what the Refactoring does.
-\item[checkInitialConditions] Checks whether the Refactoring is applicable before the User gives any informations about how the Refactoring should happen. Mostly we checked
-here if the User did a valid selection. Cause of the conditionaly visibility we used, it was used to descide whether a Refectoring is offered or not.
-The Return value is a Status. If the Refactoring can not be executed, the status must contain fatal Errors. Otherwise the Refactoring is ment to be executable.
-\item[checkFinalConditions] Checks whether the Informations the User gave to configure the Refactoring are valid. 
-\item[createChange] This is the Method where the Magic happens. All the changes of your Refactoring are made within this Method. The return value is a \verb!Change!. A \verb!Change!
-discribes what you want to change in your Refactoring. You don't execute the change yourself, this is done by the Framework. LTK offers a lot of Implementations of the Change
+\item[identifyer] A unique identifier for the processor.
+\item[name] A human readable name for what the refactoring does.
+\item[checkInitialConditions] Checks whether the refactoring is applicable before the user gives any information's about how the refactoring should happen. Mostly we checked
+here if the user did a valid selection. For the conditional visibility we used, it was used to decide whether a refactoring is offered or not.
+The return value is a status. If the refactoring can not be executed, the status must contain fatal errors. Otherwise the refactoring is meant to be executable.
+\item[checkFinalConditions] Checks whether the information's the user gave to configure the refactoring are valid. 
+\item[createChange] This is the method where the magic happens. All the changes of your refactoring are made within this method. The return value is a {\it Change}. A {\it Change}
+describes what you want to change in your refactoring. You don't execute the change yourself, this is done by the framework. LTK offers a lot of implementations of the {\it Change}
 class. 
 \end{description}
 \end{description}
 
-\section{The Change Classes}
-The LTK offers the Change Class. By createing Change Classes in stead of doing the Changes yourself you allow LTK to provied ``change priview functionality'' and ``undo redo''.
-LTK offers a lot of Changes for Moving, Renameing and so fonth. I just talk about the most important ones.
+\section{The {\it Change} classes}
+The LTK offers the {\it Change} class. By creating {\it Change} classes in stead of doing the changes yourself you allow LTK to provide ``change preview functionality''.
+LTK offers a lot of changes for moving, renaming and so forth. I just talk about the most important ones.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{changeClassDiagramm.png}
 \end{figure}
 \begin{description}
- \item[CompositeChange] Most Refactoings change more than one thing. Thatsway you will use this Change in almost every Refactoring.
- \item[NullChange] A Change that does nothing. It allows you to avoid null-Values within your Code.
- \item[DocumentChange] Changes a TextFile which is opend in the Editor. It allows you to change code that has not yet been saved. We wanted to use this, but got 
-Exceptions cause Threads tryed to access Data that are not allowed to access. In the Internet I found People having the same Problem, but no solution. The Problem seems
-to occure only in the newest Version of Eclipse. Maybe it is solved when you read that. If so, use this Change for Files that are opend, and not \verb!TextFileChange!.
- \item[TextFileChange] We used the \verb!TextFileChage! to do all our TextChanges. It works, but the User is forced to save all Files before he can start doing 
-Refactoring. 
+ \item[CompositeChange] Most refactorings change more than one thing. That's way you will use this {\it Change} in almost every refactoring.
+ \item[NullChange] A {\it Change} that does nothing. It allows you to avoid null-values within your Code.
+ \item[DocumentChange] Changes a text file which is opened in the editor. It allows you to change code that has not yet been saved. We wanted to use this, but got 
+Exceptions cause Threads tried to access data that are not allowed to be accessed by them. In the Internet we found people having the same problem, but no solution. The problem seems
+to occur only in the newest version of Eclipse. Maybe it is solved when you read this. If so, use this Change for files that are opened, and not {\it TextFileChange}.
+ \item[TextFileChange] We used the {\it TextFileChage} to do all our text changes. It works, but the User is forced to save all files before he can start doing 
+refactoring. 
 \end{description}
 
 
 
-\section{Refactoring Operation Sequence}
-Now you know all the Classes. I will no outline what happen when a Refactoring takes place. 
+\section{Refactoring operation sequence}
+Now you know all the classes. I will no outline what happen when a refactoring takes place. 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
+\label{ interactionDiagramRefactoring }
 \end{figure}
-First, (not in the Picture) the User starts a Refactoring by clicking on a menu entry. The \verb!ActionHandler! gets called and initializes all necessary classes.
-You can see that the \verb!RefactoringWizard! and the \verb!RefactoringProcessor! bouth get a link to the \verb!Info! Object. If you are working with the Selection, 
-the Selection to the \verb!Info! Object in the ActionHandler, later it is hard, cause you are in the wrong thread.
+First, (not in picture \ref{ interactionDiagramRefactoring }) the user starts a refactoring by clicking on a menu entry. The {\it ActionHandler} gets called and initializes all necessary classes.
+You can see that the {\it RefactoringWizard} and the {\it RefactoringProcessor} both get a link to the {\it Info} Object. If you are working with the selection, save
+the selection to the {\it Info} Object in the ActionHandler, later it is hard, cause you are in the wrong thread.
 
-Then the \verb!ActionHandler! calls the \verb!run()! Method of the \verb!RefactoringWizardOpenOperation!. I have to say that the Calls which are done by the
-\verb!RefactoringWizardOpenOperation! are not realy done by the \verb!RefactoringWizardOpenOperation! Class. But it would become very complex to explain how it realy works.
-The effect you see when your methods are called is as in the Picture.
+Then the {\it ActionHandler} calls the {\it run()} method of the {\it RefactoringWizardOpenOperation}. I have to say that the calls which are done by the
+{\it RefactoringWizardOpenOperation} are not really done by the {\it RefactoringWizardOpenOperation} class. But it would become very complex to explain how it really works.
+The effect you see when your methods are called is as in the picture.
 
-The \verb!RefactoringWizardOpenOperation! checks if the initialConditions are OK. If not it would show the Status Error Message to the User and terminate. If there
-are no Fatal Errors, the \verb!RefactoringWizard! is called to draw the form and save the necessary Informations of the Users to the \verb!Info! Object.
+The {\it RefactoringWizardOpenOperation} checks if the initial conditions are OK. If not it would show the status error message to the user and terminate. If there
+are no fatal errors, the {\it RefactoringWizard} is called to draw the form and save the necessary information's of the users to the {\it Info} object.
 
-Now, the final Conditions an be checked by the \verb!RefactoringProcessor!. If they are not OK, the Status Errors will be shown to the User and the \verb!RefactoringWizard!
-will be shown again. If thay are OK, the \verb!createChange()! method of the \verb!RefactoringProcesser! gets called. A Priview of the Changes is shown to the User.
+Now, the final conditions can be checked by the {\it RefactoringProcessor}. If they are not OK, the status errors will be shown to the user and the {\it RefactoringWizard}
+will be shown again. If they are OK, the {\it createChange()} method of the {\it RefactoringProcesser} gets called. A preview of the changes is shown to the user.
 
-If the User accepts the Changes, they get applied and the Refactoring is finished. Douring the whole Process, LTK makes shure that the User has \verb!back! and \verb!cancel! Buttons.
+If the user accepts the changes, they get applied and the Refactoring is finished. During the whole Process, LTK makes sure that the user has {\it back} and {\it cancel} buttons.
 
 \chapter{Menu's with conditional visibility}
 \label{menuWithConditionalVisibility}
-In our Plugin the Use Case is always the same. The User selects some code, the User selects a refactoring, the User executes the Refactoring. To achieve that we need to have Menus where the user can select the Refactoring he wants to Execute.
-But this is not enogh, our Plugin supports a lot of Refactorings. If the User has to find the Refactoring he wants to use in a list of all possible Refactorings, it will take him a lot of time.
-To make it easy for the User we want to list only those Refactorings that are actually possible for his momentary Selection. This means we need conditional visibility.
+In our plug-in the use case is always the same. The user selects some code, the user selects a refactoring, the user executes the refactoring. To achieve that we need to have menus where the user can select the refactoring he wants to execute.
+But this is not enough, our plug-in supports a lot of Refactorings. If the User has to find the Refactoring he wants to use in a list of all possible refactorings, it will take him a lot of time.
+To make it easy for the user we want to list only those refactorings that are actually possible for his momentary selection. This means we need conditional visibility.
 
-In the picture the necessary components for a Menu with conditional visibility are shown. Dooring the following sections I will explain every component in the Picture.
+In the picture \ref{menuStructure} the necessary components for a menu with conditional visibility are shown. During the following sections we will explain every component in the picture \ref{menuStructure}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{menuStructure.png}
+\label{menuStructure} 
 \end{figure}
 
-\section{Create a Menu entry}
-Eclipse knows about a hundred ways to create a new Menu Entry. Almost none of them make it necessary to write Java, but all of them have different possibilitys. 
-Douring our Project we were not able to understand what ways outdated or what the todays state of the art way is. After testing three ways which did not fit our needs,
-we chose the one I will explain now. 
+\section{Create a menu entry}
+Eclipse knows about a hundred ways to create a new menu entry. Almost none of them make it necessary to write Java code, but all of them have different possibilities. 
+During our project we were not able to understand what ways are deprecated or what the today's state of the art way is. After testing three ways which did not fit our needs,
+we chose the one we will explain now. 
 
-\subsection{Add a new Submenu}
-We want our Refactoring functionality to be available in two Menus. In the Main Menu of the Eclipse window and the Context menu which appears when one rightclicks on
-a selection. To do that we used the \verb!org.eclipse.ui.menus! Extension Point. In this Extenstion Point every menu can be identified by a URI. The URI of the Main Menu is:
-\verb!menu:org.eclipse.ui.main.menu! and to define it's Position we add \verb!?after=additions! to the URI. This adds the Menu just after the menus of the additions group, 
-which is the core Functionality of the Eclipse IDE. In the UML this \verb!<menu>! Tag is the \verb!MenuContributionMenu! Class.
+\subsection{Add a new submenu}
+We want our refactoring functionality to be available in two menus. In the main menu of the Eclipse window and the context menu which appears when one right clicks on
+a selection. To do that we used the {\it org.eclipse.ui.menus} extension point. In this extension point every menu can be identified by a URI. The URI of the main menu is:
+{\it menu:org.eclipse.ui.main.menu} and to define it's position we add {\it ?after=additions} to the URI. This adds the menu just after the menus of the additions group, 
+which is the core functionality of the Eclipse IDE. In the UML this {\it $<$menu$>$} Tag is the {\it MenuContributionMenu} class.
 
-In XML Code it looks like this:
-\begin{lstlisting}[language=XML,caption=Create Menu Folder ({\it plugin.xml})]{plugin.xml}
+In XML code it looks like this:
+\begin{lstlisting}[language=XML,caption=Create menu folder ({\it plugin.xml})]{plugin.xml}
 <extension id="add.item" point="org.eclipse.ui.menus">
   <-- Entrys in the Top Menu -->
   <menuContribution
@@ -259,21 +259,21 @@ In XML Code it looks like this:
   </menuContribution>
 </extenstion>
 \end{lstlisting}
-Important is to see that we use the Tag \verb!<menu>! which means that we add a submenu and that the id of the new Submenu is \verb!tinyos.yeti.RefactoringMenu!. 
-Later when we add Commands to that Submenu we have to refer to that id.
+Important is to see that we use the tag {\it $<$menu$>$} which means that we add a submenu and the id of the new submenu is {\it tinyos.yeti.RefactoringMenu}. 
+Later when we add commands to that submenu we have to refer to that id.
 
-To add the Submenu also to the Context menu we add the same XML Block again, but use the URI \verb!popup:org.eclipse.ui.popup.any! and give it the Id \verb!tinyos.yeti.RefactoringPopup!.
+To add the submenu to the context menu too, we add the same XML block again, but use the URI {\it popup:org.eclipse.ui.popup.any} and give it the id {\it tinyos.yeti.RefactoringPopup}.
 
-If you would now start Eclipse with that new Menu, you wouldnt see anything. The Submenus are only displayed if the Submenu has entrys.
-\subsection{Add a Command to the Submenu}
-Adding a Command (an Entry which triggers an Action) is also added by the Tag \verb!<menuContribution>! but this time not with the Child-Tag \verb!<menu>! but \verb!<command>!.
-In the UML Diagramm I called it \verb!MenuContributionCommand!. For now we don't look at the \verb!visibleWhen!, it will be explanied later.
+If you would now start Eclipse with that new menu, you wouldn't see anything. The submenus are only displayed if the submenu are not empty.
+\subsection{Add a command to the submenu}
+Adding a command (an entry which triggers an action) is also done by the tag {\it $<$menuContribution$>$} but this time not by the child tag {\it $<$menu$>$} but {\it $<$command$>$}.
+In the UML diagram we called it {\it MenuContributionCommand}. For now we don't look at the {\it visibleWhen}, it will be explained later.
 
-The \verb!<command>! Tag has three attributes. \verb!lable! is the String the user will see in the Menu. \verb!id! is just a unique identifyer and \verb!commandId! is the 
-id of the Command that shell be executed when the user clicks on this entry. Createing that command will be explaind in the next Section.
+The {\it $<$command$>$} tag has three attributes. {\it lable} is the string the user will see in the menu. {\it id} is just a unique identifier and {\it commandId} is the 
+id of the command that shell be executed when the user clicks on this entry. Creating that command will be explained in the next section.
 
 In XML it looks like this:
-\begin{lstlisting}[language=XML,caption=Adding a Command to Menu ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Adding a command to a menu ({\it plugin.xml})]{plugin.xml}
 <extension id="add.item" point="org.eclipse.ui.menus">
   <menuContribution
        locationURI= "menu:tinyos.yeti.RefactoringMenu?after=additions">
@@ -283,16 +283,16 @@ In XML it looks like this:
   </menuContribution>
 </extension>
 \end{lstlisting}
-You can see that the \verb!menuContribution! goes this time to \verb!tinyos.yeti.RefactoringMenu! which we defined in the last section.
+You can see that the {\it menuContribution} goes this time to {\it tinyos.yeti.RefactoringMenu} which we defined in the last section.
 
-\subsection{Createing a Command}
-This is now the Command that is called Command in the UML Diagramm. It is not in the Extenstion Point \verb!org.eclipse.ui.menus! but in the Extenstion Point \verb!org.eclipse.ui.commands!. 
-The \verb!<command>! Tag has three attributes. An \verb!id! which is a unique Identifiere. The \verb!categoryId! which groups the the \verb!<command>!'s to Categroies.
-We never used the Categories so we just introduced one and gave all our commands this Category. We hoped that it would be possible to fill a Submenu with a Category of Commands.
-But we didn't find a way to do that. The third Parameter is a \verb!name!. We never used it eather, we usualy took the label in the Menu also as name of the Command.
+\subsection{Createing a command}
+This is now the command that is called command in the UML diagram. It is not in the extenstion point {\it org.eclipse.ui.menus} but in the extenstion point {\it org.eclipse.ui.commands}. 
+The {\it $<$command$>$} tag has three attributes. An {\it id} which is a unique identifier. The {\it categoryId} which groups the the {\it $<$command$>$}'s to categories.
+We never used the Categories so we just introduced one and gave all our commands this category. We hoped that it would be possible to fill a submenu with a category of commands.
+But we didn't find a way to achieve that. The third parameter is a {\it name}. We never used it either, we usually took the label in the menu also as name of the command.
 
 In XML it looks like this:
-\begin{lstlisting}[language=XML,caption=Createing a Command ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Createing a command ({\it plugin.xml})]{plugin.xml}
 <extension point="org.eclipse.ui.commands">
   <category id="tinyos.yeti.refactoring"
             name="Refactoring" />
@@ -302,12 +302,12 @@ In XML it looks like this:
 </extension>
 \end{lstlisting}
 
-One can ask now, where does Eclipse know from what Method it has to invoke to call that command. Well it does not. To know that, we have to define a \verb!handel!.
+One can ask now, where does Eclipse know from what method it has to invoke to call that command. Well it does not. To know that, we have to define a {\it handel}.
 
-\subsection{Intoducing a Handler for a Command}
-A handler is connects a Command in the XML File to a Java Class which implement the Interface \verb!org.eclipse.core.commands.IHandler!. The Extenstion Point
-\verb!org.eclipse.ui.handlers! helps doing that job. It is very simple. Just the Class and the \verb!commandId!.
-\begin{lstlisting}[language=XML,caption=Connecting a Command to a Handler ({\it plugin.xml})]{plugin.xml}
+\subsection{Introducing a handler for a command}
+A handler is connects a command in the XML file to a Java class which implement the interface {\it org.eclipse.core.commands.IHandler}. The extension point
+{\it org.eclipse.ui.handlers} helps doing that job. It is very simple. Just the {\it class} and the {\it commandId}.
+\begin{lstlisting}[language=XML,caption=Connecting a command to a handler ({\it plugin.xml})]{plugin.xml}
 <extension point="org.eclipse.ui.handlers">
    <handler class="tinyos.yeti.refactoring.entities.variable.rename.local.RenameLocalVariableActionHandler"
             commandId="tinyos.yeti.refactoring.rename.local.variable" />
@@ -315,9 +315,9 @@ A handler is connects a Command in the XML File to a Java Class which implement 
 \end{lstlisting}
 
 \subsection{Bindings}
-We did not yet speak about Bindings. They allow you to introduce Shortcuts for your Commands. We did it first, but removed it later again.
-I think the following Code explains itself:
-\begin{lstlisting}[language=XML,caption=Introduce Shortcuts ({\it plugin.xml})]{plugin.xml}
+We did not yet speak about bindings. They allow you to introduce shortcuts for your commands. We did it first, but removed it later again.
+We think the following code explains itself:
+\begin{lstlisting}[language=XML,caption=Introduce shortcuts ({\it plugin.xml})]{plugin.xml}
 <extension point="org.eclipse.ui.bindings">
                 <!--
                         One could also add a Shortcut, by adding the following Attribute
@@ -339,14 +339,14 @@ I think the following Code explains itself:
 \end{lstlisting}
 
 \section{Add conditional visibility}
-Up to now all our menu entrys will allways be available no matter whether the User did a valid selection or not. But in the beginning of this Chapter we desided to show only 
-those Refactorings that are executable for the momentary selection.
-\subsection{Property Tester}
-To do that we use the Extenstion Point \verb!org.eclipse.core.expressions.propertyTesters!. It allows to define a \verb!propertyTester! with a list of Propertys. In our
-case we defined one \verb!propertyTester! called \verb!tinyos.yeti.refactoring.AvailabilityTester! which has one property for each Refactoring.
+Up to now all our menu entries will always be available no matter whether the user did a valid selection or not. But in the beginning of this chapter we decided to show only 
+those refactorings that are executable for the momentary selection.
+\subsection{Property tester}
+To do that we use the extension point {\it org.eclipse.core.expressions.propertyTesters}. It allows defining a {\it propertyTester} with a list of properties. In our
+case we defined one {\it propertyTester} called {\it tinyos.yeti.refactoring.AvailabilityTester} which has one property for each Refactoring.
 
 In XML:
-\begin{lstlisting}[language=XML,caption=Property Tester ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Property tester ({\it plugin.xml})]{plugin.xml}
 <extension point="org.eclipse.core.expressions.propertyTesters">
   <propertyTester id="tinyos.yeti.refactoring.AvailabilityTester"
                   type="org.eclipse.jface.text.ITextSelection"
@@ -356,7 +356,7 @@ In XML:
 </extension>
 \end{lstlisting}
 
-One can see that is has a \verb!class! Parameter. This is a Java Class that extends \verb!org.eclipse.core.expressions.PropertyTester!. It has only one abstract Method:
+One can see that is has a {\it class} parameter. This is a Java class that extends {\it org.eclipse.core.expressions.PropertyTester}. It has only one abstract method:
 \begin{lstlisting}[caption=extends PropertyTester]{PropertyTester.java}
 public class AvailabilityTester extends PropertyTester {
 
@@ -365,13 +365,13 @@ public class AvailabilityTester extends PropertyTester {
   }
 }
 \end{lstlisting}
-One can see that there is a String \verb!property!. It is exactly the String that is defined in the \verb!property! Attribute of the \verb!propertyTester! Tag.
-This way we wrote for each Refactoring a Test wether it is available or not.
+One can see that there is a string {\it property}. It is exactly the String that is defined in the {\it property} attribute of the {\it propertyTester} tag.
+This way we wrote for each refactoring a test whether it is available or not.
 
 \subsection{Visibility Condition}
 
 
-\begin{lstlisting}[language=XML,caption=Visibility Condition ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Visibility condition ({\it plugin.xml})]{plugin.xml}
 <extension id="add.item"
            point="org.eclipse.ui.menus">
   <menuContribution locationURI= "menu:tinyos.yeti.RefactoringMenu?after=additions">
@@ -390,11 +390,11 @@ This way we wrote for each Refactoring a Test wether it is available or not.
   </menuContribution>
 </extenstion>
 \end{lstlisting}
-In the MenuContributionCommand we add a \verb!visibleWhen! Tag. The \verb!checkEnabled="false"! disables the check whether the Command is available or not. 
-It is a Functionality provided by the Handler Class. Technicaly it would work whith just writing \verb!checkEnabled="true"! and Implementing the functionality in 
-the ActionHandler. But as the name isEnabled sais, it is not the Idea of this Function. Thatsway we prefered doing it with the Property.
+In the {\it MenuContributionCommand} we add a {\it visibleWhen} tag. The {\it checkEnabled="false"} disables the check whether the Command is available or not. 
+It is a functionality provided by the handler class. Technically it would work with just writing {\it checkEnabled="true"} and implementing the functionality in 
+the {\it ActionHandler}. But as the name {\it isEnabled} says, it is not the idea of this function. That's way we preferred doing it with the property.
 
-The \verb!visibleWhen! is necessary cause it seems to be a collection that we get there. If it is not there it wont work.
+The {\it visibleWhen} is necessary cause it seems to be a collection that we get there. If the tag is not there it won't work.
 
 \part{The Refactoring Plugin}
 \chapter{About our plugin}
