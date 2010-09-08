@@ -1,5 +1,8 @@
 package tinyos.yeti.refactoring.utilities;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
@@ -8,6 +11,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import tinyos.yeti.editors.MultiPageNesCEditor;
@@ -64,8 +69,22 @@ public class ActionHandlerUtil {
 		if(editor_object instanceof MultiPageNesCEditor){
 			return ((MultiPageNesCEditor) editor_object);
 		} else {
-			System.err.println("Was looking for a MultiPageNesCEditor but found: "+editor_object.getClass().getCanonicalName());
+			//System.err.println("Was looking for a MultiPageNesCEditor but found: "+editor_object.getClass().getCanonicalName());
 			return null;
 		}
+	}
+
+	public static Collection<IEditorPart> getUnsavedEditors() {
+		LinkedList<IEditorPart> dirtyEditors = new LinkedList<IEditorPart>();
+		for (IWorkbenchWindow window : RefactoringPlugin.getDefault()
+				.getWorkbench().getWorkbenchWindows()) {
+			for (IWorkbenchPage page : window.getPages()) {
+				for (org.eclipse.ui.IEditorPart dirtyEditor : page
+						.getDirtyEditors()) {
+					dirtyEditors.add(dirtyEditor);
+				}
+			}
+		}
+		return dirtyEditors;
 	}
 }

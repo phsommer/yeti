@@ -8,7 +8,8 @@ public class AvailabilityTester extends RenameAvailabilityTester{
 	@Override
 	protected boolean isSelectionAppropriate(Identifier selectedIdentifier) {
 		FunctionParameterSelectionIdentifier selectionIdentifier=new FunctionParameterSelectionIdentifier(selectedIdentifier);
-		return selectionIdentifier.isFunctionParameter();
+		boolean ret=selectionIdentifier.isFunctionParameter();
+		return ret;
 	}
 	
 }
