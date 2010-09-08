@@ -395,6 +395,8 @@ The \verb!visibleWhen! is necessary cause it seems to be a collection that we ge
 
 \part{The Refactoring Plugin}
 \chapter{About our plugin}
+The refactoring plugin is an extension for the Eclipse Yeti plugin. Its target is to accelerate the development of NesC code and make it more convenient.
+This is achieved by automating low level, time consuming tasks.
 \section{The general refactoring life cycle}
 From a user perspective the general refactoring life cycle looks like this:
    \begin{enumerate}
@@ -409,7 +411,7 @@ From a user perspective the general refactoring life cycle looks like this:
    \end{enumerate}
 This life cycle can be divided in two main parts. The first part is the evaluation of the available refactorings and the second part is the actual execution of a specific refactoring. 
 This partitioning has two major advantages. First it allows a better user experience, since he sees only the refactorings, which are really executable for the current selection. 
-Second, the execution of a refactoring no more has to care about, if the refactoring is even available.
+Second, the execution of a refactoring does not have to care, if the refactoring is applicable.
 
 \section{Package structure}
 The root package of the plugin is {\it tinyos.yeti.refactoring}. It contains the {\it RefactoringPlugin} class, which is required for an Eclipse plugin, as well as the classes we gone talk about in the chapter "From plugin XML to java code".\\
