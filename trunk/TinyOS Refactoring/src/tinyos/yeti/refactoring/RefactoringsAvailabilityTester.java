@@ -6,38 +6,54 @@ import org.eclipse.jface.text.ITextSelection;
 import tinyos.yeti.editors.NesCEditor;
 import tinyos.yeti.nesc12.ep.NesC12AST;
 import tinyos.yeti.refactoring.utilities.ActionHandlerUtil;
+import tinyos.yeti.refactoring.utilities.ProjectUtil;
 
 public class RefactoringsAvailabilityTester extends PropertyTester {
 
 	@Override
 	public boolean test(Object receiver, String property, Object[] args,Object expectedValue) {
+		
 		// We don't want the Refactoring Menu to come and go, so the "No Refactoring Available" will always stay
-		boolean isNotAvailableEntry = property.equals(Refactoring.NO_REFACTORING_AVAILABLE.getPropertyName());
+		boolean isIsPluginReadyEntry = property.equals(Refactoring.PLUGIN_NOT_READY.getPropertyName());
 		
 		if(!isPluginReady()){
-			return isNotAvailableEntry;
+			return isIsPluginReadyEntry;
+		} else if(isIsPluginReadyEntry) {
+			return false;
+		}
+		
+		boolean isNotSavedEntry =property.equals(Refactoring.NOT_SAVED.getPropertyName());
+		if(!isSaved()){
+			// Only the "Not Saved" Error Entry gets displayed
+			return isNotSavedEntry;
+		} else if(isNotSavedEntry ){
+			// The Not Saved Entry has to be handled even if it is saved
+			return false;
 		}
 		
 		if(!(receiver instanceof ITextSelection)){
-			System.err.println("Wrong receiver Typ");
-			return isNotAvailableEntry;
+			ProjectUtil util=new ProjectUtil( ActionHandlerUtil.getActiveEditor().getNesCEditor());
+			util.log("Wrong receiver Typ");
+			return isIsPluginReadyEntry;
 		}
 		ITextSelection selection = (ITextSelection) receiver;
 		
+		boolean isNoRefactoringAvailableEntry = property.equals(Refactoring.NO_REFACTORING_AVAILABLE.getPropertyName());
 		// The Update does'nt work when no selection is done.
 		// Thats way we force the User to do a real selection
 		if(selection.getLength() == 0){
-			return isNotAvailableEntry;
+			return isNoRefactoringAvailableEntry;
 		}
 		
 		//If there is no refactoring available show the dummy refactoring in the menu.
-		if(isNotAvailableEntry){
+		if(isNoRefactoringAvailableEntry){
 			return !isRefactoringAvailable(selection);
 		}
-		
+
 		Refactoring refactoring=Refactoring.getRefactoring4Property(property);
 		if(refactoring==null){
-			System.err.println("No Refactoring defined for property: "+property);
+			ProjectUtil util=new ProjectUtil( ActionHandlerUtil.getActiveEditor().getNesCEditor());
+			util.log("No Refactoring defined for property: "+property);
 			return false;
 		}
 		IRefactoringAvailabilityTester tester = refactoring.getTester();
@@ -47,6 +63,14 @@ public class RefactoringsAvailabilityTester extends PropertyTester {
 			// Happens when the System is not jet initialized, but the Property is already checked.
 			return false;
 		}
+	}
+	
+	/**
+	 * Tests if all editors are saved. Is required to reach a deterministic behaviour.
+	 * @return
+	 */
+	private boolean isSaved() {
+		return ActionHandlerUtil.getUnsavedEditors().isEmpty();
 	}
 	
 	/**
