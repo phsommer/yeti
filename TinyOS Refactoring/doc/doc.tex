@@ -783,6 +783,11 @@ We then put this identifiers in a map, mapped by the file, to have access to it 
 
 
 \subsection{Create the changes}
+When the {\it createchange()} method is called, a {\it CompositChange} is created. Then the method {\it addChange()} loops over all the identifiers in the {\it affectedIdentifiers} map 
+and creates a {\it TextFileChage} to change the old name to the new name.
+
+A special thing in NesC is that the interface file has the same name as the interface. That's why also a {\it RenameResourceChange} is added to rename the interface file
+to the new interface name. In the end the whole {\it CompositChange} is returned to the LTK Framework.
 
 \nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
