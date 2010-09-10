@@ -63,7 +63,7 @@
 		<command
 			id="tinyos.yeti.refactoring.rename.nesc.function"
 			categoryId="tinyos.yeti.refactoring"
-			name="Rename Nesc Function"/>
+			name="Rename NesC Function"/>
 			
 		<command
 			id="tinyos.yeti.refactoring.extractFunction"
@@ -78,7 +78,7 @@
 		<command
 			id="tinyos.yeti.refactoring.entities.interfaces.alias.introduce"
 			categoryId="tinyos.yeti.refactoring"
-			name="Introduce Interfrace Alias"/>
+			name="Introduce Interface Alias"/>
 		
 		<!-- Dummy Menu entry, for the case when there is no refactoring available-->	
 		<command
