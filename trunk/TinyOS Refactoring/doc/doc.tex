@@ -700,6 +700,15 @@ In this case you should take a look at chapter \ref{abstractRefactorings} on pag
 For writing a processor you should consider to reuse the classes explained in chapter \ref{harnessingTheAST} on page \pageref{harnessingTheAST}.\\
 If all this information is not enough, you can read the source code, which is still the most accurate Documentation.
 
+\section{An example Implementation: The rename interface refactoring}
+\section{Until the processor starts its work}
+\section{The processor}
+Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfull rename an interface.
+   \begin{enumerate}
+    \item Find all identifiers affected by the renaming, most probably in several files.
+    \item Check that the new name does not collide with an existing one.
+    \item If there are no collissions, create the changes.
+   \end{enumerate}
 
 
 \nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
