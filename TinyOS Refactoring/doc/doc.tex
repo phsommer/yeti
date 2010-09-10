@@ -529,6 +529,7 @@ This takes the burden of the subclasses, to find the identifier by themselves.
 Such an implementation then normally solves the question in about four lines of code, by means of an instance of type {\it SelectionIdentifier}. 
 
 \subsection{The {\it SelectionIdentifier} class}
+\label{SelectionIdentifier}
 Identifiers of an entity, which is to be renamed, appear mostly in different places for different purposes. I.e. a function identifier can be in a function definition, function declaration or a function call. 
 A subtype of {\it SelectionIdentifier} is intended to identify the purpose, which a given identifier has.
 This enables a {\it SelectionIdentifier} to identify the entity of a selected identifier and therefore, if a refactoring is available for the given selection. The information about the kind of entity of an identifier can  be found in the AST. 
@@ -543,6 +544,7 @@ This class builds the representation of the window, which the user will use to e
 It is especially interesting, since it uses the {\it InputValidation} class to avoid renaming of identifiers to non C names. If the user enters an unappropriate name, proceed buttons will be disabled, until he corrects his input.
 
 \subsection{The {\it RenameProcessor} class}
+\label{RenameProcessor}
 The {\it RenameProcessor} class extends the class with the same name from the Eclipse ltk library. It provides a lot of functions, which are reused in many subtypes. Besides this it enforces it subtypes to follow a little framework, by means of abstract functions.
 Each subtype has to implement at least four functions:
    \begin{enumerate}
@@ -574,6 +576,7 @@ In early phases of the development, we used a lot of static code, to gather info
 The result was the birth of the so called {\it AstAnalyzer} classes.
 
 \section{The {\it AstAnalyzer} classes}
+\label{AstAnalyzerClasses}
 This classes are intended to wrap AST's of a whole file, or at least parts of an AST. The interaction with an {\it AstAnalyzer} is more of the kind:"Give me all objects which have the property...'. I.e. you can ask a {\it CAstAnalyzer} to give you all global C functions, which appear in its AST.\\
 Without the analyzers the interaction is more like:"I have an AST node, is this AST node of type A, and if so, is it a child of type B...''. This means that in the whole program appeared code fragments, which included actually knowledge dedicated to the AST. This is pretty much the opposite of coherence and encapsulation.
 
@@ -732,14 +735,54 @@ The user who just clicked on {\it Rename Interface} can now enter the new name h
 a valid C identifier and allows him to click preview or OK, only if a possible string was written. Cause the user entered a name which generates no problems, he is allowed to click on
 preview. Eclipse checks the final conditions and calls the {\it createChange} method of the processor. The user can preview the changes and accepts them by clicking on OK.
 \section{The processor}
-Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfull rename an interface.
+Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfull rename an interface:
    \begin{enumerate}
     \item Find all identifiers affected by the renaming, most probably in several files.
     \item Check that the new name does not collide with an existing one.
-    \item If there are no collissions, create the changes.
+    \item If there are no collisions, create the changes.
    \end{enumerate}
+The processor extends the {\it tinyos.yeti.refactoring.abstractrefactorings.rename.RenameProcessor} class. It is explained in detail in chapter \ref{RenameProcessor} on page \pageref{RenameProcessor}.
+Therefore the processor implements the mini framework we mentioned in this chapter. The three framework functions perfectly match on our three steps:
+   \begin{enumerate}
+     \item Find all identifiers realised in function {\it initializeRefactoring}
+     \item Collision detection realised in function {\it checkConditionsAfterNameSetting}
+     \item Change creation realised in function {\it createChange}
+   \end{enumerate}
+We will now go on with explaining the actions taken in the different functions.
+
+\subsection{Find all identifiers affected by the renaming}
+The functionality described here is implemented in the {\it initializeRefactoring} function of our mini framework.
+In order to find all identifiers affected by the renaming, we do the following:
+   \begin{enumerate}
+     \item Find the source file, which defines the interface.
+     \item Check all project files for references to the interface definition.
+     \item Convert the found references to identifiers.
+     \item Check if the identifiers need to be renamed.
+     \item pack all identifiers in a map, mapped by the file in which they appear.
+   \end{enumerate}
+To find the source file, we are in the lucky position, that the selected identifier has to have the name of the Interface, which is to be renamed. 
+A special case is it, when the selection is actually an interface alias, but for our example implementation, this case is not relevant. 
+With the name of the interface to be renamed in our hands, we can use the class {\it ProjectUtil}. This class makes use of the facilities provided by the Yeti plugin.
+It is able to get a {\it IDeclaration} class for the interface name out of the {\it ProjectModel} class. The declaration is actually an abstraction of the interface source file. 
+At this point we have fulfilled our first step for the renaming.\\
+In order to find all references to the interface, we proceed as follows. The declaration we found in the first step has a {\it IASTModelPath}. 
+We can use this path to gather all references of a specific file to the path. This is done via the Yeti {\it ProjectModel} again.\\
+Now we come to the third step. We have now the references to the interface, but we are not able to rename based on the references.
+The reason is, that we have to do checks, if the identifiers behind the references are actually identifiers of interest, see the next step therefore.
+The references can be converted to {\it Identifer} AST nodes, which are also defined by Yeti. This conversion is done by means of our {\it AstPositioning} class.
+It takes an offset in a source file and gives you in turn the AST node at this position. 
+You then can check if it is actually of the expected type, and your done with this step.\\
+You have now the identifiers and the containing files. Unfortunately not all of this identifiers need to be renamed. First there is the possibility, that a reference 
+spans more than one Identifier. Normally not both of them reference an interface and most probably not both the one we are looking for. 
+Second, also interface aliases reference the defining interface, but we are not interested in renaming aliases. This means that we have to filter our bunch of identifiers.
+To fulfill this task, we use our {\it InterfaceSelectionIdentifier} class (chap. \ref{SelectionIdentifier}, page \pageref{SelectionIdentifier}), which makes heavy use of the {\it AstAnalyzerClasses}(chap. \ref{AstAnalyzerClasses}, page \pageref{AstAnalyzerClasses}).\\
+Now we have all identifiers we are interested in according with the files, in which they appear. 
+We then put this identifiers in a map, mapped by the file, to have access to it in the remaining two steps of our mini framework.
+
+\subsection{Check for collisions}
 
 
+\subsection{Create the changes}
 
 \nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
