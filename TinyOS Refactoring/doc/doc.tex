@@ -146,7 +146,7 @@ Important is to understand how Eclipse calls your code. First you find the exten
 \label{languageToolkitForProcessorBasedRefactoring}
 For our refactoring plug-in we used the processor based refactoring, offered by the Language Toolkit of Eclipse. We will explain now how such a refactoring works.
 \section{Important classes}
-
+\label{languageToolkitClasses}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{classDiagrammProcessorBasedRefactoring.png}
@@ -202,6 +202,7 @@ refactoring.
 
 
 \section{Refactoring operation sequence}
+\label{refactoringOperationSequence}
 Now you know all the classes. I will no outline what happen when a refactoring takes place. 
 \begin{figure}[h]
 \centering
@@ -305,6 +306,7 @@ In XML it looks like this:
 One can ask now, where does Eclipse know from what method it has to invoke to call that command. Well it does not. To know that, we have to define a {\it handel}.
 
 \subsection{Introducing a handler for a command}
+\label{commandHandler}
 A handler is connects a command in the XML file to a Java class which implement the interface {\it org.eclipse.core.commands.IHandler}. The extension point
 {\it org.eclipse.ui.handlers} helps doing that job. It is very simple. Just the {\it class} and the {\it commandId}.
 \begin{lstlisting}[language=XML,caption=Connecting a command to a handler ({\it plugin.xml})]{plugin.xml}
@@ -339,6 +341,7 @@ We think the following code explains itself:
 \end{lstlisting}
 
 \section{Add conditional visibility}
+\label{conditionalVisibility}
 Up to now all our menu entries will always be available no matter whether the user did a valid selection or not. But in the beginning of this chapter we decided to show only 
 those refactorings that are executable for the momentary selection.
 \subsection{Property tester}
@@ -706,7 +709,28 @@ Since the refactoring is about renaming, it makes heavy usage of the infrastruct
 This package is described in chapter \ref{abstractRefactorings} on page \pageref{abstractRefactorings}.
 
 \section{Until the processor starts its work}
+We assume that the developer is working in a NesC Project and has saved all his Editors. He wants to rename one of his Interfaces. To do that he double-clicks on the old
+name of the interface. 
 
+Eclipse marks it and fires a {\it Selection Changed} event. 
+This triggers, among other things, the checks which entries are to be displayed in the refactoring menu.\footnote{Defined as described in \ref{conditionalVisibility} on page \pageref{conditionalVisibility}.}
+This means that  Eclipse has to call the {\it AvailabilityTester} property tester for each possible menu entry with the according property. When Eclipse comes to the 
+{\it  renameInterface} property, the global AvailabilityTester will call the {\it test()} method of the rename interface {\it AvailabilityTester}. This method will find the 
+identifier the user marked and pass it to the {\it InterfaceSelectionIdentifier} class. This class checks if the identifier represents an interface. And yes, it does. 
+The {\it AvailabilityTester} returns {\it true} and Eclipse knows that the rename interface refactoring has to be part of the refactoring menu if the user opens it.
+
+All this checks were done so fast that the user did not notice anything. He just selected an interface name. He opens the refactoring menu and Eclipse already knows what entries
+it has to show. The user clicks on {\it Rename Interface}.
+
+Eclipse now create an Object of the {\it ActionHandler} defined in the {\it plugin.xml} {\it handler} tag\footnote{As described in \ref{commandHandler} on page \pageref{commandHandler}.} and calls the {\it execute()} method. 
+The {\it execute} method initializes all the necessary LTK classes\footnote{Described in \ref{languageToolkitClasses} on page \pageref{languageToolkitClasses}.} 
+or there rename interface subclasses. Among them the {\it Processor} and the {\it Wizard}. Then it starts LTK's {\it RefactoringWizardOpenOperation}.
+\footnote{Well illustrated by the interaction diagram\ref{refactoringOperationSequence} on page \pageref{refactoringOperationSequence}.}
+It checks the initial conditions and shows the {\it RenameInputPage} to the user.
+
+The user who just clicked on {\it Rename Interface} can now enter the new name he wants the Interface to have. While he does that, Eclipse check whether he enters
+a valid C identifier and allows him to click preview or OK, only if a possible string was written. Cause the user entered a name which generates no problems, he is allowed to click on
+preview. Eclipse checks the final conditions and calls the {\it createChange} method of the processor. The user can preview the changes and accepts them by clicking on OK.
 \section{The processor}
 Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfull rename an interface.
    \begin{enumerate}
