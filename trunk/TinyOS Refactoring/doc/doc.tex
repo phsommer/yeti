@@ -734,8 +734,9 @@ It checks the initial conditions and shows the {\it RenameInputPage} to the user
 The user who just clicked on {\it Rename Interface} can now enter the new name he wants the Interface to have. While he does that, Eclipse check whether he enters
 a valid C identifier and allows him to click preview or OK, only if a possible string was written. Cause the user entered a name which generates no problems, he is allowed to click on
 preview. Eclipse checks the final conditions and calls the {\it createChange} method of the processor. The user can preview the changes and accepts them by clicking on OK.
+
 \section{The processor}
-Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfull rename an interface:
+Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfully rename an interface:
    \begin{enumerate}
     \item Find all identifiers affected by the renaming, most probably in several files.
     \item Check that the new name does not collide with an existing one.
@@ -777,10 +778,23 @@ spans more than one Identifier. Normally not both of them reference an interface
 Second, also interface aliases reference the defining interface, but we are not interested in renaming aliases. This means that we have to filter our bunch of identifiers.
 To fulfill this task, we use our {\it InterfaceSelectionIdentifier} class (chap. \ref{SelectionIdentifier}, page \pageref{SelectionIdentifier}), which makes heavy use of the {\it AstAnalyzerClasses}(chap. \ref{AstAnalyzerClasses}, page \pageref{AstAnalyzerClasses}).\\
 Now we have all identifiers we are interested in according with the files, in which they appear. 
-We then put this identifiers in a map, mapped by the file, to have access to it in the remaining two steps of our mini framework.
+We then put this identifiers in a map, mapped by the file, to have access to it in the remaining two steps of our mini framework.\\
+If there is a problem during this steps, this can be reported back to the user, by adding a message to the returned value of type {\it RefactoringStatus}. 
+An error at this stage will be reported as fatal error, which means that the user is not able to proceed with the refactoring, but has to abort it. 
+The reason is, that an error at this stage probably means, that we did not find all affected identifiers, which will lead to compile errors, when proceeding.
 
 \subsection{Check for collisions}
-
+The functionality described here is implemented in the {\it checkConditionsAfterNameSetting} function of our mini framework.
+This function is called, after the entered a valid new name and pressed the ok button. Its target is to find any possible collision with an existing name in the source files.
+First we have to check, if there is not already a project file with the given name. If there is one, we report this back to the user by adding a error message to the return value.
+The error message informs the user about the collision.
+The use of a error message instead of a fatal error, will allow the user to go back to the name input field, to choose another name. 
+For each file, which is affected by the renaming, we make use of the so called {\it NesCComponentNameCollissionDetector} class. 
+The collision detector in turn uses an appropriate {\it AstAnalyzer} type, to investigate the source files.\\
+If the affected source file is a NesC module, then we just have to check, if there is a collision with an interface alias. 
+But if we are talking about an NesC configuration, also the implementation has to be checked, if there are any component aliases, with the given name.
+If there is any Problem, it will be reported with an error message. An error message especially allows the user to proceed, in the case he intended the collision for some special tweak.
+ 
 
 \subsection{Create the changes}
 When the {\it createchange()} method is called, a {\it CompositChange} is created. Then the method {\it addChange()} loops over all the identifiers in the {\it affectedIdentifiers} map 
