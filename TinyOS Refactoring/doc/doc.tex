@@ -13,9 +13,9 @@
 % Allow Hyperlinks in the PDF
 \usepackage{hyperref}  
 \hypersetup{colorlinks=false,
-            pdftitle={Refactoring extension for the Yeti NesC Eclipse plug-in},
+            pdftitle={Refactoring extension for the Yeti NesC Eclipse Plug-in},
             pdfauthor={Noah Heusser, Max Urech},
-            pdfsubject={Documentation of the refactoring extenstion for the Yeti NesC Eclipse Plugin},
+            pdfsubject={Documentation of the refactoring extension for the Yeti NesC Eclipse Plug-in},
             pdfkeywords={Refactoring, NesC, Yeti, TinyOS, Eclipse, LTK, Language Toolkit, ETH},
             pdfborder={0 0 0}
 } 
@@ -36,13 +36,19 @@
 
 
 \begin{abstract}
-In today's software development processes agile development is the state of the art. Agile processes lead to frequent code reorganizations or in one words ``Refactoring''.
-Refactoring can be a lot of boring and error-prone work if a developer has to do it by hand. One can easy see that a computer is much faster and far more reliable if it comes to finding all occurs of a variable name and change them to a new name.
+In today's software development processes agile development is the state of the art.
+Agile processes lead to frequent code reorganizations, or in one word, to ``Refactoring''.
+Refactoring can be a lot of boring and error-prone work, if a developer has to do it by hand.
+One can easy see that a computer is much faster and far more reliable then a human,
+if the task is to find all occurrences of a variable and give them a new name.
 
-A refactoring plug-in like the one we wrote allows the software developer to concentrate on the design of the software and let the computer do the busy work. This document describes the used frameworks and explains the solution we developed.
+A refactoring plug-in like the one we wrote, allows the software developer
+to concentrate on the design of the software and delegates the busy, cumbersome work to the computer.
+This document describes the used frameworks and explains the solution we developed.
 
-After all today we have a working refactoring plug-in which allows to rename most elements of the NesC language. We could also introduce some other refactorings like 
-``Introduce Alias'' or ``Extract Function'', but in this area a lot of work could still be done.
+The solution is the so called ``refactoring`` plug-in for Eclipse. The plug-in extends the existing Yeti plug-in for Eclipse.
+The implementation we developed, allows to rename most elements of the NesC language. We have also forged some other refactorings like 
+``Introduce Alias'' or ``Extract Function''. But we can consider a lot more of possible refactorings.
 
 We hope you enjoy using our software and also the reading of this document. 
 \end{abstract}
@@ -63,12 +69,12 @@ you might suddenly realise, that the name of the function actually not really ma
 If you have a function rename refactoring at hand at this point, you simply have to select the refactoring, type in the name, press enter and you are done. 
 Without such a tool you had to replace the function name by hand at every position in the program, where it appears, possibly in different files.
 This example is also good for the cast, that refactoring supports maintainability, because a readable program is also a maintainable program. 
-And if the names of the different entities in a program match their purpose, the program is for sure more readable, then if they don't.
+And if the names of the different entities in a program match their purpose, the program is for sure more readable, then if they do not.
 
 \part{Eclipse plug-ins}
 \chapter{General info about writing plug-ins}
-Eclipse is famous for its plug-in architecture. Everything in Eclipse is a plug-in. An Eclipse plug-in is a JAR-File or a folder in the plugins-Directory of the Eclipse program folder.
-To be a plug-in it takes at least three files.
+Eclipse is famous for its plug-in architecture. Everything in Eclipse is a plug-in. An Eclipse plug-in is a JAR file or a folder in the plug-ins directory of the Eclipse program folder.
+For a plug-in it takes at least three files.
 \begin{itemize}
   \item META-INF/MANIFEST.MF
   \item plugin.xml
@@ -76,8 +82,8 @@ To be a plug-in it takes at least three files.
 \end{itemize}
 
 \section{META-INF/MANIFEST.MF}
-The Manifest file is the first file that is read by Eclipse while loading the plug-in. It contains all the information's about what requirements 
-are needed to load the plug-in and how it can be loaded. I will now explain the most important entry's in the Manifest file.
+The Manifest file is the first file that is read by Eclipse while loading the plug-in. It contains all the information about what requirements 
+are needed to load the plug-in and how it can be loaded. We will now explain the most important entries in the Manifest file.
 
 \begin{lstlisting}[caption=MANIFEST]{META-INF/MANIFEST.MF}
 Manifest-Version: 1.0
@@ -105,26 +111,46 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
 
 \begin{description}
- \item[Manifest-Version] This line shows that a manifest's entries take the form of "header: value" pairs. The name of a header is separated from its value by a colon. \footnote{from \href{ http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html}{ http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html} access 2.9.2010}
- \item[Bundle-ManifestVersion] Manifest header identifying the bundle manifest version. A bundle manifest may express the version of the syntax in which it is written by specifying a bundle manifest version. Bundles exploiting OSGi Release 4, or later, syntax must specify a bundle manifest version. 
-The bundle manifest version defined by OSGi release 4 or, more specifically, by version 1.3 of the OSGi core specification is "2". (from Eclipse Help Version: 3.5.2)
- \item[Bundle-Name] A human readable meaningful name for the plug-in you write.
- \item[Bundle-SymbolicName] A unique string identifier for you plug-in. Mostly the path of your package structure is used. The {\it singelton:=true} makes the OSGi Framework only load your plug-in once. It has to be set in every Eclipse plug-in. It is only necessary because Eclipse uses OSGi which is not only used for Eclipse.
- \item[Bundle-Version] Defines the Version of the plug-in. When the plug-in is used by an other plug-in, it can specify the version in the {\it Required-Bundle} parameter. A version is composed of 3 positive natural numbers and a string separated by ``.'' sign. Two versions are equal if the numbers are equal. The string in the end might be used to specify different versions with the absolute same interface (for example different compilers). The numbers from left to right are called: Major.Minor.Mirco.
- \item[Bundle-Activator] This is the path of the class which is used to start the whole plug-in. The class must extend {\it org.eclipse.core.runtime.Plugin}. 
- \item[Require-Bundle] When you write you plug-in you will use the Functionality of other plug-ins. To do that you have to specify here which plug-ins you use. Eclipse will refuse to load your plug-in if the plug-ins you require are not available. In addition you can specify the version of the plug-in you need to be available. If you don't specify anything else Eclipse will assume to have a compatible version as long as there is one having the same Major-Number. In case of you have to be pickier, you can also add a {\it match} parameter with {\it perfect} for Major, Minor and Micro number have to match, or {\it equivalent} for Major and Minor Number have to match.
- \item[Bundle-ActivationPolicy] The only parameter you can add here is {\it lazy} which tells OSGi to wait with loading the plug-in until it is used.
- \item[Bundle-RequiredExecutionEnvironment] Defines a lower bound for the version of the JVM that is allowed to be used.
+ \item[Manifest-Version] This line shows, that the manifest entries have the form of "header: value" pairs.
+The name of a header is separated from its value by a colon. \footnote{from \href{ http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html}{ http://java.sun.com/developer/Books/javaprogramming/JAR/basics/manifest.html} access 2.9.2010}
+ \item[Bundle-ManifestVersion] Manifest header identifying the bundle manifest version.
+A bundle manifest may express the version of the syntax in which it is written by specifying a bundle manifest version.
+Bundles exploiting OSGi Release 4, or later, syntax must specify a bundle manifest version. 
+The bundle manifest version defined by OSGi release 4 or, more specifically, by version 1.3 of the OSGi core specification is "2".
+(from Eclipse Help Version: 3.5.2)
+ \item[Bundle-Name] A human readable, meaningful name for the plug-in you write.
+ \item[Bundle-SymbolicName] A unique string identifier for you plug-in. Usually you use the path of your package structure.
+The {\it singelton:=true} makes the OSGi Framework only load your plug-in once. It has to be set in every Eclipse plug-in.
+It is only necessary because Eclipse uses OSGi, which is not only used for Eclipse.
+ \item[Bundle-Version] Defines the Version of the plug-in. When the plug-in is used by an other plug-in, it can specify the version in the {\it Required-Bundle} parameter.
+A version is composed of 3 positive natural numbers and a string separated by ``.'' sign. Two versions are equal, if the numbers are equal.
+The string in the end might be used to specify different versions with the absolute same interface (for example different compilers).
+The numbers from left to right are called: Major.Minor.Mirco.
+ \item[Bundle-Activator] This is the path of the class, which is used to start the whole plug-in.
+The class must extend {\it org.eclipse.core.runtime.Plugin}. 
+ \item[Require-Bundle] When you write you plug-in, you will use the functionality of other plug-ins.
+To do that you have to specify here, which plug-ins you use. Eclipse will refuse to load your plug-in if the plug-ins you require are not available.
+In addition you can specify the version of the plug-in you need to be available.
+If you don't specify anything else Eclipse will assume to have a compatible version as long as there is one having the same Major-Number.
+In case you have to be pickier, you can also add a {\it match} parameter with {\it perfect}, in which case Major, Minor and Micro number have to match, or {\it equivalent}, then Major and Minor Number have to match.
+ \item[Bundle-ActivationPolicy] The only parameter you can add here is {\it lazy}, which tells OSGi to wait with loading the plug-in, until it is used.
+ \item[Bundle-RequiredExecutionEnvironment] Defines a lower bound for the version of the JVM, that is allowed to be used.
  \end{description}
 
 \section{plugin.xml}
-The {\it plugin.xml} file was once responsible for all the things that are now configured in the {\it MANIFEST.MF} file. If you search the Internet you will have problems to find what you are looking for cause of that. Today the {\it plugin.xml} is responsible for offering and using extension points. I will not talk about how to offer an extension point, cause for this project it wasn't used.
+The {\it plugin.xml} file was once responsible for all the things, that are now configured in the {\it MANIFEST.MF} file.
+If you browse the Internet, you will have problems to find, what you are looking for, because of that.
+Today the {\it plugin.xml} is responsible for offering and using extension points.
+We will not talk about how to offer an extension point, because we did not need this feature in this project.
 
 \subsection{Using extension points (making extensions)}
-When you want to use an extension point, you have to add the plug-in which defines the extension point to you {\it Require-Bundle} list in the {\it MANIFEST.MF}. Mostly you will have found the extension point you want to use by Google and often you don't know what plug-in is offering that extension point. The only advice I can give you is to use Google again or grep throw the plug-ins directory of Eclipse. We did not find a way in which one could easily find the right plug-in.
+When you want to use an extension point, you have to add the plug-in, which defines the extension point to your {\it Require-Bundle} list in the {\it MANIFEST.MF}.
+Mostly you will have found the extension point you want to use by Google and often you do not know what plug-in is offering that extension point.
+The only advice we can give you, is to use Google again or grep through the plug-ins directory of Eclipse.
+We did not find a way, which allowed us to easily find the right plug-in.
 
 When the right plug-ins are included, one can use the extension points by adding a {\it $<$ extension$>$} tag.
-\begin{lstlisting}[language=XML,caption=Use extenstion point ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Use extension point ({\it plugin.xml})]{plugin.xml}
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
@@ -135,16 +161,23 @@ When the right plug-ins are included, one can use the extension points by adding
 </plugin>
 \end{lstlisting}
 
-The {\it $<$extenstion$>$} tag has only one important attribute. It is the extension point you want to use. In this case of our example we use the extension point {\it propertyTesters} offered by the plug-in {\it org.eclipse.core.expressions}.
+The {\it $<$extension$>$} tag has only one important attribute. It is the extension point you want to use.
+In this case we use the extension point {\it propertyTesters} offered by the plug-in {\it org.eclipse.core.expressions}.
 
-The tags between {\it $<$extension$>$} and {\it $<$/extension$>$} are information's for the extension point. What tags need to be there can be read in the XML-Schema file in the {\it org.eclipse.core.expressions} plug-in Jar. I won't go into detail here, but the {\it plugin.xml} of the plug-in that provides the extension point defines where in the Jar the Schema file is. Eclipse can show the Schema file by clicking on {\it Show extension point description} in the {\it Extention}-Tab of the {\it plugin.xml} editor.
+The tags between {\it $<$extension$>$} and {\it $<$/extension$>$} are information for the extension point.
+Which tags need to be there, can be read in the XML-Schema file in the {\it org.eclipse.core.expressions} plug-in Jar.
+We do not want to go into detail here, but the {\it plugin.xml} of the plug-in, which provides the extension point, defines where in the Jar the Schema file is.
+Eclipse can show the Schema file by clicking on {\it Show extension point description} in the {\it Extention}-Tab of the {\it plugin.xml} editor.
 
-Important is to understand how Eclipse calls your code. First you find the extension point you want to extend. Then you write your XML code to extend it. For some extension points a class, implementing an interface has to be passed as attribute. If so the extension point loads your class and executes a method of that interface.
+Important is to understand how Eclipse calls your code. First you find the extension point you want to extend.
+Then you write your XML code to extend it. For some extension points a class implementing an interface has to be passed as attribute.
+If so, the extension point loads your class and executes a method of that interface.
 
 
 \chapter{Language Toolkit for processor based refactoring}
 \label{languageToolkitForProcessorBasedRefactoring}
-For our refactoring plug-in we used the processor based refactoring, offered by the Language Toolkit of Eclipse. We will explain now how such a refactoring works.
+For our refactoring plug-in we used the processor based refactoring, offered by the Language Toolkit of Eclipse.
+We will explain now, how such a refactoring works.
 \section{Important classes}
 \label{languageToolkitClasses}
 \begin{figure}[h]
@@ -152,39 +185,44 @@ For our refactoring plug-in we used the processor based refactoring, offered by 
 \includegraphics[width=\textwidth]{classDiagrammProcessorBasedRefactoring.png}
 \end{figure}
 
-In the class diagram the most important classes are shown. While writing refactorings you won't have to care about the classes {\it RefactoringWizardOpenOperation}, {\it Refactoring} and {\it ProcessorBasedRefactoring}. This 
-classes can be used as they are. All the other classes need to be extended.
+In the class diagram the most important classes are shown.
+While writing refactorings you do not have to care about the classes {\it RefactoringWizardOpenOperation}, {\it Refactoring} and {\it ProcessorBasedRefactoring}.
+This classes can be used as they are. All the other classes need to be extended.
 \begin{description}
- \item[RefactoringWizard] When the user starts a refactoring he is asked for additional information's. This form is painted by the {\it RefactoringWizard} class.
-The connection to the Info class is necessary to store the information's the user typed into the form. 
- \item[RefactoringInfo] The {\it RefactoringInfo} class is not a class of the LTK framework, we introduced it to allow communication between the {\it RefactoringProcessor} and the {\it RefactoringWizard}. 
-The idea to do it that way is from the Article \href{http://www.eclipse.org/articles/Article-LTK/ltk.html}{http://www.eclipse.org/articles/Article-LTK/ltk.html}. When writing Refactorings for our Project, you can extend the 
-{\it RefactoringInfo} class. It supports already some utility functionality.
+ \item[RefactoringWizard] When the user starts a refactoring, he will be asked for additional information.
+The required form for this, is painted by the {\it RefactoringWizard} class.
+The connection to the Info class is necessary to store the information, which the user typed into the form. 
+ \item[RefactoringInfo] The {\it RefactoringInfo} class is not a class of the LTK framework,
+we introduced it to allow communication between the {\it RefactoringProcessor} and the {\it RefactoringWizard}. 
+The idea to do it that way is from the article \href{http://www.eclipse.org/articles/Article-LTK/ltk.html}{http://www.eclipse.org/articles/Article-LTK/ltk.html}.
+When writing refactorings for our project, you can extend the {\it RefactoringInfo} class. It supports already some utility functionality.
  \item[RefactoringProcessor] This class does the actual Refactoring. 
 \begin{description}
- \item[isApplicable()] This method checks if the refactoring can be used. It can be used to enable or disable menu entry's. During my work with the refactoring processor, this 
-method got never called by the Framework. It can easily be implemented by calling {\it checkInitialConditions()}.
+ \item[isApplicable()] This method checks if the refactoring can be used. It can be used to enable or disable menu entry's.
+During our work with the refactoring processor, this method got never called by the Framework.
+It can easily be implemented by calling {\it checkInitialConditions()}.
 \begin{lstlisting}[caption=Generic isApplicable Implementation]{PropertyTester.java}
 public boolean isApplicable() throws CoreException {
   return checkInitialConditions(new NullProgressMonitor()).
            hasFatalError();
 }
 \end{lstlisting}
-\item[identifyer] A unique identifier for the processor.
+\item[identifier] A unique identifier for the processor.
 \item[name] A human readable name for what the refactoring does.
-\item[checkInitialConditions] Checks whether the refactoring is applicable before the user gives any information's about how the refactoring should happen. Mostly we checked
-here if the user did a valid selection. For the conditional visibility we used, it was used to decide whether a refactoring is offered or not.
-The return value is a status. If the refactoring can not be executed, the status must contain fatal errors. Otherwise the refactoring is meant to be executable.
-\item[checkFinalConditions] Checks whether the information's the user gave to configure the refactoring are valid. 
-\item[createChange] This is the method where the magic happens. All the changes of your refactoring are made within this method. The return value is a {\it Change}. A {\it Change}
-describes what you want to change in your refactoring. You don't execute the change yourself, this is done by the framework. LTK offers a lot of implementations of the {\it Change}
-class. 
+\item[checkInitialConditions] Checks whether the refactoring is applicable before the user gives any information, about how the refactoring should happen.
+Mostly we checked here, if the user did a valid selection. For the conditional visibility we implemented, it was used to decide whether a refactoring is offered or not.
+The return value is a status. If the refactoring can not be executed, the status must contain fatal errors.
+Otherwise the refactoring is meant to be executable.
+\item[checkFinalConditions] Checks whether the information, the user gave to configure the refactoring, are valid. 
+\item[createChange] This is the method where the magic happens. All the changes of your refactoring are made within this method.
+The return value is a {\it Change}. A {\it Change} describes what you want to change in your refactoring.
+You do not execute the change yourself, this is done by the framework. LTK offers a lot of subtypes of the {\it Change} class. 
 \end{description}
 \end{description}
 
 \section{The {\it Change} classes}
-The LTK offers the {\it Change} class. By creating {\it Change} classes in stead of doing the changes yourself you allow LTK to provide ``change preview functionality''.
-LTK offers a lot of changes for moving, renaming and so forth. I just talk about the most important ones.
+The LTK offers the {\it Change} class. By creating {\it Change} classes in stead of doing the changes yourself, you allow LTK to provide ``change preview functionality''.
+LTK offers a lot of changes for moving, renaming and so forth. We just talk about the most important ones.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{changeClassDiagramm.png}
@@ -192,46 +230,56 @@ LTK offers a lot of changes for moving, renaming and so forth. I just talk about
 \begin{description}
  \item[CompositeChange] Most refactorings change more than one thing. That's way you will use this {\it Change} in almost every refactoring.
  \item[NullChange] A {\it Change} that does nothing. It allows you to avoid null-values within your Code.
- \item[DocumentChange] Changes a text file which is opened in the editor. It allows you to change code that has not yet been saved. We wanted to use this, but got 
-Exceptions cause Threads tried to access data that are not allowed to be accessed by them. In the Internet we found people having the same problem, but no solution. The problem seems
-to occur only in the newest version of Eclipse. Maybe it is solved when you read this. If so, use this Change for files that are opened, and not {\it TextFileChange}.
- \item[TextFileChange] We used the {\it TextFileChage} to do all our text changes. It works, but the User is forced to save all files before he can start doing 
-refactoring. 
+ \item[DocumentChange] Changes a text file, which is opened in the editor. It allows you to change code that has not yet been saved.
+We intended to use this, but we got exceptions, because threads tried to access data, which are not allowed to be accessed by them.
+In the Internet we found people having the same problem, but they also had no solution.
+The problem seems to occur only in the newest version of Eclipse. Maybe it is already solved when you read this.
+If so, use this Change for files that are opened instead of {\it TextFileChange}.
+ \item[TextFileChange] We used the {\it TextFileChage} to do all our text changes. 
+It works, but the User is forced to save all files, before he can start doing refactoring. 
 \end{description}
 
 
 
 \section{Refactoring operation sequence}
 \label{refactoringOperationSequence}
-Now you know all the classes. I will no outline what happen when a refactoring takes place. 
+Now you know all the classes. We will not outline what happens, when a refactoring takes place. 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{interactionDiagramRefactoring.png}
 \label{ interactionDiagramRefactoring }
 \end{figure}
-First, (not in picture \ref{ interactionDiagramRefactoring }) the user starts a refactoring by clicking on a menu entry. The {\it ActionHandler} gets called and initializes all necessary classes.
-You can see that the {\it RefactoringWizard} and the {\it RefactoringProcessor} both get a link to the {\it Info} Object. If you are working with the selection, save
-the selection to the {\it Info} Object in the ActionHandler, later it is hard, cause you are in the wrong thread.
+First, (not in picture \ref{ interactionDiagramRefactoring }) the user starts a refactoring by clicking on a menu entry.
+The {\it ActionHandler} gets called and initializes all necessary classes.
+You can see that the {\it RefactoringWizard} and the {\it RefactoringProcessor} both get a link to the {\it Info} Object.
+If you are working with the selection, save the selection to the {\it Info} Object in the ActionHandler, later it is hard, because you are in the wrong thread.
 
-Then the {\it ActionHandler} calls the {\it run()} method of the {\it RefactoringWizardOpenOperation}. I have to say that the calls which are done by the
-{\it RefactoringWizardOpenOperation} are not really done by the {\it RefactoringWizardOpenOperation} class. But it would become very complex to explain how it really works.
-The effect you see when your methods are called is as in the picture.
+Then the {\it ActionHandler} calls the {\it run()} method of the {\it RefactoringWizardOpenOperation}.
+We have to say that the calls, which are done by the {\it RefactoringWizardOpenOperation}, are not really done by the {\it RefactoringWizardOpenOperation} class.
+But it would become very complex to explain how it really works. The effect you see, when your methods are called, is as shown in the picture.
 
-The {\it RefactoringWizardOpenOperation} checks if the initial conditions are OK. If not it would show the status error message to the user and terminate. If there
-are no fatal errors, the {\it RefactoringWizard} is called to draw the form and save the necessary information's of the users to the {\it Info} object.
+The {\it RefactoringWizardOpenOperation} checks if the initial conditions are OK.
+If not, it would show the status error message to the user and terminate. 
+If there are no fatal errors, the {\it RefactoringWizard} is called to draw the form and save the necessary information of the user to the {\it Info} object.
 
-Now, the final conditions can be checked by the {\it RefactoringProcessor}. If they are not OK, the status errors will be shown to the user and the {\it RefactoringWizard}
-will be shown again. If they are OK, the {\it createChange()} method of the {\it RefactoringProcesser} gets called. A preview of the changes is shown to the user.
+Now, the final conditions can be checked by the {\it RefactoringProcessor}.
+If they are not OK, the status errors will be shown to the user and the {\it RefactoringWizard} will be shown again.
+If they are OK, the {\it createChange()} method of the {\it RefactoringProcesser} gets called. A preview of the changes is shown to the user.
 
-If the user accepts the changes, they get applied and the Refactoring is finished. During the whole Process, LTK makes sure that the user has {\it back} and {\it cancel} buttons.
+If the user accepts the changes, they get applied and the Refactoring is finished.
+During the whole Process, LTK makes sure, that the user has {\it back} and {\it cancel} buttons.
 
 \chapter{Menu's with conditional visibility}
 \label{menuWithConditionalVisibility}
-In our plug-in the use case is always the same. The user selects some code, the user selects a refactoring, the user executes the refactoring. To achieve that we need to have menus where the user can select the refactoring he wants to execute.
-But this is not enough, our plug-in supports a lot of Refactorings. If the User has to find the Refactoring he wants to use in a list of all possible refactorings, it will take him a lot of time.
-To make it easy for the user we want to list only those refactorings that are actually possible for his momentary selection. This means we need conditional visibility.
+In our plug-in the use case is always the same. The user selects some code, the user selects a refactoring, the user executes the refactoring.
+To achieve that we need to have menus, where the user can select the refactoring he wants to execute.
+But this is not enough, our plug-in supports a lot of refactorings.
+If the User has to find the refactoring he wants to use in a list of all possible refactorings, it will take him a lot of time.
+To make it easy for the user, we want to list only those refactorings, which are actually possible for his current selection.
+This means we need conditional visibility.
 
-In the picture \ref{menuStructure} the necessary components for a menu with conditional visibility are shown. During the following sections we will explain every component in the picture \ref{menuStructure}.
+In the picture \ref{menuStructure} the necessary components for a menu with conditional visibility are shown.
+During the following sections we will explain every component in the picture \ref{menuStructure}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{menuStructure.png}
@@ -239,15 +287,19 @@ In the picture \ref{menuStructure} the necessary components for a menu with cond
 \end{figure}
 
 \section{Create a menu entry}
-Eclipse knows about a hundred ways to create a new menu entry. Almost none of them make it necessary to write Java code, but all of them have different possibilities. 
-During our project we were not able to understand what ways are deprecated or what the today's state of the art way is. After testing three ways which did not fit our needs,
-we chose the one we will explain now. 
+Eclipse knows about a hundred ways to create a new menu entry.
+Almost none of them make it necessary to write Java code, but all of them have different possibilities. 
+During our project we were not able to discover what ways are deprecated or what the state of the art is.
+After testing three ways which did not fit our needs, we chose the one, which we will explain now. 
 
 \subsection{Add a new submenu}
-We want our refactoring functionality to be available in two menus. In the main menu of the Eclipse window and the context menu which appears when one right clicks on
-a selection. To do that we used the {\it org.eclipse.ui.menus} extension point. In this extension point every menu can be identified by a URI. The URI of the main menu is:
-{\it menu:org.eclipse.ui.main.menu} and to define it's position we add {\it ?after=additions} to the URI. This adds the menu just after the menus of the additions group, 
-which is the core functionality of the Eclipse IDE. In the UML this {\it $<$menu$>$} Tag is the {\it MenuContributionMenu} class.
+We want our refactoring functionality to be available in two menus. 
+In the main menu of the Eclipse window and the context menu, which appears when one right clicks on a selection.
+To do that, we used the {\it org.eclipse.ui.menus} extension point.
+In this extension point every menu can be identified by a URI. The URI of the main menu is:
+{\it menu:org.eclipse.ui.main.menu} and to define it's position, we add {\it ?after=additions} to the URI.
+This adds the menu just after the menus of the additions group, which is the core functionality of the Eclipse IDE.
+In the UML this {\it $<$menu$>$} tag is the {\it MenuContributionMenu} class.
 
 In XML code it looks like this:
 \begin{lstlisting}[language=XML,caption=Create menu folder ({\it plugin.xml})]{plugin.xml}
@@ -260,18 +312,20 @@ In XML code it looks like this:
   </menuContribution>
 </extenstion>
 \end{lstlisting}
-Important is to see that we use the tag {\it $<$menu$>$} which means that we add a submenu and the id of the new submenu is {\it tinyos.yeti.RefactoringMenu}. 
-Later when we add commands to that submenu we have to refer to that id.
+Important is to see that we use the tag {\it $<$menu$>$}, which means that we add a submenu and that the id of the new submenu {\it tinyos.yeti.RefactoringMenu} is. 
+Later when we add commands to that submenu, we have to refer to that id.
 
 To add the submenu to the context menu too, we add the same XML block again, but use the URI {\it popup:org.eclipse.ui.popup.any} and give it the id {\it tinyos.yeti.RefactoringPopup}.
 
 If you would now start Eclipse with that new menu, you wouldn't see anything. The submenus are only displayed if the submenu are not empty.
-\subsection{Add a command to the submenu}
-Adding a command (an entry which triggers an action) is also done by the tag {\it $<$menuContribution$>$} but this time not by the child tag {\it $<$menu$>$} but {\it $<$command$>$}.
-In the UML diagram we called it {\it MenuContributionCommand}. For now we don't look at the {\it visibleWhen}, it will be explained later.
 
-The {\it $<$command$>$} tag has three attributes. {\it lable} is the string the user will see in the menu. {\it id} is just a unique identifier and {\it commandId} is the 
-id of the command that shell be executed when the user clicks on this entry. Creating that command will be explained in the next section.
+\subsection{Add a command to the submenu}
+Adding a command (an entry which triggers an action) is also done by the tag {\it $<$menuContribution$>$}, but this time not by the child tag {\it $<$menu$>$} but {\it $<$command$>$}.
+In the UML diagram we called it {\it MenuContributionCommand}. For now we do not look at the {\it visibleWhen}, it will be explained later.
+
+The {\it $<$command$>$} tag has three attributes. {\it lable} is the string the user will see in the menu.
+{\it id} is just a unique identifier and {\it commandId} is the id of the command, that shall be executed, when the user clicks on this entry.
+Creating that command will be explained in the next section.
 
 In XML it looks like this:
 \begin{lstlisting}[language=XML,caption=Adding a command to a menu ({\it plugin.xml})]{plugin.xml}
@@ -284,16 +338,20 @@ In XML it looks like this:
   </menuContribution>
 </extension>
 \end{lstlisting}
-You can see that the {\it menuContribution} goes this time to {\it tinyos.yeti.RefactoringMenu} which we defined in the last section.
+You can see, that the {\it menuContribution} goes this time to {\it tinyos.yeti.RefactoringMenu}, which we defined in the last section.
 
 \subsection{Createing a command}
-This is now the command that is called command in the UML diagram. It is not in the extenstion point {\it org.eclipse.ui.menus} but in the extenstion point {\it org.eclipse.ui.commands}. 
-The {\it $<$command$>$} tag has three attributes. An {\it id} which is a unique identifier. The {\it categoryId} which groups the the {\it $<$command$>$}'s to categories.
-We never used the Categories so we just introduced one and gave all our commands this category. We hoped that it would be possible to fill a submenu with a category of commands.
-But we didn't find a way to achieve that. The third parameter is a {\it name}. We never used it either, we usually took the label in the menu also as name of the command.
+This is now the command, that is called command in the UML diagram.
+It is not in the extenstion point {\it org.eclipse.ui.menus} but in the extenstion point {\it org.eclipse.ui.commands}. 
+The {\it $<$command$>$} tag has three attributes. An {\it id} which is a unique identifier.
+The {\it categoryId} which groups the the {\it $<$command$>$}'s to categories.
+We never used the Categories, so we just introduced one and gave all our commands this category.
+We hoped, that it would be possible to fill a submenu with a category of commands.
+But we did not find a way to achieve that. The third parameter is a {\it name}.
+We never used it either, we usually took the label in the menu also as name of the command.
 
 In XML it looks like this:
-\begin{lstlisting}[language=XML,caption=Createing a command ({\it plugin.xml})]{plugin.xml}
+\begin{lstlisting}[language=XML,caption=Creating a command ({\it plugin.xml})]{plugin.xml}
 <extension point="org.eclipse.ui.commands">
   <category id="tinyos.yeti.refactoring"
             name="Refactoring" />
@@ -303,12 +361,13 @@ In XML it looks like this:
 </extension>
 \end{lstlisting}
 
-One can ask now, where does Eclipse know from what method it has to invoke to call that command. Well it does not. To know that, we have to define a {\it handel}.
+One can ask now, where does Eclipse know from what method it has to invoke to call that command.
+Well it does not. To know that, we have to define a {\it handel}.
 
 \subsection{Introducing a handler for a command}
 \label{commandHandler}
-A handler is connects a command in the XML file to a Java class which implement the interface {\it org.eclipse.core.commands.IHandler}. The extension point
-{\it org.eclipse.ui.handlers} helps doing that job. It is very simple. Just the {\it class} and the {\it commandId}.
+A handler connects a command in the XML file to a Java class, which implements the interface {\it org.eclipse.core.commands.IHandler}.
+The extension point {\it org.eclipse.ui.handlers} helps doing that job. It is very simple. Just the {\it class} and the {\it commandId}.
 \begin{lstlisting}[language=XML,caption=Connecting a command to a handler ({\it plugin.xml})]{plugin.xml}
 <extension point="org.eclipse.ui.handlers">
    <handler class="tinyos.yeti.refactoring.entities.variable.rename.local.RenameLocalVariableActionHandler"
@@ -342,11 +401,13 @@ We think the following code explains itself:
 
 \section{Add conditional visibility}
 \label{conditionalVisibility}
-Up to now all our menu entries will always be available no matter whether the user did a valid selection or not. But in the beginning of this chapter we decided to show only 
-those refactorings that are executable for the momentary selection.
+Up to now all our menu entries will always be available no matter whether the user did a valid selection or not.
+But in the beginning of this chapter we decided to show only those refactorings, which are executable for the current selection.
+
 \subsection{Property tester}
-To do that we use the extension point {\it org.eclipse.core.expressions.propertyTesters}. It allows defining a {\it propertyTester} with a list of properties. In our
-case we defined one {\it propertyTester} called {\it tinyos.yeti.refactoring.AvailabilityTester} which has one property for each Refactoring.
+To do that we use the extension point {\it org.eclipse.core.expressions.propertyTesters}.
+It allows the definition of a {\it propertyTester} with a list of properties.
+In our case we defined one {\it propertyTester} called {\it tinyos.yeti.refactoring.AvailabilityTester}, which has one property for each Refactoring.
 
 In XML:
 \begin{lstlisting}[language=XML,caption=Property tester ({\it plugin.xml})]{plugin.xml}
@@ -355,11 +416,12 @@ In XML:
                   type="org.eclipse.jface.text.ITextSelection"
                   namespace="tinyos.yeti.refactoring.isAvailable"
                   properties="renameLocalVariable, ..."
-                  class="tinyos.yeti.refactoring.AvailabilityTester" />
+                  class="tinyos.yeti.refactoring.RefactoringsAvailabilityTester" />
 </extension>
 \end{lstlisting}
 
-One can see that is has a {\it class} parameter. This is a Java class that extends \\{\it org.eclipse.core.expressions.PropertyTester}. It has only one abstract method:
+One can see that is has a {\it class} parameter. This is a Java class that extends \\{\it org.eclipse.core.expressions.PropertyTester}.
+It has only one abstract method:
 \begin{lstlisting}[caption=extends PropertyTester]{PropertyTester.java}
 public class AvailabilityTester extends PropertyTester {
 
@@ -368,10 +430,11 @@ public class AvailabilityTester extends PropertyTester {
   }
 }
 \end{lstlisting}
-One can see that there is a string {\it property}. It is exactly the String that is defined in the {\it property} attribute of the {\it propertyTester} tag.
-This way we wrote for each refactoring a test whether it is available or not.
+One can see, that there is a string {\it property}. 
+It is exactly the String, that is defined in the {\it property} attribute of the {\it propertyTester} tag.
+This way we wrote for each refactoring a test, whether it is available or not.
 
-\subsection{Visibility Condition}
+\subsection{Visibility condition}
 
 
 \begin{lstlisting}[language=XML,caption=Visibility condition ({\it plugin.xml})]{plugin.xml}
@@ -393,22 +456,26 @@ This way we wrote for each refactoring a test whether it is available or not.
   </menuContribution>
 </extenstion>
 \end{lstlisting}
-In the {\it MenuContributionCommand} we add a {\it visibleWhen} tag. The {\it checkEnabled="false"} disables the check whether the Command is available or not. 
-It is a functionality provided by the handler class. Technically it would work with just writing {\it checkEnabled="true"} and implementing the functionality in 
-the {\it ActionHandler}. But as the name {\it isEnabled} says, it is not the idea of this function. That's way we preferred doing it with the property.
+In the {\it MenuContributionCommand} we add a {\it visibleWhen} tag.
+The {\it checkEnabled="false"} disables the check whether the Command is available or not. 
+It is a functionality provided by the handler class.
+Technically it would work with just writing {\it checkEnabled="true"} and implementing the functionality in the {\it ActionHandler}.
+But as the name {\it isEnabled} says, it is not the idea of this function.
+That's way we preferred doing it with the property.
 
 The {\it visibleWhen} is necessary cause it seems to be a collection that we get there. If the tag is not there it won't work.
 
-\part{The Refactoring Plugin}
-\chapter{About our plugin}
-The refactoring plugin is an extension for the Eclipse Yeti plugin. Its target is to accelerate the development of NesC code and make it more convenient.
+\part{The Refactoring Plug-in}
+\chapter{About our plug-in}
+The refactoring plug-in is an extension for the Eclipse Yeti plug-in.
+Its target is to accelerate the development of NesC code and make it more convenient.
 This is achieved by automating low level, time consuming tasks.
 \section{The general refactoring life cycle}
 From a user perspective the general refactoring life cycle looks like this:
    \begin{enumerate}
-     \item The user selects a new text range in his nesc editor.
+     \item The user selects a new text range in his NesC editor.
      \item Eclipse instantiates a {\it RefactoringAvailabilityTester} class, which is a subtype of the {\it PropertyTester} class, which is defined by Eclipse.
-     \item Eclipse checks all refactorings defined in the {\it plugin.xml} against the property tester, and memorises which of them are available. 
+     \item Eclipse checks all refactorings defined in the {\it plugin.xml} against the property tester and memorises, which of them are available. 
      \item Eclipse shows the available refactorings in the top menu bar, as well as in the popup menu.
      \item The user selects a refactoring, which he wants to execute.
      \item Eclipse will execute the appropriate action handler.
@@ -417,8 +484,10 @@ From a user perspective the general refactoring life cycle looks like this:
      \item The user confirms or denies the changes.
      \item Eclipse finishes the refactoring.
    \end{enumerate}
-This life cycle can be divided in two main parts. The first part is the evaluation of the available refactorings and the second part is the actual execution of a specific refactoring. 
-This partitioning has two major advantages. First it allows a better user experience, since he sees only the refactorings, which are really executable for the current selection. 
+This life cycle can be divided in two main parts.
+The first part is the evaluation of the available refactorings and the second part is the actual execution of a specific refactoring. 
+This partitioning has two major advantages.
+First it allows a better user experience, since he sees only the refactorings, which are really executable for the current selection. 
 Second, the execution of a refactoring does not have to care, if the refactoring is applicable.\\
 In the graphic on page \pageref{UserInputSequence} you can see the steps the user has to take in order to execute a refactoring.
 
@@ -426,12 +495,13 @@ In the graphic on page \pageref{UserInputSequence} you can see the steps the use
 \begin{figure}[h]
 \centering
 \includegraphics[height=0.98\textheight]{userInputSequence.png}
-\caption{A standard user interaction with the refactoring plugin.}
+\caption{A standard user interaction with the refactoring plug-in.}
 \label{UserInputSequence}
 \end{figure}
 
 \section{Package structure}
-The root package of the plugin is {\it tinyos.yeti.refactoring}. It contains the {\it RefactoringPlugin} class, which is required for an Eclipse plugin, as well as the classes we gone talk about in the chapter "From plugin XML to java code".\\
+The root package of the plug-in is {\it tinyos.yeti.refactoring}.
+It contains the {\it RefactoringPlugin} class, which is required for an Eclipse plug-in, as well as the classes we will talk about in chapter \ref{fromPluginXMLToJavaCode} on page \pageref{fromPluginXMLToJavaCode}.\\
 The root package contains four subpackages:
    \begin{enumerate}
      \item The {\it abstractrefactorings} package
@@ -439,18 +509,26 @@ The root package contains four subpackages:
      \item The {\it utilities} package
      \item The {\it entities} package
    \end{enumerate}
-The {\it abstractrefactorings} package contains infrastructure classes, used to implement concrete refactorings. We take a closer look at this classes in the "Abstract refactorings" chapter.\\
-The {\it ast} and {\it utilities} packages include classes, which are used to interact with the AST and the project, in which we are doing refactoring. The contents of this packages are explained in the chapter "Harnessing the AST".\\
-The {\it entities} package is actually the root package for all concrete refactoring implementations. By entity we mean an object which can be modified by a refactoring. I.e. the entity of a rename or extract function refactoring is a function. The entity of a rename or introduce interface alias is an interface alias.
-Therefore the next level of packages in the {\it entities} package will designate a entity, and the package in such a specific package will designate a concrete refactoring. This means that you will find the concrete implementation of the rename interface alias refactoring implementation in the subpackage {\it entities.interfaces.alias.rename}.
-About concrete refactorings we will talk in the chapter "Concrete refactorings".
+The {\it abstractrefactorings} package contains infrastructure classes, used to implement concrete refactorings.
+We take a closer look at this classes in chapter \ref{abstractRefactorings} on page \pageref{abstractRefactorings}.\\
+The {\it ast} and {\it utilities} packages include classes, which are used to interact with the AST and the project, in which we are doing refactoring.
+The contents of this packages are explained in the chapter \ref{harnessingTheAST} on page \pageref{harnessingTheAST}.\\
+The {\it entities} package is actually the root package for all concrete refactoring implementations.
+By entity we mean an object, which can be modified by a refactoring.
+I.e. the entity of a rename or extract function refactoring is a function.
+The entity of a rename or introduce interface alias is an interface alias.
+Therefore the next level of packages in the {\it entities} package will designate a entity, and the package in such a specific package will designate a concrete refactoring.
+This means that you will find the concrete implementation of the rename interface alias refactoring implementation in the subpackage {\it entities.interfaces.alias.rename}.
+About concrete refactorings we will talk in the chapter \ref{concreteRefactorings} on page \pageref{concreteRefactorings}.
 
 
-\chapter{From plugin XML to Java code}
+\chapter{From plug-in XML to Java code}
 \label{fromPluginXMLToJavaCode}
 \section{How to decide the availability of a refactoring}
-After we have introduced the appropriate lines of XML in the {\it plugin.xml} for a specific refactoring, the plugin is now able to ask the question: ``Is the current selection appropriate for this refactoring?''
-But the software is not yet capable to answer this question. That is where the {\it Refactoring} enum and the {\it RefactoringAvailabilityTester} come in. 
+After we have introduced the appropriate lines of XML in the {\it plugin.xml} for a specific refactoring, the plug-in is now able to ask the question:
+``Is the current selection appropriate for this refactoring?''
+But the software is not yet capable to answer this question.
+That is where the {\it Refactoring} enum and the {\it RefactoringAvailabilityTester} come in. 
 An overview of the relations described in this chapter is given in the graphic on page \pageref{AvailabilityTesterContext}.
 
 \begin{figure}[h]
@@ -470,12 +548,17 @@ Every such enum constant has three fields:
    \end{enumerate}
 The {\it propertyName} string must match exactly the string, which is given in the {\it plugin.xml} as property name for the refactoring. 
 It is later on used, to direct the question, if a selection is appropriate for a specific refactoring, to the right answer.\\
-The {\it entityName} string is used only to output information to the user. It is intended to designate the entity, which is modified by the refactoring. I.e. the entity name could be ``function'', if the refactoring is about renaming a function, or ``alias``, if the refactoring introduces a new alias.\\
-The {\it tester} field contains for each refactoring an instance of type {\it IRefactoringAvailabilityTester}. This instance is the one which will finally answer the question, if the refactoring is available for the current selection.
+The {\it entityName} string is used only to output information to the user.
+It is intended to designate the entity, which is modified by the refactoring.
+I.e. the entity name could be ``function'', if the refactoring is about renaming a function, or ``alias``, if the refactoring introduces a new alias.\\
+The {\it tester} field contains for each refactoring an instance of type {\it IRefactoringAvailabilityTester}.
+This instance is the one, which will finally answer the question, if the refactoring is available for the current selection.
 
 \subsection{The {\it RefactoringAvailabilityTester} class}
-The {\it RefactoringAvailabilityTester} is the class, which is designated in the {\it plugin.xml} as the property tester. This means that for every refactoring, which is defined in the {\it plugin.xml},
-eclipse will ask an instance of this class, if the refactoring is available for the current selection. Eclipse does so by calling the function {\it test} of {\it RefactoringAvailabilityTester}. 
+The {\it RefactoringAvailabilityTester} is the class, which is designated in the {\it plugin.xml} as the property tester.
+This means that for every refactoring, which is defined in the {\it plugin.xml}, eclipse will ask an instance of this class,
+if the refactoring is available for the current selection.
+Eclipse does so by calling the function {\it test} of {\it RefactoringAvailabilityTester}. 
 Everytime the user changes the selection in the editor, one such call is executed for every defined refactoring.
 The declaration of this function is actually inherited from the abstract supertype {\it PropertyTester}, which is a class defined by Eclipse.\\
 The {\it test} function has a return value of type {\it boolean} and four parameters:
@@ -485,67 +568,102 @@ The {\it test} function has a return value of type {\it boolean} and four parame
      \item {\it args}  of type {\it Object[]}, we do not make use of this parameter.
      \item {\it expectedValue}  of type {\it Object}, we do not make use of this parameter.
    \end{enumerate}
-The {\it receiver} parameter must be an instance of type {\it ITextSelection}, since the property tester is configured like that in the {\it plugin.xml}. This instance contains information about the range of the current selection.\\
-The second parameter of the {\it test} function is of type {\it String} and is named {\it property}. During a call this will be one of the strings, which we have defined in the {\it plugin.xml}, for a specific refactoring.\\
-The {\it test} function now first checks if the plugin is even fully loaded at this point. If we would not do this check, it could be that not all information are available in a refactoring processor, which are assumed to be always available. This would lead to nondeterministic behaviour.
-If this check fails the function just returns false, which means  that there will be no refactoring available. Furthermore there is a check, if all source files are saved. If there are modified ones, the function returns true only for the {\it NotSaved} property. 
+The {\it receiver} parameter must be an instance of type {\it ITextSelection}, since the property tester is configured like that in the {\it plugin.xml}.
+This instance contains information about the range of the current selection.\\
+The second parameter of the {\it test} function is of type {\it String} and is named {\it property}.
+During a call this will be one of the strings, which we have defined in the {\it plugin.xml}, for a specific refactoring.\\
+The {\it test} function now first checks, if the plug-in is even fully loaded at this point.
+If we would omit this check, it could be that not all information are available in a refactoring processor, which are assumed to be always available.
+This would lead to nondeterministic behaviour.
+If this check fails the function just returns false, which means  that there will be no refactoring available.
+Furthermore there is a check, if all source files are saved.
+If there are modified ones, the function returns true only for the {\it NotSaved} property. 
 If this is the case, the user can save all modified files with a click on a button under the refactoring menu. \\
-If the plugin is fully loaded, we come now to the point where the real matching from XML to java code happens. The {\it test} function looks for the {Refactoring} enum constant, whichs {\it propertyName} string matches the {\it property} string passed as an argument.
-If there is no such enum constant, then either the programmer forgot to define the corresponding enum constant, for a refactoring defined in the {\it plugin.xml}, or the {\it propertyName} and the {\it property} strings are not equal, i.e. if there is a typo in one of them.\\
-If we now have the {\it Refactoring} enum constant for a given {\it property} string, then we can read out its {\it tester} field. This gives us an instance of type {\it IRefactoringAvailabilityTester} and we can execute a call to the function {\it test} of this instance.
-This function will return true, if this refactoring is available and false otherwise. This return value is also the appropriate return value for our {\it test} function of the {\it RefactoringAvailabilityTester}.
+If the plug-in is fully loaded, we come now to the point, where the real matching from XML to java code happens.
+The {\it test} function looks for the {Refactoring} enum constant, which's {\it propertyName} string matches the {\it property} string passed as an argument.
+If there is no such enum constant, then either the programmer forgot to define the corresponding enum constant for a refactoring defined in the {\it plugin.xml},
+or the {\it propertyName} and the {\it property} strings are not equal, i.e. if there is a typo in one of them.\\
+If we now have the {\it Refactoring} enum constant for a given {\it property} string, then we can read out its {\it tester} field.
+This gives us an instance of type {\it IRefactoringAvailabilityTester} and we can execute a call to the function {\it test} of this instance.
+This function will return true, if this refactoring is available and false otherwise.
+This return value is also the appropriate return value for our {\it test} function of the {\it RefactoringAvailabilityTester}.
 
 \subsection{The {\it IRefactoringAvailabilityTester} interface}
-Each refactoring has an instance of type {\it IRefactoringAvailabilityTester} assigned to it. This assignment is done in the {\it Refactoring} enum. This interface has a single function {\it test}, with a return value of type {\it boolean}, and a single parameter {\it selection} of type {\it ITextSelection}.
-The purpose of the function is to decide, if the current selection is a selection, which is appropriate for the specific refactoring to be executed. If it is, the function will return true and false otherwise.\\
+Each refactoring has an instance of type {\it IRefactoringAvailabilityTester} assigned to it.
+This assignment is done in the {\it Refactoring} enum.
+This interface has a single function {\it test}, with a return value of type {\it boolean}, and a single parameter {\it selection} of type {\it ITextSelection}.
+The purpose of the function is to decide, if the current selection is a selection, which is appropriate for the specific refactoring to be executed.
+If it is, the function will return true and false otherwise.\\
 To find this decision, the refactoring can make use of the class {\it ActionHandlerUtil} to gain access to further information, i.e. to get the selected editor, or the selected file.\\
 
 
 \section{How to execute a specific refactoring}
-At this point Eclipse knows, which refactorings are available for the current selection. Now the refactoring has to be executed, if the user clicks on the corresponding button in the refactoring top menu, or the popup menu of Eclipse.
-Behind this buttons sits an implementation of the {\it AbstractHandler} abstract class. This class is defined by Eclipse. For each refactoring such an implementation has to be defined in the {\it plugin.xml}. Thats how a refactoring is mapped to its execution.
+At this point Eclipse knows, which refactorings are available for the current selection.
+Now the refactoring has to be executed, if the user clicks on the corresponding button in the refactoring top menu, or the popup menu of Eclipse.
+Behind this buttons sits an implementation of the {\it AbstractHandler} abstract class. This class is defined by Eclipse.
+For each refactoring such an implementation has to be defined in the {\it plugin.xml}. Thats how a refactoring is mapped to its execution.
 
 \subsection{The {\it AbstractHandler} abstract class}
-This class is defined by eclipse as an abstract class. For our implementations there is only the function {\it execute} of interest. This function is declared abstract in the {\it AbstractHandler} class and therefore has to be implemented in its subtypes.\\
-This function is actually the place, where the Language Toolkit for Processor Based Refactoring goes into action. Here will the wizard be initialized, which leads the user through a specific refactoring. This includes also initializing the appropriate subtype implementation of the {\it RefactoringProcessor} class, which is defined as part of the Eclipse ltk library. 
+This class is defined by eclipse as an abstract class. For our implementations there is only the function {\it execute} of interest.
+This function is declared abstract in the {\it AbstractHandler} class and therefore has to be implemented in its subtypes.\\
+This function is actually the place, where the Language Toolkit for Processor Based Refactoring goes into action.
+Here will the wizard be initialized, which leads the user through a specific refactoring.
+This includes also initializing the appropriate subtype implementation of the {\it RefactoringProcessor} class, which is defined as part of the Eclipse ltk library. 
 This implementation will finally execute the real work, which is the actual surplus of the refactoring.
 
 \chapter{Abstract refactorings}
 \label{abstractRefactorings}
 \section{What we mean by abstract refactoring}
-Refactorings have the pecularity, that they can be grouped into classes, which appear to the user to be similar. In our case the only such group we really have defined is the renaming of program identifiers. All but the {\it extract function} refactoring are actually implemented as subtypes of the elements in the {\it abstractrefactoring.rename} package.
-But we could also imagine other groups, i.e. in java there exist the group of generators, which generate some code for you or there are refactorings which allows you to push up code in a supertype or pull it down in a subtype.\\
-The similiarities of the elements of such a group have a direct impact on the needed infrastructure, which is needed to execute such a refactoring. I.e. the user has the same input to do, and the same steps to follow.\\
-The subpackages of the package {\it abstractrefactorings} right in the root package of the plugin, are intended to hold classes, which define the infrastructure for a specific group . This classes gather the code, which is reused for every element of a specific group. The direct consequence is writting less code, and especially introducing less errors, when creating new refactorings. Also in the sense of extensibility this package structure makes for sure sense.\\
+Refactorings have the peculiarity, that they can be grouped into classes, which appear to the user to be similar.
+In our case the only such group we really have implemented is the renaming of program identifiers.
+All but the {\it extract function} refactoring are actually implemented as subtypes of the elements in the {\it abstractrefactoring.rename} package.
+But we could also imagine other groups, i.e. in Java there exist the group of generators, which generate some code for you, or there are refactorings,
+which allows you to push up code in a supertype, or pull it down in a subtype.\\
+The similarities of the elements of such a group have a direct impact on the needed infrastructure, which is needed to execute such a refactoring.
+I.e. the user has the same input to do, and the same steps to follow.\\
+The subpackages of the package {\it abstractrefactorings} right in the root package of the plug-in, are intended to hold classes,
+which define the infrastructure for a specific group . This classes gather the code, which is reused for every element of a specific group.
+The direct consequence is writing less code, and especially introducing less errors, when creating new refactorings.
+Also in the sense of extensibility this package structure makes for sure sense.\\
 Because nearly all of our refactorings are about renaming, we take a closer look on the associated classes in the {\it abstractrefactoring.rename} package.
 
 \section{The {\it abstractrefactoring.rename} classes}
 \subsection{The {\it RenameAvailabilityTester} abstract class}
-Before a user is allowed to execute a rename refactoring, eclipse has to force him, to select a program identifier. Namely the identifier which has to be renamed.
+Before a user is allowed to execute a rename refactoring, eclipse has to force him, to select a program identifier.
+Namely the identifier which has to be renamed.
 The {\it RenameAvailabilityTester} implements the {\it IRefactoringAvailabilityTester} interface, which we already talked about in the last chapter.
-Therefore it overrides the interface' {\it test} function. In this function it tries to get an identifier out of the given user selection. If this is not possible, the function will just return false, which means that the associated refactoring is not available for the selection.
-Otherwise it calls its own abstract function {\it isSelectionAppropriate} which will solve the question, if the refactoring is available, in a subtype. This function has an argument of type {\it Identifier}, which is actually an AST element, which will be the currently selected identifier, during a call. 
-This takes the burden of the subclasses, to find the identifier by themselves.
-Such an implementation then normally solves the question in about four lines of code, by means of an instance of type {\it SelectionIdentifier}. 
+Therefore it overrides the interface's {\it test} function. In this function it tries to get an identifier out of the given user selection.
+If this is not possible, the function will just return false, which means that the associated refactoring is not available for the selection.
+Otherwise it calls its own abstract function {\it isSelectionAppropriate} which will solve the question, if the refactoring is available, in a subtype.
+This function has an argument of type {\it Identifier}, which is actually an AST element, which will be the currently selected identifier, during a call. 
+This takes the burden of the subclasses to find the identifier by themselves.
+Such an implementation then normally solves the question in about four lines of code by means of an instance of type {\it SelectionIdentifier}. 
 
 \subsection{The {\it SelectionIdentifier} class}
 \label{SelectionIdentifier}
-Identifiers of an entity, which is to be renamed, appear mostly in different places for different purposes. I.e. a function identifier can be in a function definition, function declaration or a function call. 
-A subtype of {\it SelectionIdentifier} is intended to identify the purpose, which a given identifier has.
-This enables a {\it SelectionIdentifier} to identify the entity of a selected identifier and therefore, if a refactoring is available for the given selection. The information about the kind of entity of an identifier can  be found in the AST. 
-This is the reason why the {\it SelectionIdentifier} class facilitates the {\it AstAnalyzerFactory} and its associated classes. About these classes will we talk in a later chapter.
+Identifiers of an entity, which is to be renamed, appear mostly in different places for different purposes.
+I.e. a function identifier can represent a function definition, a function declaration or a function call. 
+A subtype of {\it SelectionIdentifier} is intended to identify what purpose an identifier represents.
+This enables a {\it SelectionIdentifier} to identify the entity of a selected identifier and therefore,
+if a refactoring is available for the given selection. The information about the kind of entity of an identifier can  be found in the AST. 
+This is the reason why the {\it SelectionIdentifier} class facilitates the {\it AstAnalyzerFactory} and its associated classes.
+About these classes will we talk in a later chapter.
 
 \subsection{The {\it RenameActionHandler} class}
-The {\it RenameActionHandler} class plugs together the classes, which are needed to set up the refactoring wizard. These are the {\it RenameInfo}, {\it RenameInputPage} and the {\it RenameProcessor} classes.
+The {\it RenameActionHandler} class plugs together the classes, which are needed to set up the refactoring wizard.
+These are the {\it RenameInfo}, {\it RenameInputPage} and the {\it RenameProcessor} classes.
 It takes all the work from its subclasses, such that they just have to provide their specific {\it RenameProcessor} instance.
 
 \subsection{The {\it RenameInputPage} class}
 This class builds the representation of the window, which the user will use to enter a new name for a given entity.
-It is especially interesting, since it uses the {\it InputValidation} class to avoid renaming of identifiers to non C names. If the user enters an unappropriate name, proceed buttons will be disabled, until he corrects his input.
+It is especially interesting, since it uses the {\it InputValidation} class to avoid renaming of identifiers to non C names.
+If the user enters an unappropriate name, proceed buttons will be disabled, until he corrects his input.
 
 \subsection{The {\it RenameProcessor} class}
 \label{RenameProcessor}
-The {\it RenameProcessor} class extends the class with the same name from the Eclipse ltk library. It provides a lot of functions, which are reused in many subtypes. Besides this it enforces it subtypes to follow a little framework, by means of abstract functions.
+The {\it RenameProcessor} class extends the class with the same name from the Eclipse ltk library.
+It provides a lot of functions, which are reused in many subtypes.
+Besides this it enforces it subtypes to follow a little framework by means of abstract functions.
 Each subtype has to implement at least four functions:
    \begin{enumerate}
      \item {\it getProcessorName} with return type {\it String}
@@ -553,7 +671,8 @@ Each subtype has to implement at least four functions:
      \item {\it checkConditionsAfterNameSetting}  with return type {\it RefactoringStatus}
      \item {\it createChange}  with return type {\it Change}
    \end{enumerate}
-The {\it getProcessorName} function is expected to return the name of the entity, which is renamed by this refactoring. This string is used only for user output.\\
+The {\it getProcessorName} function is expected to return the name of the entity, which is renamed by this refactoring.
+This string is used only for user output.\\ 
 The {\it initializeRefactoring} function is the first function of a sublcass which will be called.
 Here a subclass can gather all its information, to be sure, the refacoring is even possible or even has an effect.
 Experience shows, that this is actually the function which gathers all {\it Identifier} AST nodes, which are affected by the renaming.
@@ -565,30 +684,41 @@ In this function a sub class can check if the new name is a reasonable choice.
 Which means that this is the place were you should check, if renaming would lead to name collisions in the program.
 Errors in this place are often not reported back as {\it FatalError} but just as {\it Error} messge instead.
 If we report just an {\it Error} message, then the user still has the choice to  proceed. An {\it Error} message informs the user, that proceeding
-will change the semantics of the source, or will even lead to compile errors. But since the user possibly wants such a change in semantics by intention, it was false to not allow proceeding.\\
-The {\it createChange} function is the last function, which will be called by the {\it RenameProcessor} framework. It is the place where a subtype finally can create a subtype of {\it Change} class, from the Eclipse ltk library.
-This object then should include all changes, which are necessary for the refactoring, to fullfil its task.
+will change the semantics of the source, or will even lead to compile errors.
+But since the user possibly wants such a change in semantics by intention, it was false to not allow proceeding.\\
+The {\it createChange} function is the last function, which will be called by the {\it RenameProcessor} framework.
+It is the place, where a subtype finally can create a subtype of {\it Change} class from the Eclipse ltk library.
+This object then should include all changes, which are necessary for the refactoring to fullfil its task.
 
 \chapter{Harnessing the AST}
 \label{harnessingTheAST}
-The Yeti NesC parser generates an AST. This AST includes all information about the NesC source code on a per file base. Big parts of our program build upon analyzing these ASTs, in order to find information about the program, which is to be refactored.
-In early phases of the development, we used a lot of static code, to gather information out of the AST. This lead to a more imperative then object oriented design, with high coupling. Since this is an unpopular attribute for good software, we decided to refactor our refactoring plugin. 
+The Yeti NesC parser generates an AST. This AST includes all information about the NesC source code on a per file base.
+Big parts of our program build upon analyzing these ASTs, in order to find information about the program, which is to be refactored.
+In early phases of the development, we used a lot of static code, to gather information out of the AST.
+This lead to a more imperative then object oriented design, with high coupling.
+Since this is an unpopular attribute for good software, we decided to refactor our refactoring plug-in. 
 The result was the birth of the so called {\it AstAnalyzer} classes.
 
 \section{The {\it AstAnalyzer} classes}
 \label{AstAnalyzerClasses}
-This classes are intended to wrap AST's of a whole file, or at least parts of an AST. The interaction with an {\it AstAnalyzer} is more of the kind:"Give me all objects which have the property...'. I.e. you can ask a {\it CAstAnalyzer} to give you all global C functions, which appear in its AST.\\
-Without the analyzers the interaction is more like:"I have an AST node, is this AST node of type A, and if so, is it a child of type B...''. This means that in the whole program appeared code fragments, which included actually knowledge dedicated to the AST. This is pretty much the opposite of coherence and encapsulation.
+This classes are intended to wrap AST's of a whole file, or at least parts of an AST.
+The interaction with an {\it AstAnalyzer} is more of the kind:"Give me all objects which have the property...'.
+I.e. you can ask a {\it CAstAnalyzer} to give you all global C functions, which appear in its AST.\\
+Without the analyzers the interaction is more like:"I have an AST node, is this AST node of type A, and if so, is it a child of type B...''.
+This means that in the whole program appeared code fragments, which included actually knowledge dedicated to the AST.
+This is pretty much the opposite of coherence and encapsulation.
 
 \subsection{The {\it AstAnalyzerFactory} class}
 Basically we can distinguish the types of AST's included in a source file. I.e. has a AST of a NesC interface a different structure, then the one of a NesC module.
 The {\it AstAnalyzerFactory} class takes an {\it ASTNode} or a source file and generates the appropriate {\it AstAnalyzer} type.\\
-We than can ask the {\it AstAnalyzerFactory} which type it has created and can then read the associated type out of the factory.
+We than can ask the {\it AstAnalyzerFactory}, which type it has created and can then read the associated type out of the factory.
 
 \subsection{{\it AstAnalyzer} types}
-For the {\it AstAnalyzers}, which represent a AST of a whole file, we have defined an hierarchy of types. It is shown in the graphic
-\ref{AstAnalyzersTypeHierarchy} on page \pageref{AstAnalyzersTypeHierarchy}. Depending on the analyzer type we can get specific information. 
-I.e. a {\it ModuleAstAnalyzer} will provide information about the Nesc code, which its module implementaion contains, while a {\it ConfigurationAstAnalyzer} holds data about the NesC wirings, which its configuration implementation includes.
+For the {\it AstAnalyzers}, which represent a AST of a whole file, we have defined an hierarchy of types.
+It is shown in the graphic \ref{AstAnalyzersTypeHierarchy} on page \pageref{AstAnalyzersTypeHierarchy}.
+Depending on the analyzer type we can get specific information. 
+I.e. a {\it ModuleAstAnalyzer} will provide information about the Nesc code, which its module implementaion contains,
+while a {\it ConfigurationAstAnalyzer} holds data about the NesC wirings, which its configuration implementation includes.
 
 \begin{figure}[h]
 \centering
@@ -600,27 +730,39 @@ I.e. a {\it ModuleAstAnalyzer} will provide information about the Nesc code, whi
 \section{Utility classes}
 
 \subsection{Auxiliary AST classes}
-As we already mentioned, our first approach was more kind of an imperative one. Because of time issues we were not able to totally get rid of the old design. Thats the reason why there exist still two classes, which are in the oldschool style.
+As we already mentioned, our first approach was more kind of an imperative one.
+Because of time issues we were not able to totally get rid of the old design.
+Thats the reason why there exist still two classes, which are in the oldschool style.
    \begin{enumerate}
      \item {\it ASTUtil4Functions} class includes a lot of functions related to the AST structure of functions.
      \item {\it ASTUtil4Variables} class includes a lot of functions related to the AST structure of variables.
    \end{enumerate}
-If we had have some more time, we probably had designed something like a {\it FunctionAstAnalyzer} class. This class than had replaced the other two, which had been more likely a good object oriented design.\\
-A very useful class dedicated to the AST, is the {\it ASTUtil} class. It includes a lot of convenience functions, which are useful everywhere, where we interact with the AST.\\
-Last but everything else then least we have to mention the {\it AstPositioning} class. This class's main task is to find the appropriate AST element for a given character position in a source file.
-This task is complicated by the fact, that the position may come from a preprocessed file. The correct functioning of the class is especially mission critical for deciding the user selection.
+If we had have some more time, we probably had designed something like a {\it FunctionAstAnalyzer} class.
+This class than had replaced the other two, which had been more likely a good object oriented design.\\
+A very useful class dedicated to the AST, is the {\it ASTUtil} class. It includes a lot of convenience functions, which are useful everywhere,
+where we interact with the AST.\\
+Last but everything else then least we have to mention the {\it AstPositioning} class.
+This class's main task is to find the corresponding AST element for a given character position in a source file.
+This task is complicated by the fact, that the position may come from a preprocessed file.
+The correct functioning of the class is especially mission critical for deciding the user selection.
 
 \subsection{Project wide classes}
 There is a number of further utility classes int the {\it utility} package.\\
-The most important one is the {\it ProjectUtil} class. Refactorings which not only affect the file from which they were triggered, have to get access to other affected files.
-Therefore the {\it ProjectUtil} class provides exactly the right functions. I.e. you can find a NesC Module by giving its name, or you can search for references to a specific {IASTModelPath} in a certain file.
-A file is always the first step to get to its AST.\\
+The most important one is the {\it ProjectUtil} class.
+Refactorings which not only affect the file from which they were triggered, have to get access to other affected files.
+Therefore the {\it ProjectUtil} class provides exactly the right functions.
+I.e. you can find a NesC Module by specifying its name, or you can search for references to a specific {IASTModelPath} in a certain file.
+A file is always the first step, in order to get to its AST.\\
 The {ProjectUtil} also includes functions for logging messages to the project log and some other stuff, which is related to the whole project.\\
-Another interesting class is the {\it ParserCache} class. As its name says, it tries to cache Parsers, so that not every file has to be parsed again and again, even if it was not modified, since it was parsed the last time. In our implementation the parser cache is only in use, if you obtain your parser from the {\it ProjectUtil} class. 
+Another interesting class is the {\it ParserCache} class.
+As its name says, it tries to cache Parsers, so that not every file has to be parsed again and again, even if it was not modified, since it was parsed the last time.
+In our implementation the parser cache is only in use, if you obtain your parser from the {\it ProjectUtil} class. 
 
 \chapter{Concrete refactorings}
+\label{concreteRefactorings}
 \section{Implemented refactorings}
-One of the main parts of our work was of course the implementation of concrete refactorings. We have implemented the ones, which we thought were the most useful:
+One of the main parts of our work was of course the implementation of concrete refactorings.
+We have implemented the ones, which we thought were the most useful:
    \begin{enumerate}
      \item Renaming of local variables
      \item Renaming of function parameters
@@ -637,20 +779,27 @@ One of the main parts of our work was of course the implementation of concrete r
      \item Introducing of NesC interface aliases
      \item Extracting of code parts to new C functions
    \end{enumerate}
-As we can see, most of the refactorings are related to renaming something. In fact even the introducing of aliases is realised as a rename refactoring. This is the reason why we took a closer look at the classes in the {\it abstractrefactoring.rename} package. 
-The refactorings, which use the infrastructure, given in this package, the implementation reduces to implementing not more then four classes:
+As we can see, most of the refactorings are related to renaming something. In fact even the introducing of aliases is realised as a rename refactoring.
+This is the reason why we took a closer look at the classes in the {\it abstractrefactoring.rename} package. 
+The implementation of refactorings, which use the infrastructure given in this package, is reduced to not more then four classes:
    \begin{enumerate}
      \item A {\it ActionHandler} class as subtype of {\it RenameActionHanlder}
      \item A {\it AvailabilityTester} class as subtype of {\it RenameAvailabilityTester}
      \item A {\it SelectionIdentifier} class as subtype of {\it SelectionIdentifier}
      \item A {\it Processor} class as subtype of {\it RenameProcessor}
    \end{enumerate}
-It is even simpler, since the {\it AvailabilityTester} and the {\it ActionHandler} classes are kind of connector classes to the {\it SelectionIdentifier} and {\it RenameProcessor}, respectively. This means that they have about three lines of code and do not much more than instantiating the other class.\\
-The only refactoring, which we have implemented, which does not rely on the rename infrastructure, is the refactoring for extracting code parts to new C functions. This is besides the complexity of it a second reason, why it has much more code.
+It is even simpler, since the {\it AvailabilityTester} and the {\it ActionHandler} classes are kind of connector classes to the {\it SelectionIdentifier} and {\it RenameProcessor}, respectively.
+This means that they have about three lines of code and do not much more than instantiating the other class.\\
+The only refactoring, which we have implemented, which does not rely on the rename infrastructure, is the refactoring for extracting code parts to new C functions.
+The so called {\it Extract Function} refactoring.
+This is besides the complexity of it a second reason, why it has much more code.
 
 \section{What else could be done}
-If we had more time, there were of course a lot, which we could have done too. Everybody who can write code knows, that there is always something, which could be done nicer or more efficient. In short, there is always something, which you can refactor.
-I.e. as we already mentioned, it was nice to get rid of the {\it AstUtil4Functions} and {\it AstUtil4Variables} classes and instead implement something like a {\it FunctionAstAnalyzer} class, to reach a nicer, more object oriented design style.\\
+If we had more time, there were of course a lot, which we could have done too.
+Everybody who can write code knows, that there is always something, which could be done nicer or more efficient.
+In short, there is always something, which you can refactor.
+I.e. as we already mentioned, it was nice to get rid of the {\it AstUtil4Functions} and {\it AstUtil4Variables} classes and instead implement something like a {\it FunctionAstAnalyzer} class,
+to reach a nicer, more object oriented design style.\\
 With more time we also could have implemented some more refactorings, i.e.:
     \begin{enumerate}
      \item Renaming of global C typedefs
@@ -666,17 +815,20 @@ With more time we also could have implemented some more refactorings, i.e.:
 And we are sure, there are a lot more of possibilities.
 
 \section{How to implement a new refactoring}
-If you intend to implement a new refactoring, this section should give you an overview, which steps you have to follow, and where in this document you can find more information to a specific topic.
+If you intend to implement a new refactoring, this section should give you an overview, which steps you have to follow,
+and where in this document you can find more information to a specific topic.
 
 \subsection{Enable your refactoring}
-First you have to add new, appropriate elements in the {\it plugin.xml} for your refactoring. The fastest way to do this is to copy and paste existing elements, and adapt their content. You have to add the following elements:
+First you have to add new, appropriate elements in the {\it plugin.xml} for your refactoring.
+The fastest way to do this, is to copy and paste existing elements, and adapt their content. You have to add the following elements:
    \begin{enumerate}
     \item A {\it command} element in the {\it commands extension} element, important is the {\it id} attribute, since it is referenced in all other elements
     \item A {\it handler} element in the {\it handlers extension} element, important is the {\it class} attribute, which references the handler implementation
     \item A {\it command} element in the {\it menu menuContribution} element under the menus {\it extension} element, important is the {\it label} attribute, which is the name shown to the user and the {\it property} attribute, since it identifies the refactoring in the property tester
     \item A {\it command} element in the {\it popup menuContribution} element under the menus {\it extension} element, important is the {\it label} attribute, which is the name shown to the user and the {\it property} attribute, since it identifies the refactoring in the property tester
    \end{enumerate}
-Finally you have to add the {\it property} string, which you have specified in the {\it command} elements, which you added to the {\it menuContribution} elements, to the {\it properties} attribute in the {\it propertyTester extensinon} element.\\
+Finally you have to add the {\it property} string, which you have specified in the {\it command} elements,
+which you added to the {\it menuContribution} elements, to the {\it properties} attribute in the {\it propertyTester extensinon} element.\\
 This is all you have to do with the {\it plugin.xml}, in order to introduce your new refactoring.
 If this information is not enough for you, maybe you find some answers in chapter \ref{menuWithConditionalVisibility} on page \pageref{menuWithConditionalVisibility}.
 
@@ -687,11 +839,12 @@ If you have done all these steps, you should now see your refactoring in the Ecl
 If you need more information about these two steps, consult chapter \ref{fromPluginXMLToJavaCode} on page \pageref{fromPluginXMLToJavaCode}.
 
 \subsection{Make your refactoring do its work}
-You should now be able to select your refactoring in the Eclipse user interface. To make the selection do your refactoring, you have to do the following steps.
+You should now be able to select your refactoring in the Eclipse user interface.
+To make the selection do your refactoring, you have to do the following steps.
 First you have to implement a subtype of the Eclipse {\it AbstractHandler} class.
 Make sure that the class name matches the one given in the {\it plugin.xml} in the {\it handler} element.
 This class is responsible for initiating your refactoring. You should do this by facilitating the language toolkit for processor based refactoring.
-This means that you have to create subtypes of the following classes: refactoring wizard, give it an input page for user input, and a refactoring processor.
+This means that you have to create subtypes of the following classes:
    \begin{enumerate}
     \item {\it DefaultRefactoringWizard} class of us, responsible for consolidating the following classes
     \item {\it RefactoringInfo} class of us, carries information needed by the refactoring and the wizard itself
@@ -704,46 +857,55 @@ If you intend to write a rename refactoring, you can extend the classes from the
 If you do so, your only real concern is to write a subtype of the {\it RenameProcessor} class.
 In this case you should take a look at chapter \ref{abstractRefactorings} on page \pageref{abstractRefactorings}.\\
 For writing a processor you should consider to reuse the classes explained in chapter \ref{harnessingTheAST} on page \pageref{harnessingTheAST}.\\
-If all this information is not enough, you can read the source code, which is still the most accurate Documentation.
+You find the description of example implementation in the next chapter.\\
+If all this information is not enough, you can read the source code, which is still the most accurate documentation.
 
 \chapter{An example Implementation: The rename interface refactoring}
-In this section we talk about the implementation of the {\it rename interface} refactoring. As its name suggest, the target of the refactoring is to rename a NesC interface.
+In this section we talk about the implementation of the {\it Rename Interface} refactoring. As its name suggest,
+the target of the refactoring is to rename a NesC interface.
 Since the refactoring is about renaming, it makes heavy usage of the infrastructure in the {\it abstractrefactoring.rename} package.
 This package is described in chapter \ref{abstractRefactorings} on page \pageref{abstractRefactorings}.
 
 \section{Until the processor starts its work}
-We assume that the developer is working in a NesC Project and has saved all his Editors. He wants to rename one of his Interfaces. To do that he double-clicks on the old
-name of the interface. 
+We assume that the developer is working in a NesC Project and has saved all his Editors.
+He wants to rename one of his Interfaces. To do that he double-clicks on the old name of the interface. 
 
 Eclipse marks it and fires a {\it Selection Changed} event. 
 This triggers, among other things, the checks which entries are to be displayed in the refactoring menu.\footnote{Defined as described in \ref{conditionalVisibility} on page \pageref{conditionalVisibility}.}
-This means that  Eclipse has to call the {\it AvailabilityTester} property tester for each possible menu entry with the according property. When Eclipse comes to the 
-{\it  renameInterface} property, the global AvailabilityTester will call the {\it test()} method of the rename interface {\it AvailabilityTester}. This method will find the 
-identifier the user marked and pass it to the {\it InterfaceSelectionIdentifier} class. This class checks if the identifier represents an interface. And yes, it does. 
-The {\it AvailabilityTester} returns {\it true} and Eclipse knows that the rename interface refactoring has to be part of the refactoring menu if the user opens it.
+This means that Eclipse has to call the {\it RefactoringsAvailabilityTester} property tester for each possible menu entry with the according property.
+When Eclipse comes to the {\it  renameInterface} property, the global RefactoringsAvailabilityTester will call the {\it test()} method of the rename interface {\it AvailabilityTester}.
+This method will find the identifier the user marked and pass it to the {\it InterfaceSelectionIdentifier} class.
+This class checks if the identifier represents an interface.
+And yes, it does. 
+The {\it AvailabilityTester} returns {\it true} and Eclipse knows, that the rename interface refactoring has to be part of the refactoring menu if the user opens it.
 
-All this checks were done so fast that the user did not notice anything. He just selected an interface name. He opens the refactoring menu and Eclipse already knows what entries
-it has to show. The user clicks on {\it Rename Interface}.
+All this checks were done so fast that the user did not notice anything. He just selected an interface name.
+He opens the refactoring menu and Eclipse already knows what entries it has to show. The user clicks on {\it Rename Interface}.
 
-Eclipse now create an Object of the {\it ActionHandler} defined in the {\it plugin.xml} {\it handler} tag\footnote{As described in \ref{commandHandler} on page \pageref{commandHandler}.} and calls the {\it execute()} method. 
+Eclipse now creates an Object of type {\it ActionHandler}, defined in the {\it plugin.xml} {\it handler} tag\footnote{As described in \ref{commandHandler} on page \pageref{commandHandler}.} and calls the {\it execute()} method. 
 The {\it execute} method initializes all the necessary LTK classes\footnote{Described in \ref{languageToolkitClasses} on page \pageref{languageToolkitClasses}.} 
-or there rename interface subclasses. Among them the {\it Processor} and the {\it Wizard}. Then it starts LTK's {\it RefactoringWizardOpenOperation}.
-\footnote{Well illustrated by the interaction diagram\ref{refactoringOperationSequence} on page \pageref{refactoringOperationSequence}.}
+and the appropriate rename interface classes. Among them the {\it Processor} and the {\it Wizard}.
+Then it starts LTK's {\it RefactoringWizardOpenOperation}.\footnote{Well illustrated by the interaction diagram\ref{refactoringOperationSequence} on page \pageref{refactoringOperationSequence}.}
 It checks the initial conditions and shows the {\it RenameInputPage} to the user.
 
-The user who just clicked on {\it Rename Interface} can now enter the new name he wants the Interface to have. While he does that, Eclipse check whether he enters
-a valid C identifier and allows him to click preview or OK, only if a possible string was written. Cause the user entered a name which generates no problems, he is allowed to click on
-preview. Eclipse checks the final conditions and calls the {\it createChange} method of the processor. The user can preview the changes and accepts them by clicking on OK.
+The user who just clicked on {\it Rename Interface}, can now enter the new name he wants the Interface to have.
+While he does that, Eclipse check whether he enters a valid C identifier and allows him to click preview or OK, only if a possible string was written.
+Because the user entered a name, which generates no problems, he is allowed to click on preview.
+Eclipse checks the final conditions and calls the {\it createChange} method of the processor.
+The user can preview the changes and accepts them by clicking on OK.
 
 \section{The processor}
-Now we come to the point, where the real work happens. The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfully rename an interface:
+Now we come to the point, where the real work happens.
+The class {\it tinyos.yeti.refactoring.entities.interfaces.rename.Processor} has to do three steps, to successfully rename an interface:
    \begin{enumerate}
     \item Find all identifiers affected by the renaming, most probably in several files.
     \item Check that the new name does not collide with an existing one.
     \item If there are no collisions, create the changes.
    \end{enumerate}
-The processor extends the {\it tinyos.yeti.refactoring.abstractrefactorings.rename.RenameProcessor} class. It is explained in detail in chapter \ref{RenameProcessor} on page \pageref{RenameProcessor}.
-Therefore the processor implements the mini framework we mentioned in this chapter. The three framework functions perfectly match on our three steps:
+The processor extends the {\it tinyos.yeti.refactoring.abstractrefactorings.rename.RenameProcessor} class.
+It is explained in detail in chapter \ref{RenameProcessor} on page \pageref{RenameProcessor}.
+Therefore the processor implements the mini framework we mentioned in this chapter.
+The three framework functions perfectly match on our three steps:
    \begin{enumerate}
      \item Find all identifiers realised in function {\it initializeRefactoring}
      \item Collision detection realised in function {\it checkConditionsAfterNameSetting}
@@ -763,50 +925,60 @@ In order to find all identifiers affected by the renaming, we do the following:
    \end{enumerate}
 To find the source file, we are in the lucky position, that the selected identifier has to have the name of the Interface, which is to be renamed. 
 A special case is it, when the selection is actually an interface alias, but for our example implementation, this case is not relevant. 
-With the name of the interface to be renamed in our hands, we can use the class {\it ProjectUtil}. This class makes use of the facilities provided by the Yeti plugin.
-It is able to get a {\it IDeclaration} class for the interface name out of the {\it ProjectModel} class. The declaration is actually an abstraction of the interface source file. 
+With the name of the interface to be renamed in our hands, we can use the class {\it ProjectUtil}.
+This class makes use of the facilities provided by the Yeti plug-in.
+It is able to get a {\it IDeclaration} class for the interface name out of the {\it ProjectModel} class.
+The declaration is actually an abstraction of the interface source file. 
 At this point we have fulfilled our first step for the renaming.\\
-In order to find all references to the interface, we proceed as follows. The declaration we found in the first step has a {\it IASTModelPath}. 
+In order to find all references to the interface, we proceed as follows. The declaration we found in the first step has an {\it IASTModelPath}. 
 We can use this path to gather all references of a specific file to the path. This is done via the Yeti {\it ProjectModel} again.\\
 Now we come to the third step. We have now the references to the interface, but we are not able to rename based on the references.
 The reason is, that we have to do checks, if the identifiers behind the references are actually identifiers of interest, see the next step therefore.
-The references can be converted to {\it Identifer} AST nodes, which are also defined by Yeti. This conversion is done by means of our {\it AstPositioning} class.
+The references can be converted to {\it Identifer} AST nodes, which are also defined by Yeti.
+This conversion is done by means of our {\it AstPositioning} class.
 It takes an offset in a source file and gives you in turn the AST node at this position. 
 You then can check if it is actually of the expected type, and your done with this step.\\
-You have now the identifiers and the containing files. Unfortunately not all of this identifiers need to be renamed. First there is the possibility, that a reference 
-spans more than one Identifier. Normally not both of them reference an interface and most probably not both the one we are looking for. 
-Second, also interface aliases reference the defining interface, but we are not interested in renaming aliases. This means that we have to filter our bunch of identifiers.
-To fulfill this task, we use our {\it InterfaceSelectionIdentifier} class (chap. \ref{SelectionIdentifier}, page \pageref{SelectionIdentifier}), which makes heavy use of the {\it AstAnalyzerClasses}(chap. \ref{AstAnalyzerClasses}, page \pageref{AstAnalyzerClasses}).\\
+You have now the identifiers and the containing files. Unfortunately not all of this identifiers need to be renamed.
+First there is the possibility, that a reference spans more than one Identifier.
+Normally not both of them reference an interface and most probably not both the interface we are looking for. 
+Second, also interface aliases reference the defining interface, but we are not interested in renaming aliases.
+This means that we have to filter our bunch of identifiers.
+To fulfill this task we use our {\it InterfaceSelectionIdentifier} class (chap. \ref{SelectionIdentifier}, page \pageref{SelectionIdentifier}), which makes heavy use of the {\it AstAnalyzerClasses}(chap. \ref{AstAnalyzerClasses}, page \pageref{AstAnalyzerClasses}).\\
 Now we have all identifiers we are interested in according with the files, in which they appear. 
 We then put this identifiers in a map, mapped by the file, to have access to it in the remaining two steps of our mini framework.\\
-If there is a problem during this steps, this can be reported back to the user, by adding a message to the returned value of type {\it RefactoringStatus}. 
+If there is a problem during this steps, this can be reported back to the user by adding a message to the returned value of type {\it RefactoringStatus}. 
 An error at this stage will be reported as fatal error, which means that the user is not able to proceed with the refactoring, but has to abort it. 
-The reason is, that an error at this stage probably means, that we did not find all affected identifiers, which will lead to compile errors, when proceeding.
+The reason is, that an error at this stage probably means, that we did not find all affected identifiers, which will lead to compile errors, when we proceed.
 
 \subsection{Check for collisions}
 The functionality described here is implemented in the {\it checkConditionsAfterNameSetting} function of our mini framework.
-This function is called, after the entered a valid new name and pressed the ok button. Its target is to find any possible collision with an existing name in the source files.
-First we have to check, if there is not already a project file with the given name. If there is one, we report this back to the user by adding a error message to the return value.
+This function is called, after the user entered a valid new name and pressed the OK button.
+Its target is to find any possible collision with an existing name in the source files.
+First we have to check, if there is not already a project file with the given name.
+If there is one, we report this back to the user by adding a error message to the return value.
 The error message informs the user about the collision.
 The use of a error message instead of a fatal error, will allow the user to go back to the name input field, to choose another name. 
 For each file, which is affected by the renaming, we make use of the so called {\it NesCComponentNameCollissionDetector} class. 
 The collision detector in turn uses an appropriate {\it AstAnalyzer} type, to investigate the source files.\\
 If the affected source file is a NesC module, then we just have to check, if there is a collision with an interface alias. 
 But if we are talking about an NesC configuration, also the implementation has to be checked, if there are any component aliases, with the given name.
-If there is any Problem, it will be reported with an error message. An error message especially allows the user to proceed, in the case he intended the collision for some special tweak.
+If there is any problem, it will be reported with an error message.
+An error message especially allows the user to proceed, in the case he intended the collision for some special tweak.
  
 
 \subsection{Create the changes}
-When the {\it createchange()} method is called, a {\it CompositChange} is created. Then the method {\it addChange()} loops over all the identifiers in the {\it affectedIdentifiers} map 
-and creates a {\it TextFileChage} to change the old name to the new name.
+When the {\it createchange()} method is called, a {\it CompositChange} is created.
+Then the method {\it addChange()} loops over all the identifiers in the {\it affectedIdentifiers} map and creates a {\it TextFileChage} to change the old name to the new name.
 
-A special thing in NesC is that the interface file has the same name as the interface. That's why also a {\it RenameResourceChange} is added to rename the interface file
-to the new interface name. In the end the whole {\it CompositChange} is returned to the LTK Framework.
+A special thing in NesC is that the interface file has the same name as the interface by convention.
+That's why also a {\it RenameResourceChange} is added to rename the interface file to the new interface name.
+In the end the whole {\it CompositChange} is returned to the LTK Framework.
 
 \nomenclature{AST}{AST stands for abstract syntax tree. The yeti NesC parser generates for each source file such an AST. It is a first abstraction of the source code, based on the NesC syntax.}
+\nomenclature{Eclipse}{Is a so called integrated development environment engineered by IBM. An IDE facilitates program code writing.}
 \nomenclature{NesC}{NesC (Network embedded systems C) is a component-based, event-driven programming language used to build applications for the TinyOS platform. TinyOS is an operating environment designed to run on embedded devices used in distributed Wireless Sensor Networks. nesC is built as an extension to the C programming language with components "wired" together to run applications on TinyOS.}
 \nomenclature{OSGi}{The OSGi framework is a module system and service platform for the Java programming language that implements a complete and dynamic component model, something that does not exist in standalone Java/VM environments. Applications or components (coming in the form of bundles for deployment) can be remotely installed, started, stopped, updated and uninstalled without requiring a reboot; management of Java packages/classes is specified in great detail. Life cycle management is done via APIs which allow for remote downloading  of management policies. The service registry allows bundles to detect the addition of new services, or the removal of services, and adapt accordingly. (from Wikipdedia)}
-\nomenclature{Yeti}{The TinyOS 2.x Plugin for Eclipse, nicknamed "Yeti 2", was developed by the Distributed Computing Group at ETH Zurich. The plugin aims to provide developers with all the convenience functions expected from a modern development environment.}
+\nomenclature{Yeti}{The TinyOS 2.x Plug-in for Eclipse, nicknamed "Yeti 2", was developed by the Distributed Computing Group at ETH Zurich. The plug-in aims to provide developers with all the convenience functions expected from a modern development environment.}
 \renewcommand{\nomname}{Glossary}
 \printnomenclature
 
