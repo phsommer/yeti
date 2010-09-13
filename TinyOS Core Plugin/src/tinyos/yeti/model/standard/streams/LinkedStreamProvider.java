@@ -105,6 +105,9 @@ public class LinkedStreamProvider extends StreamProvider{
 		try{
 			MapFile map = open( file, extension );
 			setLastReadFile( map );
+			if( map == null ){
+				return false;
+			}
 			boolean result = map.contains( extension );
 			map.close();
 			return result;
@@ -133,8 +136,10 @@ public class LinkedStreamProvider extends StreamProvider{
 		try{
 			MapFile map = open( file, extension );
 			setLastReadFile( map );
-			map.remove( extension );
-			map.close();
+			if( map != null ){
+				map.remove( extension );
+				map.close();
+			}
 		}
 		catch( CoreException ex ){
 			TinyOSPlugin.log( ex );
