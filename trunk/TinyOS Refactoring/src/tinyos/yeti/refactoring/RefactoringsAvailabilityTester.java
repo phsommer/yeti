@@ -91,9 +91,11 @@ public class RefactoringsAvailabilityTester extends PropertyTester {
 	 */
 	private boolean isRefactoringAvailable(ITextSelection selection) {
 		for(Refactoring refactoring:Refactoring.values()){
-		IRefactoringAvailabilityTester tester=refactoring.getTester();
-			if(tester.test(selection)){
-				return true;
+			IRefactoringAvailabilityTester tester=refactoring.getTester();
+			if(tester!=null){
+				if(tester.test(selection)){
+					return true;
+				}
 			}
 		}
 		return false;
