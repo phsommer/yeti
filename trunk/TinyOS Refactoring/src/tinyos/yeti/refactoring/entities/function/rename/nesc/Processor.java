@@ -85,11 +85,20 @@ public class Processor extends RenameProcessor {
 		try {
 			//Get the InterfaceAstAnalyzer of the interface definition of the selected identifier 
 			String definingInterfaceName=getInterfaceDefinitionName();
+			if(definingInterfaceName==null){
+				initializationStatus.addFatalError("Defining interface is out of project range!");
+				return initializationStatus;
+			}
 			ProjectUtil projectUtil=getProjectUtil();
 			definingInterfaceDeclaration=projectUtil.getInterfaceDefinition(definingInterfaceName);
-			declaringFile=getIFile4ParseFile(definingInterfaceDeclaration.getParseFile());
-			if(!projectUtil.isProjectFile(declaringFile)){
+			if(definingInterfaceName==null){
 				initializationStatus.addFatalError("Defining interface is out of project range!");
+				return initializationStatus;
+			}
+			declaringFile=getIFile4ParseFile(definingInterfaceDeclaration.getParseFile());
+			if(declaringFile==null||!projectUtil.isProjectFile(declaringFile)){
+				initializationStatus.addFatalError("Defining interface is out of project range!");
+				return initializationStatus;
 			}
 			AstAnalyzerFactory factory4definingInterface=new AstAnalyzerFactory(declaringFile, projectUtil, pm);
 			if(!factory4definingInterface.hasInterfaceAnalyzerCreated()){
@@ -100,6 +109,7 @@ public class Processor extends RenameProcessor {
 		catch(Exception e){
 			initializationStatus.addFatalError("Exception occured during initialization! See project log for more information.");
 			getProjectUtil().log("Exception during initialization.", e);
+			e.printStackTrace();
 		}
 		return initializationStatus;
 	}
