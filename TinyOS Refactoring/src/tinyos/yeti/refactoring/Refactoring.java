@@ -81,13 +81,13 @@ public enum Refactoring {
 	PLUGIN_NOT_READY (
 			"PluginNotReady",
 			"none",
-			null),		
+			new tinyos.yeti.refactoring.entities.none.notavailable.AvailabilityTester()),		
 	
 	
 	NOT_SAVED (
 			"NotSaved",
 			"none",
-			null);
+			new tinyos.yeti.refactoring.entities.none.notavailable.AvailabilityTester());
 
 	private String propertyName;
 	private String entityName;
