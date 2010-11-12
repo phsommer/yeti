@@ -208,11 +208,12 @@ public class EnvironmentManager{
 
     		List<IEnvironment> list = new ArrayList<IEnvironment>();
     		
-    		for(IExtension extension: Arrays.asList(extensions)){
-    			IConfigurationElement[] configurationElements = extension.getConfigurationElements();
-    			for(IConfigurationElement configurationElement: Arrays.asList(configurationElements)){
+    		for( int i = 0; i < extensions.length; i++ ){
+    			IExtension ext = extensions[i];
+    			IConfigurationElement[] ce = ext.getConfigurationElements();
+    			for( int j = 0; j < ce.length; j++ ){
     				try{
-    					list.add( ( IEnvironment )configurationElement.createExecutableExtension( "class" ) );
+    					list.add( ( IEnvironment )ce[j].createExecutableExtension( "class" ) );
     				}
     				catch ( CoreException e ){
     					TinyOSPlugin.log( e );
