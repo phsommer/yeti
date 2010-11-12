@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="tinyos.yeti.formatter"
-      label="TinyOS Formatter (Optional)"
-      version="1.0.1"
+      label="Yeti 2 - Formatter (Optional)"
+      version="1.0.2"
       provider-name="ETH Zurich, Jianyuan Li">
 
    <description url="http://www.example.com/description">
@@ -689,7 +689,7 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;http://www.gnu.org/philosophy/why-not-lgpl.html&gt;.
    </license>
-   
+
    <includes
          id="tinyos.yeti.formatter.source"
          version="0.0.0"
@@ -700,8 +700,8 @@ Public License instead of this License.  But first, please read
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
-      <import feature="Feature_Core_Plugin" version="2.2.1"/>
-      <import plugin="tinyos.yeti.core" version="2.2.1" match="greaterOrEqual"/>
+      <import feature="Feature_Core_Plugin" version="2.2.2"/>
+      <import plugin="tinyos.yeti.core" version="2.2.2" match="greaterOrEqual"/>
    </requires>
 
    <plugin

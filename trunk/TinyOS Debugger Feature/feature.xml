@@ -2,7 +2,7 @@
 <feature
       id="tinyos.yeti.debugger"
       label="Yeti 2 - TinyOS Debugger (optional)"
-      version="1.2.17"
+      version="1.2.18"
       provider-name="Silvan Nellen, ETH Zurich">
 
    <description url="http://tos-ide.ethz.ch/wiki/index.php">
@@ -46,13 +46,18 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <update label="Yeti 2" url="http://tos-ide.ethz.ch/update/site.xml"/>
    </url>
 
+   <includes
+         id="tinyos.yeti.debugger.source"
+         version="0.0.0"
+         optional="true"/>
+
    <requires>
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.filesystem"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.ui.editors"/>
-      <import feature="Feature_Core_Plugin" version="2.2.17"/>
+      <import feature="Feature_Core_Plugin" version="2.2.18"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.ide"/>
@@ -62,11 +67,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <import plugin="org.eclipse.cdt.debug.mi.core"/>
       <import plugin="org.eclipse.cdt.launch"/>
       <import plugin="org.eclipse.cdt.ui"/>
-      <import plugin="tinyos.yeti.core" version="2.2.17" match="greaterOrEqual"/>
+      <import plugin="tinyos.yeti.core" version="2.2.18" match="greaterOrEqual"/>
    </requires>
 
-  <includes id="tinyos.yeti.debugger.source" version="0.0.0" optional="true"/>
-  
    <plugin
          id="tinyos.yeti.debugger"
          download-size="0"

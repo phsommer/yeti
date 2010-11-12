@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Yeti 2 - Abstract Environment
 Bundle-SymbolicName: tinyos.yeti.environment.basic;singleton:=true
-Bundle-Version: 1.2.17
+Bundle-Version: 1.2.18
 Bundle-Activator: tinyos.yeti.environment.basic.TinyOSAbstractEnvironmentPlugin
 Bundle-Vendor: ETH Zurich, Benjamin Sigg
 Require-Bundle: org.eclipse.ui,
@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.ui,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.editors,
- tinyos.yeti.core;bundle-version="2.2.17"
+ tinyos.yeti.core;bundle-version="2.2.18"
 Eclipse-LazyStart: false
 Export-Package: tinyos.yeti.environment.basic,
  tinyos.yeti.environment.basic.checker,
