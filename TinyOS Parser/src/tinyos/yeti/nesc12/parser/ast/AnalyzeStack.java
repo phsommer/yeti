@@ -947,7 +947,7 @@ public class AnalyzeStack {
             scope = scope.parent;
             top--;
         }
-
+        
         if( isReportErrors() ){
             FieldPusher pusher = scope.getFieldPusher( name );
             pusher.pushField( name, field, forwardDeclaration, field.asNode() );
@@ -973,7 +973,7 @@ public class AnalyzeStack {
         	}
         	knownFields.add(field);
         }
-
+        
         scope.put( FIELDS, name, field );
     }
 
