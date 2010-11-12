@@ -2,7 +2,7 @@
 <feature
       id="Feature_TosLinux_2"
       label="Yeti 2 - TinyOS 2.x on Unix (optional)"
-      version="2.2.17"
+      version="2.2.18"
       provider-name="ETH Zurich, Benjamin Sigg">
 
    <description url="http://www.example.com/description">
@@ -704,10 +704,10 @@ Public License instead of this License.  But first, please read
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.console"/>
-      <import feature="Feature_Core_Plugin" version="2.2.17"/>
-      <import feature="Feature_Environment" version="1.2.17"/>
-      <import plugin="tinyos.yeti.core" version="2.2.17" match="greaterOrEqual"/>
-      <import plugin="tinyos.yeti.environment.basic" version="1.2.17" match="greaterOrEqual"/>
+      <import feature="Feature_Core_Plugin" version="2.2.18"/>
+      <import feature="Feature_Environment" version="1.2.18"/>
+      <import plugin="tinyos.yeti.core" version="2.2.18" match="greaterOrEqual"/>
+      <import plugin="tinyos.yeti.environment.basic" version="1.2.18" match="greaterOrEqual"/>
    </requires>
 
    <plugin

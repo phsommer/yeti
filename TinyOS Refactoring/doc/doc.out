@@ -1,0 +1,60 @@
+\BOOKMARK [-1][-]{part.1}{I What is refactoring}{}
+\BOOKMARK [0][-]{chapter.1}{Definition of refactoring}{part.1}
+\BOOKMARK [0][-]{chapter.2}{Why do we need refactoring}{part.1}
+\BOOKMARK [-1][-]{part.2}{II Eclipse plug-ins}{}
+\BOOKMARK [0][-]{chapter.3}{General info about writing plug-ins}{part.2}
+\BOOKMARK [1][-]{section.3.1}{META-INF/MANIFEST.MF}{chapter.3}
+\BOOKMARK [1][-]{section.3.2}{plugin.xml}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.2.1}{Using extension points \(making extensions\)}{section.3.2}
+\BOOKMARK [0][-]{chapter.4}{Language Toolkit for processor based refactoring}{part.2}
+\BOOKMARK [1][-]{section.4.1}{Important classes}{chapter.4}
+\BOOKMARK [1][-]{section.4.2}{The Change classes}{chapter.4}
+\BOOKMARK [1][-]{section.4.3}{Refactoring operation sequence}{chapter.4}
+\BOOKMARK [0][-]{chapter.5}{Menu's with conditional visibility}{part.2}
+\BOOKMARK [1][-]{section.5.1}{Create a menu entry}{chapter.5}
+\BOOKMARK [2][-]{subsection.5.1.1}{Add a new submenu}{section.5.1}
+\BOOKMARK [2][-]{subsection.5.1.2}{Add a command to the submenu}{section.5.1}
+\BOOKMARK [2][-]{subsection.5.1.3}{Createing a command}{section.5.1}
+\BOOKMARK [2][-]{subsection.5.1.4}{Introducing a handler for a command}{section.5.1}
+\BOOKMARK [2][-]{subsection.5.1.5}{Bindings}{section.5.1}
+\BOOKMARK [1][-]{section.5.2}{Add conditional visibility}{chapter.5}
+\BOOKMARK [2][-]{subsection.5.2.1}{Property tester}{section.5.2}
+\BOOKMARK [2][-]{subsection.5.2.2}{Visibility condition}{section.5.2}
+\BOOKMARK [-1][-]{part.3}{III The Refactoring Plug-in}{}
+\BOOKMARK [0][-]{chapter.6}{About our plug-in}{part.3}
+\BOOKMARK [1][-]{section.6.1}{The general refactoring life cycle}{chapter.6}
+\BOOKMARK [1][-]{section.6.2}{Package structure}{chapter.6}
+\BOOKMARK [0][-]{chapter.7}{From plug-in XML to Java code}{part.3}
+\BOOKMARK [1][-]{section.7.1}{How to decide the availability of a refactoring}{chapter.7}
+\BOOKMARK [2][-]{subsection.7.1.1}{The Refactoring enum}{section.7.1}
+\BOOKMARK [2][-]{subsection.7.1.2}{The RefactoringAvailabilityTester class}{section.7.1}
+\BOOKMARK [2][-]{subsection.7.1.3}{The IRefactoringAvailabilityTester interface}{section.7.1}
+\BOOKMARK [1][-]{section.7.2}{How to execute a specific refactoring}{chapter.7}
+\BOOKMARK [2][-]{subsection.7.2.1}{The AbstractHandler abstract class}{section.7.2}
+\BOOKMARK [0][-]{chapter.8}{Abstract refactorings}{part.3}
+\BOOKMARK [1][-]{section.8.1}{What we mean by abstract refactoring}{chapter.8}
+\BOOKMARK [1][-]{section.8.2}{The abstractrefactoring.rename classes}{chapter.8}
+\BOOKMARK [2][-]{subsection.8.2.1}{The RenameAvailabilityTester abstract class}{section.8.2}
+\BOOKMARK [2][-]{subsection.8.2.2}{The SelectionIdentifier class}{section.8.2}
+\BOOKMARK [2][-]{subsection.8.2.3}{The RenameActionHandler class}{section.8.2}
+\BOOKMARK [2][-]{subsection.8.2.4}{The RenameInputPage class}{section.8.2}
+\BOOKMARK [2][-]{subsection.8.2.5}{The RenameProcessor class}{section.8.2}
+\BOOKMARK [0][-]{chapter.9}{Harnessing the AST}{part.3}
+\BOOKMARK [1][-]{section.9.1}{The AstAnalyzer classes}{chapter.9}
+\BOOKMARK [2][-]{subsection.9.1.1}{The AstAnalyzerFactory class}{section.9.1}
+\BOOKMARK [2][-]{subsection.9.1.2}{AstAnalyzer types}{section.9.1}
+\BOOKMARK [1][-]{section.9.2}{Utility classes}{chapter.9}
+\BOOKMARK [2][-]{subsection.9.2.1}{Auxiliary AST classes}{section.9.2}
+\BOOKMARK [2][-]{subsection.9.2.2}{Project wide classes}{section.9.2}
+\BOOKMARK [0][-]{chapter.10}{Concrete refactorings}{part.3}
+\BOOKMARK [1][-]{section.10.1}{Implemented refactorings}{chapter.10}
+\BOOKMARK [1][-]{section.10.2}{What else could be done}{chapter.10}
+\BOOKMARK [1][-]{section.10.3}{How to implement a new refactoring}{chapter.10}
+\BOOKMARK [2][-]{subsection.10.3.1}{Enable your refactoring}{section.10.3}
+\BOOKMARK [2][-]{subsection.10.3.2}{Make your refactoring do its work}{section.10.3}
+\BOOKMARK [0][-]{chapter.11}{An example Implementation: The rename interface refactoring}{part.3}
+\BOOKMARK [1][-]{section.11.1}{Until the processor starts its work}{chapter.11}
+\BOOKMARK [1][-]{section.11.2}{The processor}{chapter.11}
+\BOOKMARK [2][-]{subsection.11.2.1}{Find all identifiers affected by the renaming}{section.11.2}
+\BOOKMARK [2][-]{subsection.11.2.2}{Check for collisions}{section.11.2}
+\BOOKMARK [2][-]{subsection.11.2.3}{Create the changes}{section.11.2}
