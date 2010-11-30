@@ -4,11 +4,11 @@
       label="Yeti 2 - Refactoring (Optional)"
       version="1.0.1">
 
-   <description url="http://www.example.com/description">
+   <description>
       Core refactoring.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
+   <copyright>
       [Enter Copyright Description here.]
    </copyright>
 
@@ -869,14 +869,14 @@ Public License instead of this License.  But first, please read
       <import plugin="tinyos.yeti.core" version="2.2.1" match="greaterOrEqual"/>
       <import plugin="tinyos.yeti.parser.nesc12" version="1.2.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.workbench.texteditor" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.4.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.resources" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jface.text" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.editors" version="3.5.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.4.101" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.5.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.5.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="tinyos.yeti.preprocessor.nesc12" version="1.2.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.expressions" version="3.4.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.expressions" version="3.4.101" match="greaterOrEqual"/>
       <import feature="Feature_Core_Plugin" version="2.2.1"/>
       <import feature="Feature_Parser12" version="1.2.1"/>
    </requires>
