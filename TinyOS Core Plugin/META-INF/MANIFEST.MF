@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Yeti 2 - TinyOS Plugin
+Bundle-Name: YETI - TinyOS Plugin
 Bundle-SymbolicName: tinyos.yeti.core;singleton:=true
-Bundle-Version: 2.2.18
+Bundle-Version: 2.2.383
 Bundle-ClassPath: .,
  lib/jlex.jar,
  lib/yydebug.jar
 Bundle-Activator: tinyos.yeti.TinyOSPlugin
-Bundle-Vendor: ETH Zurich, Roland Schuler, Benjamin Sigg
+Bundle-Vendor: ETH Zurich
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

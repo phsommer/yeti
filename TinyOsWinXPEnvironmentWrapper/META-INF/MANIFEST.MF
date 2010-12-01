@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Yeti 2 - TinyOS Cygwin Wrapper
+Bundle-Name: YETI - TinyOS Cygwin Wrapper
 Bundle-SymbolicName: tinyos.yeti.environment.winXP;singleton:=true
-Bundle-Version: 1.1.18
+Bundle-Version: 2.2.383
 Bundle-Activator: tinyos.yeti.environment.winXP.TinyOSWinXPEnvironmentWrapper
-Bundle-Vendor: ETH Zurich, Benjamin Sigg
+Bundle-Vendor: ETH Zurich
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
- tinyos.yeti.core;bundle-version="2.2.18",
- tinyos.yeti.environment.basic;bundle-version="1.2.18"
+ tinyos.yeti.core,
+ tinyos.yeti.environment.basic
 Eclipse-LazyStart: true
