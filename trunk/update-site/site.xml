@@ -1,70 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description url="http://tos-ide.ethz.ch/update/site.xml">
-      Yeti 2 update site
+   <description name="YETI Update Site" url="http://svn.codespot.com/a/eclipselabs.org/yeti/trunk/update-site/">
+      YETI TinyOS Plugin Upate Site
    </description>
-   <feature url="features/Feature_Core_Plugin_2.2.17.jar" id="Feature_Core_Plugin" version="2.2.17">
+   <feature url="features/tinyos.yeti.core_2.2.383.jar" id="tinyos.yeti.core" version="2.2.383">
       <category name="core"/>
    </feature>
-   <feature url="features/Feature_Parser12_1.2.17.jar" id="Feature_Parser12" version="1.2.17">
+   <feature url="features/tinyos.yeti.parser_2.2.383.jar" id="tinyos.yeti.parser" version="2.2.383">
       <category name="core"/>
    </feature>
-   <feature url="features/Feature_Environment_1.2.17.jar" id="Feature_Environment" version="1.2.17">
+   <feature url="features/tinyos.yeti.debugger_2.2.383.jar" id="tinyos.yeti.debugger" version="2.2.383">
+      <category name="opt"/>
+   </feature>
+   <feature url="features/tinyos.yeti.environment_2.2.383.jar" id="tinyos.yeti.environment" version="2.2.383">
       <category name="env"/>
    </feature>
-   <feature url="features/Feature_TosLinux_2_2.2.17.jar" id="Feature_TosLinux_2" version="2.2.17">
+   <feature url="features/tinyos.yeti.environment.unix_2.2.383.jar" id="tinyos.yeti.environment.unix" version="2.2.383">
       <category name="env"/>
    </feature>
-   <feature url="features/tinyos.windows.environment_1.1.17.jar" id="tinyos.windows.environment" version="1.1.17">
+   <feature url="features/tinyos.yeti.environment.windows_2.2.383.jar" id="tinyos.yeti.environment.windows" version="2.2.383">
       <category name="env"/>
    </feature>
-   <feature url="features/tinyos.yeti.debugger_1.2.17.jar" id="tinyos.yeti.debugger" version="1.2.17">
+   <feature url="features/tinyos.yeti.formatter_2.2.383.jar" id="tinyos.yeti.formatter" version="2.2.383">
       <category name="opt"/>
    </feature>
-   <feature url="features/tinyos.yeti.formatter_1.0.1.jar" id="tinyos.yeti.formatter" version="1.0.1">
+   <feature url="features/tinyos.yeti.refactoring_2.2.383.jar" id="tinyos.yeti.refactoring" version="2.2.383">
       <category name="opt"/>
    </feature>
-   <feature url="features/tinyos.yeti.search_1.1.17.jar" id="tinyos.yeti.search" version="1.1.17">
+   <feature url="features/tinyos.yeti.search_2.2.383.jar" id="tinyos.yeti.search" version="2.2.383">
       <category name="opt"/>
    </feature>
-   <feature url="features/Feature_Core_Plugin_2.2.18.jar" id="Feature_Core_Plugin" version="2.2.18">
-      <category name="core"/>
-   </feature>
-   <feature url="features/Feature_Parser12_1.2.18.jar" id="Feature_Parser12" version="1.2.18">
-      <category name="core"/>
-   </feature>
-   <feature url="features/Feature_Environment_1.2.18.jar" id="Feature_Environment" version="1.2.18">
-      <category name="env"/>
-   </feature>
-   <feature url="features/Feature_TosLinux_2_2.2.18.jar" id="Feature_TosLinux_2" version="2.2.18">
-      <category name="env"/>
-   </feature>
-   <feature url="features/tinyos.windows.environment_1.1.18.jar" id="tinyos.windows.environment" version="1.1.18">
-      <category name="env"/>
-   </feature>
-   <feature url="features/tinyos.yeti.debugger_1.2.18.jar" id="tinyos.yeti.debugger" version="1.2.18">
-      <category name="opt"/>
-   </feature>
-   <feature url="features/tinyos.yeti.formatter_1.0.2.jar" id="tinyos.yeti.formatter" version="1.0.2">
-      <category name="opt"/>
-   </feature>
-   <feature url="features/tinyos.yeti.refactoring_1.0.1.jar" id="tinyos.yeti.refactoring" version="1.0.1">
-      <category name="opt"/>
-   </feature>
-   <feature url="features/tinyos.yeti.search_1.1.18.jar" id="tinyos.yeti.search" version="1.1.18">
-      <category name="opt"/>
-   </feature>
-   <category-def name="core" label="Yeti 2 - Core">
+   <category-def name="core" label="YETI TinyOS - Core">
       <description>
          The core library with extensions.
       </description>
    </category-def>
-   <category-def name="env" label="Yeti 2 - Environments">
+   <category-def name="env" label="YETI TinyOS - Environments">
       <description>
          Platform dependent environments
       </description>
    </category-def>
-   <category-def name="opt" label="Yeti 2 - Optional">
+   <category-def name="opt" label="YETI TinyOS - Optional">
       <description>
          Optional and experimental features.
       </description>
