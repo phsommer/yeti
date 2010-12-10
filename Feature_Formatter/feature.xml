@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="tinyos.yeti.formatter"
-      label="Yeti - Code Formatter (Optional)"
+      label="YETI - Code Formatter (Optional)"
       version="2.2.383"
       provider-name="ETH Zurich">
 
