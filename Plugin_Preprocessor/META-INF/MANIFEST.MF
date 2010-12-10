@@ -8,13 +8,29 @@ Bundle-Activator: tinyos_preprocessor.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/cup/java-cup-11a-runtime.jar,
  .
-Export-Package: tinyos.yeti.preprocessor,
- tinyos.yeti.preprocessor.lexer,
- tinyos.yeti.preprocessor.lexer.macro,
- tinyos.yeti.preprocessor.output,
- tinyos.yeti.preprocessor.parser,
- tinyos.yeti.preprocessor.parser.elements,
- tinyos.yeti.preprocessor.parser.stream
+Export-Package: tinyos.yeti.preprocessor;
+  uses:="org.eclipse.core.runtime,
+   tinyos.yeti.preprocessor.output,
+   tinyos.yeti.preprocessor.lexer,
+   tinyos.yeti.preprocessor.parser,
+   tinyos.yeti.preprocessor.parser.elements",
+ tinyos.yeti.preprocessor.lexer;
+  uses:="org.eclipse.core.runtime,
+   java_cup.runtime,
+   tinyos.yeti.preprocessor.output,
+   tinyos.yeti.preprocessor.parser,
+   tinyos.yeti.preprocessor.parser.elements,
+   tinyos.yeti.preprocessor,
+   tinyos.yeti.preprocessor.lexer.streams",
+ tinyos.yeti.preprocessor.lexer.macro;uses:="tinyos.yeti.preprocessor.lexer,tinyos.yeti.preprocessor.parser.elements,tinyos.yeti.preprocessor.parser",
+ tinyos.yeti.preprocessor.output;
+  uses:="tinyos.yeti.preprocessor.lexer,
+   tinyos.yeti.preprocessor.parser,
+   tinyos.yeti.preprocessor,
+   tinyos.yeti.preprocessor.parser.stream",
+ tinyos.yeti.preprocessor.parser;uses:="java_cup.runtime,tinyos.yeti.preprocessor.lexer",
+ tinyos.yeti.preprocessor.parser.elements;uses:="tinyos.yeti.preprocessor.lexer,tinyos.yeti.preprocessor.parser,tinyos.yeti.preprocessor.lexer.streams",
+ tinyos.yeti.preprocessor.parser.stream;uses:="tinyos.yeti.preprocessor.parser"

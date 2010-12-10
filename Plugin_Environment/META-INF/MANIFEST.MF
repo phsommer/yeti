@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.editors,
  tinyos.yeti.core
-Eclipse-LazyStart: false
+Bundle-ActivationPolicy: lazy
 Export-Package: tinyos.yeti.environment.basic,
  tinyos.yeti.environment.basic.checker,
  tinyos.yeti.environment.basic.commands,

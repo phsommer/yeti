@@ -24,7 +24,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  org.eclipse.ui.intro.universal,
  org.eclipse.ui.intro
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: jay.yydebug,
  tinyos.yeti;
   uses:="org.eclipse.core.runtime,

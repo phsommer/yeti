@@ -11,5 +11,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console,
  tinyos.yeti.core,
  tinyos.yeti.environment.basic
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 
