@@ -30,6 +30,7 @@
    <feature url="features/tinyos.yeti.search_2.2.383.jar" id="tinyos.yeti.search" version="2.2.383">
       <category name="opt"/>
    </feature>
+   <feature url="features/tinyos.yeti.debugger.simulation_2.2.383.jar" id="tinyos.yeti.debugger.simulation" version="2.2.383"/>
    <category-def name="core" label="YETI TinyOS - Core">
       <description>
          The core library with extensions.

@@ -21,4 +21,8 @@ Require-Bundle: org.eclipse.debug.core,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: tinyOS.debug.TinyOSDebugPlugin
+Export-Package: tinyOS.debug,
+ tinyOS.debug.CDTAbstractionLayer,
+ tinyOS.debug.launch,
+ tinyOS.debug.launch.configuration
 

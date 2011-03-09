@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="tinyos.yeti.debugger.simulation.simulatorTab" name="tinyos.yeti.debugger.simulation.simulatorTab" schema="schema/tinyos.yeti.debugger.simulation.simulatorTab.exsd"/>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="tinyOS.debug.simulation.launch.LaunchConfigurationDelegate"
+            id="tinyOS.debug.simulation.launch.configurationType"
+            modes="debug"
+            name="TinyOS Debug Simulation"
+            public="true"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="tinyOS.debug.simulation.launch.configuration.LaunchConfigurationTabGroup"
+            id="tinyOS.debug.simulation.launch.tabGroup"
+            type="tinyOS.debug.simulation.launch.configurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="tinyos.yeti.debugger.simulation.simulatorTab">
+      <tab
+            class="tinyOS.debug.simulation.launch.configuration.CoojaConfigurationTab"
+            id="tinyos.yeti.debugger.simulation.simulatorTab.cooja"
+            order="1"
+            simulation_manager="tinyOS.debug.simulation.manager.cooja.CoojaSimulationManager">
+      </tab>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="tinyOS.debug.simulation.ui.views.SimulationDebugView"
+            icon="icons/debugger_tab.gif"
+            id="tinyos.yeti.debugger.simulation.simulation_debug_view"
+            name="Simulation Debug"
+            restorable="true">
+      </view>
+   </extension>
+
+
+</plugin>
