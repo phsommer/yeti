@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="tinyos.yeti.debugger.simulation.simulatorTab" name="tinyos.yeti.debugger.simulation.simulatorTab"/>
+   <extension-point id="tinyos.yeti.debugger.simulation.simulatorTab" name="tinyos.yeti.debugger.simulation.simulatorTab" schema="schema/tinyos.yeti.debugger.simulation.simulatorTab.exsd"/>
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType

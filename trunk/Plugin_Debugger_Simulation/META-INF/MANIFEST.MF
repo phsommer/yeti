@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Yeti 2 - Debugger Simulation
+Bundle-Name: YETI - Debugger Simulation
 Bundle-SymbolicName: tinyos.yeti.debugger.simulation;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 2.2.383
 Bundle-Activator: tinyos.yeti.debug.simulation.TinyOSDebugSimulationPlugin
 Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,tinyos.yeti.de
  bugger,org.eclipse.debug.core,org.eclipse.deb
@@ -10,12 +10,7 @@ Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,tinyos.yeti.de
  bench.texteditor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Vendor: Richard Huber
-Import-Package: org.eclipse.cdt.core,org.eclipse.cdt.core.model,org.ec
- lipse.cdt.debug.core,org.eclipse.cdt.debug.core.cdi,org.eclipse.cdt.d
- ebug.core.cdi.model,org.eclipse.cdt.debug.mi.core,org.eclipse.cdt.deb
- ug.mi.core.cdi,org.eclipse.cdt.debug.mi.core.command,org.eclipse.cdt.
- launch.internal,org.eclipse.cdt.launch.internal.ui,tinyos.yeti.launch
+Bundle-Vendor: ETH Zurich
 Export-Package: tinyos.yeti.debug.simulation;
   uses:="org.eclipse.debug.core,
    org.eclipse.jface.preference,
@@ -50,4 +45,5 @@ Export-Package: tinyos.yeti.debug.simulation;
    org.eclipse.jface.viewers,
    org.eclipse.swt.widgets,
    org.eclipse.debug.core.model"
+Import-Package: org.eclipse.cdt.debug.mi.core
 
