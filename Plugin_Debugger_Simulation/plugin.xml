@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="tinyos.yeti.debugger.simulation.simulatorTab" name="tinyos.yeti.debugger.simulation.simulatorTab" schema="schema/tinyos.yeti.debugger.simulation.simulatorTab.exsd"/>
+   <extension-point id="tinyos.yeti.debugger.simulation.simulatorTab" name="tinyos.yeti.debugger.simulation.simulatorTab"/>
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="tinyOS.debug.simulation.launch.LaunchConfigurationDelegate"
+            delegate="tinyos.yeti.debug.simulation.launch.LaunchConfigurationDelegate"
             id="tinyOS.debug.simulation.launch.configurationType"
             modes="debug"
             name="TinyOS Debug Simulation"
@@ -17,7 +17,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            class="tinyOS.debug.simulation.launch.configuration.LaunchConfigurationTabGroup"
+            class="tinyos.yeti.debug.simulation.launch.configuration.LaunchConfigurationTabGroup"
             id="tinyOS.debug.simulation.launch.tabGroup"
             type="tinyOS.debug.simulation.launch.configurationType">
       </launchConfigurationTabGroup>
@@ -34,7 +34,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="tinyOS.debug.simulation.ui.views.SimulationDebugView"
+            class="tinyos.yeti.debug.simulation.ui.views.SimulationDebugView"
             icon="icons/debugger_tab.gif"
             id="tinyos.yeti.debugger.simulation.simulation_debug_view"
             name="Simulation Debug"

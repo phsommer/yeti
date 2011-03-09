@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Yeti 2 - Debugger Simulation
 Bundle-SymbolicName: tinyos.yeti.debugger.simulation;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: tinyOS.debug.simulation.TinyOSDebugSimulationPlugin
+Bundle-Activator: tinyos.yeti.debug.simulation.TinyOSDebugSimulationPlugin
 Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,tinyos.yeti.de
  bugger,org.eclipse.debug.core,org.eclipse.deb
  ug.ui,org.eclipse.cdt.debug.core,tinyos.yeti.core,org.eclipse.ui.work
@@ -16,9 +16,40 @@ Import-Package: org.eclipse.cdt.core,org.eclipse.cdt.core.model,org.ec
  ebug.core.cdi.model,org.eclipse.cdt.debug.mi.core,org.eclipse.cdt.deb
  ug.mi.core.cdi,org.eclipse.cdt.debug.mi.core.command,org.eclipse.cdt.
  launch.internal,org.eclipse.cdt.launch.internal.ui,tinyos.yeti.launch
-Export-Package: tinyOS,tinyOS.debug,tinyOS.debug.simulation,tinyOS.deb
- ug.simulation.events,tinyOS.debug.simulation.launch,tinyOS.debug.simu
- lation.launch.configuration,tinyOS.debug.simulation.manager,tinyOS.de
- bug.simulation.manager.cooja,tinyOS.debug.simulation.ui.actions,tinyO
- S.debug.simulation.ui.views
+Export-Package: tinyOS,
+ tinyOS.debug,
+ tinyos.yeti.debug.simulation;
+  uses:="org.eclipse.debug.core,
+   org.eclipse.jface.preference,
+   tinyOS.debug.simulation.events,
+   org.eclipse.ui.plugin,
+   org.osgi.framework,
+   tinyOS.debug.simulation.manager,
+   org.eclipse.swt.widgets",
+ tinyos.yeti.debug.simulation.events,
+ tinyos.yeti.debug.simulation.launch;uses:="org.eclipse.debug.core,org.eclipse.core.runtime,org.eclipse.debug.core.model",
+ tinyos.yeti.debug.simulation.launch.configuration;
+  uses:="org.eclipse.debug.core,
+   org.eclipse.debug.ui,
+   org.eclipse.swt.graphics,
+   tinyOS.debug.launch.configuration,
+   org.eclipse.swt.widgets",
+ tinyos.yeti.debug.simulation.manager;uses:="org.eclipse.debug.core",
+ tinyos.yeti.debug.simulation.manager.cooja;
+  uses:="org.eclipse.debug.core,
+   tinyOS.debug.simulation.events,
+   org.eclipse.core.resources,
+   tinyOS.debug.simulation.manager,
+   org.eclipse.debug.core.model",
+ tinyos.yeti.debug.simulation.ui.actions;
+  uses:="org.eclipse.jface.action,
+   org.eclipse.jface.resource,
+   org.eclipse.jface.viewers,
+   tinyOS.debug.simulation.manager",
+ tinyos.yeti.debug.simulation.ui.views;
+  uses:="org.eclipse.jface.action,
+   org.eclipse.debug.ui,
+   org.eclipse.jface.viewers,
+   org.eclipse.swt.widgets,
+   org.eclipse.debug.core.model"
 
