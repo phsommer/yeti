@@ -79,9 +79,15 @@ public class RefactoringsAvailabilityTester extends PropertyTester {
 	 * @return 
 	 */
 	private boolean isPluginReady() {
-		NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
-		NesC12AST ast = (NesC12AST) editor.getAST();
-		return ast!=null;
+		
+		try {
+			NesCEditor editor = ActionHandlerUtil.getActiveEditor().getNesCEditor();
+			NesC12AST ast = (NesC12AST) editor.getAST();
+			return ast!=null;
+		} catch (Exception e) {
+			return false;
+		}
+		
 	}
 
 	/**

@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Yeti 2 - Debugger Simulation
+Bundle-SymbolicName: tinyos.yeti.debugger.simulation;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: tinyOS.debug.simulation.TinyOSDebugSimulationPlugin
+Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,tinyos.yeti.de
+ bugger,org.eclipse.debug.core,org.eclipse.deb
+ ug.ui,org.eclipse.cdt.debug.core,tinyos.yeti.core,org.eclipse.ui.work
+ bench.texteditor
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Richard Huber
+Import-Package: org.eclipse.cdt.core,org.eclipse.cdt.core.model,org.ec
+ lipse.cdt.debug.core,org.eclipse.cdt.debug.core.cdi,org.eclipse.cdt.d
+ ebug.core.cdi.model,org.eclipse.cdt.debug.mi.core,org.eclipse.cdt.deb
+ ug.mi.core.cdi,org.eclipse.cdt.debug.mi.core.command,org.eclipse.cdt.
+ launch.internal,org.eclipse.cdt.launch.internal.ui,tinyos.yeti.launch
+Export-Package: tinyOS,tinyOS.debug,tinyOS.debug.simulation,tinyOS.deb
+ ug.simulation.events,tinyOS.debug.simulation.launch,tinyOS.debug.simu
+ lation.launch.configuration,tinyOS.debug.simulation.manager,tinyOS.de
+ bug.simulation.manager.cooja,tinyOS.debug.simulation.ui.actions,tinyO
+ S.debug.simulation.ui.views
+
