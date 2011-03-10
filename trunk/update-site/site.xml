@@ -10,40 +10,40 @@
       <category name="core"/>
    </feature>
    <feature url="features/tinyos.yeti.debugger_2.2.383.jar" id="tinyos.yeti.debugger" version="2.2.383">
-      <category name="opt"/>
+      <category name="optional"/>
    </feature>
    <feature url="features/tinyos.yeti.environment_2.2.383.jar" id="tinyos.yeti.environment" version="2.2.383">
-      <category name="env"/>
+      <category name="tinyos"/>
    </feature>
    <feature url="features/tinyos.yeti.environment.unix_2.2.383.jar" id="tinyos.yeti.environment.unix" version="2.2.383">
-      <category name="env"/>
+      <category name="tinyos"/>
    </feature>
    <feature url="features/tinyos.yeti.environment.windows_2.2.383.jar" id="tinyos.yeti.environment.windows" version="2.2.383">
-      <category name="env"/>
+      <category name="tinyos"/>
    </feature>
    <feature url="features/tinyos.yeti.formatter_2.2.383.jar" id="tinyos.yeti.formatter" version="2.2.383">
-      <category name="opt"/>
+      <category name="optional"/>
    </feature>
    <feature url="features/tinyos.yeti.refactoring_2.2.383.jar" id="tinyos.yeti.refactoring" version="2.2.383">
-      <category name="opt"/>
+      <category name="optional"/>
    </feature>
    <feature url="features/tinyos.yeti.search_2.2.383.jar" id="tinyos.yeti.search" version="2.2.383">
-      <category name="opt"/>
+      <category name="optional"/>
    </feature>
    <feature url="features/tinyos.yeti.debugger.simulation_2.2.383.jar" id="tinyos.yeti.debugger.simulation" version="2.2.383">
-      <category name="opt"/>
+      <category name="optional"/>
    </feature>
    <category-def name="core" label="YETI TinyOS - Core">
       <description>
          The core library with extensions.
       </description>
    </category-def>
-   <category-def name="env" label="YETI TinyOS - Environments">
+   <category-def name="tinyos" label="YETI TinyOS - Environments">
       <description>
          Platform dependent environments
       </description>
    </category-def>
-   <category-def name="opt" label="YETI TinyOS - Optional">
+   <category-def name="optional" label="YETI TinyOS - Optional">
       <description>
          Optional and experimental features.
       </description>
