@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import tinyOS.debug.TinyOSDebugPlugin;
-import tinyOS.debug.launch.configuration.AbstractTinyOSDebuggerTab;
+import tinyos.yeti.debug.TinyOSDebugPlugin;
+import tinyos.yeti.debug.launch.configuration.AbstractTinyOSDebuggerTab;
 
 public class CoojaConfigurationTab extends AbstractTinyOSDebuggerTab implements ISimulatorConfigurationTab 
 {

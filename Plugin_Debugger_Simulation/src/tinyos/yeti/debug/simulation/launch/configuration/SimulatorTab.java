@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
-import tinyOS.debug.NesCDebugIcons;
-import tinyOS.debug.TinyOSDebugPlugin;
-import tinyOS.debug.launch.configuration.AbstractTinyOSDebuggerTab;
+import tinyos.yeti.debug.NesCDebugIcons;
+import tinyos.yeti.debug.TinyOSDebugPlugin;
+import tinyos.yeti.debug.launch.configuration.AbstractTinyOSDebuggerTab;
 import tinyos.yeti.TinyOSPlugin;
 
 /**
