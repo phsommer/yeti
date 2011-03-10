@@ -9,12 +9,12 @@
       <view
             name="Component Variables Browser"
             icon="icons/component.gif"
-            category="tinyOS.debug.category.main"
-            class="tinyOS.debug.views.NescVariablesViewer"
-            id="tinyOS.debug.views.ComponenVariablesView">
+            category="tinyos.yeti.debug.category.main"
+            class="tinyos.yeti.debug.views.NescVariablesViewer"
+            id="tinyos.yeti.debug.views.ComponenVariablesView">
       </view>
       <category
-            id="tinyOS.debug.category.main"
+            id="tinyos.yeti.debug.category.main"
             name="TinyOS Debug">
       </category>
    </extension>
@@ -29,12 +29,12 @@
    <extension
          point="org.eclipse.ui.editorActions">
       <editorContribution
-            id="tinyOS.debug.ui.editor.nesc.RulerExtensions"
+            id="tinyos.yeti.debug.ui.editor.nesc.RulerExtensions"
             targetID="tinyos.ui.editor.nesc">
          <action
                actionID="RulerDoubleClick"
-               class="tinyOS.debug.editorActions.BreakpointRulerDelegate"
-               id="tinyOS.debug.ui.editor.nesc.editorActions.BreakpointRulerAction"
+               class="tinyos.yeti.debug.editorActions.BreakpointRulerDelegate"
+               id="tinyos.yeti.debug.ui.editor.nesc.editorActions.BreakpointRulerAction"
                label="BreakpointRulerAction"
                style="push">
          </action>
@@ -45,19 +45,19 @@
          point="org.eclipse.ui.popupMenus">
          <viewerContribution
             targetID="#NESCRulerContext"
-            id="tinyOS.debug.ui.editor.nesc.BreakpointRulerPopupMenu">
+            id="tinyos.yeti.debug.ui.editor.nesc.BreakpointRulerPopupMenu">
          <action
                label="Toggle Breakpoint"
-               class="tinyOS.debug.editorActions.BreakpointRulerDelegate"
+               class="tinyos.yeti.debug.editorActions.BreakpointRulerDelegate"
                menubarPath="debug"
-               id="tinyOS.debug.ui.editor.nesc.editorActions.BreakpointRulerPopupMenu">
+               id="tinyos.yeti.debug.ui.editor.nesc.editorActions.BreakpointRulerPopupMenu">
          </action>
       </viewerContribution>
    </extension>
    <extension
          point="tinyos.yeti.core.EditorAnnotationModelProvider">
       <factory
-            class="tinyOS.debug.views.annotation.DebugMarkerAnnotationModelFactory"
+            class="tinyos.yeti.debug.views.annotation.DebugMarkerAnnotationModelFactory"
             contentTypeId="TinyOS.nesCSource">
       </factory>
    </extension>
@@ -65,16 +65,16 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            class="tinyOS.debug.launch.configuration.LaunchConfigurationTabGroup"
-            id="tinyOS.debug.launch.tabGroup"
-            type="tinyOS.debug.launch.configurationType">
+            class="tinyos.yeti.debug.launch.configuration.LaunchConfigurationTabGroup"
+            id="tinyos.yeti.debug.launch.tabGroup"
+            type="tinyos.yeti.debug.launch.configurationType">
       </launchConfigurationTabGroup>
    </extension>
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="tinyOS.debug.launch.LaunchConfigurationDelegate"
-            id="tinyOS.debug.launch.configurationType"
+            delegate="tinyos.yeti.debug.launch.LaunchConfigurationDelegate"
+            id="tinyos.yeti.debug.launch.configurationType"
             modes="debug"
             name="TinyOS Debugger"
             public="true"
@@ -85,7 +85,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
-            configTypeID="tinyOS.debug.launch.configurationType"
+            configTypeID="tinyos.yeti.debug.launch.configurationType"
             icon="icons/nescfile.png"
             id="tinyos.launch.build.icon">
       </launchConfigurationTypeImage>
@@ -93,7 +93,7 @@
    <extension
          point="tinyos.yeti.core.EditorInputConverter">
       <converter
-            class="tinyOS.debug.ep.ExternalEditorInputConverter">
+            class="tinyos.yeti.debug.ep.ExternalEditorInputConverter">
       </converter>
    </extension>
    <extension
@@ -101,51 +101,51 @@
       <perspectiveExtension
             targetID="org.eclipse.debug.ui.DebugPerspective">
          <viewShortcut
-               id="tinyOS.debug.views.ComponenVariablesView">
+               id="tinyos.yeti.debug.views.ComponenVariablesView">
          </viewShortcut>
       </perspectiveExtension>
    </extension>
    <extension
          point="tinyos.yeti.debugger.proxyTab">
       <tab
-            class="tinyOS.debug.launch.configuration.AvariceGdbProxyTab"
+            class="tinyos.yeti.debug.launch.configuration.AvariceGdbProxyTab"
             order="1.5"></tab>
       <tab
-            class="tinyOS.debug.launch.configuration.UserDefinedGdbProxyTab"
+            class="tinyos.yeti.debug.launch.configuration.UserDefinedGdbProxyTab"
             order="2.5"></tab>
       <tab
-            class="tinyOS.debug.launch.configuration.NoGdbProxyTab"
+            class="tinyos.yeti.debug.launch.configuration.NoGdbProxyTab"
             order="3.5"></tab>
       <tab
-            class="tinyOS.debug.launch.configuration.MSP430ProxyTab"
+            class="tinyos.yeti.debug.launch.configuration.MSP430ProxyTab"
             order="1.6">
       </tab>
    </extension>
    <extension
          point="tinyos.yeti.debugger.launchPrerun">
       <prerun
-            class="tinyOS.debug.launch.configuration.prerun.DoNothingPrerun"
+            class="tinyos.yeti.debug.launch.configuration.prerun.DoNothingPrerun"
             id="do-nothing"
             order="1.0"
-            tab-class="tinyOS.debug.launch.configuration.prerun.DoNothingPrerun">
+            tab-class="tinyos.yeti.debug.launch.configuration.prerun.DoNothingPrerun">
       </prerun>
       <prerun
-            class="tinyOS.debug.launch.configuration.prerun.DefaultPrerun"
+            class="tinyos.yeti.debug.launch.configuration.prerun.DefaultPrerun"
             id="build-default"
             order="2.0"
-            tab-class="tinyOS.debug.launch.configuration.prerun.DefaultPrerun">
+            tab-class="tinyos.yeti.debug.launch.configuration.prerun.DefaultPrerun">
       </prerun>
       <prerun
-            class="tinyOS.debug.launch.configuration.prerun.MakeOptionPrerun"
+            class="tinyos.yeti.debug.launch.configuration.prerun.MakeOptionPrerun"
             id="make-option"
             order="3.0"
-            tab-class="tinyOS.debug.launch.configuration.prerun.MakeOptionPrerun">
+            tab-class="tinyos.yeti.debug.launch.configuration.prerun.MakeOptionPrerun">
       </prerun>
       <prerun
-            class="tinyOS.debug.launch.configuration.prerun.LaunchConfigurationPrerun"
+            class="tinyos.yeti.debug.launch.configuration.prerun.LaunchConfigurationPrerun"
             id="launch-configuration"
             order="2.5"
-            tab-class="tinyOS.debug.launch.configuration.prerun.LaunchConfigurationPrerun">
+            tab-class="tinyos.yeti.debug.launch.configuration.prerun.LaunchConfigurationPrerun">
       </prerun>
    </extension>
    

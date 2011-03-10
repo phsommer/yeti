@@ -22,7 +22,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 
-import tinyOS.debug.ITinyOSDebugConstants;
+import tinyos.yeti.debug.ITinyOSDebugConstants;
 import tinyos.yeti.debug.simulation.events.ISimulationEventListener;
 import tinyos.yeti.debug.simulation.events.SimulationEvent;
 import tinyos.yeti.debug.simulation.manager.ISimulationManager;
@@ -43,9 +43,9 @@ public class TinyOSDebugSimulationPlugin extends AbstractUIPlugin implements ISi
     private LinkedList<ISimulationEventListener> simulationEventListener;
     
 	/**
-	 * The plug-in identifier (value <code>"tinyOS.debug.simulation"</code>).
+	 * The plug-in identifier (value <code>"tinyos.yeti.debug.simulation"</code>).
 	 */
-	public static final String PLUGIN_ID = "tinyOS.debug.simulation";
+	public static final String PLUGIN_ID = "tinyos.yeti.debug.simulation";
 	
     /**
      * The constructor.

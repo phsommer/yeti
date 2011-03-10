@@ -6,7 +6,7 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="tinyos.yeti.debug.simulation.launch.LaunchConfigurationDelegate"
-            id="tinyOS.debug.simulation.launch.configurationType"
+            id="tinyos.yeti.debug.simulation.launch.configurationType"
             modes="debug"
             name="TinyOS Debug Simulation"
             public="true"
@@ -18,17 +18,17 @@
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="tinyos.yeti.debug.simulation.launch.configuration.LaunchConfigurationTabGroup"
-            id="tinyOS.debug.simulation.launch.tabGroup"
-            type="tinyOS.debug.simulation.launch.configurationType">
+            id="tinyos.yeti.debug.simulation.launch.tabGroup"
+            type="tinyos.yeti.debug.simulation.launch.configurationType">
       </launchConfigurationTabGroup>
    </extension>
    <extension
          point="tinyos.yeti.debugger.simulation.simulatorTab">
       <tab
-            class="tinyOS.debug.simulation.launch.configuration.CoojaConfigurationTab"
+            class="tinyos.yeti.debug.simulation.launch.configuration.CoojaConfigurationTab"
             id="tinyos.yeti.debugger.simulation.simulatorTab.cooja"
             order="1"
-            simulation_manager="tinyOS.debug.simulation.manager.cooja.CoojaSimulationManager">
+            simulation_manager="tinyos.yeti.debug.simulation.manager.cooja.CoojaSimulationManager">
       </tab>
    </extension>
    <extension

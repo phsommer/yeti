@@ -11,7 +11,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
-import tinyOS.debug.TinyOSDebugPlugin;
+import tinyos.yeti.debug.TinyOSDebugPlugin;
 import tinyos.yeti.debug.simulation.launch.configuration.ITinyOSDebugSimulationLaunchConstants;
 import tinyos.yeti.debug.simulation.manager.ISimulationManager;
 

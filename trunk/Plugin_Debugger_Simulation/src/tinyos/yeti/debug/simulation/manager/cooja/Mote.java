@@ -16,8 +16,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
-import tinyOS.debug.CDTAbstractionLayer.CDTLaunchConfigConst;
-import tinyOS.debug.CDTAbstractionLayer.CDTLaunchConfigurationDelegate;
+import tinyos.yeti.debug.CDTAbstractionLayer.CDTLaunchConfigConst;
+import tinyos.yeti.debug.CDTAbstractionLayer.CDTLaunchConfigurationDelegate;
 import tinyos.yeti.TinyOSPlugin;
 import tinyos.yeti.debug.simulation.TinyOSDebugSimulationPlugin;
 import tinyos.yeti.debug.simulation.events.SimulationEvent;

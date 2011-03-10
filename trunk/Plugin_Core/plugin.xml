@@ -47,7 +47,7 @@
       <page
             category="tinyOS"
             class="tinyos.yeti.preferences.DebugPreferencePage"
-            id="tinyOS.debug"
+            id="tinyos.yeti.debug"
             name="Debug">
       </page>
       <page
@@ -849,7 +849,7 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
-            id="tinyOS.debug.ui.editor.nesc.BreakpointRulerPopupMenu"
+            id="tinyos.yeti.debug.ui.editor.nesc.BreakpointRulerPopupMenu"
             targetID="#NESCRulerContext">
          <action
                class="org.eclipse.ui.texteditor.BookmarkRulerAction"

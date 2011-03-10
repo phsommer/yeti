@@ -10,12 +10,12 @@ public interface ITinyOSDebugSimulationLaunchConstants
 	/**
 	 * Prefix for all launch constants
 	 */
-	public static final String TINYOS_DBG_LAUNCH_SIMULATION_ID = "tinyOS.debug.simulation.launch";
+	public static final String TINYOS_DBG_LAUNCH_SIMULATION_ID = "tinyos.yeti.debug.simulation.launch";
 
 	/**
 	 * This is the launch type id.
 	 */
-	public static final String ID_LAUNCH_TINYOS_DEBUG_SIMULATION = "tinyOS.debug.launch.simulation.configurationType";
+	public static final String ID_LAUNCH_TINYOS_DEBUG_SIMULATION = "tinyos.yeti.debug.launch.simulation.configurationType";
 	
 	/**
 	 * Launch configuration attribute key. The value indicates the currently configured simulator.

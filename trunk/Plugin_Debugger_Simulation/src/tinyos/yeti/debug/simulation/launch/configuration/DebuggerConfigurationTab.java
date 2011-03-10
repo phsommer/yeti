@@ -40,10 +40,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import tinyOS.debug.NesCDebugIcons;
-import tinyOS.debug.TinyOSDebugPlugin;
-import tinyOS.debug.CDTAbstractionLayer.CDTLaunchConfigConst;
-import tinyOS.debug.launch.configuration.AbstractTinyOSDebuggerTab;
+import tinyos.yeti.debug.NesCDebugIcons;
+import tinyos.yeti.debug.TinyOSDebugPlugin;
+import tinyos.yeti.debug.CDTAbstractionLayer.CDTLaunchConfigConst;
+import tinyos.yeti.debug.launch.configuration.AbstractTinyOSDebuggerTab;
 /**
  * Configures the CDT debugger.
  * @author Silvan Nellen
@@ -326,7 +326,7 @@ public class DebuggerConfigurationTab extends AbstractTinyOSDebuggerTab
 	}
 
 	private void setAdditionalAttributes(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute( CDTLaunchConfigConst.ATTR_DEBUGGER_ID, "tinyOS.debug.simulation.debugger.CoojaDebugger"); // TODO: hier ID des Debuggers hardcoden
+		configuration.setAttribute( CDTLaunchConfigConst.ATTR_DEBUGGER_ID, "tinyos.yeti.debug.simulation.debugger.CoojaDebugger"); // TODO: hier ID des Debuggers hardcoden
 		configuration.setAttribute( CDTLaunchConfigConst.ATTR_REMOTE_TCP ,true);
 	}
 
