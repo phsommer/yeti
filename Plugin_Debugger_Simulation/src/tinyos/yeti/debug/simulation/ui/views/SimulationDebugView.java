@@ -297,7 +297,7 @@ public class SimulationDebugView extends AbstractDebugView
 							if(((Mote)element).isInBreakpoint())
 								return DebugUITools.getImage(IDebugUIConstants.IMG_OBJS_BREAKPOINT);
 							else
-								return NesCIcons.icons().get(NesCIcons.ICON_PLATFORM);
+								return NesCIcons.icons().get(NesCIcons.ICON_TMOTE);
 						}
 					}
 				}
@@ -316,15 +316,15 @@ public class SimulationDebugView extends AbstractDebugView
 			if(element instanceof ISimulationManager)
 			{
 				if(((ISimulationManager)element).getSimulationState() == ISimulationManager.SIM_STATE_RUNNING)
-					return "Debug Simulation (Running)";
-				return "Debug Simulation";
+					return "Cooja Simulation (Running)";
+				return "Cooja Simulation (Paused)";
 			}
 				
 			if(element instanceof Mote)
 			{
 				Mote mote = (Mote)element;
 				String projectName = (mote.getProject() != null) ? mote.getProject().getName() : "Unknown Project";
-				return "Mote " + Integer.toString(mote.getId()) + " (" + projectName + ")";
+				return mote.getPlatform() + " " + Integer.toString(mote.getId()) + " (" + projectName + ")";
 			}
 
 			if(element instanceof IStackFrame)

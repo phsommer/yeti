@@ -230,8 +230,6 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	private class CoojaCommand
 	{
 		protected Map<String, String> command;
-		@SuppressWarnings("unused")
-		public String commandName = "Default command name";
 		
 		public CoojaCommand()
 		{
@@ -266,13 +264,15 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		
 		public void sendCommand()
 		{
-			if(objectOutputStream != null)
+			if(objectOutputStream != null && socket.isConnected())
 			{
 				try {
+					System.out.println("Send command: " + command.get("commandName"));
 					objectOutputStream.writeObject(command);
 					objectOutputStream.flush();
 				} catch (IOException e) {
-					TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to send command to Cooja", e.getMessage());
+					//TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to send command to Cooja", e.getMessage());
+					e.printStackTrace();
 				}
 				
 			}
@@ -406,6 +406,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			mote.setGdbBinary(getCommand().get("gdbBinary"));
 			mote.setGdbInit(getCommand().get("gdbInit"));
 			mote.setFirmware(getCommand().get("firmware"));
+			mote.setPlatform(getCommand().get("platform"));
 			fireSimulationEvent(mote, SimulationEvent.CHANGE);
 		}
 	}
@@ -432,6 +433,16 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		public static final String commandName = "resumeSimulation";
 		
 		public ResumeSimulationCommand()
+		{
+			setCommandName(commandName);
+		}
+	}
+	
+	private class SteppingMoteCommand extends CoojaCommand
+	{
+		public static final String commandName = "stepMote";
+		
+		public SteppingMoteCommand()
 		{
 			setCommandName(commandName);
 		}
@@ -557,6 +568,27 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		job.schedule();
 		
 	}
+	
+	
+	@Override
+	public void stepMote(Mote mote) {
+		
+
+		Job job = new Job("Wait for mote to be started")
+		{	
+			@Override
+			protected IStatus run(IProgressMonitor monitor) 
+			{
+				simulationState = ISimulationManager.SIM_STATE_STOPPED;
+				new SteppingMoteCommand().sendCommand();
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
+
+		
+	}
+	
 
 	@Override
 	public void terminate() 
@@ -568,7 +600,8 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			moteIterator.next().terminate();
 		}
 		
-		// Say coodbye to cooja
+		// Say goodbye to cooja
+		System.out.println("Disconnect from Cooja");
 		new DisconnectCommand().sendCommand();
 		
 		// terminate manager
@@ -609,5 +642,6 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	{
 		return simulationState;
 	}
+	
 }
 
