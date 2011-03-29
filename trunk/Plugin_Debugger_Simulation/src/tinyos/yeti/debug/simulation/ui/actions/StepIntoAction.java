@@ -6,6 +6,7 @@ import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.viewers.Viewer;
 
+import tinyos.yeti.debug.simulation.manager.ISimulationManager;
 import tinyos.yeti.debug.simulation.manager.cooja.Mote;
 
 public class StepIntoAction extends AbstractSimulatorAction 
@@ -36,6 +37,9 @@ public class StepIntoAction extends AbstractSimulatorAction
 		} catch (DebugException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {	}
+		
+		ISimulationManager manager = getManager(getSelectedObject());
+		manager.stepMote((Mote)selectedObject);
 		
 		viewer.setSelection(null);
 	}

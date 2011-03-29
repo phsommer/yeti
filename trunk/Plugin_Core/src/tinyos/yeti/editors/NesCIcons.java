@@ -137,6 +137,7 @@ public class NesCIcons extends Icons{
     public static final String ICON_SENSOR = "icon_sensor";
     public static final String ICON_APPLICATION = "icon_application";
     public static final String ICON_PLATFORM = "icon_platform";
+    public static final String ICON_TMOTE = "icon_tmote";
     public static final String ICON_NESC = "icon_nesc";
     public static final String ICON_NESC_FILE = "icon_nesc_file";
     public static final String ICON_NESC_DECORATION = "icon_nesc_decoration";
@@ -258,6 +259,7 @@ public class NesCIcons extends Icons{
 
         declareRegistryImage( ICON_TEMPLATE, "template.gif" );
         declareRegistryImage( ICON_PLATFORM, "platform.png" );
+        declareRegistryImage( ICON_TMOTE, "tmote.png" );
 
         declareRegistryImage( ICON_DECORATION_ERROR, "small_error.png" );
         declareRegistryImage( ICON_DECORATION_WARNING, "small_warning.png" );

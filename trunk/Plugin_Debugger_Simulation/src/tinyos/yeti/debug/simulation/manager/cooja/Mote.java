@@ -40,6 +40,7 @@ public class Mote
 	private moteState state = moteState.DISCONNECTED;
 	
 	private boolean inBreakpoint = false;
+	private String platform;
 	
 	
 	public Mote(int id, ISimulationManager manager, ILaunch launch, ILaunchConfiguration originalLaunchConfiguration)
@@ -120,6 +121,16 @@ public class Mote
 	{
 		this.firmware = firmware;
 		this.project = findProject(firmware);
+	}
+	
+	public String getPlatform()
+	{
+	    return platform;	
+	}
+	
+	public void setPlatform(String platform)
+	{
+		this.platform = platform;
 	}
 	
 	public void resume()

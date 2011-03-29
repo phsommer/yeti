@@ -17,6 +17,7 @@ public interface ISimulationManager extends Runnable, IDebugEventSetListener
 	
 	public static final int SIM_STATE_RUNNING = 0;
 	public static final int SIM_STATE_STOPPED = 1;
+	public static final int SIM_SINGLE_STEPPING = 2;
 	
 	/**
 	 * Setting up the configuration parameter for the simulation
@@ -29,6 +30,8 @@ public interface ISimulationManager extends Runnable, IDebugEventSetListener
 	public Mote[] getMotes();
 
 	public void resumeSimulation();
+	
+	public void stepMote(Mote mote);
 	
 	public void terminate();
 
