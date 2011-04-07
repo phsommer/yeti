@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="tinyos.yeti.parser"
-      label="Yeti - TinyOS NesC 1.3.x Parser (recommended)"
+      label="YETI- TinyOS NesC 1.3.x Parser (required)"
       version="2.2.383"
       provider-name="ETH Zurich">
 
    <description url="http://code.google.com/a/eclipselabs.org/p/yeti/">
-      Preprocessor and parser for NesC 1.2.x files.
+      Preprocessor and parser for NesC 1.3.x files.
    </description>
 
    <copyright>
