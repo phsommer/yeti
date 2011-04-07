@@ -108,21 +108,20 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </url>
 
    <requires>
-      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.filesystem"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.cdt.debug.core"/>
-      <import plugin="org.eclipse.cdt.core"/>
       <import plugin="org.eclipse.cdt.debug.mi.core"/>
       <import plugin="org.eclipse.cdt.launch"/>
       <import plugin="org.eclipse.cdt.ui"/>
       <import plugin="tinyos.yeti.core"/>
+      <import plugin="org.eclipse.cdt.core" version="5.1.2" match="greaterOrEqual"/>
    </requires>
 
    <plugin

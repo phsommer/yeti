@@ -114,6 +114,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="tinyos.yeti.core"/>
+      <import plugin="org.eclipse.ui.editors"/>
    </requires>
 
    <plugin
