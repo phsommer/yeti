@@ -9,14 +9,10 @@
       <view
             name="Component Variables Browser"
             icon="icons/component.gif"
-            category="tinyos.yeti.debug.category.main"
+            category="tinyOS.category.main"
             class="tinyos.yeti.debug.views.NescVariablesViewer"
-            id="tinyos.yeti.debug.views.ComponenVariablesView">
+            id="tinyos.yeti.debug.views.ComponentVariablesView">
       </view>
-      <category
-            id="tinyos.yeti.debug.category.main"
-            name="TinyOS Debug">
-      </category>
    </extension>
    <extension
          point="org.eclipse.help.contexts">
@@ -101,7 +97,7 @@
       <perspectiveExtension
             targetID="org.eclipse.debug.ui.DebugPerspective">
          <viewShortcut
-               id="tinyos.yeti.debug.views.ComponenVariablesView">
+               id="tinyos.yeti.debug.views.ComponentVariablesView">
          </viewShortcut>
       </perspectiveExtension>
    </extension>

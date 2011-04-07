@@ -15,6 +15,14 @@
       </launchConfigurationType>
    </extension>
    <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="tinyos.yeti.debug.simulation.launch.configurationType"
+            icon="icons/nescfile.png"
+            id="tinyos.launch.build.icon">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="tinyos.yeti.debug.simulation.launch.configuration.LaunchConfigurationTabGroup"
@@ -38,6 +46,7 @@
             icon="icons/debugger_tab.gif"
             id="tinyos.yeti.debugger.simulation.simulation_debug_view"
             name="Simulation Debug"
+            category="tinyOS.category.main"
             restorable="true">
       </view>
    </extension>
