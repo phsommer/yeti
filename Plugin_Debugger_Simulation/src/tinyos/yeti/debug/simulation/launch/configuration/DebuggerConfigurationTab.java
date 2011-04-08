@@ -185,7 +185,7 @@ public class DebuggerConfigurationTab extends AbstractTinyOSDebuggerTab
 		connectionComp.setLayoutData(gd);
 
 		Label label = new Label( connectionComp, SWT.WRAP );
-		label.setText("Eclipse will try to connect to this host:port to communicate with the Cooja plugin:");
+		label.setText("Eclipse will try to connect to this host:port to communicate with the COOJA plugin:");
 		gd = new GridData( GridData.FILL_HORIZONTAL );
 		gd.heightHint = SWT.DEFAULT;
 		gd.horizontalSpan = 2;

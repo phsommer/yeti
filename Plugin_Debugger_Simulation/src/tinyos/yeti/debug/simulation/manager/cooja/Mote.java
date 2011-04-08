@@ -2,6 +2,7 @@ package tinyos.yeti.debug.simulation.manager.cooja;
 
 import org.eclipse.cdt.debug.mi.core.IGDBServerMILaunchConfigurationConstants;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -24,7 +25,7 @@ import tinyos.yeti.debug.simulation.events.SimulationEvent;
 import tinyos.yeti.debug.simulation.launch.configuration.ITinyOSDebugSimulationLaunchConstants;
 import tinyos.yeti.debug.simulation.manager.ISimulationManager;
 
-public class Mote 
+public class Mote implements IProgressMonitor
 {
 	
 	private int id, port;
@@ -379,19 +380,86 @@ public class Mote
 	
 	private void setCNature(IProject project) throws CoreException
 	{
+		
 		if(project.hasNature(CDTLaunchConfigConst.CDT_PROJECT_NATURE))
 			return;
+
 		String[] natureIds = project.getDescription().getNatureIds();
 		String[] newNatures = new String[natureIds.length+1];
 		System.arraycopy(natureIds, 0, newNatures, 0, natureIds.length);
 		newNatures[natureIds.length] = CDTLaunchConfigConst.CDT_PROJECT_NATURE;
-		project.getDescription().setNatureIds(newNatures);
+		IProjectDescription description = project.getDescription();
+		description.setNatureIds(newNatures);
+		// update project description
+		project.setDescription(description, this);
+		
+		// block until project description is updated
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	private void fireSimulationEvent(Object source, int type)
 	{
 		SimulationEvent event = new SimulationEvent(source, type);
 		TinyOSDebugSimulationPlugin.getDefault().fireSimulationEvent(event);
+	}
+
+	@Override
+	public void beginTask(String name, int totalWork) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void done() {
+		
+		synchronized (this) {
+			this.notify();
+		}
+		
+	}
+
+	@Override
+	public void internalWorked(double work) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isCanceled() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setCanceled(boolean value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTaskName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void subTask(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void worked(int work) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

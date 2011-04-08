@@ -16,8 +16,11 @@ public class ResumeSimulationAction extends AbstractSimulatorAction
 	
 	public void run()
 	{
+		System.out.println("ResumeSimulationAction");
+		System.out.println("getSelectedObject(): " + getSelectedObject());
 		ISimulationManager manager = getManager(getSelectedObject());
 		manager.resumeSimulation();
+		System.out.println("manager: " + manager);
 		viewer.setSelection(null);
 	}
 	
