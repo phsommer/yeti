@@ -103,7 +103,7 @@ public class CoojaConfigurationTab extends AbstractTinyOSDebuggerTab implements 
 	@Override
 	public String getName() 
 	{
-		return "Cooja";
+		return "COOJA";
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class CoojaConfigurationTab extends AbstractTinyOSDebuggerTab implements 
 		comboComp.setLayoutData(gd);
 
 		hostLabel = new Label(comboComp, SWT.NONE);
-		hostLabel.setText("Connect to Cooja on host");
+		hostLabel.setText("Connect to COOJA on host");
 		gd = new GridData();
 		gd.horizontalSpan = 1;
 		hostLabel.setLayoutData(gd);
@@ -211,7 +211,7 @@ public class CoojaConfigurationTab extends AbstractTinyOSDebuggerTab implements 
 			});
 	
 		portLabel = new Label(comboComp, SWT.NONE);
-		portLabel.setText("Connect to Cooja on port");
+		portLabel.setText("Connect to COOJA on port");
 		gd = new GridData();
 		gd.horizontalSpan = 1;
 		portLabel.setLayoutData(gd);

@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.progress.UIJob;
 
@@ -85,6 +86,10 @@ public class SimulationDebugView extends AbstractDebugView
 	@Override
 	protected void createActions() 
 	{
+		// TODO: set icons
+		// addItemAction.setImageDescriptor(getImageDescriptor("add.gif"));
+		
+		System.out.println("createActions()");
 		ConnectMoteAction connectAction = new ConnectMoteAction(viewer);
 		setAction(CONNECT_MOTE_ACTION_ID, connectAction);
 		
@@ -126,7 +131,8 @@ public class SimulationDebugView extends AbstractDebugView
 	@Override
 	protected void configureToolBar(IToolBarManager tbm) 
 	{
-
+		System.out.println("configureToolBar()");
+		tbm.add(getAction(RESUME_SIMULATION_ACTION_ID));
 	}
 	
 	private class DebugContentProvider implements ITreeContentProvider, ISimulationEventListener
@@ -219,9 +225,18 @@ public class SimulationDebugView extends AbstractDebugView
 		@Override
 		public void handleSimulationEvent(SimulationEvent event)
 		{
+			System.out.println("New Simulation event: type = " + event.getType() + ", source = " + event.getSource());
 			UIJob uiJob = new UIJob("Update Simulation Debug View") {
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor) {
+					
+					TreeItem root = null;
+					try {
+						root = viewer.getTree().getItem(0);
+					} catch (Exception e) {}
+					
+					if (root!=null) viewer.getTree().setSelection(root);
+					
 					viewer.refresh();
 					
 					int cursorType = (isBusy()) ? SWT.CURSOR_WAIT : SWT.CURSOR_ARROW;
@@ -294,9 +309,11 @@ public class SimulationDebugView extends AbstractDebugView
 							return DebugUITools.getImage(IDebugUIConstants.IMG_OBJS_THREAD_RUNNING);
 						case ISimulationManager.SIM_STATE_STOPPED:
 						{
-							if(((Mote)element).isInBreakpoint())
+							if(((Mote)element).isInBreakpoint()) {
+								
+								// TODO: set focus on mote and expand subtree
 								return DebugUITools.getImage(IDebugUIConstants.IMG_OBJS_BREAKPOINT);
-							else
+							} else
 								return NesCIcons.icons().get(NesCIcons.ICON_TMOTE);
 						}
 					}
@@ -316,8 +333,8 @@ public class SimulationDebugView extends AbstractDebugView
 			if(element instanceof ISimulationManager)
 			{
 				if(((ISimulationManager)element).getSimulationState() == ISimulationManager.SIM_STATE_RUNNING)
-					return "Cooja Simulation (Running)";
-				return "Cooja Simulation (Paused)";
+					return "COOJA Simulation (Running)";
+				return "COOJA Simulation (Paused)";
 			}
 				
 			if(element instanceof Mote)

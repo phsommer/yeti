@@ -66,7 +66,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	
 	public CoojaSimulationManager() 
 	{
-		
+		System.out.println("New CoojaSimulationManager()");
 	}
 	
 	@Override
@@ -93,6 +93,17 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			return;
 		}
 		
+		// auto-connect motes
+		for (Mote mote : getMotes()) {
+			
+			if (mote.canConnect()) {
+				mote.connect();
+			}
+			
+		}
+		
+		
+		
 		while(managerState != SimulationManagerState.TERMINATED)
 		{
 			CoojaCommand command = null;
@@ -116,11 +127,11 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	
 	private boolean connectToCooja()
 	{
-		Job job = new Job("Connect to Cooja") 
+		Job job = new Job("Connect to COOJA") 
 		{
 		    protected IStatus run(IProgressMonitor monitor) 
 		    {
-		    	monitor.beginTask("Connecting to Cooja", 5);
+		    	monitor.beginTask("Connecting to COOJA", 5);
 		    	try
 		    	{
 			    	// create socket with host/port pair from the configuration
@@ -130,7 +141,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 						socket = new Socket( host, port );
 						socket.setSoTimeout(SOCKET_TIMEOUT);
 					} catch (Exception e) {
-						TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to establish connection to Cooja", e.getMessage());
+						TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to establish connection to COOJA", e.getMessage());
 						return Status.CANCEL_STATUS;
 					}
 					monitor.worked(1);
@@ -190,7 +201,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			monitor.done();
 			return true;
 		}
-		TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to connect to Cooja", "Timeout while registering streams");
+		TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to connect to COOJA", "Timeout while registering streams");
 		monitor.done();
 		return false;
 	}
@@ -204,7 +215,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		{
 			if(i>SOCKET_TIMEOUT_NUMBER_OF_ATTEMPTS)
 			{
-				TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to connect to Cooja", "Connection timed out. Cooja did not reply on hello packet");
+				TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to connect to COOJA", "Connection timed out. Cooja did not reply on hello packet");
 				monitor.done();
 				return false;
 			}
@@ -213,7 +224,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			} catch (Exception e) {
 				if (!(e instanceof SocketTimeoutException))
 				{
-					TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to connect to Cooja", "Unknown error while waiting for 'helloAck' package: "+e.getMessage());
+					TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to connect to COOJA", "Unknown error while waiting for 'helloAck' package: "+e.getMessage());
 					monitor.done();
 					return false;
 				}
@@ -271,7 +282,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 					objectOutputStream.writeObject(command);
 					objectOutputStream.flush();
 				} catch (IOException e) {
-					//TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to send command to Cooja", e.getMessage());
+					//TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to send command to COOJA", e.getMessage());
 					e.printStackTrace();
 				}
 				
@@ -492,7 +503,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		else if(receivedCommand.get("commandName").equals(BreakpointReceivedCommand.commandName))
 			return new BreakpointReceivedCommand(receivedCommand);
 		
-		TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Received unknown command form Cooja", (String)receivedCommand.get("commandName"));
+		TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Received unknown command form COOJA", (String)receivedCommand.get("commandName"));
 		return null;
 	}
 
@@ -601,7 +612,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		}
 		
 		// Say goodbye to cooja
-		System.out.println("Disconnect from Cooja");
+		System.out.println("Disconnect from COOJA");
 		new DisconnectCommand().sendCommand();
 		
 		// terminate manager
