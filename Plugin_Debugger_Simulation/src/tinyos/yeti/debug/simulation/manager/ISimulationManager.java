@@ -3,6 +3,7 @@ package tinyos.yeti.debug.simulation.manager;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.model.IDebugTarget;
 
 import tinyos.yeti.debug.simulation.manager.cooja.Mote;
 
@@ -28,6 +29,8 @@ public interface ISimulationManager extends Runnable, IDebugEventSetListener
 	public void setup(ILaunchConfiguration configuration, String mode, ILaunch launch);
 		
 	public Mote[] getMotes();
+	
+	public Mote getMote(IDebugTarget target);
 
 	public void resumeSimulation();
 	
