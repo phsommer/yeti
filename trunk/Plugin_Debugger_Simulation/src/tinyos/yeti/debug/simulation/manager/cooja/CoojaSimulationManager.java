@@ -23,6 +23,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.model.IDebugTarget;
 
 import tinyos.yeti.debug.simulation.TinyOSDebugSimulationPlugin;
 import tinyos.yeti.debug.simulation.events.ISimulationEventListener;
@@ -56,6 +57,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	private int simulationState = ISimulationManager.SIM_STATE_STOPPED;
 	
 	private Map<Integer, Mote> motes = new HashMap<Integer, Mote>();
+	private Map<IDebugTarget, Mote> targetMap = new HashMap<IDebugTarget, Mote>();
 	
 	private enum SimulationManagerState {
 		CONNECTING_TO_COOJA,
@@ -93,15 +95,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			return;
 		}
 		
-		// auto-connect motes
-		for (Mote mote : getMotes()) {
 			
-			if (mote.canConnect()) {
-				mote.connect();
-			}
-			
-		}
-		
 		
 		
 		while(managerState != SimulationManagerState.TERMINATED)
@@ -281,7 +275,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 					System.out.println("Send command: " + command.get("commandName"));
 					objectOutputStream.writeObject(command);
 					objectOutputStream.flush();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					//TinyOSDebugSimulationPlugin.getDefault().dialog(IStatus.ERROR, "Unable to send command to COOJA", e.getMessage());
 					e.printStackTrace();
 				}
@@ -367,6 +361,9 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			while(iterator.hasNext())
 			{
 				Mote removedMote = motes.remove(iterator.next());
+				targetMap.remove(removedMote.getTarget());
+				System.out.println("Remove target: " + removedMote.getTarget());
+				
 				fireSimulationEvent(removedMote, SimulationEvent.TERMINATE);
 				fireSimulationEvent(this, SimulationEvent.CHANGE);
 			}
@@ -380,6 +377,8 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 				{
 					Mote newMote = new Mote(id, CoojaSimulationManager.this, launch, originalConfiguration);
 					motes.put(id, newMote);
+					targetMap.put(newMote.getTarget(), newMote);
+					System.out.println("Put target: " + newMote.getTarget());
 					new GetMoteConfiguration(id).sendCommand();
 					fireSimulationEvent(newMote, SimulationEvent.CREATE);
 					fireSimulationEvent(this, SimulationEvent.CHANGE);
@@ -453,9 +452,10 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	{
 		public static final String commandName = "stepMote";
 		
-		public SteppingMoteCommand()
+		public SteppingMoteCommand(int id)
 		{
 			setCommandName(commandName);
+			addArgument("id", Integer.toString(id));
 		}
 	}
 	
@@ -533,6 +533,13 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 		return motes.values().toArray(new Mote[0]);
 	}
 	
+	public Mote getMote(IDebugTarget target) {
+		for (Mote mote : motes.values()) {
+			if (mote.getTarget()==target) return mote;
+		}
+		return null;
+	}
+	
 	
 	@Override
 	public void resumeSimulation()
@@ -582,7 +589,7 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 	
 	
 	@Override
-	public void stepMote(Mote mote) {
+	public void stepMote(final Mote mote) {
 		
 
 		Job job = new Job("Wait for mote to be started")
@@ -590,8 +597,9 @@ public class CoojaSimulationManager implements ISimulationManager, ISimulationEv
 			@Override
 			protected IStatus run(IProgressMonitor monitor) 
 			{
+				System.out.println("Step request for mote " + mote.getId());
 				simulationState = ISimulationManager.SIM_STATE_STOPPED;
-				new SteppingMoteCommand().sendCommand();
+				new SteppingMoteCommand(mote.getId()).sendCommand();
 				return Status.OK_STATUS;
 			}
 		};

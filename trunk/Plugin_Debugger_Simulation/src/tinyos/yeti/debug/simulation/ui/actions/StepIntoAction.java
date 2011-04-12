@@ -21,16 +21,19 @@ public class StepIntoAction extends AbstractSimulatorAction
 	public void run()
 	{
 		Object selectedObject = getSelectedObject();
+		ISimulationManager manager = getManager(getSelectedObject());
 		
 		try 
 		{
 			if(selectedObject instanceof IStackFrame)
 			{
+				manager.stepMote((Mote)selectedObject);
 				((IStackFrame)selectedObject).stepInto();
 				return;
 			}
 			if(selectedObject instanceof Mote)
 			{
+				manager.stepMote((Mote)selectedObject);
 				((Mote)selectedObject).getTarget().getThreads()[0].stepInto();
 				return;
 			}
@@ -38,8 +41,8 @@ public class StepIntoAction extends AbstractSimulatorAction
 			e.printStackTrace();
 		} catch (NullPointerException e) {	}
 		
-		ISimulationManager manager = getManager(getSelectedObject());
-		manager.stepMote((Mote)selectedObject);
+		
+		
 		
 		viewer.setSelection(null);
 	}

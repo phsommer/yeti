@@ -50,6 +50,7 @@ import tinyos.yeti.debug.simulation.ui.actions.DisconnectMoteAction;
 import tinyos.yeti.debug.simulation.ui.actions.ResumeSimulationAction;
 import tinyos.yeti.debug.simulation.ui.actions.StepIntoAction;
 import tinyos.yeti.debug.simulation.ui.actions.StepOverAction;
+import tinyos.yeti.debug.simulation.ui.actions.StepReturnAction;
 import tinyos.yeti.debug.simulation.ui.actions.TerminateManagerAction;
 import tinyos.yeti.editors.NesCIcons;
 
@@ -66,6 +67,7 @@ public class SimulationDebugView extends AbstractDebugView
 	private static final String RESUME_SIMULATION_ACTION_ID = "resume_simulation_action";
 	private static final String STEP_INTO_ACTION_ID = "step_into_action";
 	private static final String STEP_OVER_ACTION_ID = "step_over_action";
+	private static final String STEP_RETURN_ACTION_ID = "step_return_action";
 	
 	@Override
 	protected Viewer createViewer(Composite parent) 
@@ -107,6 +109,9 @@ public class SimulationDebugView extends AbstractDebugView
 		
 		StepOverAction stepOverAction = new StepOverAction(viewer);
 		setAction(STEP_OVER_ACTION_ID, stepOverAction);
+		
+		StepReturnAction stepReturnAction = new StepReturnAction(viewer);
+		setAction(STEP_RETURN_ACTION_ID, stepReturnAction);
 	}
 
 	@Override
@@ -124,6 +129,7 @@ public class SimulationDebugView extends AbstractDebugView
 		menu.add(getAction(RESUME_SIMULATION_ACTION_ID));
 		menu.add(getAction(STEP_INTO_ACTION_ID));
 		menu.add(getAction(STEP_OVER_ACTION_ID));
+		menu.add(getAction(STEP_RETURN_ACTION_ID));
 		menu.add(new Separator());
 		menu.add(getAction(DISCONNECT_MANAGER_ACTION_ID));
 	}
@@ -528,15 +534,19 @@ public class SimulationDebugView extends AbstractDebugView
 			// Step Action
 			boolean enableStepIntoAction = false;
 			boolean enableStepOverAction = false;
+			boolean enableStepReturnAction = false;
+			
 			if(activeContext instanceof IStructuredSelection)
 			{
 				Object element = ((IStructuredSelection)activeContext).getFirstElement();
+				System.out.println("element is: " + element);
 				if(element instanceof Mote)
 				{
 					if(((Mote)element).getTarget() != null)
 					{
 						enableStepIntoAction = true;
 						enableStepOverAction = true;
+						enableStepReturnAction = true;
 						try 
 						{
 							for(IThread thread : ((Mote)element).getTarget().getThreads())
@@ -545,13 +555,25 @@ public class SimulationDebugView extends AbstractDebugView
 									enableStepIntoAction = false;
 								if(!thread.canStepOver())
 									enableStepOverAction = false;
+								if (!thread.canStepReturn())
+									enableStepReturnAction = false;
 							}
 						} catch (DebugException e) { e.printStackTrace(); }
 					}
+				} else if (element instanceof IStackFrame) {
+										
+					if(((IStackFrame)element).canStepInto())
+						enableStepIntoAction = true;
+					if(((IStackFrame)element).canStepOver())
+						enableStepOverAction = true;
+					if (((IStackFrame)element).canStepReturn())
+						enableStepReturnAction = true;
+					
 				}
 			}
 			getAction(STEP_INTO_ACTION_ID).setEnabled(enableStepIntoAction && enableResumeSimulationAction);
 			getAction(STEP_OVER_ACTION_ID).setEnabled(enableStepOverAction && enableResumeSimulationAction);
+			getAction(STEP_RETURN_ACTION_ID).setEnabled(enableStepReturnAction && enableResumeSimulationAction);
 		}
 	}
 	
